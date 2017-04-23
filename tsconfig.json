@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "typeRoots": [ "./node_modules/@types", "./node_modules/typescript/lib" ],
+    "alwaysStrict": true,
+    "emitDecoratorMetadata": false,
+    "importHelpers": true,
+    "experimentalDecorators": true,
+    "strictNullChecks": true,
+    "module": "es2015",
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "target": "es2017",
+    "outDir": "compiled",
+    "lib": [
+      "es2015.promise",
+      "dom",
+      "es6",
+      "scripthost",
+      "es7",
+      "es2017.object",
+      "es2015.proxy"
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "ava": ["node_modules/ava/types/generated.d.ts"],
+      "tslib" : ["node_modules/tslib/tslib.d.ts"],
+      "array-flatten": ["node_modules/array-flatten/array-flatten.d.ts"],
+      "marshaller": ["node_modules/marshaller/dist/es2015/Marshaller.d.ts"],
+      "typedetector": ["node_modules/typedetector/dist/es2015/TypeDetector.d.ts"],
+      "typescript": ["node_modules/typescript/lib/typescript.d.ts"]
+    }
+  }
+}
