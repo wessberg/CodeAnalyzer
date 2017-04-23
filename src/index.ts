@@ -1,4 +1,4 @@
-export {BindingIdentifier} from "src/BindingIdentifier";
-export {SimpleLanguageService} from "src/SimpleLanguageService";
+export {BindingIdentifier} from "./BindingIdentifier";
+export {SimpleLanguageService} from "./SimpleLanguageService";
 export {ISimpleLanguageService, IClassDeclaration, IModuleDependency, InitializationValue, NullableInitializationValue} from "./interface/ISimpleLanguageService";
 export {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
