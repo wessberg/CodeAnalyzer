@@ -39,14 +39,6 @@ import {
 } from "typescript";
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
-export enum ModuleKind {
-	ES2015 = 5
-}
-
-export enum ScriptTarget {
-	ES2017 = 4
-}
-
 export enum SyntaxKind {
 	Unknown = 0,
 	EndOfFileToken = 1,
