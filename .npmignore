@@ -2,3 +2,5 @@
 tsconfig.*
 .gitignore
 /test/
+/compiled/
+.idea

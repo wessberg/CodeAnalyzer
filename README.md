@@ -34,5 +34,5 @@ and exports and other stuff.
 
 - First release.
 
-[npm-url]: https://npmjs.org/package/simplelanguageservice
-[npm-image]: https://badge.fury.io/js/simplelanguageservice.svg
+[npm-url]: https://npmjs.org/package/@wessberg/simplelanguageservice
+[npm-image]: https://badge.fury.io/js/@wessberg/simplelanguageservice.svg

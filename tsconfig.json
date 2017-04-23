@@ -4,6 +4,7 @@
     "alwaysStrict": true,
     "emitDecoratorMetadata": false,
     "importHelpers": true,
+    "moduleResolution": "node",
     "experimentalDecorators": true,
     "strictNullChecks": true,
     "module": "es2015",
@@ -25,12 +26,7 @@
     ],
     "baseUrl": ".",
     "paths": {
-      "ava": ["node_modules/ava/types/generated.d.ts"],
-      "tslib" : ["node_modules/tslib/tslib.d.ts"],
-      "array-flatten": ["node_modules/array-flatten/array-flatten.d.ts"],
-      "marshaller": ["node_modules/marshaller/dist/es2015/Marshaller.d.ts"],
-      "typedetector": ["node_modules/typedetector/dist/es2015/TypeDetector.d.ts"],
-      "typescript": ["node_modules/typescript/lib/typescript.d.ts"]
+      "tslib" : ["node_modules/tslib/tslib.d.ts"]
     }
   }
 }
