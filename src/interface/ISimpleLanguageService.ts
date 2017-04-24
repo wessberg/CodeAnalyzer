@@ -1,41 +1,54 @@
 import {
-	ArrayLiteralExpression, ArrayTypeNode,
+	ArrayLiteralExpression,
+	ArrayTypeNode,
 	BinaryExpression,
 	BindingName,
+	NumericLiteral,
+	TemplateHead,
+	TemplateTail,
+	StringLiteral,
 	Block,
 	BooleanLiteral,
-	PropertyDeclaration,
 	CallExpression,
 	ClassDeclaration,
 	ConditionalExpression,
 	ConstructorDeclaration,
 	Declaration,
-	ElementAccessExpression, EntityName,
+	ElementAccessExpression,
+	EntityName,
 	EnumDeclaration,
 	ExportDeclaration,
 	Expression,
 	ExpressionStatement,
 	HeritageClause,
 	Identifier,
-	ImportDeclaration, IntersectionTypeNode, KeywordTypeNode,
+	ImportDeclaration,
+	IntersectionTypeNode,
+	KeywordTypeNode,
 	LanguageServiceHost,
 	MethodDeclaration,
-	NamedImports, NewExpression,
+	NamedImports,
+	NewExpression,
 	Node,
 	NodeArray,
 	NoSubstitutionTemplateLiteral,
-	ObjectLiteralExpression, ParameterDeclaration,
+	ObjectLiteralExpression,
+	ParameterDeclaration,
 	ParenthesizedExpression,
 	PrefixUnaryExpression,
 	PropertyAccessExpression,
 	PropertyAssignment,
+	PropertyDeclaration,
 	Statement,
 	TemplateExpression,
 	TemplateSpan,
-	ThisExpression, TupleTypeNode, TypeAliasDeclaration,
+	ThisExpression,
+	TupleTypeNode,
+	TypeAliasDeclaration,
 	TypeAssertion,
 	TypeNode,
-	TypeReferenceNode, UnionTypeNode,
+	TypeReferenceNode,
+	UnionTypeNode,
 	VariableStatement
 } from "typescript";
 
@@ -374,8 +387,8 @@ export enum SyntaxKind {
 
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 
-export declare type AssignmentMap = { [key: string]: string };
-export declare type TypeArgument = string|boolean|symbol|number|null|undefined;
+export declare type AssignmentMap = { [key: string]: InitializationValue };
+export declare type TypeArgument = string | boolean | symbol | number | null | undefined;
 
 export interface IModuleDependency {
 	relativePath: string;
@@ -440,11 +453,14 @@ export interface IArbitraryObject<T> {
 
 export declare interface IPropDeclaration {
 	decorators: string[];
-	type: string|null;
+	type: string | null;
 }
 
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
-export declare type InitializationValue = (string | IBindingIdentifier | number | boolean | IArbitraryObject<{}|null>)[];
+export declare type ArbitraryValue = string|boolean|symbol|number|null|undefined|Function|object|IBindingIdentifier|{};
+export declare type ArbitraryValueIndexable = ArbitraryValue|IArbitraryObject<ArbitraryValue>;
+export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
+export declare type InitializationValue = ArbitraryValueArray;
 export declare type NullableInitializationValue = InitializationValue | null;
 
 export interface ISimpleLanguageService extends LanguageServiceHost {
@@ -459,6 +475,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral;
 	isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration;
 	isTemplateSpan (statement: Statement | Declaration | Expression | Node): statement is TemplateSpan;
+	isTemplateHead (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateHead;
+	isTemplateTail (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateTail;
 	isConditionalExpression (statement: Statement | Declaration | Expression | Node): statement is ConditionalExpression;
 	isCallExpression (statement: Statement | Declaration | Expression | Node): statement is CallExpression;
 	isPrefixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PrefixUnaryExpression;
@@ -481,7 +499,9 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isVoidKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isSymbolKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isStringKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
-	isTypeNode (statement: ParameterDeclaration|TypeAliasDeclaration|TypeNode): statement is TypeNode;
+	isTypeNode (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): statement is TypeNode;
+	isNumericLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is NumericLiteral;
+	isStringLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is StringLiteral;
 	isPropertyAssignment (statement: Statement | Declaration | Expression | Node): statement is PropertyAssignment;
 	isClassDeclaration (statement: Statement | Declaration | Expression | Node): statement is ClassDeclaration;
 	isMethodDeclaration (statement: Statement | Declaration | Expression | Node): statement is MethodDeclaration;
@@ -489,15 +509,15 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isNamedImports (statement: Statement | Declaration | Expression | Node): statement is NamedImports;
 	isExportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ExportDeclaration;
 	isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement;
-	isTypeReference (statement: ParameterDeclaration|TypeReferenceNode | TypeNode|TypeAliasDeclaration): statement is TypeReferenceNode;
-	isIdentifierObject (statement: BindingName|EntityName|Expression): statement is Identifier;
+	isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode;
+	isIdentifierObject (statement: BindingName | EntityName | Expression): statement is Identifier;
 	isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration;
 	isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression;
 	isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode;
-	isArrayTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is ArrayTypeNode;
-	isTupleTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is TupleTypeNode;
-	isUnionTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is UnionTypeNode;
-	isIntersectionTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is IntersectionTypeNode;
+	isArrayTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is ArrayTypeNode;
+	isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode;
+	isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode;
+	isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode;
 	getScope (statement: Statement | Declaration | Expression | Node): string | null;
 	isStatic (statement: Statement | Declaration | Expression | Node): boolean;
 	getName (statement: Statement | Declaration | Expression | Node, traceParentPath?: boolean): string | null;
