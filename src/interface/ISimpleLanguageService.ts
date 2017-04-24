@@ -37,6 +37,7 @@ import {
 	TypeReferenceNode, UnionTypeNode,
 	VariableStatement
 } from "typescript";
+
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
 export enum SyntaxKind {

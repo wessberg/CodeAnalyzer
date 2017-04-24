@@ -16,6 +16,51 @@ import {
 } from "./interface/ISimpleLanguageService";
 
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
+import {
+	ArrayLiteralExpression, ArrayTypeNode,
+	BinaryExpression,
+	BindingName,
+	Block,
+	BooleanLiteral,
+	CallExpression,
+	ClassDeclaration,
+	ConditionalExpression,
+	ConstructorDeclaration,
+	Declaration,
+	ElementAccessExpression, EntityName,
+	EnumDeclaration,
+	ExportDeclaration,
+	Expression,
+	CompilerOptions,
+	ScriptTarget,
+	ExpressionStatement,
+	HeritageClause,
+	Identifier,
+	ImportDeclaration, IntersectionTypeNode, KeywordTypeNode,
+	ModuleKind,
+	MethodDeclaration,
+	NamedImports, NewExpression,
+	Node,
+	NodeArray,
+	NoSubstitutionTemplateLiteral,
+	ObjectLiteralExpression, ParameterDeclaration,
+	ParenthesizedExpression,
+	PrefixUnaryExpression,
+	PropertyAccessExpression,
+	PropertyAssignment,
+	Statement,
+	TemplateExpression,
+	TemplateSpan,
+	ThisExpression, TupleTypeNode, TypeAliasDeclaration,
+	TypeAssertion,
+	TypeNode,
+	TypeReferenceNode, UnionTypeNode,
+	VariableStatement,
+	LanguageService,
+	ReturnStatement,
+	ModifiersArray,
+	IScriptSnapshot,
+} from "typescript";
 import * as ts from "typescript";
 import {IMarshaller} from "@wessberg/marshaller";
 
@@ -26,7 +71,7 @@ import {IMarshaller} from "@wessberg/marshaller";
  * @author Frederik Wessberg
  */
 export class SimpleLanguageService implements ISimpleLanguageService {
-	private languageService: ts.LanguageService;
+	private languageService: LanguageService;
 	private files: Map<string, { version: number, content: string }> = new Map();
 
 	constructor (private typescript: typeof ts,
@@ -42,7 +87,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {number} [version=0]
 	 * @returns {void}
 	 */
-	public addFile (fileName: string, content: string, version: number = 0): ts.NodeArray<ts.Statement> {
+	public addFile (fileName: string, content: string, version: number = 0): NodeArray<Statement> {
 		this.files.set(fileName, {version, content});
 		return this.languageService.getProgram().getSourceFile(fileName).statements;
 	}
@@ -52,10 +97,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * anything but the libs developer-facing since we only support ES2015 modules.
 	 * @returns {CompilerOptions}
 	 */
-	public getCompilationSettings (): ts.CompilerOptions {
+	public getCompilationSettings (): CompilerOptions {
 		return {
-			target: ts.ScriptTarget.ES2017,
-			module: ts.ModuleKind.ES2015,
+			target: ScriptTarget.ES2017,
+			module: ModuleKind.ES2015,
 			lib: this.config.lib || ["es2015.promise", "dom", "es6", "scripthost", "es7", "es2017.object", "es2015.proxy"]
 		};
 	}
@@ -85,7 +130,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} fileName
 	 * @returns {IScriptSnapshot?}
 	 */
-	public getScriptSnapshot (fileName: string): ts.IScriptSnapshot | undefined {
+	public getScriptSnapshot (fileName: string): IScriptSnapshot | undefined {
 		const file = this.files.get(fileName);
 		if (file == null) return undefined;
 		return this.typescript.ScriptSnapshot.fromString(file.content);
@@ -104,7 +149,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {CompilerOptions} options
 	 * @returns {string}
 	 */
-	public getDefaultLibFileName (options: ts.CompilerOptions): string {
+	public getDefaultLibFileName (options: CompilerOptions): string {
 		return this.typescript.getDefaultLibFilePath(options);
 	}
 
@@ -113,7 +158,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isObjectLiteralDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ObjectLiteralExpression {
+	public isObjectLiteralDeclaration (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression {
 		return statement.kind === SyntaxKind.ObjectLiteralExpression;
 	}
 
@@ -122,7 +167,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isVariableDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.VariableStatement {
+	public isVariableDeclaration (statement: Statement | Declaration | Expression | Node): statement is VariableStatement {
 		return statement.kind === SyntaxKind.VariableStatement;
 	}
 
@@ -131,7 +176,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isPropertyAccessExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.PropertyAccessExpression {
+	public isPropertyAccessExpression (statement: Statement | Declaration | Expression | Node): statement is PropertyAccessExpression {
 		return statement.kind === SyntaxKind.PropertyAccessExpression;
 	}
 
@@ -140,7 +185,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isElementAccessExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ElementAccessExpression {
+	public isElementAccessExpression (statement: Statement | Declaration | Expression | Node): statement is ElementAccessExpression {
 		return statement.kind === SyntaxKind.ElementAccessExpression;
 	}
 
@@ -149,7 +194,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isArrayLiteralExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ArrayLiteralExpression {
+	public isArrayLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ArrayLiteralExpression {
 		return statement.kind === SyntaxKind.ArrayLiteralExpression;
 	}
 
@@ -158,7 +203,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isTypeAssertionExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.TypeAssertion {
+	public isTypeAssertionExpression (statement: Statement | Declaration | Expression | Node): statement is TypeAssertion {
 		return statement.kind === SyntaxKind.TypeAssertionExpression;
 	}
 
@@ -167,7 +212,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNoSubstitutionTemplateLiteral (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.NoSubstitutionTemplateLiteral {
+	public isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral {
 		return statement.kind === SyntaxKind.NoSubstitutionTemplateLiteral;
 	}
 
@@ -176,7 +221,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isTemplateExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.TemplateExpression {
+	public isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression {
 		return statement.kind === SyntaxKind.TemplateExpression || statement.kind === SyntaxKind.TaggedTemplateExpression;
 	}
 
@@ -185,7 +230,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isTemplateSpan (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.TemplateSpan {
+	public isTemplateSpan (statement: Statement | Declaration | Expression | Node): statement is TemplateSpan {
 		return statement.kind === SyntaxKind.TemplateSpan;
 	}
 
@@ -194,7 +239,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isConditionalExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ConditionalExpression {
+	public isConditionalExpression (statement: Statement | Declaration | Expression | Node): statement is ConditionalExpression {
 		return statement.kind === SyntaxKind.ConditionalExpression;
 	}
 
@@ -203,7 +248,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isCallExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.CallExpression {
+	public isCallExpression (statement: Statement | Declaration | Expression | Node): statement is CallExpression {
 		return statement.kind === SyntaxKind.CallExpression;
 	}
 
@@ -212,7 +257,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isPrefixUnaryExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.PrefixUnaryExpression {
+	public isPrefixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PrefixUnaryExpression {
 		return statement.kind === SyntaxKind.PrefixUnaryExpression;
 	}
 
@@ -221,7 +266,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isParenthesizedExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ParenthesizedExpression {
+	public isParenthesizedExpression (statement: Statement | Declaration | Expression | Node): statement is ParenthesizedExpression {
 		return statement.kind === SyntaxKind.ParenthesizedExpression;
 	}
 
@@ -230,7 +275,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isParameterDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ParameterDeclaration {
+	public isParameterDeclaration (statement: Statement | Declaration | Expression | Node): statement is ParameterDeclaration {
 		return statement.kind === SyntaxKind.Parameter;
 	}
 
@@ -239,7 +284,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isBinaryExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.BinaryExpression {
+	public isBinaryExpression (statement: Statement | Declaration | Expression | Node): statement is BinaryExpression {
 		return statement.kind === SyntaxKind.BinaryExpression;
 	}
 
@@ -248,7 +293,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isImportDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ImportDeclaration {
+	public isImportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportDeclaration {
 		return statement.kind === SyntaxKind.ImportDeclaration;
 	}
 
@@ -257,7 +302,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isEnumDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.EnumDeclaration {
+	public isEnumDeclaration (statement: Statement | Declaration | Expression | Node): statement is EnumDeclaration {
 		return statement.kind === SyntaxKind.EnumDeclaration;
 	}
 
@@ -266,7 +311,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isTrueKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.BooleanLiteral {
+	public isTrueKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BooleanLiteral {
 		return statement.kind === SyntaxKind.TrueKeyword;
 	}
 
@@ -275,7 +320,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isFalseKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.BooleanLiteral {
+	public isFalseKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BooleanLiteral {
 		return statement.kind === SyntaxKind.FalseKeyword;
 	}
 
@@ -284,7 +329,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isUndefinedKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isUndefinedKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.UndefinedKeyword;
 	}
 
@@ -293,7 +338,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNullKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isNullKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.NullKeyword;
 	}
 
@@ -302,7 +347,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isStringKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isStringKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.StringKeyword;
 	}
 
@@ -311,7 +356,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isSymbolKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isSymbolKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.SymbolKeyword;
 	}
 
@@ -320,7 +365,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isVoidKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isVoidKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.VoidKeyword;
 	}
 
@@ -329,7 +374,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isAnyKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isAnyKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.AnyKeyword;
 	}
 
@@ -338,7 +383,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isBooleanKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isBooleanKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.BooleanKeyword;
 	}
 
@@ -347,7 +392,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNeverKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isNeverKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.NeverKeyword;
 	}
 
@@ -356,7 +401,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNumberKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isNumberKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.NumberKeyword;
 	}
 
@@ -365,7 +410,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isObjectKeyword (statement: ts.TypeNode | ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.KeywordTypeNode {
+	public isObjectKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
 		return statement.kind === SyntaxKind.ObjectKeyword;
 	}
 
@@ -374,7 +419,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isThisKeyword (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ThisExpression {
+	public isThisKeyword (statement: Statement | Declaration | Expression | Node): statement is ThisExpression {
 		return statement.kind === SyntaxKind.ThisKeyword;
 	}
 
@@ -383,7 +428,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {boolean}
 	 */
-	public isTypeNode (statement: ts.ParameterDeclaration | ts.TypeAliasDeclaration | ts.TypeNode): statement is ts.TypeNode {
+	public isTypeNode (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): statement is TypeNode {
 		return this.isThisKeyword(statement) ||
 			this.isArrayTypeNode(statement) ||
 			this.isTupleTypeNode(statement) ||
@@ -408,7 +453,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isPropertyAssignment (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.PropertyAssignment {
+	public isPropertyAssignment (statement: Statement | Declaration | Expression | Node): statement is PropertyAssignment {
 		return statement.kind === SyntaxKind.PropertyAssignment;
 	}
 
@@ -417,7 +462,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isExpressionStatement (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ExpressionStatement {
+	public isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement {
 		return statement.kind === SyntaxKind.ExpressionStatement;
 	}
 
@@ -426,7 +471,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
 	 */
-	public isTypeReference (statement: ts.ParameterDeclaration | ts.TypeReferenceNode | ts.TypeNode | ts.TypeAliasDeclaration): statement is ts.TypeReferenceNode {
+	public isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode {
 		return statement.kind === SyntaxKind.TypeReference;
 	}
 
@@ -435,7 +480,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isClassDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ClassDeclaration {
+	public isClassDeclaration (statement: Statement | Declaration | Expression | Node): statement is ClassDeclaration {
 		return statement.kind === SyntaxKind.ClassDeclaration;
 	}
 
@@ -444,7 +489,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isConstructorDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ConstructorDeclaration {
+	public isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration {
 		return statement.kind === SyntaxKind.Constructor;
 	}
 
@@ -453,7 +498,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isTypeReferenceNode (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.TypeReferenceNode {
+	public isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode {
 		return statement.kind === SyntaxKind.TypeReference;
 	}
 
@@ -462,7 +507,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
 	 */
-	public isArrayTypeNode (statement: ts.ParameterDeclaration | ts.TypeNode | ts.TypeAliasDeclaration): statement is ts.ArrayTypeNode {
+	public isArrayTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is ArrayTypeNode {
 		return statement.kind === SyntaxKind.ArrayType;
 	}
 
@@ -471,7 +516,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
 	 */
-	public isTupleTypeNode (statement: ts.ParameterDeclaration | ts.TypeNode | ts.TypeAliasDeclaration): statement is ts.TupleTypeNode {
+	public isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode {
 		return statement.kind === SyntaxKind.TupleType;
 	}
 
@@ -480,7 +525,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
 	 */
-	public isUnionTypeNode (statement: ts.ParameterDeclaration | ts.TypeNode | ts.TypeAliasDeclaration): statement is ts.UnionTypeNode {
+	public isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode {
 		return statement.kind === SyntaxKind.UnionType;
 	}
 
@@ -489,7 +534,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
 	 */
-	public isIntersectionTypeNode (statement: ts.ParameterDeclaration | ts.TypeNode | ts.TypeAliasDeclaration): statement is ts.IntersectionTypeNode {
+	public isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode {
 		return statement.kind === SyntaxKind.IntersectionType;
 	}
 
@@ -498,7 +543,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isMethodDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.MethodDeclaration {
+	public isMethodDeclaration (statement: Statement | Declaration | Expression | Node): statement is MethodDeclaration {
 		return statement.kind === SyntaxKind.MethodDeclaration;
 	}
 
@@ -507,7 +552,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNewExpression (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.NewExpression {
+	public isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression {
 		return statement.kind === SyntaxKind.NewExpression;
 	}
 
@@ -516,7 +561,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isBlockDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.Block {
+	public isBlockDeclaration (statement: Statement | Declaration | Expression | Node): statement is Block {
 		return statement.kind === SyntaxKind.Block;
 	}
 
@@ -525,7 +570,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isReturnStatement (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ReturnStatement {
+	public isReturnStatement (statement: Statement | Declaration | Expression | Node): statement is ReturnStatement {
 		return statement.kind === SyntaxKind.ReturnStatement;
 	}
 
@@ -534,7 +579,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isExportDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.ExportDeclaration {
+	public isExportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ExportDeclaration {
 		return statement.kind === SyntaxKind.ExportDeclaration;
 	}
 
@@ -543,7 +588,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isIdentifierObject (statement: ts.BindingName | ts.EntityName | ts.Expression): statement is ts.Identifier {
+	public isIdentifierObject (statement: BindingName | EntityName | Expression): statement is Identifier {
 		return statement != null && statement.constructor.name === "IdentifierObject";
 	}
 
@@ -552,9 +597,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isExtendsKeyword (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.HeritageClause {
+	public isExtendsKeyword (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
 		// Extends will always be a 'token', not a 'kind'.
-		return (<ts.HeritageClause>statement).token === SyntaxKind.ExtendsKeyword;
+		return (<HeritageClause>statement).token === SyntaxKind.ExtendsKeyword;
 	}
 
 	/**
@@ -562,7 +607,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isNamedImports (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): statement is ts.NamedImports {
+	public isNamedImports (statement: Statement | Declaration | Expression | Node): statement is NamedImports {
 		// Extends will always be a 'token', not a 'kind'.
 		return statement.kind === SyntaxKind.NamedImports;
 	}
@@ -572,7 +617,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {string|null}
 	 */
-	public getScope (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): string | null {
+	public getScope (statement: Statement | Declaration | Expression | Node): string | null {
 		return this.isClassDeclaration(statement) && statement.name != null ? statement.name.text : null;
 	}
 
@@ -581,10 +626,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isStatic (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): boolean {
+	public isStatic (statement: Statement | Declaration | Expression | Node): boolean {
 		if (statement.modifiers == null) return false;
 		if (this.isObjectLiteralDeclaration(statement) || this.isEnumDeclaration(statement)) return false;
-		return (<ts.ModifiersArray>statement.modifiers).some(modifier => modifier.kind === SyntaxKind.StaticKeyword);
+		return (<ModifiersArray>statement.modifiers).some(modifier => modifier.kind === SyntaxKind.StaticKeyword);
 	}
 
 	/**
@@ -593,11 +638,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {boolean} [traceParentPath=false]
 	 * @returns {string|null}
 	 */
-	public getName (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node, traceParentPath: boolean = false): string | null {
+	public getName (statement: Statement | Declaration | Expression | Node, traceParentPath: boolean = false): string | null {
 
 		let path = traceParentPath ? `${this.extractParentPath(statement)}` : "";
-		if ((<ts.Declaration>statement).name != null && (<ts.Identifier>(<ts.Declaration>statement).name).text != null) {
-			path += `${(<ts.Identifier>(<ts.Declaration>statement).name).text}`;
+		if ((<Declaration>statement).name != null && (<Identifier>(<Declaration>statement).name).text != null) {
+			path += `${(<Identifier>(<Declaration>statement).name).text}`;
 		}
 		return path.length < 1 ? null : path;
 	}
@@ -607,7 +652,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {string|null}
 	 */
-	public getDecorators (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): string[] {
+	public getDecorators (statement: Statement | Declaration | Expression | Node): string[] {
 		if (statement.decorators == null) return [];
 		// TODO: Remove any declaration!
 		return statement.decorators.map((decorator: any) => decorator.expression.text);
@@ -618,7 +663,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode} keyword
 	 * @returns {string?}
 	 */
-	public serializeTypeKeyword (keyword: ts.TypeNode): string | undefined {
+	public serializeTypeKeyword (keyword: TypeNode): string | undefined {
 		switch (keyword.kind) {
 			case SyntaxKind.ObjectKeyword:
 				return "object";
@@ -783,7 +828,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {TypeArgument}
 	 */
 	// TODO: Remove any declaration!
-	private getExpressionTextMarshalled (statement: ts.Expression|any): TypeArgument {
+	private getExpressionTextMarshalled (statement: Expression|any): TypeArgument {
 		if (this.isFalseKeyword(statement)) return false;
 		if (this.isTrueKeyword(statement)) return true;
 		if (this.isNullKeyword(statement)) return null;
@@ -813,7 +858,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {NodeArray<Statement>} statements
 	 * @returns {IPropertyCallExpression[]}
 	 */
-	public getPropertyCallExpressions (statements: ts.NodeArray<ts.Statement>): IPropertyCallExpression[] {
+	public getPropertyCallExpressions (statements: NodeArray<Statement>): IPropertyCallExpression[] {
 		const expressions: IPropertyCallExpression[] = [];
 		let args: ICallExpressionArgument[] = [];
 
@@ -873,7 +918,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} filepath
 	 * @returns {IModuleDependency}
 	 */
-	public getImportDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node, filepath: string): IModuleDependency {
+	public getImportDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string): IModuleDependency {
 		if (!this.isImportDeclaration(statement)) throw new Error(`Could not get an import declaration for statement that isn't an ImportDeclaration!`);
 
 		// TODO: Remove any declaration
@@ -902,7 +947,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {PropIndexer}
 	 */
-	private getClassProps (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): PropIndexer {
+	private getClassProps (statement: Statement | Declaration | Expression | Node): PropIndexer {
 		const obj: PropIndexer = {};
 		if (!this.isClassDeclaration(statement)) return obj;
 
@@ -928,7 +973,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {NodeArray<Statement>} statements
 	 * @returns {AssignmentMap}
 	 */
-	public getVariableAssignments (statements: ts.NodeArray<ts.Statement>): AssignmentMap {
+	public getVariableAssignments (statements: NodeArray<Statement>): AssignmentMap {
 		const assignmentMap: AssignmentMap = {};
 		for (const statement of statements) {
 			if (this.isVariableDeclaration(statement)) {
@@ -953,7 +998,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} filepath
 	 * @returns {IModuleDependency[]}
 	 */
-	public getImportDeclarations (statements: ts.NodeArray<ts.Statement>, filepath: string): IModuleDependency[] {
+	public getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[] {
 		const declarations: IModuleDependency[] = [];
 		for (const statement of statements) {
 			if (this.isImportDeclaration(statement)) {
@@ -970,7 +1015,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {NodeArray<Statement>} statements
 	 * @returns {Set<string>}
 	 */
-	public getExportDeclarations (statements: ts.NodeArray<ts.Statement>): Set<string> {
+	public getExportDeclarations (statements: NodeArray<Statement>): Set<string> {
 		const declarations: Set<string> = new Set();
 		for (const statement of statements) {
 			if (this.isExportDeclaration(statement)) {
@@ -990,15 +1035,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string|null} currentScope
 	 * @returns {NullableInitializationValue}
 	 */
-	public getInitializedValue (rawStatement: ts.Statement|ts.Expression|ts.Node, currentScope: string | null): NullableInitializationValue {
+	public getInitializedValue (rawStatement: Statement|Expression|Node, currentScope: string | null): NullableInitializationValue {
 		// TODO: Remove any declarations
 		const statement = (<any>rawStatement).initializer == null ? rawStatement : (<any>rawStatement).initializer;
 		if (statement == null) return null;
 
 		if (this.isTemplateSpan(rawStatement)) {
 			const initializedValue = this.getInitializedValue(rawStatement.expression, currentScope);
-			if (!this.initializedValueIsDefined(initializedValue) && (<ts.TemplateSpan>statement).literal.text == null) return null;
-			return this.flatten([initializedValue, (<ts.TemplateSpan>statement).literal.text]);
+			if (!this.initializedValueIsDefined(initializedValue) && (<TemplateSpan>statement).literal.text == null) return null;
+			return this.flatten([initializedValue, (<TemplateSpan>statement).literal.text]);
 		}
 
 		if (this.isBinaryExpression(statement)) {
@@ -1131,13 +1176,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		const isIdentifier = statement.constructor.name === "IdentifierObject";
-		if ((<ts.Identifier>statement).text == null) return null;
-		const marshalled = this.marshaller.marshal((<ts.Identifier>statement).text);
+		if ((<Identifier>statement).text == null) return null;
+		const marshalled = this.marshaller.marshal((<Identifier>statement).text);
 		return [isIdentifier
-			? new BindingIdentifier((<ts.Identifier>statement).text)
+			? new BindingIdentifier((<Identifier>statement).text)
 			: (typeof marshalled === "string" )
-				? `\`${(<ts.Identifier>statement).text}\``
-				: (<ts.Identifier>statement).text];
+				? `\`${(<Identifier>statement).text}\``
+				: (<Identifier>statement).text];
 	}
 
 	/**
@@ -1161,12 +1206,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {string|undefined}
 	 */
-	private normalizeParameterTypeSignature (statement: ts.ParameterDeclaration | ts.TypeAliasDeclaration | ts.TypeNode): string | undefined {
+	private normalizeParameterTypeSignature (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string | undefined {
 		if (this.isTypeNode(statement)) {
 
 			if (this.isTypeReferenceNode(statement)) {
 				// We have an identifier here.
-				return (<ts.Identifier>statement.typeName).text;
+				return (<Identifier>statement.typeName).text;
 			}
 
 			if (this.isArrayTypeNode(statement)) {
@@ -1206,7 +1251,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} fileContents
 	 * @returns {IClassDeclaration}
 	 */
-	public getClassDeclaration (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node, filepath: string, fileContents: string): IClassDeclaration | null {
+	public getClassDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string, fileContents: string): IClassDeclaration | null {
 		if (!this.isClassDeclaration(statement) || statement.name == null) return null;
 
 		const className = statement.name.text;
@@ -1235,7 +1280,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		statement.members.forEach(member => {
 			if (this.isConstructorDeclaration(member)) {
 				member.parameters.forEach(parameter => {
-					const name = (<ts.Identifier>parameter.name).text;
+					const name = (<Identifier>parameter.name).text;
 					let type: string | undefined;
 					let initializer: string | null = null;
 
@@ -1253,7 +1298,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (!this.isMethodDeclaration(member)) return;
 
 			// TODO: Typescript doesn't think that a 'text' prop exists here. Who's right?
-			const methodName = (<ts.Identifier>member.name).text;
+			const methodName = (<Identifier>member.name).text;
 
 			const methodDeclarationStartsAt = member.pos;
 			const methodDeclarationEndsAt = member.end;
@@ -1320,7 +1365,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (this.isExtendsKeyword(clause)) {
 				const [type] = clause.types;
 				// TODO: Why the need for casting? According to TS, text doesn't exist on this one.
-				superClassName = (<ts.Identifier>type.expression).text;
+				superClassName = (<Identifier>type.expression).text;
 				declaration.derives = superClassName;
 			}
 		}
@@ -1332,7 +1377,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {string}
 	 */
-	private extractParentPath (statement: ts.Statement | ts.Declaration | ts.Expression | ts.Node): string {
+	private extractParentPath (statement: Statement | Declaration | Expression | Node): string {
 		let path = "";
 		let current = statement.parent;
 
@@ -1393,7 +1438,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string|null} currentScope
 	 * @returns {NullableInitializationValue}
 	 */
-	private getInitializedValuesForObjectLiteral (statement: ts.ObjectLiteralExpression, currentScope: string | null): NullableInitializationValue {
+	private getInitializedValuesForObjectLiteral (statement: ObjectLiteralExpression, currentScope: string | null): NullableInitializationValue {
 		const props: { [key: string]: NullableInitializationValue } = {};
 		statement.properties.forEach(prop => {
 
@@ -1427,12 +1472,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {EnumDeclaration} statement
 	 * @returns NullableInitializationValue}
 	 */
-	private getInitializedValuesForEnum (statement: ts.EnumDeclaration): NullableInitializationValue {
+	private getInitializedValuesForEnum (statement: EnumDeclaration): NullableInitializationValue {
 		const props: { [key: string]: NullableInitializationValue } = {};
 		const taken: Set<number> = new Set();
 		statement.members.forEach(member => {
 			// TODO: Typescript doesn't think that a 'text' key exists here. Why?
-			const value = (<ts.Identifier>member.name).text;
+			const value = (<Identifier>member.name).text;
 			const initializer = member.initializer;
 			// TODO: Remove any declaration.
 			const integerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : parseInt((<any>initializer).text);
