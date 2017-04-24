@@ -986,7 +986,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Checks and formats the initialization value of the given statement (if any) and returns it.
 	 * Since such a statement can be a combination of multiple operations and identifiers, an array of statements will be
 	 * returned.
-	 * @param {Statement} rawStatement
+	 * @param {Statement|Expression|Node} rawStatement
 	 * @param {string|null} currentScope
 	 * @returns {NullableInitializationValue}
 	 */
