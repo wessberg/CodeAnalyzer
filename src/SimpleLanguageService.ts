@@ -20,6 +20,7 @@ import {
 	ArrayLiteralExpression, ArrayTypeNode,
 	BinaryExpression,
 	BindingName,
+	PropertyDeclaration,
 	Block,
 	BooleanLiteral,
 	CallExpression,
@@ -101,7 +102,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return {
 			target: ScriptTarget.ES2017,
 			module: ModuleKind.ES2015,
-			lib: this.config.lib || ["es2015.promise", "dom", "es6", "scripthost", "es7", "es2017.object", "es2015.proxy"]
+			lib: this.config.lib != null && this.config.lib.length > 0
+				? this.config.lib
+				: ["es2015.promise", "dom", "es6", "scripthost", "es7", "es2017.object", "es2015.proxy"]
 		};
 	}
 
@@ -178,6 +181,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isPropertyAccessExpression (statement: Statement | Declaration | Expression | Node): statement is PropertyAccessExpression {
 		return statement.kind === SyntaxKind.PropertyAccessExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a PropertyDeclaration.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration {
+		return statement.kind === SyntaxKind.PropertyDeclaration;
 	}
 
 	/**
@@ -954,13 +966,21 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		statement.members.forEach(memberStatement => {
 			const name = this.getName(memberStatement, false);
 
-			if (memberStatement.decorators == null || name == null) return;
+			if (name == null) return;
+			obj[name] = obj[name] || {decorators: [], type: null};
 
+			if (this.isPropertyDeclaration(memberStatement)) {
+				if (memberStatement.type != null) {
+					const type = this.normalizeTypeDeclaration(memberStatement.type);
+					obj[name].type = type == null ? null : type;
+				}
+			}
+
+			if (memberStatement.decorators == null) return;
 			memberStatement.decorators.forEach(decorator => {
 				// TODO: Remove any declaration.
 				const text = (<any>decorator.expression).text;
-				obj[name] = obj[name] || [];
-				obj[name].push(text);
+				obj[name].decorators.push(text);
 			});
 		});
 
@@ -982,14 +1002,34 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					if (this.isIdentifierObject(declaration.name)) {
 						const boundName = declaration.name.text;
 						if (declaration.initializer != null) {
-							// TODO: Remove any declaration.
-							assignmentMap[boundName] = (<any>declaration.initializer).text;
+							const value = this.getInitializedValue(declaration.initializer, null);
+							if (value != null) {
+								const joined = this.join(value, true);
+								if (joined != null) assignmentMap[boundName] = joined;
+							}
 						}
 					}
 				});
 			}
 		}
 		return assignmentMap;
+	}
+
+	/**
+	 * Gets all class declarations (if any) that occurs in the given array of statements
+	 * and returns them as an array.
+	 * @param {NodeArray<Statement>} statements
+	 * @param {string} filepath
+	 * @param {string} code
+	 * @returns {IClassDeclaration[]}
+	 */
+	public getClassDeclarations (statements: NodeArray<Statement>, filepath: string, code: string): IClassDeclaration[] {
+		const declarations: IClassDeclaration[] = [];
+		for (const statement of statements) {
+			const declaration = this.getClassDeclaration(statement, filepath, code);
+			if (declaration != null) declarations.push(declaration);
+		}
+		return declarations;
 	}
 
 	/**
@@ -1202,11 +1242,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Formats and returns a string representation of a type parameter.
+	 * Formats and returns a string representation of a type.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {string|undefined}
 	 */
-	private normalizeParameterTypeSignature (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string | undefined {
+	private normalizeTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string | undefined {
 		if (this.isTypeNode(statement)) {
 
 			if (this.isTypeReferenceNode(statement)) {
@@ -1215,19 +1255,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			if (this.isArrayTypeNode(statement)) {
-				return `${this.normalizeParameterTypeSignature(statement.elementType)}[]`;
+				return `${this.normalizeTypeDeclaration(statement.elementType)}[]`;
 			}
 
 			if (this.isTupleTypeNode(statement)) {
-				return `[${statement.elementTypes.map(type => this.normalizeParameterTypeSignature(type)).join(", ")}]`;
+				return `[${statement.elementTypes.map(type => this.normalizeTypeDeclaration(type)).join(", ")}]`;
 			}
 
 			if (this.isIntersectionTypeNode(statement)) {
-				return statement.types.map(intersectionType => this.normalizeParameterTypeSignature(intersectionType)).join(" & ");
+				return statement.types.map(intersectionType => this.normalizeTypeDeclaration(intersectionType)).join(" & ");
 			}
 
 			if (this.isUnionTypeNode(statement)) {
-				return statement.types.map(unionType => this.normalizeParameterTypeSignature(unionType)).join("|");
+				return statement.types.map(unionType => this.normalizeTypeDeclaration(unionType)).join("|");
 			}
 
 			return this.serializeTypeKeyword(statement);
@@ -1239,7 +1279,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				return undefined;
 			}
 
-			return statement.type == null ? undefined : this.normalizeParameterTypeSignature(statement.type);
+			return statement.type == null ? undefined : this.normalizeTypeDeclaration(statement.type);
 		}
 	}
 
@@ -1284,7 +1324,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					let type: string | undefined;
 					let initializer: string | null = null;
 
-					type = this.normalizeParameterTypeSignature(parameter);
+					type = this.normalizeTypeDeclaration(parameter);
 
 					const initValue = this.getInitializedValue(parameter, null);
 					if (initValue != null) initializer = this.join(initValue, true);

@@ -4,6 +4,7 @@ import {
 	BindingName,
 	Block,
 	BooleanLiteral,
+	PropertyDeclaration,
 	CallExpression,
 	ClassDeclaration,
 	ConditionalExpression,
@@ -437,7 +438,12 @@ export interface IArbitraryObject<T> {
 	[key: number]: T;
 }
 
-export declare type PropIndexer = { [key: string]: string[] };
+export declare interface IPropDeclaration {
+	decorators: string[];
+	type: string|null;
+}
+
+export declare type PropIndexer = { [key: string]: IPropDeclaration };
 export declare type InitializationValue = (string | IBindingIdentifier | number | boolean | IArbitraryObject<{}|null>)[];
 export declare type NullableInitializationValue = InitializationValue | null;
 
@@ -451,6 +457,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isTypeAssertionExpression (statement: Statement | Declaration | Expression | Node): statement is TypeAssertion;
 	isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression;
 	isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral;
+	isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration;
 	isTemplateSpan (statement: Statement | Declaration | Expression | Node): statement is TemplateSpan;
 	isConditionalExpression (statement: Statement | Declaration | Expression | Node): statement is ConditionalExpression;
 	isCallExpression (statement: Statement | Declaration | Expression | Node): statement is CallExpression;
@@ -498,6 +505,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	serializeToken (token: SyntaxKind): string;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string): IModuleDependency;
 	getClassDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string, fileContents: string): IClassDeclaration | null;
+	getClassDeclarations (statements: NodeArray<Statement>, filepath: string, code: string): IClassDeclaration[];
 	getVariableAssignments (statements: NodeArray<Statement>): AssignmentMap;
 	getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[];
 	getExportDeclarations (statements: NodeArray<Statement>): Set<string>;

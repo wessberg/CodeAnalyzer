@@ -17,7 +17,7 @@ const fileContents = "const foo = 'bar'";
 const statements = simpleLanguageService.addFile(filePath, fileContents);
 
 // Now we can play around with it:
-simpleLanguageService.getClassDeclaration(statements, filePath, fileContents);
+simpleLanguageService.getClassDeclarations(statements, filePath, fileContents);
 simpleLanguageService.getImportDeclarations(statements, filePath);
 simpleLanguageService.getVariableAssignments(statements);
 // And so on...
@@ -30,7 +30,11 @@ and exports and other stuff.
 
 ## Changelog:
 
-**v1.0**:
+**v1.0.8**:
+
+- Bug fixes, more tests.
+
+**v1.0.0**:
 
 - First release.
 
