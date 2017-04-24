@@ -501,6 +501,6 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[];
 	getExportDeclarations (statements: NodeArray<Statement>): Set<string>;
 	getPropertyCallExpressions (statements: NodeArray<Statement>): IPropertyCallExpression[];
-	getInitializedValue (rawStatement: Statement, currentScope: string | null): NullableInitializationValue;
+	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): NullableInitializationValue;
 	join (value: InitializationValue, stringifyIdentifiers?: boolean): string | null;
 }
