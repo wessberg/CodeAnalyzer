@@ -2,7 +2,13 @@ import {
 	ArrayLiteralExpression,
 	ArrayTypeNode,
 	BinaryExpression,
+	ComputedPropertyName,
 	BindingName,
+	PropertyName,
+	BindingPattern,
+	ObjectBindingPattern,
+	ArrayBindingPattern,
+	DeclarationName,
 	NumericLiteral,
 	TemplateHead,
 	TemplateTail,
@@ -465,12 +471,13 @@ export declare type NullableInitializationValue = InitializationValue | null;
 
 export interface ISimpleLanguageService extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
-	isObjectLiteralDeclaration (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression;
+	isObjectLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression;
 	isVariableDeclaration (statement: Statement | Declaration | Expression | Node): statement is VariableStatement;
 	isPropertyAccessExpression (statement: Statement | Declaration | Expression | Node): statement is PropertyAccessExpression;
 	isElementAccessExpression (statement: Statement | Declaration | Expression | Node): statement is ElementAccessExpression;
 	isArrayLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ArrayLiteralExpression;
 	isTypeAssertionExpression (statement: Statement | Declaration | Expression | Node): statement is TypeAssertion;
+	isComputedPropertyName (statement: BindingName | EntityName | Expression| Node): statement is ComputedPropertyName;
 	isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression;
 	isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral;
 	isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration;
@@ -510,7 +517,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isExportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ExportDeclaration;
 	isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement;
 	isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode;
-	isIdentifierObject (statement: BindingName | EntityName | Expression): statement is Identifier;
+	isIdentifierObject (statement: BindingName | EntityName | Expression| Node): statement is Identifier;
 	isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration;
 	isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression;
 	isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode;
@@ -518,6 +525,11 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode;
 	isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode;
 	isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode;
+	isPropertyName (statement: Expression|Node): statement is PropertyName;
+	isDeclarationName (statement: Expression|Node): statement is DeclarationName;
+	isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern;
+	isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern;
+	isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern;
 	getScope (statement: Statement | Declaration | Expression | Node): string | null;
 	isStatic (statement: Statement | Declaration | Expression | Node): boolean;
 	getName (statement: Statement | Declaration | Expression | Node, traceParentPath?: boolean): string | null;

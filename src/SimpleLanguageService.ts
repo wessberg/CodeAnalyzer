@@ -6,12 +6,18 @@ import {
 	ArrayLiteralExpression,
 	ArrayTypeNode,
 	NumericLiteral,
+	PropertyName,
+	BindingPattern,
+	ArrayBindingPattern,
+	ObjectBindingPattern,
 	StringLiteral,
+	DeclarationName,
 	TemplateTail,
 	TemplateHead,
 	BinaryExpression,
 	BindingName,
 	Block,
+	ComputedPropertyName,
 	BooleanLiteral,
 	CallExpression,
 	ClassDeclaration,
@@ -176,7 +182,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isObjectLiteralDeclaration (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression {
+	public isObjectLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression {
 		return statement.kind === SyntaxKind.ObjectLiteralExpression;
 	}
 
@@ -442,6 +448,54 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is an ObjectBindingPattern.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern {
+		return statement.kind === SyntaxKind.ObjectBindingPattern;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an ArrayBindingPattern.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern {
+		return statement.kind === SyntaxKind.ArrayBindingPattern;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an ArrayBindingPattern.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern {
+		return this.isObjectBindingPattern(statement) || this.isArrayBindingPattern(statement);
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a PropertyName.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isPropertyName (statement: Expression|Node): statement is PropertyName {
+		return this.isIdentifierObject(statement) ||
+			this.isStringLiteral(statement) ||
+			this.isNumericLiteral(statement) ||
+			this.isComputedPropertyName(statement);
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a DeclarationName.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isDeclarationName (statement: Expression|Node): statement is DeclarationName {
+		return this.isPropertyName(statement) || this.isBindingPattern(statement);
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a TemplateHead.
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
@@ -651,8 +705,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isIdentifierObject (statement: BindingName | EntityName | Expression): statement is Identifier {
+	public isIdentifierObject (statement: BindingName | EntityName | Expression| Node): statement is Identifier {
 		return statement != null && statement.constructor.name === "IdentifierObject";
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a ComputedPropertyName.
+	 * @param {BindingName|EntityName|Expression} statement
+	 * @returns {boolean}
+	 */
+	public isComputedPropertyName (statement: BindingName | EntityName | Expression| Node): statement is ComputedPropertyName {
+		return statement.kind === SyntaxKind.ComputedPropertyName;
 	}
 
 	/**
@@ -691,7 +754,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isStatic (statement: Statement | Declaration | Expression | Node): boolean {
 		if (statement.modifiers == null) return false;
-		if (this.isObjectLiteralDeclaration(statement) || this.isEnumDeclaration(statement)) return false;
+		if (this.isObjectLiteralExpression(statement) || this.isEnumDeclaration(statement)) return false;
 		return (<ModifiersArray>statement.modifiers).some(modifier => modifier.kind === SyntaxKind.StaticKeyword);
 	}
 
@@ -1129,6 +1192,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return declarations;
 	}
 
+
+
 	/**
 	 * Checks and formats the initialization value of the given statement (if any) and returns it.
 	 * Since such a statement can be a combination of multiple operations and identifiers, an array of statements will be
@@ -1166,6 +1231,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const head = this.getInitializedValue(rawStatement.expression, currentScope);
 			const tail = this.getInitializedValue(rawStatement.literal, currentScope);
 			return [...(head || []), ...(tail || [])];
+		}
+
+		if (this.isObjectLiteralExpression(rawStatement)) {
+			const obj: NullableInitializationValue = ["{"];
+			rawStatement.properties.forEach((property, index) => {
+				if (property.name == null) return;
+				let name = this.getNameOfMember(property.name, true);
+				let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer, currentScope) : null;
+
+				obj.push(name);
+				obj.push(":");
+				if (value == null) obj.push(value);
+				else value.forEach(item => obj.push(item));
+
+				if (index !== rawStatement.properties.length - 1) obj.push(",");
+			});
+			obj.push("}");
+			return obj;
 		}
 
 		if (this.isBinaryExpression(statement)) {
@@ -1262,11 +1345,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isArrayLiteralExpression(statement)) {
 			const arr: NullableInitializationValue = [];
 			const mapped: NullableInitializationValue[] = statement.elements.map(element => {
-				/*
-				if (this.isObjectLiteralDeclaration(element)) return this.getInitializedValuesForObjectLiteral(element, currentScope);
-				if (this.isPropertyAccessExpression(element) || this.isElementAccessExpression(element)) return this.getInitializedValuesForPropertyAccess(element, currentScope);
-				if (this.isEnumDeclaration(element)) return this.getInitializedValuesForEnum(element);
-				*/
 				return this.getInitializedValue(element, currentScope);
 			});
 			mapped.forEach(item => {
@@ -1281,7 +1359,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.getInitializedValuesForPropertyAccess(statement, currentScope);
 		}
 
-		if (this.isObjectLiteralDeclaration(statement)) {
+		if (this.isObjectLiteralExpression(statement)) {
 			return this.getInitializedValuesForObjectLiteral(statement, currentScope);
 		}
 
@@ -1305,6 +1383,34 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [typeof marshalled === "string" ? `\`${statement.text}\`` : marshalled];
 		}
 		return null;
+	}
+
+	/**
+	 * Detects the name/key of a member of something (for example, an ObjectLiteral). If the second argument is truthy,
+	 * the name may also be a number (numbers are allowed as keys in ObjectLiterals).
+	 * @param {DeclarationName} name
+	 * @param {boolean} [allowNumberAsType=false]
+	 * @returns {string|number|BindingIdentifier}
+	 */
+	private getNameOfMember (name: DeclarationName, allowNumberAsType: boolean = false): string|number|BindingIdentifier {
+
+		if (this.isComputedPropertyName(name)) {
+			if (this.isPropertyName(name.expression)) {
+				if (this.isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression);
+
+				const isBindingIdentifier = !SimpleLanguageService.NATIVE_GLOBAL_SYMBOLS.has(name.expression.text);
+				if (isBindingIdentifier) return new BindingIdentifier(name.expression.text);
+				return this.getNameOfMember(name.expression);
+			}
+			throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}: It wasn't a DeclarationName. Instead, it was a ${SyntaxKind[name.expression.kind]}`);
+		}
+
+		if (this.isIdentifierObject(name)) {
+			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text);
+			return typeof marshalled === "number" && allowNumberAsType ? marshalled : name.text;
+		}
+
+		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
 	}
 
 	/**
