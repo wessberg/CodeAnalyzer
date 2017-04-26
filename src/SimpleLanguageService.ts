@@ -1,12 +1,15 @@
 import {IMarshaller} from "@wessberg/marshaller";
-import {from} from "array-flatten";
 import {dirname, join} from "path";
 import * as ts from "typescript";
 import {
 	ArrayLiteralExpression,
 	ArrayTypeNode,
 	NumericLiteral,
+	FunctionExpression,
 	PropertyName,
+	ArrowFunction,
+	Token,
+	LeftHandSideExpression,
 	BindingPattern,
 	ArrayBindingPattern,
 	ObjectBindingPattern,
@@ -94,7 +97,7 @@ import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceCo
 export class SimpleLanguageService implements ISimpleLanguageService {
 	private languageService: LanguageService;
 	private files: Map<string, { version: number, content: string }> = new Map();
-	private static readonly NATIVE_GLOBAL_SYMBOLS: Set<string> = new Set(["Infinity", "NaN"]);
+	// private static readonly NATIVE_GLOBAL_SYMBOLS: Set<string> = new Set(["Infinity", "NaN"]);
 
 	constructor (private marshaller: IMarshaller,
 							 private config: ISimpleLanguageServiceConfig = {},
@@ -256,6 +259,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression {
 		return statement.kind === SyntaxKind.TemplateExpression || statement.kind === SyntaxKind.TaggedTemplateExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a an ArrowFunction.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction {
+		return statement.kind === SyntaxKind.ArrowFunction;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a a FunctionExpression.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression {
+		return statement.kind === SyntaxKind.FunctionExpression;
 	}
 
 	/**
@@ -710,6 +731,26 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is a TokenObject.
+	 * @param {BindingName|EntityName|Expression} statement
+	 * @returns {boolean}
+	 */
+	public isTokenObject (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind> {
+		return statement != null && statement.constructor.name === "TokenObject";
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a FirstLiteralToken.
+	 * @param {BindingName|EntityName|Expression} statement
+	 * @returns {boolean}
+	 */
+	public isFirstLiteralToken (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind.FirstLiteralToken> & {text: string} {
+		return statement.kind === SyntaxKind.FirstLiteralToken;
+	}
+
+
+
+	/**
 	 * A predicate function that returns true if the given Statement is a ComputedPropertyName.
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
@@ -785,12 +826,32 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Serializes the given type keyword and returns the textual representation of it.
-	 * @param {TypeNode} keyword
-	 * @returns {string?}
+	 * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
+	 * @param {SyntaxKind} token
+	 * @returns {ArbitraryValue}
 	 */
-	public serializeTypeKeyword (keyword: TypeNode): string | undefined {
-		switch (keyword.kind) {
+	public marshalToken (token: SyntaxKind): ArbitraryValue {
+		switch (token) {
+			case SyntaxKind.NullKeyword:
+				return null;
+			case SyntaxKind.UndefinedKeyword:
+				return undefined;
+			case SyntaxKind.TrueKeyword:
+				return true;
+			case SyntaxKind.FalseKeyword:
+				return false;
+			default:
+				return this.serializeToken(token);
+		}
+	}
+
+	/**
+	 * Serializes the given token (operand) and returns the textual representation of it.
+	 * @param {SyntaxKind} token
+	 * @returns {string}
+	 */
+	public serializeToken (token: SyntaxKind|TypeNode): string {
+		switch (token) {
 			case SyntaxKind.ObjectKeyword:
 				return "object";
 			case SyntaxKind.NumberKeyword:
@@ -811,17 +872,125 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				return "undefined";
 			case SyntaxKind.StringKeyword:
 				return "string";
-		}
-		return undefined;
-	}
-
-	/**
-	 * Serializes the given token (operand) and returns the textual representation of it.
-	 * @param {SyntaxKind} token
-	 * @returns {string}
-	 */
-	public serializeToken (token: SyntaxKind): string {
-		switch (token) {
+			case SyntaxKind.TrueKeyword:
+				return "true";
+			case SyntaxKind.FalseKeyword:
+				return "false";
+			case SyntaxKind.BreakKeyword:
+				return "break";
+			case SyntaxKind.CatchKeyword:
+				return "catch";
+			case SyntaxKind.CaseKeyword:
+				return "case";
+			case SyntaxKind.ClassKeyword:
+				return "class";
+			case SyntaxKind.ConstKeyword:
+				return "const";
+			case SyntaxKind.ContinueKeyword:
+				return "continue";
+			case SyntaxKind.DebuggerKeyword:
+				return "debugger";
+			case SyntaxKind.DefaultKeyword:
+				return "default";
+			case SyntaxKind.DeleteKeyword:
+				return "delete";
+			case SyntaxKind.DoKeyword:
+				return "do";
+			case SyntaxKind.ElseKeyword:
+				return "else";
+			case SyntaxKind.EnumKeyword:
+				return "enum";
+			case SyntaxKind.ExportKeyword:
+				return "export";
+			case SyntaxKind.ExtendsKeyword:
+				return "extends";
+			case SyntaxKind.FinallyKeyword:
+				return "finally";
+			case SyntaxKind.ForKeyword:
+				return "for";
+			case SyntaxKind.FunctionKeyword:
+				return "function";
+			case SyntaxKind.IfKeyword:
+				return "if";
+			case SyntaxKind.ImportKeyword:
+				return "import";
+			case SyntaxKind.InKeyword:
+				return "in";
+			case SyntaxKind.InstanceOfKeyword:
+				return "instanceof";
+			case SyntaxKind.NewKeyword:
+				return "new";
+			case SyntaxKind.ReturnKeyword:
+			case SyntaxKind.ReturnStatement:
+				return "return";
+			case SyntaxKind.SuperKeyword:
+				return "super";
+			case SyntaxKind.ThisKeyword:
+				return "this";
+			case SyntaxKind.ThrowKeyword:
+				return "throw";
+			case SyntaxKind.TryKeyword:
+				return "try";
+			case SyntaxKind.TypeOfKeyword:
+				return "typeof";
+			case SyntaxKind.VarKeyword:
+				return "var";
+			case SyntaxKind.WithKeyword:
+				return "with";
+			case SyntaxKind.ImplementsKeyword:
+				return "implements";
+			case SyntaxKind.InterfaceKeyword:
+				return "interface";
+			case SyntaxKind.LetKeyword:
+				return "let";
+			case SyntaxKind.PackageKeyword:
+				return "package";
+			case SyntaxKind.PrivateKeyword:
+				return "private";
+			case SyntaxKind.ProtectedKeyword:
+				return "protected";
+			case SyntaxKind.PublicKeyword:
+				return "public";
+			case SyntaxKind.StaticKeyword:
+				return "static";
+			case SyntaxKind.YieldKeyword:
+				return "yield";
+			case SyntaxKind.AbstractKeyword:
+				return "abstract";
+			case SyntaxKind.AsKeyword:
+				return "as";
+			case SyntaxKind.AsyncKeyword:
+				return "async";
+			case SyntaxKind.AwaitKeyword:
+				return "await";
+			case SyntaxKind.ConstructorKeyword:
+				return "constructor";
+			case SyntaxKind.DeclareKeyword:
+				return "declare";
+			case SyntaxKind.GetKeyword:
+				return "get";
+			case SyntaxKind.IsKeyword:
+				return "is";
+			case SyntaxKind.KeyOfKeyword:
+				return "keyof";
+			case SyntaxKind.ModuleKeyword:
+				return "module";
+			case SyntaxKind.NamespaceKeyword:
+				return "namespace";
+			case SyntaxKind.ReadonlyKeyword:
+				return "readonly";
+			case SyntaxKind.RequireKeyword:
+				return "require";
+			case SyntaxKind.SetKeyword:
+				return "set";
+			case SyntaxKind.TypeKeyword:
+				return "type";
+			case SyntaxKind.FromKeyword:
+				return "from";
+			case SyntaxKind.GlobalKeyword:
+				return "global";
+			case SyntaxKind.OfKeyword:
+				return "of";
 			case SyntaxKind.MinusToken:
 				return "-";
 			case SyntaxKind.PlusToken:
@@ -1128,7 +1297,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					if (this.isIdentifierObject(declaration.name)) {
 						const boundName = declaration.name.text;
 						if (declaration.initializer != null) {
-							const value = this.getInitializedValue(declaration.initializer, null);
+							const value = this.getInitializedValue(declaration.initializer);
 							if (value != null) {
 								assignmentMap[boundName] = value;
 							}
@@ -1199,48 +1368,108 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Since such a statement can be a combination of multiple operations and identifiers, an array of statements will be
 	 * returned.
 	 * @param {Statement|Expression|Node} rawStatement
-	 * @param {string|null} currentScope
 	 * @returns {NullableInitializationValue}
 	 */
-	public getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): NullableInitializationValue {
-		// TODO: Remove any declarations
-		const statement = (<any>rawStatement).initializer == null ? rawStatement : (<any>rawStatement).initializer;
-		if (statement == null) return null;
+	public getInitializedValue (rawStatement: Statement | Expression | Node): InitializationValue {
+
+		console.log(this.getInitializedValuesForEnum.toString().slice(0,0));
 
 		if (this.isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
-			return marshalled == null ? null : [marshalled];
+			return [marshalled];
 		}
 
 		if (this.isStringLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(rawStatement.text);
-			return marshalled == null ? null : [marshalled];
+			return  [marshalled];
 		}
 
 		if (this.isNoSubstitutionTemplateLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text);
-			return marshalled == null ? null : [marshalled];
+			return [marshalled];
 		}
 
 		if (this.isTemplateHead(rawStatement) || this.isTemplateTail(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text, "");
-			return marshalled == null ? null : [marshalled];
+			return [marshalled];
 		}
 
 		if (this.isTemplateSpan(rawStatement)) {
-			const head = this.getInitializedValue(rawStatement.expression, currentScope);
-			const tail = this.getInitializedValue(rawStatement.literal, currentScope);
+			const head = this.getInitializedValue(rawStatement.expression);
+			const tail = this.getInitializedValue(rawStatement.literal);
 			return [...(head || []), ...(tail || [])];
 		}
 
+		if (this.isBinaryExpression(rawStatement)) {
+			const arr: InitializationValue = [];
+
+			const left = this.getInitializedValue(rawStatement.left);
+			const operator = this.getInitializedValue(rawStatement.operatorToken);
+			const right = this.getInitializedValue(rawStatement.right);
+
+			left.forEach(item => arr.push(item));
+			operator.forEach(item => arr.push(item));
+			right.forEach(item => arr.push(item));
+			return arr;
+		}
+
+		if (this.isConditionalExpression(rawStatement)) {
+			const arr: InitializationValue = [];
+			const condition = this.getInitializedValue(rawStatement.condition);
+			const question = this.getInitializedValue(rawStatement.questionToken);
+			const colon = this.getInitializedValue(rawStatement.colonToken);
+			const whenTrue = this.getInitializedValue(rawStatement.whenTrue);
+			const whenFalse = this.getInitializedValue(rawStatement.whenFalse);
+
+			condition.forEach(item => arr.push(item));
+			question.forEach(item => arr.push(item));
+			whenTrue.forEach(item => arr.push(item));
+			colon.forEach(item => arr.push(item));
+			whenFalse.forEach(item => arr.push(item));
+			return arr;
+		}
+
+		if (this.isCallExpression(rawStatement) || this.isNewExpression(rawStatement)) {
+			const name = this.getNameOfMember(rawStatement.expression);
+			const arr: InitializationValue = [];
+			if (this.isNewExpression(rawStatement)) arr.push("new ");
+			arr.push(name);
+			arr.push("(");
+			const args = rawStatement.arguments;
+			if (args != null) args.forEach((arg, index) => {
+				const value = this.getInitializedValue(arg);
+				value.forEach(item => {
+					arr.push(item);
+					if (index !== args.length - 1) arr.push(",");
+				});
+			});
+			arr.push(")");
+			return arr;
+		}
+
 		if (this.isObjectLiteralExpression(rawStatement)) {
-			const obj: NullableInitializationValue = ["{"];
+			const obj: InitializationValue = ["{"];
 			rawStatement.properties.forEach((property, index) => {
 				if (property.name == null) return;
-				let name = this.getNameOfMember(property.name, true);
-				let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer, currentScope) : null;
 
-				obj.push(name);
+				let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer) : null;
+				if (property.name == null) return;
+
+				// Check if the property name is computed (.eg. [key]: "foo").
+				if (this.isComputedPropertyName(property.name)) obj.push("[");
+
+				// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
+				if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
+					const callExpression = this.getInitializedValue(property.name.expression);
+					callExpression.forEach(item => obj.push(item));
+				}
+
+				else {
+					// Otherwise, just push the name of it.
+					obj.push(this.getNameOfMember(property.name, true));
+				}
+
+				if (this.isComputedPropertyName(property.name)) obj.push("]");
 				obj.push(":");
 				if (value == null) obj.push(value);
 				else value.forEach(item => obj.push(item));
@@ -1251,11 +1480,114 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return obj;
 		}
 
+		if (this.isArrayLiteralExpression(rawStatement)) {
+			const arr: InitializationValue = [];
+			const mapped: InitializationValue[] = rawStatement.elements.map(element => this.getInitializedValue(element));
+			mapped.forEach(item => item.forEach(part => arr.push(part)));
+			return [arr];
+		}
+
+		if (this.isTemplateExpression(rawStatement)) {
+
+			let values: InitializationValue = [...this.getInitializedValue(rawStatement.head)];
+
+			rawStatement.templateSpans.forEach(span => {
+				const content = this.getInitializedValue(span);
+				// Remove empty strings from the contents and add everything else to the value array.
+				content.filter(item => !(typeof item === "string" && item.length < 1)).forEach(checkedItem => values.push(checkedItem));
+			});
+
+
+			return ["\`", ...values, "\`"];
+		}
+
+		if (this.isPropertyAccessExpression(rawStatement)) {
+			return [this.getPropertyAccessExpressionName(rawStatement)];
+		}
+
+		if (this.isElementAccessExpression(rawStatement)) {
+			const baseName = this.getNameOfMember(rawStatement.expression);
+			const argExpression = rawStatement.argumentExpression == null ? [] : this.getInitializedValue(rawStatement.argumentExpression);
+			return [new BindingIdentifier([this.stringifyIdentifier(<BindingIdentifier>baseName), "[", ...argExpression, "]"].join(""))];
+		}
+
+		if (this.isParameterDeclaration(rawStatement)) {
+			const name = this.getNameOfMember(rawStatement.name);
+			const initializer = rawStatement.initializer == null ? null : this.getInitializedValue(rawStatement.initializer);
+			const arr: InitializationValue = [name];
+			if (initializer != null) {
+				arr.push("=");
+				initializer.forEach(item => arr.push(item));
+			}
+			return arr;
+		}
+
+		if (this.isArrowFunction(rawStatement)) {
+			const arr: InitializationValue = ["("];
+			const equalsGreaterThanToken = this.getInitializedValue(rawStatement.equalsGreaterThanToken);
+			const body = this.getInitializedValue(rawStatement.body);
+
+			rawStatement.parameters.forEach((parameter, index) => {
+				const value = this.getInitializedValue(parameter);
+				value.forEach(item => arr.push(item));
+				if (index !== rawStatement.parameters.length - 1) arr.push(",");
+			});
+
+			arr.push(")");
+			equalsGreaterThanToken.forEach(item => arr.push(item));
+			body.forEach(item => arr.push(item));
+			return arr;
+		}
+
+		if (this.isFunctionExpression(rawStatement)) {
+			const arr: InitializationValue = ["function"];
+			const body = this.getInitializedValue(rawStatement.body);
+
+			if (rawStatement.name != null) {
+				arr.push(this.getNameOfMember(rawStatement.name));
+			}
+
+			arr.push("(");
+
+			rawStatement.parameters.forEach((parameter, index) => {
+				const value = this.getInitializedValue(parameter);
+				value.forEach(item => arr.push(item));
+				if (index !== rawStatement.parameters.length - 1) arr.push(",");
+			});
+			arr.push(")");
+			arr.push("{");
+			body.forEach(item => arr.push(item));
+			arr.push("}");
+			return arr;
+		}
+
+		if (this.isBlockDeclaration(rawStatement)) {
+			const arr: InitializationValue = [];
+			rawStatement.statements.forEach(statement => {
+				const value = this.getInitializedValue(statement);
+				value.forEach(item => arr.push(item));
+			});
+			return arr;
+		}
+
+		if (this.isReturnStatement(rawStatement)) {
+			return [this.marshalToken(rawStatement.kind), ...(rawStatement.expression == null ? [] : this.getInitializedValue(rawStatement.expression))];
+		}
+
+		if (this.isTokenObject(rawStatement)) {
+			return [this.marshalToken(rawStatement.kind)];
+		}
+
+		if (this.isIdentifierObject(rawStatement)) {
+			return [this.getNameOfMember(rawStatement, true)];
+		}
+
+		throw new TypeError(`${this.getInitializedValue.toString()} could not extract a value for a statement! of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]}`);
+
+		/*
 		if (this.isBinaryExpression(statement)) {
 			// TODO: Fix the typing system!
-			/* tslint:disable */
 			const arr: any = [];
-			/* tslint:enable */
 			const left = this.getInitializedValue(statement.left, currentScope);
 			const operator = this.serializeToken(statement.operatorToken.kind);
 			const right = this.getInitializedValue(statement.right, currentScope);
@@ -1283,46 +1615,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.flatten([prefixOperator, value]);
 		}
 
-		if (this.isCallExpression(statement) || this.isNewExpression(statement)) {
-			const value = this.getInitializedValue(statement.expression, currentScope);
-			if (!this.initializedValueIsDefined(value)) return null;
-
-			// TODO: Fix InitializationValue.
-			/* tslint:disable */
-			const res: any[] = [value, "("];
-			/* tslint:enable */
-			const mappedArgs = statement.arguments == null ? [] : statement.arguments.map(argument => this.getInitializedValue(argument, currentScope));
-			mappedArgs.forEach((arg, index) => {
-				res.push(arg);
-				if (index !== mappedArgs.length - 1) res.push(",");
-			});
-			res.push(")");
-			return this.isNewExpression(statement) ? this.flatten(["new", ...res]) : this.flatten(res);
-		}
-
-		if (this.isConditionalExpression(statement)) {
-
-			// TODO: FIX the typing system!
-			/* tslint:disable */
-			let arr: any = [];
-			/* tslint:enable */
-			const condition = this.getInitializedValue(statement.condition, currentScope);
-			const whenTrue = this.getInitializedValue(statement.whenTrue, currentScope);
-			const whenFalse = this.getInitializedValue(statement.whenFalse, currentScope);
-
-			if (this.initializedValueIsDefined(condition)) {
-				arr.push("(");
-				arr.push(condition);
-				arr.push(")");
-				arr.push("?");
-				arr.push(whenTrue);
-				arr.push(":");
-				arr.push(whenFalse);
-			}
-
-			return this.flatten(arr);
-		}
-
 		if (this.isEnumDeclaration(statement)) {
 			return this.getInitializedValuesForEnum(statement);
 		}
@@ -1342,19 +1634,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.initializedValueIsDefined(values) ? ["\`", ...values, "\`"] : null;
 		}
 
-		if (this.isArrayLiteralExpression(statement)) {
-			const arr: NullableInitializationValue = [];
-			const mapped: NullableInitializationValue[] = statement.elements.map(element => {
-				return this.getInitializedValue(element, currentScope);
-			});
-			mapped.forEach(item => {
-				if (item == null) arr.push(item);
-				else item.forEach(part => arr.push(part));
-			});
-
-			return [arr];
-		}
-
 		if (this.isPropertyAccessExpression(statement) || this.isElementAccessExpression(statement)) {
 			return this.getInitializedValuesForPropertyAccess(statement, currentScope);
 		}
@@ -1367,14 +1646,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.getInitializedValue(statement, currentScope);
 		}
 
-		if (this.isTrueKeyword(statement)) {
-			return [true];
-		}
-
-		if (this.isFalseKeyword(statement)) {
-			return [false];
-		}
-
 		if (this.isIdentifierObject(statement)) {
 			const isBindingIdentifier = !SimpleLanguageService.NATIVE_GLOBAL_SYMBOLS.has(statement.text);
 			if (isBindingIdentifier) return [new BindingIdentifier(statement.text)];
@@ -1382,35 +1653,88 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(statement.text);
 			return [typeof marshalled === "string" ? `\`${statement.text}\`` : marshalled];
 		}
-		return null;
+		*/
+	}
+
+	/**
+	 * Returns the name of an identifier.
+	 * @param {BindingIdentifier|string} identifier
+	 * @returns {string}
+	 */
+	private stringifyIdentifier (identifier: BindingIdentifier|string): string {
+		return identifier instanceof BindingIdentifier ? identifier.name : identifier;
+	}
+
+	/**
+	 * Computes the mot probable native type of the given string.
+	 * @param {string} text
+	 * @returns {string}
+	 */
+	private mostProbableTypeOf (text: string): string {
+		return typeof this.marshaller.marshal<string, ArbitraryValue>(text);
 	}
 
 	/**
 	 * Detects the name/key of a member of something (for example, an ObjectLiteral). If the second argument is truthy,
-	 * the name may also be a number (numbers are allowed as keys in ObjectLiterals).
+	 * the name may also be a non-string entity.
 	 * @param {DeclarationName} name
-	 * @param {boolean} [allowNumberAsType=false]
-	 * @returns {string|number|BindingIdentifier}
+	 * @param {boolean} [allowNonStringNames=false]
+	 * @returns {ArbitraryValue}
 	 */
-	private getNameOfMember (name: DeclarationName, allowNumberAsType: boolean = false): string|number|BindingIdentifier {
+	private getNameOfMember (name: DeclarationName|LeftHandSideExpression, allowNonStringNames: boolean = false): ArbitraryValue {
 
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {
 				if (this.isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression);
-
-				const isBindingIdentifier = !SimpleLanguageService.NATIVE_GLOBAL_SYMBOLS.has(name.expression.text);
-				if (isBindingIdentifier) return new BindingIdentifier(name.expression.text);
 				return this.getNameOfMember(name.expression);
 			}
-			throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}: It wasn't a DeclarationName. Instead, it was a ${SyntaxKind[name.expression.kind]}`);
+
+			if (this.isCallExpression(name.expression)) {
+				return this.getNameOfMember(name.expression.expression);
+			}
+
+			throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}: It wasn't a PropertyName or a CallExpression. Instead, it was a ${SyntaxKind[name.expression.kind]}`);
 		}
 
 		if (this.isIdentifierObject(name)) {
-			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text);
-			return typeof marshalled === "number" && allowNumberAsType ? marshalled : name.text;
+			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+
+			if (name.parent != null && (this.isPropertyAssignment(name.parent) || this.isParameterDeclaration(name.parent))) {
+				// Then this is the key of a property-assignment. We already know it isn't computed, so it can't be an identifier to another variable.
+				return marshalled;
+			}
+
+			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
+			if (this.mostProbableTypeOf(name.text) === "string") {
+				return new BindingIdentifier(name.text);
+			}
+			return marshalled;
+		}
+
+		if (this.isFirstLiteralToken(name)) {
+			return this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+		}
+
+		if (this.isStringLiteral(name)) {
+			return name.text;
+		}
+
+		if (this.isPropertyAccessExpression(name)) {
+			return this.getPropertyAccessExpressionName(name);
 		}
 
 		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
+	}
+
+	/**
+	 * Returns a BindingIdentifier containing a full property access.
+	 * @param {PropertyAccessExpression} name
+	 * @returns {BindingIdentifier}
+	 */
+	private getPropertyAccessExpressionName (name: PropertyAccessExpression): BindingIdentifier {
+		const baseProp = this.getInitializedValue(name.expression);
+		const path = this.getInitializedValue(name.name);
+		return new BindingIdentifier([...baseProp.map(this.stringifyIdentifier), ...path.map(this.stringifyIdentifier)].join("."));
 	}
 
 	/**
@@ -1458,7 +1782,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				return statement.types.map(unionType => this.normalizeTypeDeclaration(unionType)).join("|");
 			}
 
-			return this.serializeTypeKeyword(statement);
+			return this.serializeToken(statement.kind);
 		} else {
 
 			if (this.isTypeReference(statement)) {
@@ -1514,7 +1838,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 					type = this.normalizeTypeDeclaration(parameter);
 
-					const initValue = this.getInitializedValue(parameter, null);
+					const initValue = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
 					if (initValue != null) initializer = this.join(initValue, true);
 
 					const startsAt = parameter.pos;
@@ -1620,67 +1944,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Checks for property accesses and returns the initialization values for them.
-	 * @param {*} statement
-	 * @param {string|null} currentScope
-	 * @returns {NullableInitializationValue}
-	 */
-	/* tslint:disable */
-	private getInitializedValuesForPropertyAccess (statement: any/*PropertyAccessExpression|ElementAccessExpression*/, currentScope: string | null): NullableInitializationValue {
-		/* tslint:enable */
-		let path = "";
-
-		// TODO: Fix typings.
-		let currentForProperty = statement.expression;
-		if (currentForProperty == null) return null;
-		while (currentForProperty != null && currentForProperty.text == null) {
-			if (this.isThisKeyword(currentForProperty)) break;
-			currentForProperty = currentForProperty.expression;
-		}
-
-		let currentForPath = statement;
-		const argumentExpressions: string[] = [];
-		while (currentForPath.expression != null) {
-			const argument = currentForPath.argumentExpression;
-			if (argument != null) argumentExpressions.push(`[${argument.text}]`);
-
-			if (currentForPath.name != null) {
-				path = `.${currentForPath.name.text}${path}`;
-				if (argumentExpressions.length > 0) path += argumentExpressions.splice(0, 1)[0];
-			}
-
-			currentForPath = currentForPath.expression;
-		}
-
-		const text = this.isThisKeyword(currentForProperty)
-			? currentScope != null
-				? `${currentScope}.prototype`
-				: "this"
-			: currentForProperty.text;
-		return (text == null && path == null) ? null : [new BindingIdentifier(`${text}${path}`)];
-	}
-
-	/**
-	 * Checks for values associated with keys in an object literal and returns the initialization values.
-	 * @param {ObjectLiteralExpression} statement
-	 * @param {string|null} currentScope
-	 * @returns {NullableInitializationValue}
-	 */
-	private getInitializedValuesForObjectLiteral (statement: ObjectLiteralExpression, currentScope: string | null): NullableInitializationValue {
-		const props: { [key: string]: NullableInitializationValue } = {};
-		statement.properties.forEach(prop => {
-
-			const name = this.getName(prop);
-			const value = this.getInitializedValue(prop, currentScope);
-
-			if (name != null && value != null) {
-				props[name] = value;
-			}
-		});
-		return [props];
-	}
-
-	/**
 	 * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
 	 * @param {Set<number>} taken
 	 * @returns {number}
@@ -1717,21 +1980,4 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return [props];
 	}
 
-	/**
-	 * Flattens any amount of n-dimensional arrays.
-	 * @param {...{}[]} arrays
-	 * @returns {{}[]}
-	 */
-	private flatten (...arrays: {}[]): {}[] {
-		return from(arrays);
-	}
-
-	/**
-	 * Returns true if the given is not null and has length > 0.
-	 * @param {NullableInitializationValue} value
-	 * @returns {boolean}
-	 */
-	private initializedValueIsDefined (value: NullableInitializationValue): value is InitializationValue {
-		return value != null && value.length > 0;
-	}
 }

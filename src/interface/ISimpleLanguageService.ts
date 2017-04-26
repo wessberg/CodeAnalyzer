@@ -2,6 +2,9 @@ import {
 	ArrayLiteralExpression,
 	ArrayTypeNode,
 	BinaryExpression,
+	Token,
+	ArrowFunction,
+	FunctionExpression,
 	ComputedPropertyName,
 	BindingName,
 	PropertyName,
@@ -518,6 +521,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement;
 	isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode;
 	isIdentifierObject (statement: BindingName | EntityName | Expression| Node): statement is Identifier;
+	isTokenObject (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind>;
 	isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration;
 	isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression;
 	isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode;
@@ -525,16 +529,20 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode;
 	isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode;
 	isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode;
+	isFirstLiteralToken (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind.FirstLiteralToken> & {text: string};
 	isPropertyName (statement: Expression|Node): statement is PropertyName;
 	isDeclarationName (statement: Expression|Node): statement is DeclarationName;
 	isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern;
 	isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern;
 	isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern;
+	isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction;
+	isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
 	getScope (statement: Statement | Declaration | Expression | Node): string | null;
 	isStatic (statement: Statement | Declaration | Expression | Node): boolean;
 	getName (statement: Statement | Declaration | Expression | Node, traceParentPath?: boolean): string | null;
 	getDecorators (statement: Statement | Declaration | Expression | Node): string[];
 	serializeToken (token: SyntaxKind): string;
+	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string): IModuleDependency;
 	getClassDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string, fileContents: string): IClassDeclaration | null;
 	getClassDeclarations (statements: NodeArray<Statement>, filepath: string, code: string): IClassDeclaration[];
@@ -542,6 +550,6 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[];
 	getExportDeclarations (statements: NodeArray<Statement>): Set<string>;
 	getPropertyCallExpressions (statements: NodeArray<Statement>): IPropertyCallExpression[];
-	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): NullableInitializationValue;
+	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): InitializationValue;
 	join (value: InitializationValue, stringifyIdentifiers?: boolean): string | null;
 }

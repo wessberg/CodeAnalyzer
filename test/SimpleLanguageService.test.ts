@@ -1,9 +1,11 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {test} from "ava";
-import {Mock} from "typemoq";
+import * as TypeMoq from "typemoq";
+import {BindingIdentifier} from "../src/BindingIdentifier";
 import {ArbitraryValueIndexable, ISimpleLanguageService, NullableInitializationValue} from "../src/interface/ISimpleLanguageService";
 import {SimpleLanguageService} from "../src/SimpleLanguageService";
-import {BindingIdentifier} from "../src/BindingIdentifier";
+const Mock = TypeMoq.Mock;
+const It = TypeMoq.It;
 
 // Setup
 const fileName = "a_file.ts";
@@ -15,12 +17,14 @@ const parse = (code: string) => service.addFile(fileName, code);
 
 function setupMock<T> (input?: NullableInitializationValue | ArbitraryValueIndexable, output?: T, treatUndefinedAsExpectedValue: boolean = false): void {
 	if (input != null || treatUndefinedAsExpectedValue) {
-		let out: T|undefined;
+		let out: T | undefined;
 		if (output == null) {
 			if (treatUndefinedAsExpectedValue) out = output;
 			else out = <T>input;
 		} else out = output;
-		marshaller.setup(marshaller => marshaller.marshal<NullableInitializationValue | ArbitraryValueIndexable, T|undefined>(input)).returns(() => out);
+
+		marshaller.setup(marshaller => marshaller.marshal<NullableInitializationValue | ArbitraryValueIndexable, T | undefined>(input)).returns(() => out);
+		marshaller.setup(marshaller => marshaller.marshal<NullableInitializationValue | ArbitraryValueIndexable, any>(input, It.isAny())).returns(() => out);
 	}
 }
 
@@ -69,7 +73,7 @@ test(`Detects all variable assignments properly. #3`, t => {
 });
 
 test(`Detects all variable assignments properly. #4`, t => {
-	setupMany([["true", true], ["false", false], ["Infinity", Infinity] ]);
+	setupMany([["true", true], ["false", false], ["Infinity", Infinity]]);
 	const statements = parse(`
 		const a = true, b = false, c = Infinity;
 	`);
@@ -111,7 +115,7 @@ test(`Detects all initialization values correctly. #3`, t => {
 });
 
 test(`Detects all initialization values correctly. #4`, t => {
-	setup();
+	setupMany([ ["this has the substitution ", "this has the substitution "], ["substitution", "substitution"], ["", ""]  ]);
 
 	const statements = parse(`
 		const substitution = 2;
@@ -122,7 +126,7 @@ test(`Detects all initialization values correctly. #4`, t => {
 });
 
 test(`Detects all initialization values correctly. #5`, t => {
-	setupMany([ ["this has the substitution ", "this has the substitution "], [ "2", "2" ] ]);
+	setupMany([["this has the substitution ", "this has the substitution "], ["2", "2"], ["", ""]]);
 
 	const statements = parse(`
 		const substitution = 2;
@@ -143,7 +147,7 @@ test(`Detects all initialization values correctly. #6`, t => {
 });
 
 test(`Detects all initialization values correctly. #7`, t => {
-	setupMany([ ["[1, 2, 3]", [1, 2, 3]], ["1", 1], ["2", 2], ["3", 3]  ]);
+	setupMany([["[1, 2, 3]", [1, 2, 3]], ["1", 1], ["2", 2], ["3", 3]]);
 
 	const statements = parse(`
 		var baz = [1, 2, 3];
@@ -154,7 +158,7 @@ test(`Detects all initialization values correctly. #7`, t => {
 });
 
 test(`Detects all initialization values correctly. #8`, t => {
-	setupMany([["true", true], ["false", false], ["Infinity", Infinity] ]);
+	setupMany([["true", true], ["false", false], ["Infinity", Infinity]]);
 	const statements = parse(`
 		const a = true, b = false, c = Infinity;
 	`);
@@ -177,7 +181,7 @@ test(`Detects all initialization values correctly. #9`, t => {
 });
 
 test(`Detects all initialization values correctly. #10`, t => {
-	setupMany([["1", 1], ["2", 2 ], ["3", 3], ["foo", "foo"], ["false", false], ["[1, 2, 3]", [1, 2, 3] ]]);
+	setupMany([["1", 1], ["2", 2], ["3", 3], ["foo", "foo"], ["false", false], ["[1, 2, 3]", [1, 2, 3]]]);
 
 	const statements = parse(`
 		const a = [1, "foo", false, [1, 2, 3]]
@@ -188,7 +192,7 @@ test(`Detects all initialization values correctly. #10`, t => {
 });
 
 test(`Detects all initialization values correctly. #11`, t => {
-	setup<number>("1", 1);
+	setupMany([[ "1", 1], ["a", "a"] ]);
 
 	const statements = parse(`
 		const a = {a: 1};
@@ -199,7 +203,7 @@ test(`Detects all initialization values correctly. #11`, t => {
 });
 
 test(`Detects all initialization values correctly. #12`, t => {
-	setup<number>("1", 1);
+	setupMany([ ["1", 1], ["key", "key"] ]);
 
 	const statements = parse(`
 		const key = "foo";
@@ -207,7 +211,223 @@ test(`Detects all initialization values correctly. #12`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"], ["{", new BindingIdentifier("key"), ":", 1, "}"]);
+	t.deepEqual(assignments["a"], ["{", "[", new BindingIdentifier("key"), "]", ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #13`, t => {
+	setupMany([["1", 1], ["0", 0]]);
+
+	const statements = parse(`
+		const key = 0;
+		const a = {0: 1};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", 0, ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #14`, t => {
+	setupMany([["1", 1], ["123", 123]]);
+
+	const statements = parse(`
+		const key = 0;
+		const a = {123: 1};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", 123, ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #15`, t => {
+	setupMany([["Hello world!", "Hello world!"], ["Symbol", "Symbol"] ]);
+
+	const statements = parse(`
+		const key = 0;
+		const a = Symbol("Hello world!");
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("Symbol"), "(", "Hello world!", ")"]);
+});
+
+test(`Detects all initialization values correctly. #16`, t => {
+	setupMany([["a", "a"], ["1", 1] ]);
+
+	const statements = parse(`
+		const a = {"a": 1};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", "a", ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #17`, t => {
+	setupMany([["a", "a"], ["0", "0"], ["1", 1] ]);
+
+	const statements = parse(`
+		const a = {"0": 1};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", "0", ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #18`, t => {
+	setupMany([["a", "a"], ["getKey", "getKey"], ["test", "test"], ["1", 1] ]);
+
+	const statements = parse(`
+		function getKey () {return "test";}
+		const a = {[getKey()]: 1};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", "[", new BindingIdentifier("getKey"), "(", ")", "]", ":", 1, "}"]);
+});
+
+test(`Detects all initialization values correctly. #19`, t => {
+	setupMany([["a", "a"], ["getKey", "getKey"], ["test", "test"], ["1", "1"], ["Infinity", Infinity], ["false", false], ["123", 123] ]);
+
+	const statements = parse(`
+		function getKey (num: number, bool: boolean, arr: number[]) {return "test";}
+		const a = {[getKey("1", false, [123])]: Infinity};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", "[", new BindingIdentifier("getKey"), "(", "1", ",", false, ",", [123], ")", "]", ":", Infinity, "}"]);
+});
+
+test(`Detects all initialization values correctly. #20`, t => {
+	setupMany([ ["foo", "foo"], ["bar", "bar"], ["baz", "baz"], ["Foo", "Foo"], ["true", true], ["false", false] ]);
+
+	const statements = parse(`
+		const a = {foo: {bar: {baz: new Foo(true, false)}}};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["{", "foo", ":", "{", "bar", ":", "{", "baz", ":", "new ", new BindingIdentifier("Foo"), "(", true, ",", false, ")", "}", "}", "}" ]);
+});
+
+test(`Detects all initialization values correctly. #21`, t => {
+	setupMany([["1", 1], ["0", 0] ]);
+
+	const statements = parse(`
+		const a = true ? 1 : 0;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [true, "?", 1, ":", 0]);
+});
+
+test(`Detects all initialization values correctly. #22`, t => {
+	setupMany([["1", 1], ["0", 0], ["sub", "sub"] ]);
+
+	const statements = parse(`
+		const sub = true;
+		const a = sub ? 1 : 0;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("sub"), "?", 1, ":", 0]);
+});
+
+test(`Detects all initialization values correctly. #23`, t => {
+	setupMany([["1", 1], ["null", null], ["sub", "sub"], ["false", false], ["true", true] ]);
+
+	const statements = parse(`
+		const sub = true;
+		const a = sub && true ? false && 1 ? false : null : null;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("sub"), "&&", true, "?", false, "&&", 1, "?", false, ":", null, ":", null]);
+});
+
+test(`Detects all initialization values correctly. #24`, t => {
+	setupMany([ ["new ", "new "], ["Foo", "Foo"], ["true", true] ]);
+
+	const statements = parse(`
+		const a = new Foo(true)
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["new ", new BindingIdentifier("Foo"), "(", true, ")"]);
+});
+
+test(`Detects all initialization values correctly. #25`, t => {
+	setupMany([ ["Foo", "Foo"], ["A", "A"] ]);
+
+	const statements = parse(`
+		const a = Foo.A;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("Foo.A")]);
+});
+
+test(`Detects all initialization values correctly. #26`, t => {
+	setupMany([ ["Foo", "Foo"], ["A", "A"], ["B", "B"], ["C", "C"], ["D", "D"] ]);
+
+	const statements = parse(`
+		const a = Foo.A.B.C.D;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("Foo.A.B.C.D")]);
+});
+
+test(`Detects all initialization values correctly. #27`, t => {
+	setupMany([ ["true", true] ]);
+
+	const statements = parse(`
+		const a = () => true;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["(", ")", "=>", true]);
+});
+
+test(`Detects all initialization values correctly. #28`, t => {
+	setupMany([ [ "foo", "foo" ], ["true", true] ]);
+
+	const statements = parse(`
+		const a = (foo: string) => true;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["(", "foo", ")", "=>", true]);
+});
+
+test(`Detects all initialization values correctly. #29`, t => {
+	setupMany([ [ "foo", "foo" ], ["true", true], ["return", "return"] ]);
+
+	const statements = parse(`
+		const a = (foo: string) => function () {return true;};
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], ["(", "foo", ")", "=>", "function", "(", ")", "{", "return", true, "}"]);
+});
+
+test(`Detects all initialization values correctly. #30`, t => {
+	setupMany([ [ "Something", "Something" ], ["Other", "Other"], ["Than", "Than"], ["OtherThing", "OtherThing"], ["baz", "baz"] ]);
+
+	const statements = parse(`
+		const a = Something.Other.Than<OtherThing>("baz");
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("Something.Other.Than"), "(", "baz", ")"]);
+});
+
+test(`Detects all initialization values correctly. #31`, t => {
+	setupMany([ [ "Something", "Something" ], ["2", 2], ["Other", "Other"], ["Than", "Than"], ["OtherThing", "OtherThing"], ["baz", "baz"] ]);
+
+	const statements = parse(`
+		const a = Something[2].Other.Than<OtherThing>("baz");
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"], [new BindingIdentifier("Something[2].Other.Than"), "(", "baz", ")"]);
 });
 
 test(`Detects all class declarations properly. #1`, t => {
