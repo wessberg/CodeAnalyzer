@@ -533,7 +533,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, null);
+	t.deepEqual(assignments["a"].typeFlattened, null);
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
@@ -544,7 +544,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "string");
+	t.deepEqual(assignments["a"].typeFlattened, "string");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
@@ -555,7 +555,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "string|symbol");
+	t.deepEqual(assignments["a"].typeFlattened, "string|symbol");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
@@ -566,7 +566,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "Foo[]");
+	t.deepEqual(assignments["a"].typeFlattened, "Foo[]");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
@@ -577,7 +577,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "{[key: string]: any}");
+	t.deepEqual(assignments["a"].typeFlattened, "{[key: string]: any}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
@@ -588,7 +588,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "{[key: string]: any, foo: number}");
+	t.deepEqual(assignments["a"].typeFlattened, "{[key: string]: any, foo: number}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
@@ -599,7 +599,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "{foo?: number}");
+	t.deepEqual(assignments["a"].typeFlattened, "{foo?: number}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
@@ -610,7 +610,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "{foo?: number} & {bar: boolean}");
+	t.deepEqual(assignments["a"].typeFlattened, "{foo?: number} & {bar: boolean}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
@@ -621,7 +621,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].type, "Foobar");
+	t.deepEqual(assignments["a"].typeFlattened, "Foobar");
 });
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
@@ -658,9 +658,9 @@ test(`getClassDeclarations() -> Constructor -> Detects types of constructor argu
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.true(classDeclaration.constructorArguments[0].type === "string");
-	t.true(classDeclaration.constructorArguments[1].type === "number");
-	t.true(classDeclaration.constructorArguments[2].type === "Foo");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[0].typeFlattened === "string");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[1].typeFlattened === "number");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[2].typeFlattened === "Foo");
 });
 
 test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
@@ -681,6 +681,20 @@ test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
 	t.true(classDeclaration.props["field3"] != null);
 });
 
+test(`getClassDeclarations() -> Fields -> Detects the valueExpressions of class fields. #1`, t => {
+	setupMany([ ["field1", "field1"], ["true", true] ]);
+	const code = `
+		class MyClass {
+			field1 = () => true;
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, fileName, code);
+	const [classDeclaration] = assignments;
+	t.deepEqual(classDeclaration.props["field1"].valueExpression, ["(", ")", "=>", true]);
+});
+
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #1`, t => {
 	setupMany([ ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
@@ -694,9 +708,23 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.true(classDeclaration.props["field1"].type === "string");
-	t.true(classDeclaration.props["field2"].type === "number");
-	t.true(classDeclaration.props["field3"].type === "Foo");
+	t.true(classDeclaration.props["field1"].typeFlattened === "string");
+	t.true(classDeclaration.props["field2"].typeFlattened === "number");
+	t.true(classDeclaration.props["field3"].typeFlattened === "Foo");
+});
+
+test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #2`, t => {
+	setupMany([ ["field1", "field1"], ["Foo", "Foo"] ]);
+	const code = `
+		class MyClass {
+			field1: Foo<Foo>;
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, fileName, code);
+	const [classDeclaration] = assignments;
+	t.true(classDeclaration.props["field1"].typeFlattened === "Foo<Foo>");
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #1`, t => {
@@ -749,6 +777,22 @@ test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields
 });
 
 test(`getClassDeclarations() -> Methods -> Detects method declarations correctly. #1`, t => {
+	setupMany([ ["myMethod", "myMethod"], ["true", true] ]);
+	const code = `
+		class MyClass {
+			public myMethod () {
+				return true;
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, fileName, code);
+	const [classDeclaration] = assignments;
+	t.true(classDeclaration.methods["myMethod"] != null);
+});
+
+test(`getClassDeclarations() -> Methods -> Detects method declarations correctly. #2`, t => {
 	setupMany([ ["myMethod", "myMethod"], ["Hello", "Hello"], ["<hello></hello><goodbye><", "<hello></hello><goodbye><"], ["></for-now></goodbye>", "></for-now></goodbye>"] ]);
 	const code = `
 		class MyClass {

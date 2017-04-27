@@ -1,81 +1,9 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {
-	ArrayBindingPattern,
-	ArrayLiteralExpression,
-	ArrayTypeNode,
-	ArrowFunction,
-	BinaryExpression,
-	BindingName,
-	BindingPattern,
-	Block,
-	BooleanLiteral,
-	CallExpression,
-	ClassDeclaration,
-	CompilerOptions,
-	ComputedPropertyName,
-	ConditionalExpression,
-	ConstructorDeclaration,
-	Declaration,
-	DeclarationName,
-	ElementAccessExpression,
-	EntityName,
-	EnumDeclaration,
-	ExportDeclaration,
-	Expression,
-	ExpressionStatement,
-	FunctionExpression,
-	HeritageClause,
-	Identifier,
-	ImportDeclaration,
-	IndexSignatureDeclaration,
-	IntersectionTypeNode,
-	IScriptSnapshot,
-	KeywordTypeNode,
-	LanguageService,
-	LeftHandSideExpression,
-	MethodDeclaration,
-	ModuleKind,
-	NamedImports,
-	NewExpression,
-	Node,
-	NodeArray,
-	NoSubstitutionTemplateLiteral,
-	NumericLiteral,
-	ObjectBindingPattern,
-	ObjectLiteralExpression,
-	ParameterDeclaration,
-	ParenthesizedExpression,
-	PrefixUnaryExpression,
-	PropertyAccessExpression,
-	PropertyAssignment,
-	PropertyDeclaration,
-	PropertyName,
-	PropertySignature,
-	ReturnStatement,
-	ScriptTarget,
-	SpreadAssignment,
-	SpreadElement,
-	Statement,
-	StringLiteral,
-	TemplateExpression,
-	TemplateHead,
-	TemplateSpan,
-	TemplateTail,
-	ThisExpression,
-	Token,
-	TupleTypeNode,
-	TypeAliasDeclaration,
-	TypeAssertion,
-	TypeLiteralNode,
-	TypeNode,
-	TypeReferenceNode,
-	UnionTypeNode,
-	VariableStatement
-} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, LeftHandSideExpression, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, ICallExpressionArgument, IClassDeclaration, IModuleDependency, InitializationValue, IPropertyCallExpression, ISimpleLanguageService, SyntaxKind, TypeArgument} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, AssignmentMap, IArgument, IArgumentsable, ICallExpressionArgument, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IPropDeclaration, IPropertyCallExpression, ISimpleLanguageService, ITypeBinding, SyntaxKind, TypeArgument, TypeExpression} from "./interface/ISimpleLanguageService";
 
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
@@ -798,9 +726,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isExtendsKeyword (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
+	public isExtendsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
 		// Extends will always be a 'token', not a 'kind'.
 		return (<HeritageClause>statement).token === SyntaxKind.ExtendsKeyword;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a HeritageClause.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isImplementsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
+		// Extends will always be a 'token', not a 'kind'.
+		return (<HeritageClause>statement).token === SyntaxKind.ImplementsKeyword;
 	}
 
 	/**
@@ -811,6 +749,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	public isNamedImports (statement: Statement | Declaration | Expression | Node): statement is NamedImports {
 		// Extends will always be a 'token', not a 'kind'.
 		return statement.kind === SyntaxKind.NamedImports;
+	}
+
+	/**
+	 * A predicate function that returns true if an expression is a ITypeBinding.
+	 * @param {ArbitraryValue} expression
+	 * @returns {boolean}
+	 */
+	private isTypeBinding (expression: ArbitraryValue): expression is ITypeBinding {
+		const exp = <ITypeBinding>expression;
+		return exp.name != null && (exp.typeArguments === null || Array.isArray(exp.typeArguments));
 	}
 
 	/**
@@ -1088,7 +1036,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			case SyntaxKind.DotDotDotToken:
 				return "...";
 			default:
-				return "";
+				throw new TypeError(`${this.serializeToken.name} could not serialize a token of kind ${SyntaxKind[<SyntaxKind>token]}`);
 		}
 	}
 
@@ -1254,7 +1202,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
 						const startsAt = declaration.pos;
 						const endsAt = declaration.end;
-						const type = declaration.type == null ? null : this.normalizeTypeDeclaration(declaration.type);
+						const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
+						// TODO: Compute from expression instead!
+						const typeFlattened = declaration.type == null ? null : this.stringifyTypeDeclaration(declaration.type);
 
 						assignmentMap[name] = {
 							name,
@@ -1263,7 +1213,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 							valueResolved: "",
 							startsAt,
 							endsAt,
-							type
+							typeExpression,
+							typeFlattened
 						};
 					}
 				});
@@ -1678,32 +1629,179 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Returns a stringified version of generic type arguments.
+	 * @param {NodeArray<TypeNode>} typeArguments
+	 * @returns {string}
+	 */
+	private stringifyTypeArguments (typeArguments: NodeArray<TypeNode>): string {
+		return `<${typeArguments.map(arg => this.stringifyTypeDeclaration(arg)).join(", ")}>`;
+	}
+
+	/**
+	 * Tokenizes the type information from the given statement and returns a TypeExpression.
+	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
+	 * @returns {TypeExpression}
+	 */
+	private getTypeExpression (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): TypeExpression {
+
+
+		if (this.isTypeNode(statement)) {
+			if ((this.isTypeReferenceNode(statement) || this.isTypeReference(statement)) && this.isIdentifierObject(statement.typeName)) {
+				const name = statement.typeName.text;
+				let typeArguments: TypeExpression | null = null;
+
+				if (statement.typeArguments != null) {
+					statement.typeArguments.forEach(typeArgument => {
+						const value = this.getTypeExpression(typeArgument);
+						value.forEach(part => {
+							if (typeArguments == null) typeArguments = [];
+							typeArguments.push(part);
+						});
+					});
+				}
+				return [{name, typeArguments}];
+			}
+
+			if (this.isArrayTypeNode(statement)) {
+				return [...this.getTypeExpression(statement.elementType), "[", "]"];
+			}
+
+			if (this.isTupleTypeNode(statement)) {
+				const exp: TypeExpression = [];
+				exp.push("[");
+
+				statement.elementTypes.forEach((type, index) => {
+					const value = this.getTypeExpression(type);
+					value.forEach(part => exp.push(part));
+					if (index !== statement.elementTypes.length - 1) exp.push(", ");
+				});
+				exp.push("]");
+				return exp;
+			}
+
+			if (this.isIntersectionTypeNode(statement)) {
+				const exp: TypeExpression = [];
+
+				statement.types.forEach((intersectionType, index) => {
+					const value = this.getTypeExpression(intersectionType);
+
+					value.forEach(part => exp.push(part));
+					if (index !== statement.types.length - 1) exp.push(" & ");
+				});
+				return exp;
+			}
+
+			if (this.isUnionTypeNode(statement)) {
+				const exp: TypeExpression = [];
+
+				statement.types.forEach((unionType, index) => {
+					const value = this.getTypeExpression(unionType);
+
+					value.forEach(part => exp.push(part));
+					if (index !== statement.types.length - 1) exp.push("|");
+				});
+				return exp;
+			}
+
+			return [this.serializeToken(statement.kind)];
+		}
+
+		if (this.isTypeLiteralNode(statement)) {
+			const exp: TypeExpression = ["{"];
+
+			statement.members.forEach((member, index) => {
+
+				if (this.isIndexSignatureDeclaration(member)) {
+					exp.push("[");
+
+					member.parameters.forEach(parameter => {
+						exp.push(<string>this.getNameOfMember(parameter.name, false, true));
+						if (parameter.type != null) {
+							exp.push(":");
+							const type = this.getTypeExpression(parameter.type);
+							type.forEach(part => exp.push(part));
+						}
+						exp.push("]");
+
+					});
+					if (member.type != null) {
+						exp.push(":");
+						const type = this.getTypeExpression(member.type);
+						type.forEach(part => exp.push(part));
+					}
+				}
+
+				if (this.isPropertySignature(member)) {
+					const name = <string>this.getNameOfMember(member.name, false, true);
+					const type = member.type == null ? null : this.getTypeExpression(member.type);
+					exp.push(name);
+
+					if (member.questionToken != null) {
+						exp.push(this.serializeToken(member.questionToken.kind));
+					}
+					if (type != null) {
+						exp.push(":");
+						type.forEach(part => exp.push(part));
+					}
+				}
+
+				if (index !== statement.members.length - 1) exp.push(", ");
+
+			});
+			exp.push("}");
+			return exp;
+		}
+
+		if (this.isTypeReference(statement) && this.isIdentifierObject(statement.typeName)) {
+			const name = statement.typeName.text;
+			let typeArguments: TypeExpression | null = null;
+
+			if (statement.typeArguments != null) {
+				statement.typeArguments.forEach(typeArgument => {
+					const value = this.getTypeExpression(typeArgument);
+					value.forEach(part => {
+						if (typeArguments == null) typeArguments = [];
+						typeArguments.push(part);
+					});
+				});
+			}
+			return [{name, typeArguments}];
+		}
+
+		if (statement.type != null) return this.getTypeExpression(statement.type);
+		console.log(statement);
+		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+	}
+
+
+	/**
 	 * Formats and returns a string representation of a type.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {string}
 	 */
-	private normalizeTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string {
+	private stringifyTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string {
 		if (this.isTypeNode(statement)) {
 
-			if (this.isTypeReferenceNode(statement)) {
-				// We have an identifier here.
-				return (<Identifier>statement.typeName).text;
+			if ((this.isTypeReferenceNode(statement) || this.isTypeReference(statement)) && this.isIdentifierObject(statement.typeName)) {
+				return statement.typeArguments == null
+					? statement.typeName.text
+					: `${statement.typeName.text}${this.stringifyTypeArguments(statement.typeArguments)}`;
 			}
 
 			if (this.isArrayTypeNode(statement)) {
-				return `${this.normalizeTypeDeclaration(statement.elementType)}[]`;
+				return `${this.stringifyTypeDeclaration(statement.elementType)}[]`;
 			}
 
 			if (this.isTupleTypeNode(statement)) {
-				return `[${statement.elementTypes.map(type => this.normalizeTypeDeclaration(type)).join(", ")}]`;
+				return `[${statement.elementTypes.map(type => this.stringifyTypeDeclaration(type)).join(", ")}]`;
 			}
 
 			if (this.isIntersectionTypeNode(statement)) {
-				return statement.types.map(intersectionType => this.normalizeTypeDeclaration(intersectionType)).join(" & ");
+				return statement.types.map(intersectionType => this.stringifyTypeDeclaration(intersectionType)).join(" & ");
 			}
 
 			if (this.isUnionTypeNode(statement)) {
-				return statement.types.map(unionType => this.normalizeTypeDeclaration(unionType)).join("|");
+				return statement.types.map(unionType => this.stringifyTypeDeclaration(unionType)).join("|");
 			}
 
 			return this.serializeToken(statement.kind);
@@ -1717,17 +1815,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					val += "[";
 					member.parameters.forEach(parameter => {
 						val += <string>this.getNameOfMember(parameter.name, false, true);
-						if (parameter.type != null) val += `: ${this.normalizeTypeDeclaration(parameter.type)}`;
+						if (parameter.type != null) val += `: ${this.stringifyTypeDeclaration(parameter.type)}`;
 						val += "]";
 					});
 					if (member.type != null) {
-						val += `: ${this.normalizeTypeDeclaration(member.type)}`;
+						val += `: ${this.stringifyTypeDeclaration(member.type)}`;
 					}
 				}
 
 				if (this.isPropertySignature(member)) {
 					const name = <string>this.getNameOfMember(member.name, false, true);
-					const type = member.type == null ? null : this.normalizeTypeDeclaration(member.type);
+					const type = member.type == null ? null : this.stringifyTypeDeclaration(member.type);
 					val += name;
 					if (member.questionToken != null) val += this.serializeToken(member.questionToken.kind);
 					if (type != null) {
@@ -1742,14 +1840,157 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return val;
 		}
 
-		if (this.isTypeReference(statement)) {
-			const typeName = statement.typeName;
-			if (this.isIdentifierObject(typeName)) return typeName.text;
+		if (this.isTypeReference(statement) && this.isIdentifierObject(statement.typeName)) {
+			return statement.typeArguments == null
+				? statement.typeName.text
+				: `${statement.typeName.text}${this.stringifyTypeArguments(statement.typeArguments)}`;
 		}
 
-		if (statement.type != null) return this.normalizeTypeDeclaration(statement.type);
+		if (statement.type != null) return this.stringifyTypeDeclaration(statement.type);
 
-		throw new TypeError(`${this.normalizeTypeDeclaration.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+		throw new TypeError(`${this.stringifyTypeDeclaration.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+	}
+
+	/**
+	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
+	 * @param {PropertyDeclaration} declaration
+	 * @returns {IPropDeclaration}
+	 */
+	private formatPropertyDeclaration (declaration: PropertyDeclaration): IPropDeclaration {
+		const startsAt = declaration.pos;
+		const endsAt = declaration.end;
+		const name = <string>this.getNameOfMember(declaration.name, false, true);
+		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
+		// TODO: Compute from expression instead!
+		const typeFlattened = declaration.type == null ? null : this.stringifyTypeDeclaration(declaration.type);
+		const decorators = declaration.decorators == null ? [] : declaration.decorators.map(decorator => <string>this.getNameOfMember(decorator.expression, false, true));
+		const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
+		// TODO: Resolve value!
+		const valueResolved = "";
+		return {startsAt, endsAt, name, typeExpression, typeFlattened, decorators, valueExpression, valueResolved};
+	}
+
+	/**
+	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
+	 * @param {PropertyDeclaration} declaration
+	 * @returns {IPropDeclaration}
+	 */
+	private formatHeritageClauses (clauses: NodeArray<HeritageClause>): IHeritage {
+		const obj: IHeritage = {extendsClass: null, implementsInterfaces: []};
+
+		clauses.forEach(clause => {
+
+			if (this.isExtendsClause(clause)) {
+				// There can only be one extended class.
+				const [classIdentifier] = clause.types;
+				const [extendsClass] = this.getTypeExpression(classIdentifier);
+				if (this.isTypeBinding(extendsClass)) {
+					obj.extendsClass = extendsClass;
+				}
+			}
+
+			if (this.isImplementsClause(clause)) {
+				clause.types.forEach(identifier => {
+					const expression = this.getTypeExpression(identifier);
+					expression.forEach(part => {
+						if (this.isTypeBinding(part)) {
+							obj.implementsInterfaces.push(part);
+						}
+					});
+				});
+			}
+		});
+		return obj;
+	}
+
+	/**
+	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
+	 * @param {ConstructorDeclaration|MethodDeclaration} declaration
+	 * @param {string} fileContents
+	 * @returns {IMemberDeclaration}
+	 */
+	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration, fileContents: string): IMemberDeclaration & IArgumentsable {
+		const startsAt = declaration.pos;
+		const endsAt = declaration.end;
+		const body = declaration.body;
+
+		const bodyStartsAt = body == null ? -1 : body.pos;
+		const bodyEndsAt = body == null ? -1 : body.end;
+		const contents = fileContents.slice(startsAt, endsAt);
+		const bodyContents = body == null ? null : fileContents.slice(bodyStartsAt, bodyEndsAt);
+
+		const args: IArgument[] = declaration.parameters.map(parameter => {
+			const argumentStartsAt = parameter.pos;
+			const argumentEndsAt = parameter.end;
+			const argumentName = <string>this.getNameOfMember(parameter.name, false, true);
+			const argumentTypeExpression = parameter.type == null ? null : this.getTypeExpression(parameter);
+			// TODO: Compute from TypeExpression instead!
+			const argumentTypeFlattened = parameter.type == null ? null : this.stringifyTypeDeclaration(parameter);
+			const argumentValueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
+			// TODO: Compute this!
+			const argumentValueResolved = "";
+			return {
+				startsAt: argumentStartsAt,
+				endsAt: argumentEndsAt,
+				name: argumentName,
+				typeExpression: argumentTypeExpression,
+				typeFlattened: argumentTypeFlattened,
+				valueExpression: argumentValueExpression,
+				valueResolved: argumentValueResolved
+			};
+		});
+
+		return {
+			startsAt,
+			endsAt,
+			contents,
+			bodyContents,
+			bodyStartsAt,
+			bodyEndsAt,
+			arguments: args
+		};
+	}
+
+	/**
+	 * Takes a ConstructorDeclaration and returns an IConstructorDeclaration.
+	 * @param {ConstructorDeclaration} declaration
+	 * @param {string} fileContents
+	 * @returns {IConstructorDeclaration}
+	 */
+	private formatConstructorDeclaration (declaration: ConstructorDeclaration, fileContents: string): IConstructorDeclaration {
+		const name = "constructor";
+		return {...this.formatCallableMemberDeclaration(declaration, fileContents), ...{name}};
+	}
+
+	/**
+	 * Takes a MethodDeclaration and returns an IMethodDeclaration.
+	 * @param {MethodDeclaration} declaration
+	 * @param {string} fileContents
+	 * @returns {IMethodDeclaration}
+	 */
+	private formatMethodDeclaration (declaration: MethodDeclaration, fileContents: string): IMethodDeclaration {
+		const name = <string>this.getNameOfMember(declaration.name, false, true);
+		let returnStatementStartsAt: number = -1;
+		let returnStatementEndsAt: number = -1;
+		let returnStatementContents: string | null = null;
+
+		if (declaration.body != null && declaration.body.statements != null) {
+			declaration.body.statements.forEach(bodyStatement => {
+
+				if (this.isReturnStatement(bodyStatement)) {
+					if (bodyStatement.expression != null) {
+						returnStatementStartsAt = bodyStatement.expression.pos;
+						returnStatementEndsAt = bodyStatement.expression.end;
+						returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
+					}
+				}
+			});
+		}
+
+		return {
+			...this.formatCallableMemberDeclaration(declaration, fileContents),
+			...{name, returnStatementStartsAt, returnStatementEndsAt, returnStatementContents}
+		};
 	}
 
 	/**
@@ -1775,13 +2016,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			name: className,
 			filepath,
 			methods: {},
-			derives: null,
-			constructorArguments: [],
-			fullStartsAt: classDeclarationStartsAt,
-			fullEndsAt: classDeclarationEndsAt,
+			heritage: statement.heritageClauses == null ? null : this.formatHeritageClauses(statement.heritageClauses),
+			constructor: null,
+			startsAt: classDeclarationStartsAt,
+			endsAt: classDeclarationEndsAt,
 			bodyStartsAt: classBodyStartsAt,
 			bodyEndsAt: classBodyEndsAt,
-			fullContents: fullClassContents,
+			contents: fullClassContents,
 			bodyContents: bodyClassContents,
 			props: {}
 		};
@@ -1789,95 +2030,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		statement.members.forEach(member => {
 
 			if (this.isPropertyDeclaration(member)) {
-				const startsAt = member.pos;
-				const endsAt = member.end;
-				const name = <string>this.getNameOfMember(member.name, false, true);
-				const type = member.type == null ? null : this.normalizeTypeDeclaration(member.type);
-				const decorators = member.decorators == null ? [] : member.decorators.map(decorator => <string>this.getNameOfMember(decorator.expression, false, true));
-				const valueExpression = member.initializer == null ? null : this.getInitializedValue(member.initializer);
-				// TODO: Resolve value!
-				const valueResolved = "";
-
-				declaration.props[name] = {
-					startsAt, endsAt, name, type, decorators, valueExpression, valueResolved
-				};
+				const formatted = this.formatPropertyDeclaration(member);
+				declaration.props[formatted.name] = formatted;
 			}
 
 			else if (this.isConstructorDeclaration(member)) {
-
-				member.parameters.forEach(parameter => {
-					const startsAt = parameter.pos;
-					const endsAt = parameter.end;
-					const name = <string>this.getNameOfMember(parameter.name, false, true);
-					const type = parameter.type == null ? null : this.normalizeTypeDeclaration(parameter);
-					const valueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
-					// TODO: Compute this!
-					const valueResolved = "";
-
-					declaration.constructorArguments.push({name, type, valueExpression, valueResolved, startsAt, endsAt});
-				});
+				declaration.constructor = this.formatConstructorDeclaration(member, fileContents);
 			}
 
 			else if (this.isMethodDeclaration(member)) {
-
-				const methodName = <string>this.getNameOfMember(member.name, false, true);
-				const methodDeclarationStartsAt = member.pos;
-				const methodDeclarationEndsAt = member.end;
-				const methodBody = member.body;
-				let methodBodyStartsAt = methodBody == null ? -1 : methodBody.pos;
-				let methodBodyEndsAt = methodBody == null ? -1 : methodBody.end;
-				const fullMethodContents = fileContents.slice(methodDeclarationStartsAt, methodDeclarationEndsAt);
-				let bodyMethodContents = methodBody == null ? null : fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
-				let returnStatementStartsAt: number = -1;
-				let returnStatementEndsAt: number = -1;
-				let returnStatementContents: string | null = null;
-
-				if (methodBody != null && methodBody.statements != null) {
-					methodBody.statements.forEach(methodBodyStatement => {
-
-						if (this.isReturnStatement(methodBodyStatement)) {
-							if (methodBodyStatement.expression != null) {
-								returnStatementStartsAt = methodBodyStatement.expression.pos;
-								returnStatementEndsAt = methodBodyStatement.expression.end;
-								returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
-							}
-						}
-					});
-				}
-
-				if (bodyMethodContents != null && bodyMethodContents.trim().startsWith("{")) {
-					methodBodyStartsAt = fileContents.indexOf("{", methodBodyStartsAt) + 1;
-					methodBodyEndsAt = fileContents.indexOf("}", methodBodyEndsAt - 1);
-					bodyMethodContents = fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
-				}
-
-				declaration.methods[methodName] = {
-					fullStartsAt: methodDeclarationStartsAt,
-					fullEndsAt: methodDeclarationEndsAt,
-					bodyStartsAt: methodBodyStartsAt,
-					bodyEndsAt: methodBodyEndsAt,
-					fullContents: fullMethodContents,
-					bodyContents: bodyMethodContents,
-					returnStatementStartsAt,
-					returnStatementEndsAt,
-					returnStatementContents
-				};
+				const formatted = this.formatMethodDeclaration(member, fileContents);
+				declaration.methods[formatted.name] = formatted;
 			}
 
 			else throw new TypeError(`${this.getClassDeclaration.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
 		});
 
-		if (statement.heritageClauses == null || statement.heritageClauses.length === 0) return declaration;
-
-		let superClassName: string | null = null;
-		for (const clause of statement.heritageClauses) {
-			if (this.isExtendsKeyword(clause)) {
-				const [type] = clause.types;
-				// TODO: Why the need for casting? According to TS, text doesn't exist on this one.
-				superClassName = (<Identifier>type.expression).text;
-				declaration.derives = superClassName;
-			}
-		}
 		return declaration;
 	}
 

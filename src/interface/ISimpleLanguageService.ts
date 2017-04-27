@@ -1,70 +1,4 @@
-import {
-	ArrayBindingPattern,
-	ArrayLiteralExpression,
-	ArrayTypeNode,
-	ArrowFunction,
-	BinaryExpression,
-	BindingName,
-	BindingPattern,
-	Block,
-	BooleanLiteral,
-	CallExpression,
-	ClassDeclaration,
-	ComputedPropertyName,
-	ConditionalExpression,
-	ConstructorDeclaration,
-	Declaration,
-	DeclarationName,
-	ElementAccessExpression,
-	EntityName,
-	EnumDeclaration,
-	ExportDeclaration,
-	Expression,
-	ExpressionStatement,
-	FunctionExpression,
-	HeritageClause,
-	Identifier,
-	ImportDeclaration,
-	IndexSignatureDeclaration,
-	IntersectionTypeNode,
-	KeywordTypeNode,
-	LanguageServiceHost,
-	MethodDeclaration,
-	NamedImports,
-	NewExpression,
-	Node,
-	NodeArray,
-	NoSubstitutionTemplateLiteral,
-	NumericLiteral,
-	ObjectBindingPattern,
-	ObjectLiteralExpression,
-	ParameterDeclaration,
-	ParenthesizedExpression,
-	PrefixUnaryExpression,
-	PropertyAccessExpression,
-	PropertyAssignment,
-	PropertyDeclaration,
-	PropertyName,
-	PropertySignature,
-	SpreadAssignment,
-	SpreadElement,
-	Statement,
-	StringLiteral,
-	TemplateExpression,
-	TemplateHead,
-	TemplateSpan,
-	TemplateTail,
-	ThisExpression,
-	Token,
-	TupleTypeNode,
-	TypeAliasDeclaration,
-	TypeAssertion,
-	TypeLiteralNode,
-	TypeNode,
-	TypeReferenceNode,
-	UnionTypeNode,
-	VariableStatement
-} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement} from "typescript";
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
@@ -422,28 +356,41 @@ export interface IPropertyCallExpression {
 	args: ICallExpressionArgument[];
 }
 
-export interface IMemberDeclaration {
-	fullStartsAt: number;
-	fullEndsAt: number;
+export interface IBodyPositionable {
 	bodyStartsAt: number;
 	bodyEndsAt: number;
-	fullContents: string;
+}
+
+export interface IMemberDeclaration extends IPositionable, IBodyPositionable {
+	contents: string;
 	bodyContents: string | null;
 }
 
-export interface IMethodDeclaration extends IMemberDeclaration {
+export interface IArgumentsable {
+	arguments: IArgument[];
+}
+
+export interface IMethodDeclaration extends INameable, IMemberDeclaration, IArgumentsable {
 	returnStatementStartsAt: number;
 	returnStatementEndsAt: number;
 	returnStatementContents: string | null;
 }
 
-export interface IClassDeclaration extends IMemberDeclaration {
-	name: string;
+export interface IConstructorDeclaration extends IMemberDeclaration, IArgumentsable {
+
+}
+
+export interface IHeritage {
+	extendsClass: ITypeBinding | null;
+	implementsInterfaces: ITypeBinding[];
+}
+
+export interface IClassDeclaration extends IMemberDeclaration, INameable {
 	filepath: string;
 	methods: ResolvedMethodMap;
-	derives: string | null;
 	props: PropIndexer;
-	constructorArguments: IConstructorArgument[];
+	constructor: IConstructorDeclaration | null;
+	heritage: IHeritage | null;
 }
 
 export interface IPositionable {
@@ -451,8 +398,10 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IConstructorArgument extends IPositionable, INameable, ITypeable, IValueable {
+export declare interface IArgument extends IPositionable, INameable, ITypeable, IValueable {
 }
+
+export declare interface IConstructorArgument extends IArgument {}
 
 export interface IArbitraryObject<T> {
 	[key: string]: T;
@@ -470,8 +419,16 @@ export interface INameable {
 	name: string;
 }
 
+export interface ITypeBinding extends INameable {
+	typeArguments: TypeExpression | null;
+}
+
+export declare type TypeExpression = InitializationValue;
+
 export interface ITypeable {
-	type: string | null;
+	typeExpression: TypeExpression | null;
+	typeFlattened: string | null;
+
 }
 
 export interface IValueable {
@@ -483,7 +440,7 @@ export interface IVariableAssignment extends IPositionable, IValueable, ITypeabl
 }
 
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
-export declare type ArbitraryValue = string | boolean | symbol | number | null | undefined | Function | object | IBindingIdentifier | {};
+export declare type ArbitraryValue = string | boolean | symbol | number | null | undefined | Function | object | IBindingIdentifier | ITypeBinding | {};
 export declare type ArbitraryValueIndexable = ArbitraryValue | IArbitraryObject<ArbitraryValue>;
 export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
@@ -514,7 +471,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isTrueKeyword (statement: Statement | Declaration | Expression | Node): statement is BooleanLiteral;
 	isFalseKeyword (statement: Statement | Declaration | Expression | Node): statement is BooleanLiteral;
 	isThisKeyword (statement: Statement | Declaration | Expression | Node): statement is ThisExpression;
-	isExtendsKeyword (statement: Statement | Declaration | Expression | Node): statement is HeritageClause;
+	isExtendsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause;
+	isImplementsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause;
 	isUndefinedKeyword (statement: Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isNullKeyword (statement: Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isObjectKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
