@@ -482,7 +482,6 @@ test(`Detects all initialization values correctly. #36`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	console.log(assignments["a"]);
 	t.deepEqual(assignments["a"], ["{", "...", "{", "foo", ":", 1, "}", ",", "...", new BindingIdentifier("bar"), "}"]);
 });
 
@@ -494,8 +493,25 @@ test(`Detects all initialization values correctly. #37`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	console.log(assignments["a"]);
 	t.deepEqual(assignments["a"], [ "[", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "]" ]);
+});
+
+test(`Detects all initialization values correctly. #38`, t => {
+	setupMany([ ["AssignmentMap", "AssignmentMap"], ["statement", "statement"], ["declarationList", "declarationList"], ["declarations", "declarations"], ["declaration", "declaration"], ["name", "name"], ["text", "text"], ["initializer", "initializer"], ["getInitializedValue", "getInitializedValue"], ["this", "this"] ]);
+
+	const statements = parse(`
+		const assignmentMap: AssignmentMap = {};
+		const declarations = statement.declarationList.declarations;
+		const boundName = declaration.name.text;
+		const value = this.getInitializedValue(declaration.initializer);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+
+	t.deepEqual(assignments["assignmentMap"], [ "{", "}"  ]);
+	t.deepEqual(assignments["declarations"], [ new BindingIdentifier("statement.declarationList.declarations") ]);
+	t.deepEqual(assignments["boundName"], [ new BindingIdentifier("declaration.name.text") ]);
+	t.deepEqual(assignments["value"], [ new BindingIdentifier("this.getInitializedValue"), "(", new BindingIdentifier("declaration.initializer"), ")" ]);
 });
 
 test(`Detects all class declarations properly. #1`, t => {
