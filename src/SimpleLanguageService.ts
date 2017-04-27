@@ -29,6 +29,7 @@ import {
 	HeritageClause,
 	Identifier,
 	ImportDeclaration,
+	IndexSignatureDeclaration,
 	IntersectionTypeNode,
 	IScriptSnapshot,
 	KeywordTypeNode,
@@ -51,6 +52,7 @@ import {
 	PropertyAssignment,
 	PropertyDeclaration,
 	PropertyName,
+	PropertySignature,
 	ReturnStatement,
 	ScriptTarget,
 	SpreadAssignment,
@@ -66,6 +68,7 @@ import {
 	TupleTypeNode,
 	TypeAliasDeclaration,
 	TypeAssertion,
+	TypeLiteralNode,
 	TypeNode,
 	TypeReferenceNode,
 	UnionTypeNode,
@@ -81,7 +84,6 @@ import {
 	InitializationValue,
 	IPropertyCallExpression,
 	ISimpleLanguageService,
-	NullableInitializationValue,
 	PropIndexer,
 	SyntaxKind,
 	TypeArgument
@@ -214,6 +216,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration {
 		return statement.kind === SyntaxKind.PropertyDeclaration;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a PropertySignature.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isPropertySignature (statement: Statement | Declaration | Expression | Node): statement is PropertySignature {
+		return statement.kind === SyntaxKind.PropertySignature;
 	}
 
 	/**
@@ -629,6 +640,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode {
 		return statement.kind === SyntaxKind.TypeReference;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a TypeLiteralNode.
+	 * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
+	 * @returns {boolean}
+	 */
+	public isTypeLiteralNode (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeLiteralNode {
+		return statement.kind === SyntaxKind.TypeLiteral;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an IndexSignatureDeclaration.
+	 * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
+	 * @returns {boolean}
+	 */
+	public isIndexSignatureDeclaration (statement: Declaration): statement is IndexSignatureDeclaration {
+		return statement.kind === SyntaxKind.IndexSignature;
 	}
 
 	/**
@@ -1278,14 +1307,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (this.isVariableDeclaration(statement)) {
 				const declarations = statement.declarationList.declarations;
 				declarations.forEach(declaration => {
+
 					if (this.isIdentifierObject(declaration.name)) {
-						const boundName = declaration.name.text;
-						if (declaration.initializer != null) {
-							const value = this.getInitializedValue(declaration.initializer);
-							if (value != null) {
-								assignmentMap[boundName] = value;
-							}
-						}
+						const name = declaration.name.text;
+						const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
+						const startsAt = declaration.pos;
+						const endsAt = declaration.end;
+						const type = declaration.type == null ? null : this.normalizeTypeDeclaration(declaration.type);
+
+						assignmentMap[name] = {
+							name,
+							valueExpression,
+							resolvedValue: "",
+							startsAt,
+							endsAt,
+							type
+						};
 					}
 				});
 			}
@@ -1354,8 +1391,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {NullableInitializationValue}
 	 */
 	public getInitializedValue (rawStatement: Statement | Expression | Node): InitializationValue {
-
-		console.log(this.getInitializedValuesForEnum.toString().slice(0, 0));
 
 		if (this.isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
@@ -1689,9 +1724,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Formats and returns a string representation of a type.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
-	 * @returns {string|undefined}
+	 * @returns {string}
 	 */
-	private normalizeTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string | undefined {
+	private normalizeTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string {
 		if (this.isTypeNode(statement)) {
 
 			if (this.isTypeReferenceNode(statement)) {
@@ -1716,16 +1751,49 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			return this.serializeToken(statement.kind);
-		} else {
-
-			if (this.isTypeReference(statement)) {
-				const typeName = statement.typeName;
-				if (this.isIdentifierObject(typeName)) return typeName.text;
-				return undefined;
-			}
-
-			return statement.type == null ? undefined : this.normalizeTypeDeclaration(statement.type);
 		}
+
+		if (this.isTypeLiteralNode(statement)) {
+			let val: string = "{";
+			statement.members.forEach((member, index) => {
+
+				if (this.isIndexSignatureDeclaration(member)) {
+					val += "[";
+					member.parameters.forEach(parameter => {
+						val += <string>this.getNameOfMember(parameter.name, false, true);
+						if (parameter.type != null) val += `: ${this.normalizeTypeDeclaration(parameter.type)}`;
+						val += "]";
+					});
+					if (member.type != null) {
+						val += `: ${this.normalizeTypeDeclaration(member.type)}`;
+					}
+				}
+
+				if (this.isPropertySignature(member)) {
+					const name = <string>this.getNameOfMember(member.name, false, true);
+					const type = member.type == null ? null : this.normalizeTypeDeclaration(member.type);
+					val += name;
+					if (member.questionToken != null) val += this.serializeToken(member.questionToken.kind);
+					if (type != null) {
+						val += `: ${type}`;
+					}
+				}
+
+				if (index !== statement.members.length - 1) val += ", ";
+
+			});
+			val += "}";
+			return val;
+		}
+
+		if (this.isTypeReference(statement)) {
+			const typeName = statement.typeName;
+			if (this.isIdentifierObject(typeName)) return typeName.text;
+		}
+
+		if (statement.type != null) return this.normalizeTypeDeclaration(statement.type);
+
+		throw new TypeError(`${this.normalizeTypeDeclaration.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
 	}
 
 	/**
@@ -1766,13 +1834,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (this.isConstructorDeclaration(member)) {
 				member.parameters.forEach(parameter => {
 					const name = (<Identifier>parameter.name).text;
-					let type: string | undefined;
-					let initializer: string | null = null;
-
-					type = this.normalizeTypeDeclaration(parameter);
-
-					const initValue = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
-					if (initValue != null) initializer = this.join(initValue, true);
+					let type = parameter.type == null ? null : this.normalizeTypeDeclaration(parameter);
+					let initializer = parameter.initializer != null ? this.join(this.getInitializedValue(parameter.initializer), true) : null;
 
 					const startsAt = parameter.pos;
 					const endsAt = parameter.end;
@@ -1857,41 +1920,41 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return declaration;
 	}
 
-	/**
-	 * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
-	 * @param {Set<number>} taken
-	 * @returns {number}
-	 */
-	private findFreeEnumIntegerValue (taken: Set<number>): number {
-		const sorted = [...taken].sort();
-
-		for (let i = 0; i < sorted.length; i++) {
-			if (taken.has(i)) continue;
-			return i;
-		}
-		return sorted.length;
-	}
-
-	/**
-	 * Walks through an enumeration and checks the associated ordinal values.
-	 * @param {EnumDeclaration} statement
-	 * @returns NullableInitializationValue}
-	 */
-	private getInitializedValuesForEnum (statement: EnumDeclaration): NullableInitializationValue {
-		const props: { [key: string]: NullableInitializationValue } = {};
-		const taken: Set<number> = new Set();
-		statement.members.forEach(member => {
-			// TODO: Typescript doesn't think that a 'text' key exists here. Why?
-			const value = (<Identifier>member.name).text;
-			const initializer = member.initializer;
-			// TODO: Remove any declaration.
-			const integerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : parseInt((<any>initializer).text);
-
-			taken.add(integerValue);
-
-			if (value != null) props[value] = [integerValue];
-		});
-		return [props];
-	}
+	// /**
+	//  * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
+	//  * @param {Set<number>} taken
+	//  * @returns {number}
+	//  */
+	// private findFreeEnumIntegerValue (taken: Set<number>): number {
+	// 	const sorted = [...taken].sort();
+	//
+	// 	for (let i = 0; i < sorted.length; i++) {
+	// 		if (taken.has(i)) continue;
+	// 		return i;
+	// 	}
+	// 	return sorted.length;
+	// }
+	//
+	// /**
+	//  * Walks through an enumeration and checks the associated ordinal values.
+	//  * @param {EnumDeclaration} statement
+	//  * @returns NullableInitializationValue}
+	//  */
+	// private getInitializedValuesForEnum (statement: EnumDeclaration): NullableInitializationValue {
+	// 	const props: { [key: string]: NullableInitializationValue } = {};
+	// 	const taken: Set<number> = new Set();
+	// 	statement.members.forEach(member => {
+	// 		// TODO: Typescript doesn't think that a 'text' key exists here. Why?
+	// 		const value = (<Identifier>member.name).text;
+	// 		const initializer = member.initializer;
+	// 		// TODO: Remove any declaration.
+	// 		const integerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : parseInt((<any>initializer).text);
+	//
+	// 		taken.add(integerValue);
+	//
+	// 		if (value != null) props[value] = [integerValue];
+	// 	});
+	// 	return [props];
+	// }
 
 }

@@ -1,39 +1,31 @@
 import {
+	ArrayBindingPattern,
 	ArrayLiteralExpression,
 	ArrayTypeNode,
-	BinaryExpression,
-	Token,
-	SpreadAssignment,
-	SpreadElement,
 	ArrowFunction,
-	FunctionExpression,
-	ComputedPropertyName,
+	BinaryExpression,
 	BindingName,
-	PropertyName,
 	BindingPattern,
-	ObjectBindingPattern,
-	ArrayBindingPattern,
-	DeclarationName,
-	NumericLiteral,
-	TemplateHead,
-	TemplateTail,
-	StringLiteral,
 	Block,
 	BooleanLiteral,
 	CallExpression,
 	ClassDeclaration,
+	ComputedPropertyName,
 	ConditionalExpression,
 	ConstructorDeclaration,
 	Declaration,
+	DeclarationName,
 	ElementAccessExpression,
 	EntityName,
 	EnumDeclaration,
 	ExportDeclaration,
 	Expression,
 	ExpressionStatement,
+	FunctionExpression,
 	HeritageClause,
 	Identifier,
 	ImportDeclaration,
+	IndexSignatureDeclaration,
 	IntersectionTypeNode,
 	KeywordTypeNode,
 	LanguageServiceHost,
@@ -43,6 +35,8 @@ import {
 	Node,
 	NodeArray,
 	NoSubstitutionTemplateLiteral,
+	NumericLiteral,
+	ObjectBindingPattern,
 	ObjectLiteralExpression,
 	ParameterDeclaration,
 	ParenthesizedExpression,
@@ -50,13 +44,22 @@ import {
 	PropertyAccessExpression,
 	PropertyAssignment,
 	PropertyDeclaration,
+	PropertyName,
+	PropertySignature,
+	SpreadAssignment,
+	SpreadElement,
 	Statement,
+	StringLiteral,
 	TemplateExpression,
+	TemplateHead,
 	TemplateSpan,
+	TemplateTail,
 	ThisExpression,
+	Token,
 	TupleTypeNode,
 	TypeAliasDeclaration,
 	TypeAssertion,
+	TypeLiteralNode,
 	TypeNode,
 	TypeReferenceNode,
 	UnionTypeNode,
@@ -398,7 +401,7 @@ export enum SyntaxKind {
 
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 
-export declare type AssignmentMap = { [key: string]: InitializationValue };
+export declare type AssignmentMap = { [key: string]: IVariableAssignment };
 export declare type TypeArgument = string | boolean | symbol | number | null | undefined;
 
 export interface IModuleDependency {
@@ -453,7 +456,7 @@ export interface IPositionable {
 
 export declare interface IConstructorArgument extends IPositionable {
 	name: string;
-	type: string | undefined;
+	type: string | null;
 	initializer: string | null;
 }
 
@@ -467,12 +470,18 @@ export declare interface IPropDeclaration {
 	type: string | null;
 }
 
+export interface IVariableAssignment extends IPositionable {
+	name: string;
+	type: string | null;
+	resolvedValue: ArbitraryValue | null;
+	valueExpression: InitializationValue | null;
+}
+
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
-export declare type ArbitraryValue = string|boolean|symbol|number|null|undefined|Function|object|IBindingIdentifier|{};
-export declare type ArbitraryValueIndexable = ArbitraryValue|IArbitraryObject<ArbitraryValue>;
+export declare type ArbitraryValue = string | boolean | symbol | number | null | undefined | Function | object | IBindingIdentifier | {};
+export declare type ArbitraryValueIndexable = ArbitraryValue | IArbitraryObject<ArbitraryValue>;
 export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
-export declare type NullableInitializationValue = InitializationValue | null;
 
 export interface ISimpleLanguageService extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
@@ -482,7 +491,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isElementAccessExpression (statement: Statement | Declaration | Expression | Node): statement is ElementAccessExpression;
 	isArrayLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ArrayLiteralExpression;
 	isTypeAssertionExpression (statement: Statement | Declaration | Expression | Node): statement is TypeAssertion;
-	isComputedPropertyName (statement: BindingName | EntityName | Expression| Node): statement is ComputedPropertyName;
+	isComputedPropertyName (statement: BindingName | EntityName | Expression | Node): statement is ComputedPropertyName;
 	isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression;
 	isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral;
 	isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration;
@@ -512,6 +521,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isSymbolKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isStringKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode;
 	isTypeNode (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): statement is TypeNode;
+	isTypeLiteralNode (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeLiteralNode;
 	isNumericLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is NumericLiteral;
 	isStringLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is StringLiteral;
 	isPropertyAssignment (statement: Statement | Declaration | Expression | Node): statement is PropertyAssignment;
@@ -522,19 +532,21 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isExportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ExportDeclaration;
 	isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement;
 	isTypeReference (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode;
-	isIdentifierObject (statement: BindingName | EntityName | Expression| Node): statement is Identifier;
-	isTokenObject (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind>;
+	isIdentifierObject (statement: BindingName | EntityName | Expression | Node): statement is Identifier;
+	isTokenObject (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind>;
 	isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration;
 	isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression;
+	isIndexSignatureDeclaration (statement: Declaration): statement is IndexSignatureDeclaration;
+	isPropertySignature (statement: Statement | Declaration | Expression | Node): statement is PropertySignature;
 	isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode;
 	isArrayTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is ArrayTypeNode;
 	isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode;
 	isSpreadAssignment (statement: Statement | Declaration | Expression | Node): statement is SpreadAssignment;
 	isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode;
 	isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode;
-	isFirstLiteralToken (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind.FirstLiteralToken> & {text: string};
-	isPropertyName (statement: Expression|Node): statement is PropertyName;
-	isDeclarationName (statement: Expression|Node): statement is DeclarationName;
+	isFirstLiteralToken (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken> & { text: string };
+	isPropertyName (statement: Expression | Node): statement is PropertyName;
+	isDeclarationName (statement: Expression | Node): statement is DeclarationName;
 	isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern;
 	isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern;
 	isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern;
