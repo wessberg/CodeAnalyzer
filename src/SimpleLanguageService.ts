@@ -6,10 +6,8 @@ import {
 	ArrayLiteralExpression,
 	ArrayTypeNode,
 	ArrowFunction,
-	SpreadElement,
 	BinaryExpression,
 	BindingName,
-	SpreadAssignment,
 	BindingPattern,
 	Block,
 	BooleanLiteral,
@@ -37,7 +35,6 @@ import {
 	LanguageService,
 	LeftHandSideExpression,
 	MethodDeclaration,
-	ModifiersArray,
 	ModuleKind,
 	NamedImports,
 	NewExpression,
@@ -56,6 +53,8 @@ import {
 	PropertyName,
 	ReturnStatement,
 	ScriptTarget,
+	SpreadAssignment,
+	SpreadElement,
 	Statement,
 	StringLiteral,
 	TemplateExpression,
@@ -99,7 +98,6 @@ import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceCo
 export class SimpleLanguageService implements ISimpleLanguageService {
 	private languageService: LanguageService;
 	private files: Map<string, { version: number, content: string }> = new Map();
-	// private static readonly NATIVE_GLOBAL_SYMBOLS: Set<string> = new Set(["Infinity", "NaN"]);
 
 	constructor (private marshaller: IMarshaller,
 							 private config: ISimpleLanguageServiceConfig = {},
@@ -799,41 +797,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Gets the name of the current scope. For example, a class member's scope will be the name of the class.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {string|null}
-	 */
-	public getScope (statement: Statement | Declaration | Expression | Node): string | null {
-		return this.isClassDeclaration(statement) && statement.name != null ? statement.name.text : null;
-	}
-
-	/**
-	 * Returns true if the current statement represents a static class member.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {boolean}
-	 */
-	public isStatic (statement: Statement | Declaration | Expression | Node): boolean {
-		if (statement.modifiers == null) return false;
-		if (this.isObjectLiteralExpression(statement) || this.isEnumDeclaration(statement)) return false;
-		return (<ModifiersArray>statement.modifiers).some(modifier => modifier.kind === SyntaxKind.StaticKeyword);
-	}
-
-	/**
-	 * Gets the name for the current member of a class or object.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @param {boolean} [traceParentPath=false]
-	 * @returns {string|null}
-	 */
-	public getName (statement: Statement | Declaration | Expression | Node, traceParentPath: boolean = false): string | null {
-
-		let path = traceParentPath ? `${this.extractParentPath(statement)}` : "";
-		if ((<Declaration>statement).name != null && (<Identifier>(<Declaration>statement).name).text != null) {
-			path += `${(<Identifier>(<Declaration>statement).name).text}`;
-		}
-		return path.length < 1 ? null : path;
-	}
-
-	/**
 	 * Gets the decorators associated with the current expression.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {string|null}
@@ -1177,6 +1140,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		let args: ICallExpressionArgument[] = [];
 
 		statements.forEach(statement => {
+			// TODO: Delegate all (or most of) this logic to 'getInitializedValue'?
 			if (this.isExpressionStatement(statement)) {
 				const exp = statement.expression;
 
@@ -1189,6 +1153,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						args.push({
 							startsAt,
 							endsAt,
+							// TODO: Use 'getInitializedValue' or 'getNameOfMember' here?
 							value: this.getExpressionTextMarshalled(arg)
 						});
 					});
@@ -1276,9 +1241,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (!this.isClassDeclaration(statement)) return obj;
 
 		statement.members.forEach(memberStatement => {
-			const name = this.getName(memberStatement, false);
+			if (memberStatement.name == null) return;
+			const name = <string>this.getNameOfMember(memberStatement.name, false, true);
 
-			if (name == null) return;
 			obj[name] = obj[name] || {decorators: [], type: null};
 
 			if (this.isPropertyDeclaration(memberStatement)) {
@@ -1646,9 +1611,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * the name may also be a non-string entity.
 	 * @param {DeclarationName} name
 	 * @param {boolean} [allowNonStringNames=false]
+	 * @param {boolean} [forceNoBindingIdentifier=false]
 	 * @returns {ArbitraryValue}
 	 */
-	private getNameOfMember (name: DeclarationName | LeftHandSideExpression, allowNonStringNames: boolean = false): ArbitraryValue {
+	private getNameOfMember (name: DeclarationName | LeftHandSideExpression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
 
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {
@@ -1672,7 +1638,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
-			if (this.mostProbableTypeOf(name.text) === "string") {
+			if (this.mostProbableTypeOf(name.text) === "string" && !forceNoBindingIdentifier) {
 				return new BindingIdentifier(name.text);
 			}
 			return marshalled;
@@ -1889,25 +1855,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 		}
 		return declaration;
-	}
-
-	/**
-	 * Iterates through the parent chain and builds up a nested path to a property (e.g. 'this.is.a.member').
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {string}
-	 */
-	private extractParentPath (statement: Statement | Declaration | Expression | Node): string {
-		let path = "";
-		let current = statement.parent;
-
-		while (current != null) {
-			const name = this.getName(current);
-			if (name != null) {
-				path += this.isStatic(statement) ? `${name}.` : `${name}.prototype.`;
-			}
-			current = current.parent;
-		}
-		return path;
 	}
 
 	/**

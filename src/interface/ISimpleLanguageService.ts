@@ -541,9 +541,6 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction;
 	isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement;
 	isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
-	getScope (statement: Statement | Declaration | Expression | Node): string | null;
-	isStatic (statement: Statement | Declaration | Expression | Node): boolean;
-	getName (statement: Statement | Declaration | Expression | Node, traceParentPath?: boolean): string | null;
 	getDecorators (statement: Statement | Declaration | Expression | Node): string[];
 	serializeToken (token: SyntaxKind): string;
 	marshalToken (token: SyntaxKind): ArbitraryValue;

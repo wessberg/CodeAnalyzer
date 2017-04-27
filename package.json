@@ -31,7 +31,6 @@
     "typescript": "2.3.0"
   },
   "dependencies": {
-    "@wessberg/marshaller": "^1.0.0",
-    "array-flatten": "^2.1.1"
+    "@wessberg/marshaller": "^1.0.0"
   }
 }

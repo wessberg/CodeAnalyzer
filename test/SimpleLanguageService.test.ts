@@ -538,7 +538,7 @@ test(`Detects all class declarations properly. #2`, t => {
 });
 
 test(`Detects all class declarations properly. #3`, t => {
-	setup();
+	setupMany([ ["arg1", "arg1"], ["arg2", "arg2"], ["arg3", "arg3"] ]);
 	const code = `
 		class MyClass {
 			constructor (arg1: string, arg2: number, arg3: Foo) {}
@@ -554,7 +554,7 @@ test(`Detects all class declarations properly. #3`, t => {
 });
 
 test(`Detects all class declarations properly. #4`, t => {
-	setup();
+	setupMany([ ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
 			field1;
@@ -572,7 +572,7 @@ test(`Detects all class declarations properly. #4`, t => {
 });
 
 test(`Detects all class declarations properly. #5`, t => {
-	setup();
+	setupMany([ ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
 			field1: string;
@@ -590,7 +590,7 @@ test(`Detects all class declarations properly. #5`, t => {
 });
 
 test(`Detects all class declarations properly. #6`, t => {
-	setup();
+	setupMany([ ["prop", "prop"], ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
 			@prop field1: string;
@@ -608,12 +608,11 @@ test(`Detects all class declarations properly. #6`, t => {
 });
 
 test(`Detects all class declarations properly. #7`, t => {
-	setup();
+	setupMany([ ["field1", "field1"], ["field2", "field2"], ["setOnHost", "setOnHost"], ["prop", "prop"], ["blabla", "blabla"] ]);
 	const code = `
 		class MyClass {
 			@prop field1: string;
-			@setOnHost @prop field2: number = 2;
-			field3: Foo;
+			@setOnHost @blabla field2: number = 2;
 		}
 	`;
 
@@ -622,11 +621,11 @@ test(`Detects all class declarations properly. #7`, t => {
 	const [classDeclaration] = assignments;
 	t.true(classDeclaration.props["field1"].decorators.includes("prop"));
 	t.true(classDeclaration.props["field2"].decorators.includes("setOnHost"));
-	t.true(classDeclaration.props["field2"].decorators.includes("prop"));
+	t.true(classDeclaration.props["field2"].decorators.includes("blabla"));
 });
 
 test(`Detects all class declarations properly. #8`, t => {
-	setup();
+	setupMany([ ["field1", "field1"], ["prop", "prop"] ]);
 	const code = `
 		class MyClass {
 			@prop() field1: string;
