@@ -2,38 +2,32 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
 import {
+	ArrayBindingPattern,
 	ArrayLiteralExpression,
 	ArrayTypeNode,
-	NumericLiteral,
-	FunctionExpression,
-	PropertyName,
 	ArrowFunction,
-	Token,
-	LeftHandSideExpression,
-	BindingPattern,
-	ArrayBindingPattern,
-	ObjectBindingPattern,
-	StringLiteral,
-	DeclarationName,
-	TemplateTail,
-	TemplateHead,
+	SpreadElement,
 	BinaryExpression,
 	BindingName,
+	SpreadAssignment,
+	BindingPattern,
 	Block,
-	ComputedPropertyName,
 	BooleanLiteral,
 	CallExpression,
 	ClassDeclaration,
 	CompilerOptions,
+	ComputedPropertyName,
 	ConditionalExpression,
 	ConstructorDeclaration,
 	Declaration,
+	DeclarationName,
 	ElementAccessExpression,
 	EntityName,
 	EnumDeclaration,
 	ExportDeclaration,
 	Expression,
 	ExpressionStatement,
+	FunctionExpression,
 	HeritageClause,
 	Identifier,
 	ImportDeclaration,
@@ -41,6 +35,7 @@ import {
 	IScriptSnapshot,
 	KeywordTypeNode,
 	LanguageService,
+	LeftHandSideExpression,
 	MethodDeclaration,
 	ModifiersArray,
 	ModuleKind,
@@ -49,6 +44,8 @@ import {
 	Node,
 	NodeArray,
 	NoSubstitutionTemplateLiteral,
+	NumericLiteral,
+	ObjectBindingPattern,
 	ObjectLiteralExpression,
 	ParameterDeclaration,
 	ParenthesizedExpression,
@@ -56,12 +53,17 @@ import {
 	PropertyAccessExpression,
 	PropertyAssignment,
 	PropertyDeclaration,
+	PropertyName,
 	ReturnStatement,
 	ScriptTarget,
 	Statement,
+	StringLiteral,
 	TemplateExpression,
+	TemplateHead,
 	TemplateSpan,
+	TemplateTail,
 	ThisExpression,
+	Token,
 	TupleTypeNode,
 	TypeAliasDeclaration,
 	TypeAssertion,
@@ -500,7 +502,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isPropertyName (statement: Expression|Node): statement is PropertyName {
+	public isPropertyName (statement: Expression | Node): statement is PropertyName {
 		return this.isIdentifierObject(statement) ||
 			this.isStringLiteral(statement) ||
 			this.isNumericLiteral(statement) ||
@@ -512,7 +514,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isDeclarationName (statement: Expression|Node): statement is DeclarationName {
+	public isDeclarationName (statement: Expression | Node): statement is DeclarationName {
 		return this.isPropertyName(statement) || this.isBindingPattern(statement);
 	}
 
@@ -602,6 +604,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement {
 		return statement.kind === SyntaxKind.ExpressionStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a SpreadAssignment.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isSpreadAssignment (statement: Statement | Declaration | Expression | Node): statement is SpreadAssignment {
+		return statement.kind === SyntaxKind.SpreadAssignment;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a SpreadElement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement {
+		return statement.kind === SyntaxKind.SpreadElement;
 	}
 
 	/**
@@ -726,7 +746,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isIdentifierObject (statement: BindingName | EntityName | Expression| Node): statement is Identifier {
+	public isIdentifierObject (statement: BindingName | EntityName | Expression | Node): statement is Identifier {
 		return statement != null && statement.constructor.name === "IdentifierObject";
 	}
 
@@ -735,7 +755,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isTokenObject (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind> {
+	public isTokenObject (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind> {
 		return statement != null && statement.constructor.name === "TokenObject";
 	}
 
@@ -744,10 +764,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isFirstLiteralToken (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind.FirstLiteralToken> & {text: string} {
+	public isFirstLiteralToken (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken> & { text: string } {
 		return statement.kind === SyntaxKind.FirstLiteralToken;
 	}
-
 
 
 	/**
@@ -755,7 +774,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
 	 */
-	public isComputedPropertyName (statement: BindingName | EntityName | Expression| Node): statement is ComputedPropertyName {
+	public isComputedPropertyName (statement: BindingName | EntityName | Expression | Node): statement is ComputedPropertyName {
 		return statement.kind === SyntaxKind.ComputedPropertyName;
 	}
 
@@ -850,7 +869,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {SyntaxKind} token
 	 * @returns {string}
 	 */
-	public serializeToken (token: SyntaxKind|TypeNode): string {
+	public serializeToken (token: SyntaxKind | TypeNode): string {
 		switch (token) {
 			case SyntaxKind.ObjectKeyword:
 				return "object";
@@ -1362,7 +1381,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 
-
 	/**
 	 * Checks and formats the initialization value of the given statement (if any) and returns it.
 	 * Since such a statement can be a combination of multiple operations and identifiers, an array of statements will be
@@ -1372,7 +1390,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public getInitializedValue (rawStatement: Statement | Expression | Node): InitializationValue {
 
-		console.log(this.getInitializedValuesForEnum.toString().slice(0,0));
+		console.log(this.getInitializedValuesForEnum.toString().slice(0, 0));
 
 		if (this.isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
@@ -1381,7 +1399,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isStringLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(rawStatement.text);
-			return  [marshalled];
+			return [marshalled];
 		}
 
 		if (this.isNoSubstitutionTemplateLiteral(rawStatement)) {
@@ -1450,30 +1468,36 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isObjectLiteralExpression(rawStatement)) {
 			const obj: InitializationValue = ["{"];
 			rawStatement.properties.forEach((property, index) => {
-				if (property.name == null) return;
 
-				let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer) : null;
-				if (property.name == null) return;
+				if (this.isSpreadAssignment(property)) {
+					obj.push("...");
+					const exp = this.getInitializedValue(property.expression);
+					exp.forEach(item => obj.push(item));
+				} else {
+					if (property.name == null) return;
 
-				// Check if the property name is computed (.eg. [key]: "foo").
-				if (this.isComputedPropertyName(property.name)) obj.push("[");
+					let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer) : null;
+					if (property.name == null) return;
 
-				// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
-				if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
-					const callExpression = this.getInitializedValue(property.name.expression);
-					callExpression.forEach(item => obj.push(item));
+					// Check if the property name is computed (.eg. [key]: "foo").
+					if (this.isComputedPropertyName(property.name)) obj.push("[");
+
+					// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
+					if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
+						const callExpression = this.getInitializedValue(property.name.expression);
+						callExpression.forEach(item => obj.push(item));
+					}
+
+					else {
+						// Otherwise, just push the name of it.
+						obj.push(this.getNameOfMember(property.name, true));
+					}
+
+					if (this.isComputedPropertyName(property.name)) obj.push("]");
+					obj.push(":");
+					if (value == null) obj.push(value);
+					else value.forEach(item => obj.push(item));
 				}
-
-				else {
-					// Otherwise, just push the name of it.
-					obj.push(this.getNameOfMember(property.name, true));
-				}
-
-				if (this.isComputedPropertyName(property.name)) obj.push("]");
-				obj.push(":");
-				if (value == null) obj.push(value);
-				else value.forEach(item => obj.push(item));
-
 				if (index !== rawStatement.properties.length - 1) obj.push(",");
 			});
 			obj.push("}");
@@ -1481,10 +1505,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isArrayLiteralExpression(rawStatement)) {
-			const arr: InitializationValue = [];
-			const mapped: InitializationValue[] = rawStatement.elements.map(element => this.getInitializedValue(element));
-			mapped.forEach(item => item.forEach(part => arr.push(part)));
-			return [arr];
+			const arr: InitializationValue = ["["];
+			rawStatement.elements.forEach((element, index) => {
+				const value = this.getInitializedValue(element);
+				value.forEach(part => arr.push(part));
+				const lastPart = value[value.length - 1];
+				if (index !== rawStatement.elements.length - 1 && lastPart !== "...") arr.push(",");
+			});
+
+			arr.push("]");
+			return arr;
 		}
 
 		if (this.isTemplateExpression(rawStatement)) {
@@ -1570,6 +1600,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return arr;
 		}
 
+		if (this.isSpreadElement(rawStatement)) {
+			return ["...", ...this.getInitializedValue(rawStatement.expression)];
+		}
+
+		if (this.isParenthesizedExpression(rawStatement)) {
+			return ["(", ...this.getInitializedValue(rawStatement.expression), ")"];
+		}
+
 		if (this.isReturnStatement(rawStatement)) {
 			return [this.marshalToken(rawStatement.kind), ...(rawStatement.expression == null ? [] : this.getInitializedValue(rawStatement.expression))];
 		}
@@ -1590,7 +1628,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {BindingIdentifier|string} identifier
 	 * @returns {string}
 	 */
-	private stringifyIdentifier (identifier: BindingIdentifier|string): string {
+	private stringifyIdentifier (identifier: BindingIdentifier | string): string {
 		return identifier instanceof BindingIdentifier ? identifier.name : identifier;
 	}
 
@@ -1610,7 +1648,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {boolean} [allowNonStringNames=false]
 	 * @returns {ArbitraryValue}
 	 */
-	private getNameOfMember (name: DeclarationName|LeftHandSideExpression, allowNonStringNames: boolean = false): ArbitraryValue {
+	private getNameOfMember (name: DeclarationName | LeftHandSideExpression, allowNonStringNames: boolean = false): ArbitraryValue {
 
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {

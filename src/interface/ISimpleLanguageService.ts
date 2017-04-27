@@ -3,6 +3,8 @@ import {
 	ArrayTypeNode,
 	BinaryExpression,
 	Token,
+	SpreadAssignment,
+	SpreadElement,
 	ArrowFunction,
 	FunctionExpression,
 	ComputedPropertyName,
@@ -527,6 +529,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isTypeReferenceNode (statement: Statement | Declaration | Expression | Node): statement is TypeReferenceNode;
 	isArrayTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is ArrayTypeNode;
 	isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode;
+	isSpreadAssignment (statement: Statement | Declaration | Expression | Node): statement is SpreadAssignment;
 	isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode;
 	isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode;
 	isFirstLiteralToken (statement: BindingName | EntityName | Expression| Node): statement is Token<SyntaxKind.FirstLiteralToken> & {text: string};
@@ -536,6 +539,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern;
 	isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern;
 	isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction;
+	isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement;
 	isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
 	getScope (statement: Statement | Declaration | Expression | Node): string | null;
 	isStatic (statement: Statement | Declaration | Expression | Node): boolean;
