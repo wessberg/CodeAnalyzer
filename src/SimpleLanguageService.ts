@@ -75,19 +75,7 @@ import {
 	VariableStatement
 } from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {
-	ArbitraryValue,
-	AssignmentMap,
-	ICallExpressionArgument,
-	IClassDeclaration,
-	IModuleDependency,
-	InitializationValue,
-	IPropertyCallExpression,
-	ISimpleLanguageService,
-	PropIndexer,
-	SyntaxKind,
-	TypeArgument
-} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, AssignmentMap, ICallExpressionArgument, IClassDeclaration, IModuleDependency, InitializationValue, IPropertyCallExpression, ISimpleLanguageService, SyntaxKind, TypeArgument} from "./interface/ISimpleLanguageService";
 
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
@@ -826,17 +814,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Gets the decorators associated with the current expression.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {string|null}
-	 */
-	public getDecorators (statement: Statement | Declaration | Expression | Node): string[] {
-		if (statement.decorators == null) return [];
-		// TODO: Remove any declaration!
-		return statement.decorators.map((decorator: any) => decorator.expression.text);
-	}
-
-	/**
 	 * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
 	 * @param {SyntaxKind} token
 	 * @returns {ArbitraryValue}
@@ -1153,7 +1130,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const quotedWith = this.isQuotedWith(statement.text);
 			return quotedWith === "`" ? `\`\\${statement.text.slice(0, statement.text.length - 1)}\\\`\`` : `\`${statement.text}\``;
 		}
-
 		return marshalled;
 	}
 
@@ -1261,41 +1237,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Gets all class fields associated with a class.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {PropIndexer}
-	 */
-	private getClassProps (statement: Statement | Declaration | Expression | Node): PropIndexer {
-		const obj: PropIndexer = {};
-		if (!this.isClassDeclaration(statement)) return obj;
-
-		statement.members.forEach(memberStatement => {
-			if (memberStatement.name == null) return;
-			const name = <string>this.getNameOfMember(memberStatement.name, false, true);
-
-			obj[name] = obj[name] || {decorators: [], type: null};
-
-			if (this.isPropertyDeclaration(memberStatement)) {
-				if (memberStatement.type != null) {
-					const type = this.normalizeTypeDeclaration(memberStatement.type);
-					obj[name].type = type == null ? null : type;
-				}
-			}
-
-			if (memberStatement.decorators == null) return;
-			memberStatement.decorators.forEach(decorator => {
-				if (this.isIdentifierObject(decorator.expression)) {
-					obj[name].decorators.push(decorator.expression.text);
-				} else if (this.isCallExpression(decorator.expression)) {
-					obj[name].decorators.push(this.getCallExpressionMemberName(decorator.expression));
-				}
-			});
-		});
-
-		return obj;
-	}
-
-	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
 	 * and returns them in an AssignmentMap.
 	 * @param {NodeArray<Statement>} statements
@@ -1318,7 +1259,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						assignmentMap[name] = {
 							name,
 							valueExpression,
-							resolvedValue: "",
+							// TODO: Compute this!
+							valueResolved: "",
 							startsAt,
 							endsAt,
 							type
@@ -1341,7 +1283,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	public getClassDeclarations (statements: NodeArray<Statement>, filepath: string, code: string): IClassDeclaration[] {
 		const declarations: IClassDeclaration[] = [];
 		for (const statement of statements) {
-			const declaration = this.getClassDeclaration(statement, filepath, code);
+			const declaration = this.isClassDeclaration(statement) ? this.getClassDeclaration(statement, filepath, code) : null;
 			if (declaration != null) declarations.push(declaration);
 		}
 		return declarations;
@@ -1415,7 +1357,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isTemplateSpan(rawStatement)) {
 			const head = this.getInitializedValue(rawStatement.expression);
 			const tail = this.getInitializedValue(rawStatement.literal);
-			return [...(head || []), ...(tail || [])];
+			const headNormalized: InitializationValue = [];
+			head.forEach(part => {
+				if (part instanceof BindingIdentifier) {
+					headNormalized.push("${");
+					headNormalized.push(part);
+					headNormalized.push("}");
+				}
+				else headNormalized.push(part);
+			});
+
+			return [...headNormalized, ...tail];
 		}
 
 		if (this.isBinaryExpression(rawStatement)) {
@@ -1691,6 +1643,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.getPropertyAccessExpressionName(name);
 		}
 
+		if (this.isCallExpression(name)) {
+			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
+		}
+
 		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
 	}
 
@@ -1804,14 +1760,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} fileContents
 	 * @returns {IClassDeclaration}
 	 */
-	public getClassDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string, fileContents: string): IClassDeclaration | null {
-		if (!this.isClassDeclaration(statement) || statement.name == null) return null;
+	public getClassDeclaration (statement: ClassDeclaration, filepath: string, fileContents: string): IClassDeclaration | null {
+		if (statement.name == null) return null;
 
 		const className = statement.name.text;
 		const classDeclarationStartsAt = statement.pos;
 		const classDeclarationEndsAt = statement.end;
-		const classBodyStartsAt = fileContents.indexOf("{", classDeclarationStartsAt) + 1;
-		const classBodyEndsAt = fileContents.indexOf("}", classDeclarationEndsAt - 1);
+		const classBodyStartsAt = statement.members.pos;
+		const classBodyEndsAt = statement.members.end;
 		const fullClassContents = fileContents.slice(classDeclarationStartsAt, classDeclarationEndsAt);
 		const bodyClassContents = fileContents.slice(classBodyStartsAt, classBodyEndsAt);
 
@@ -1827,83 +1783,88 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			bodyEndsAt: classBodyEndsAt,
 			fullContents: fullClassContents,
 			bodyContents: bodyClassContents,
-			props: this.getClassProps(statement)
+			props: {}
 		};
 
 		statement.members.forEach(member => {
-			if (this.isConstructorDeclaration(member)) {
-				member.parameters.forEach(parameter => {
-					const name = (<Identifier>parameter.name).text;
-					let type = parameter.type == null ? null : this.normalizeTypeDeclaration(parameter);
-					let initializer = parameter.initializer != null ? this.join(this.getInitializedValue(parameter.initializer), true) : null;
 
+			if (this.isPropertyDeclaration(member)) {
+				const startsAt = member.pos;
+				const endsAt = member.end;
+				const name = <string>this.getNameOfMember(member.name, false, true);
+				const type = member.type == null ? null : this.normalizeTypeDeclaration(member.type);
+				const decorators = member.decorators == null ? [] : member.decorators.map(decorator => <string>this.getNameOfMember(decorator.expression, false, true));
+				const valueExpression = member.initializer == null ? null : this.getInitializedValue(member.initializer);
+				// TODO: Resolve value!
+				const valueResolved = "";
+
+				declaration.props[name] = {
+					startsAt, endsAt, name, type, decorators, valueExpression, valueResolved
+				};
+			}
+
+			else if (this.isConstructorDeclaration(member)) {
+
+				member.parameters.forEach(parameter => {
 					const startsAt = parameter.pos;
 					const endsAt = parameter.end;
-					declaration.constructorArguments.push({name, type, initializer, startsAt, endsAt});
+					const name = <string>this.getNameOfMember(parameter.name, false, true);
+					const type = parameter.type == null ? null : this.normalizeTypeDeclaration(parameter);
+					const valueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
+					// TODO: Compute this!
+					const valueResolved = "";
+
+					declaration.constructorArguments.push({name, type, valueExpression, valueResolved, startsAt, endsAt});
 				});
 			}
 
-			if (!this.isMethodDeclaration(member)) return;
+			else if (this.isMethodDeclaration(member)) {
 
-			// TODO: Typescript doesn't think that a 'text' prop exists here. Who's right?
-			const methodName = (<Identifier>member.name).text;
+				const methodName = <string>this.getNameOfMember(member.name, false, true);
+				const methodDeclarationStartsAt = member.pos;
+				const methodDeclarationEndsAt = member.end;
+				const methodBody = member.body;
+				let methodBodyStartsAt = methodBody == null ? -1 : methodBody.pos;
+				let methodBodyEndsAt = methodBody == null ? -1 : methodBody.end;
+				const fullMethodContents = fileContents.slice(methodDeclarationStartsAt, methodDeclarationEndsAt);
+				let bodyMethodContents = methodBody == null ? null : fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
+				let returnStatementStartsAt: number = -1;
+				let returnStatementEndsAt: number = -1;
+				let returnStatementContents: string | null = null;
 
-			const methodDeclarationStartsAt = member.pos;
-			const methodDeclarationEndsAt = member.end;
-			const methodBody = member.body;
-			let methodBodyStartsAt = methodBody == null ? -1 : methodBody.pos;
-			let methodBodyEndsAt = methodBody == null ? -1 : methodBody.end;
-			const fullMethodContents = fileContents.slice(methodDeclarationStartsAt, methodDeclarationEndsAt);
-			let bodyMethodContents = methodBody == null ? null : fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
+				if (methodBody != null && methodBody.statements != null) {
+					methodBody.statements.forEach(methodBodyStatement => {
 
-			let returnStatementStartsAt: number = -1;
-			let returnStatementEndsAt: number = -1;
-			let returnStatementContents: string | null = null;
-			let returnStatementTemplateStringContentsStartsAt: number = -1;
-			let returnStatementTemplateStringContentsEndsAt: number = -1;
-			let returnStatementTemplateStringContents: string | null = null;
-
-			if (methodBody != null && methodBody.statements != null) {
-				methodBody.statements.forEach(methodBodyStatement => {
-					if (this.isReturnStatement(methodBodyStatement)) {
-						if (methodBodyStatement.expression != null) {
-							returnStatementStartsAt = methodBodyStatement.expression.pos;
-							returnStatementEndsAt = methodBodyStatement.expression.end;
-							returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
-							if (this.isTemplateExpression(methodBodyStatement.expression)) {
-								returnStatementTemplateStringContentsStartsAt = fileContents.indexOf("`", methodBodyStatement.expression.head.pos) + 1;
-								returnStatementTemplateStringContentsEndsAt = methodBodyStatement.expression.templateSpans[methodBodyStatement.expression.templateSpans.length - 1].end - 1;
-								returnStatementTemplateStringContents = fileContents.slice(returnStatementTemplateStringContentsStartsAt, returnStatementTemplateStringContentsEndsAt);
-							} else if (this.isNoSubstitutionTemplateLiteral(methodBodyStatement.expression)) {
-								returnStatementTemplateStringContentsStartsAt = fileContents.indexOf("`", methodBodyStatement.expression.pos) + 1;
-								returnStatementTemplateStringContentsEndsAt = methodBodyStatement.expression.end - 1;
-								returnStatementTemplateStringContents = fileContents.slice(returnStatementTemplateStringContentsStartsAt, returnStatementTemplateStringContentsEndsAt);
+						if (this.isReturnStatement(methodBodyStatement)) {
+							if (methodBodyStatement.expression != null) {
+								returnStatementStartsAt = methodBodyStatement.expression.pos;
+								returnStatementEndsAt = methodBodyStatement.expression.end;
+								returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
 							}
 						}
-					}
-				});
+					});
+				}
+
+				if (bodyMethodContents != null && bodyMethodContents.trim().startsWith("{")) {
+					methodBodyStartsAt = fileContents.indexOf("{", methodBodyStartsAt) + 1;
+					methodBodyEndsAt = fileContents.indexOf("}", methodBodyEndsAt - 1);
+					bodyMethodContents = fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
+				}
+
+				declaration.methods[methodName] = {
+					fullStartsAt: methodDeclarationStartsAt,
+					fullEndsAt: methodDeclarationEndsAt,
+					bodyStartsAt: methodBodyStartsAt,
+					bodyEndsAt: methodBodyEndsAt,
+					fullContents: fullMethodContents,
+					bodyContents: bodyMethodContents,
+					returnStatementStartsAt,
+					returnStatementEndsAt,
+					returnStatementContents
+				};
 			}
 
-			if (bodyMethodContents != null && bodyMethodContents.trim().startsWith("{")) {
-				methodBodyStartsAt = fileContents.indexOf("{", methodBodyStartsAt) + 1;
-				methodBodyEndsAt = fileContents.indexOf("}", methodBodyEndsAt - 1);
-				bodyMethodContents = fileContents.slice(methodBodyStartsAt, methodBodyEndsAt);
-			}
-
-			declaration.methods[methodName] = {
-				fullStartsAt: methodDeclarationStartsAt,
-				fullEndsAt: methodDeclarationEndsAt,
-				bodyStartsAt: methodBodyStartsAt,
-				bodyEndsAt: methodBodyEndsAt,
-				fullContents: fullMethodContents,
-				bodyContents: bodyMethodContents,
-				returnStatementStartsAt,
-				returnStatementEndsAt,
-				returnStatementContents,
-				returnStatementTemplateStringContentsStartsAt,
-				returnStatementTemplateStringContentsEndsAt,
-				returnStatementTemplateStringContents
-			};
+			else throw new TypeError(`${this.getClassDeclaration.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
 		});
 
 		if (statement.heritageClauses == null || statement.heritageClauses.length === 0) return declaration;

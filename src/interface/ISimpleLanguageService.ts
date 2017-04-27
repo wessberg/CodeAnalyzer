@@ -435,9 +435,6 @@ export interface IMethodDeclaration extends IMemberDeclaration {
 	returnStatementStartsAt: number;
 	returnStatementEndsAt: number;
 	returnStatementContents: string | null;
-	returnStatementTemplateStringContentsStartsAt: number;
-	returnStatementTemplateStringContentsEndsAt: number;
-	returnStatementTemplateStringContents: string | null;
 }
 
 export interface IClassDeclaration extends IMemberDeclaration {
@@ -454,10 +451,7 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IConstructorArgument extends IPositionable {
-	name: string;
-	type: string | null;
-	initializer: string | null;
+export declare interface IConstructorArgument extends IPositionable, INameable, ITypeable, IValueable {
 }
 
 export interface IArbitraryObject<T> {
@@ -465,16 +459,27 @@ export interface IArbitraryObject<T> {
 	[key: number]: T;
 }
 
-export declare interface IPropDeclaration {
+export interface IDecoratorsable {
 	decorators: string[];
+}
+
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IValueable, ITypeable {
+}
+
+export interface INameable {
+	name: string;
+}
+
+export interface ITypeable {
 	type: string | null;
 }
 
-export interface IVariableAssignment extends IPositionable {
-	name: string;
-	type: string | null;
-	resolvedValue: ArbitraryValue | null;
+export interface IValueable {
+	valueResolved: ArbitraryValue | null;
 	valueExpression: InitializationValue | null;
+}
+
+export interface IVariableAssignment extends IPositionable, IValueable, ITypeable, INameable {
 }
 
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
@@ -553,7 +558,6 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction;
 	isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement;
 	isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
-	getDecorators (statement: Statement | Declaration | Expression | Node): string[];
 	serializeToken (token: SyntaxKind): string;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string): IModuleDependency;

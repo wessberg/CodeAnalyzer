@@ -122,7 +122,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #4`, t
 		const foo: string = \`this has the substitution \${substitution}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, ["`", "this has the substitution ", new BindingIdentifier("substitution"), "`"]);
+	t.deepEqual(assignments["foo"].valueExpression, ["`", "this has the substitution ", "${", new BindingIdentifier("substitution"), "}", "`"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #5`, t => {
@@ -613,6 +613,17 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 	t.deepEqual(assignments["a"].type, "{foo?: number} & {bar: boolean}");
 });
 
+test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
+	setupMany([ ["Foobar", "Foobar"] ]);
+
+	const statements = parse(`
+		const a: Foobar = Foobar.HELLO;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["a"].type, "Foobar");
+});
+
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 	setup();
 	const code = `
@@ -636,7 +647,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #2`, t 
 	t.true(assignments.length === 2);
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #3`, t => {
+test(`getClassDeclarations() -> Constructor -> Detects types of constructor arguments correctly. #1`, t => {
 	setupMany([ ["arg1", "arg1"], ["arg2", "arg2"], ["arg3", "arg3"] ]);
 	const code = `
 		class MyClass {
@@ -652,7 +663,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #3`, t 
 	t.true(classDeclaration.constructorArguments[2].type === "Foo");
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #4`, t => {
+test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
 	setupMany([ ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
@@ -670,7 +681,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #4`, t 
 	t.true(classDeclaration.props["field3"] != null);
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #5`, t => {
+test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #1`, t => {
 	setupMany([ ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
@@ -688,7 +699,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #5`, t 
 	t.true(classDeclaration.props["field3"].type === "Foo");
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #6`, t => {
+test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #1`, t => {
 	setupMany([ ["prop", "prop"], ["field1", "field1"], ["field2", "field2"], ["field3", "field3"] ]);
 	const code = `
 		class MyClass {
@@ -706,7 +717,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #6`, t 
 	t.true(classDeclaration.props["field3"].decorators.length === 0);
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #7`, t => {
+test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #2`, t => {
 	setupMany([ ["field1", "field1"], ["field2", "field2"], ["setOnHost", "setOnHost"], ["prop", "prop"], ["blabla", "blabla"] ]);
 	const code = `
 		class MyClass {
@@ -723,7 +734,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #7`, t 
 	t.true(classDeclaration.props["field2"].decorators.includes("blabla"));
 });
 
-test(`getClassDeclarations() -> Detects all class declarations properly. #8`, t => {
+test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #3`, t => {
 	setupMany([ ["field1", "field1"], ["prop", "prop"] ]);
 	const code = `
 		class MyClass {
@@ -735,4 +746,20 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #8`, t 
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
 	t.true(classDeclaration.props["field1"].decorators.includes("prop"));
+});
+
+test(`getClassDeclarations() -> Methods -> Detects method declarations correctly. #1`, t => {
+	setupMany([ ["myMethod", "myMethod"], ["Hello", "Hello"], ["<hello></hello><goodbye><", "<hello></hello><goodbye><"], ["></for-now></goodbye>", "></for-now></goodbye>"] ]);
+	const code = `
+		class MyClass {
+			public myMethod () {
+				return \`<hello></hello><goodbye><\${Hello}></for-now></goodbye>\`;
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, fileName, code);
+	const [classDeclaration] = assignments;
+	t.true(classDeclaration.methods["myMethod"] != null);
 });
