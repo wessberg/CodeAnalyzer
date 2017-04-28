@@ -3,7 +3,7 @@ import {dirname, join} from "path";
 import * as ts from "typescript";
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, LeftHandSideExpression, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, IArgument, IArgumentsable, ICallExpressionArgument, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IPropDeclaration, IPropertyCallExpression, ISimpleLanguageService, ITypeBinding, SyntaxKind, TypeArgument, TypeExpression} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, SyntaxKind, TypeExpression} from "./interface/ISimpleLanguageService";
 
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
@@ -1041,100 +1041,52 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Checks if the given string is quoted, and if so, with which char (either ', " or `).
-	 * @param {string} str
-	 * @returns {string|null}
-	 */
-	private isQuotedWith (str: string): string | null {
-		const quoteRegex = /["'`]/;
-		const firstChar = str[0].trim();
-		const isQuoted = quoteRegex.test(firstChar) && str.trim().endsWith(firstChar);
-		return isQuoted ? firstChar : null;
-	}
-
-	/**
-	 * Takes the text associated with an expression and returns a textual representation of it
-	 * that plays nice with injection inside code.
-	 * @param {Expression} statement
-	 * @returns {TypeArgument}
-	 */
-	// TODO: Remove any declaration!
-	private getExpressionTextMarshalled (statement: Expression | any): TypeArgument {
-		if (this.isFalseKeyword(statement)) return false;
-		if (this.isTrueKeyword(statement)) return true;
-		if (this.isNullKeyword(statement)) return null;
-		if (this.isUndefinedKeyword(statement)) return undefined;
-
-		if (statement.text === null || statement.text === "null") return null;
-		if (statement.text === undefined || statement.text === "undefined") return undefined;
-
-		// Marshal the string into a native type.
-		const marshalled = this.marshaller.marshal<string, TypeArgument>(statement.text);
-		const isString = typeof marshalled === "string";
-
-		// Wrap the string in quotes if it is not an identifier. Escape them if it is already quoted with a "`".
-		if (isString && !this.isIdentifierObject(statement)) {
-
-			const quotedWith = this.isQuotedWith(statement.text);
-			return quotedWith === "`" ? `\`\\${statement.text.slice(0, statement.text.length - 1)}\\\`\`` : `\`${statement.text}\``;
-		}
-		return marshalled;
-	}
-
-	/**
-	 * Gets and formats all PropertyCallExpressions associated with the given statements.
+	 * Gets and formats all CallExpressions associated with the given statements.
 	 * These hold information such as the arguments the members are invoked with, generic type
 	 * arguments and such.
 	 * @param {NodeArray<Statement>} statements
-	 * @returns {IPropertyCallExpression[]}
+	 * @returns {ICallExpression[]}
 	 */
-	public getPropertyCallExpressions (statements: NodeArray<Statement>): IPropertyCallExpression[] {
-		const expressions: IPropertyCallExpression[] = [];
-		let args: ICallExpressionArgument[] = [];
+	public getCallExpressions (statements: NodeArray<Statement>): ICallExpression[] {
+		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
-			// TODO: Delegate all (or most of) this logic to 'getInitializedValue'?
 			if (this.isExpressionStatement(statement)) {
 				const exp = statement.expression;
 
 				if (this.isCallExpression(exp)) {
 					const expExp = exp.expression;
 
-					exp.arguments.forEach(arg => {
-						const startsAt = arg.pos;
-						const endsAt = arg.end;
-						args.push({
-							startsAt,
-							endsAt,
-							// TODO: Use 'getInitializedValue' or 'getNameOfMember' here?
-							value: this.getExpressionTextMarshalled(arg)
-						});
-					});
-
-
 					if (this.isPropertyAccessExpression(expExp)) {
-						// TODO: Remove any declaration
-						const property = (<any>expExp.expression).text;
-						const method = expExp.name.text;
-						const typeArguments: string[] = [];
+						const property = this.getNameOfMember(expExp.expression);
+						const method = this.getNameOfMember(expExp.name, false, true);
+						const typeExpressions = exp.typeArguments == null ? null : exp.typeArguments.map(typeArg => this.getTypeExpression(typeArg));
+						let typeExpression: TypeExpression = [];
 
-						if (exp.typeArguments != null) {
-							exp.typeArguments.forEach(arg => {
-								if (this.isTypeReference(arg)) {
-									const typeName = arg.typeName;
-									if (this.isIdentifierObject(typeName)) {
-										typeArguments.push(typeName.text);
-									}
-								}
+						if (typeExpressions != null) {
+							typeExpressions.forEach((typeExp, index) => {
+								typeExp.forEach(part => typeExpression.push(part));
+								if (index !== typeExpressions.length - 1) typeExpression.push(", ");
 							});
 						}
 
+						const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.serializeTypeExpression(typeExpression);
+						const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.takeTypeBindings(typeExpression);
+
 						expressions.push({
-							callBlockPosition: {startsAt: exp.arguments.pos, endsAt: exp.arguments.end},
+							arguments: {
+								startsAt: exp.arguments.pos,
+								endsAt: exp.arguments.end,
+								argumentsList: this.formatArguments(exp)
+							},
 							property,
 							method,
-							typeArguments,
-							args
+							type: {
+								expression: typeExpression.length < 1 ? null : typeExpression,
+								flattened: typeFlattened,
+								bindings: typeBindings
+
+							}
 						});
 					}
 				}
@@ -1203,18 +1155,23 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						const startsAt = declaration.pos;
 						const endsAt = declaration.end;
 						const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
-						// TODO: Compute from expression instead!
-						const typeFlattened = declaration.type == null ? null : this.stringifyTypeDeclaration(declaration.type);
+						const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
+						const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
 
 						assignmentMap[name] = {
 							name,
-							valueExpression,
-							// TODO: Compute this!
-							valueResolved: "",
+							value: {
+								expression: valueExpression,
+								// TODO: Compute this!
+								resolved: ""
+							},
 							startsAt,
 							endsAt,
-							typeExpression,
-							typeFlattened
+							type: {
+								expression: typeExpression,
+								flattened: typeFlattened,
+								bindings: typeBindings
+							}
 						};
 					}
 				});
@@ -1556,12 +1513,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {
-				if (this.isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression);
-				return this.getNameOfMember(name.expression);
+				if (this.isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression, allowNonStringNames, false);
+				return this.getNameOfMember(name.expression, allowNonStringNames, false);
 			}
 
 			if (this.isCallExpression(name.expression)) {
-				return this.getNameOfMember(name.expression.expression);
+				return this.getNameOfMember(name.expression.expression, allowNonStringNames, forceNoBindingIdentifier);
 			}
 
 			throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}: It wasn't a PropertyName or a CallExpression. Instead, it was a ${SyntaxKind[name.expression.kind]}`);
@@ -1629,15 +1586,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Returns a stringified version of generic type arguments.
-	 * @param {NodeArray<TypeNode>} typeArguments
-	 * @returns {string}
-	 */
-	private stringifyTypeArguments (typeArguments: NodeArray<TypeNode>): string {
-		return `<${typeArguments.map(arg => this.stringifyTypeDeclaration(arg)).join(", ")}>`;
-	}
-
-	/**
 	 * Tokenizes the type information from the given statement and returns a TypeExpression.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {TypeExpression}
@@ -1649,13 +1597,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if ((this.isTypeReferenceNode(statement) || this.isTypeReference(statement)) && this.isIdentifierObject(statement.typeName)) {
 				const name = statement.typeName.text;
 				let typeArguments: TypeExpression | null = null;
+				const typeArgs = statement.typeArguments;
 
-				if (statement.typeArguments != null) {
-					statement.typeArguments.forEach(typeArgument => {
+				if (typeArgs != null) {
+					typeArgs.forEach((typeArgument, index) => {
 						const value = this.getTypeExpression(typeArgument);
 						value.forEach(part => {
 							if (typeArguments == null) typeArguments = [];
 							typeArguments.push(part);
+							if (index !== typeArgs.length - 1) typeArguments.push(", ");
 						});
 					});
 				}
@@ -1717,7 +1667,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					member.parameters.forEach(parameter => {
 						exp.push(<string>this.getNameOfMember(parameter.name, false, true));
 						if (parameter.type != null) {
-							exp.push(":");
+							exp.push(": ");
 							const type = this.getTypeExpression(parameter.type);
 							type.forEach(part => exp.push(part));
 						}
@@ -1725,7 +1675,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 					});
 					if (member.type != null) {
-						exp.push(":");
+						exp.push(": ");
 						const type = this.getTypeExpression(member.type);
 						type.forEach(part => exp.push(part));
 					}
@@ -1740,7 +1690,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						exp.push(this.serializeToken(member.questionToken.kind));
 					}
 					if (type != null) {
-						exp.push(":");
+						exp.push(": ");
 						type.forEach(part => exp.push(part));
 					}
 				}
@@ -1755,13 +1705,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isTypeReference(statement) && this.isIdentifierObject(statement.typeName)) {
 			const name = statement.typeName.text;
 			let typeArguments: TypeExpression | null = null;
-
-			if (statement.typeArguments != null) {
-				statement.typeArguments.forEach(typeArgument => {
+			const typeArgs = statement.typeArguments;
+			if (typeArgs != null) {
+				typeArgs.forEach((typeArgument, index) => {
 					const value = this.getTypeExpression(typeArgument);
 					value.forEach(part => {
 						if (typeArguments == null) typeArguments = [];
 						typeArguments.push(part);
+						if (index !== typeArgs.length - 1) typeArguments.push(", ");
 					});
 				});
 			}
@@ -1769,86 +1720,49 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (statement.type != null) return this.getTypeExpression(statement.type);
-		console.log(statement);
 		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+	}
+
+	/**
+	 * Takes all ITypeBindings from a TypeExpression and returns an array of them.
+	 * @param {TypeExpression} expression
+	 * @param {boolean} [deep=false]
+	 * @returns {ITypeBinding[]}
+	 */
+	private takeTypeBindings (expression: TypeExpression, deep: boolean = false): ITypeBinding[] {
+		const bindings: ITypeBinding[] = [];
+
+		expression.forEach(token => {
+			if (this.isTypeBinding(token)) {
+				bindings.push(token);
+
+				if (token.typeArguments != null && deep) {
+					this.takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
+				}
+			}
+		});
+		return bindings;
 	}
 
 
 	/**
 	 * Formats and returns a string representation of a type.
-	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
+	 * @param {TypeExpression} expression
 	 * @returns {string}
 	 */
-	private stringifyTypeDeclaration (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): string {
-		if (this.isTypeNode(statement)) {
-
-			if ((this.isTypeReferenceNode(statement) || this.isTypeReference(statement)) && this.isIdentifierObject(statement.typeName)) {
-				return statement.typeArguments == null
-					? statement.typeName.text
-					: `${statement.typeName.text}${this.stringifyTypeArguments(statement.typeArguments)}`;
-			}
-
-			if (this.isArrayTypeNode(statement)) {
-				return `${this.stringifyTypeDeclaration(statement.elementType)}[]`;
-			}
-
-			if (this.isTupleTypeNode(statement)) {
-				return `[${statement.elementTypes.map(type => this.stringifyTypeDeclaration(type)).join(", ")}]`;
-			}
-
-			if (this.isIntersectionTypeNode(statement)) {
-				return statement.types.map(intersectionType => this.stringifyTypeDeclaration(intersectionType)).join(" & ");
-			}
-
-			if (this.isUnionTypeNode(statement)) {
-				return statement.types.map(unionType => this.stringifyTypeDeclaration(unionType)).join("|");
-			}
-
-			return this.serializeToken(statement.kind);
-		}
-
-		if (this.isTypeLiteralNode(statement)) {
-			let val: string = "{";
-			statement.members.forEach((member, index) => {
-
-				if (this.isIndexSignatureDeclaration(member)) {
-					val += "[";
-					member.parameters.forEach(parameter => {
-						val += <string>this.getNameOfMember(parameter.name, false, true);
-						if (parameter.type != null) val += `: ${this.stringifyTypeDeclaration(parameter.type)}`;
-						val += "]";
-					});
-					if (member.type != null) {
-						val += `: ${this.stringifyTypeDeclaration(member.type)}`;
-					}
+	private serializeTypeExpression (expression: TypeExpression): string {
+		let statement: string = "";
+		expression.forEach(token => {
+			if (this.isTypeBinding(token)) {
+				statement += token.name;
+				if (token.typeArguments != null) {
+					statement += `<${this.serializeTypeExpression(token.typeArguments)}>`;
 				}
-
-				if (this.isPropertySignature(member)) {
-					const name = <string>this.getNameOfMember(member.name, false, true);
-					const type = member.type == null ? null : this.stringifyTypeDeclaration(member.type);
-					val += name;
-					if (member.questionToken != null) val += this.serializeToken(member.questionToken.kind);
-					if (type != null) {
-						val += `: ${type}`;
-					}
-				}
-
-				if (index !== statement.members.length - 1) val += ", ";
-
-			});
-			val += "}";
-			return val;
-		}
-
-		if (this.isTypeReference(statement) && this.isIdentifierObject(statement.typeName)) {
-			return statement.typeArguments == null
-				? statement.typeName.text
-				: `${statement.typeName.text}${this.stringifyTypeArguments(statement.typeArguments)}`;
-		}
-
-		if (statement.type != null) return this.stringifyTypeDeclaration(statement.type);
-
-		throw new TypeError(`${this.stringifyTypeDeclaration.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+			} else {
+				statement += `${token}`;
+			}
+		});
+		return statement;
 	}
 
 	/**
@@ -1861,18 +1775,32 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const endsAt = declaration.end;
 		const name = <string>this.getNameOfMember(declaration.name, false, true);
 		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
-		// TODO: Compute from expression instead!
-		const typeFlattened = declaration.type == null ? null : this.stringifyTypeDeclaration(declaration.type);
+		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
 		const decorators = declaration.decorators == null ? [] : declaration.decorators.map(decorator => <string>this.getNameOfMember(decorator.expression, false, true));
 		const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
 		// TODO: Resolve value!
 		const valueResolved = "";
-		return {startsAt, endsAt, name, typeExpression, typeFlattened, decorators, valueExpression, valueResolved};
+		return {
+			startsAt,
+			endsAt,
+			name,
+			type: {
+				expression: typeExpression,
+				flattened: typeFlattened,
+				bindings: typeBindings
+			},
+			decorators,
+			value: {
+				expression: valueExpression,
+				resolved: valueResolved
+			}
+		};
 	}
 
 	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
-	 * @param {PropertyDeclaration} declaration
+	 * @param {NodeArray<HeritageClause>} clauses
 	 * @returns {IPropDeclaration}
 	 */
 	private formatHeritageClauses (clauses: NodeArray<HeritageClause>): IHeritage {
@@ -1904,50 +1832,107 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Formats a concrete ParameterDeclaration and returns an IParameter.
+	 * @param {ParameterDeclaration} parameter
+	 * @returns {IParameter}
+	 */
+	private formatParameter (parameter: ParameterDeclaration): IParameter {
+		const startsAt = parameter.pos;
+		const endsAt = parameter.end;
+		const name = <string>this.getNameOfMember(parameter.name, false, true);
+		const typeExpression = parameter.type == null ? null : this.getTypeExpression(parameter);
+		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
+		const valueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
+		// TODO: Compute this!
+		const valueResolved = "";
+		return {
+			startsAt,
+			endsAt,
+			name,
+			type: {
+				expression: typeExpression,
+				flattened: typeFlattened,
+				bindings: typeBindings
+			},
+			value: {
+				expression: valueExpression,
+				resolved: valueResolved
+			}
+		};
+	}
+
+	/**
+	 * Formats a concrete ParameterDeclaration and returns an IArgument.
+	 * @param {Expression} argument
+	 * @returns {IArgument}
+	 */
+	private formatArgument (argument: Expression): IArgument {
+		const startsAt = argument.pos;
+		const endsAt = argument.end;
+		const valueExpression = this.getInitializedValue(argument);
+		// TODO: Compute this!
+		const valueResolved = "";
+		return {
+			startsAt,
+			endsAt,
+			value: {
+				expression: valueExpression,
+				resolved: valueResolved
+			}
+		};
+	}
+
+	/**
+	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
+	 * @param {ConstructorDeclaration | MethodDeclaration} declaration
+	 * @returns {IParameter[]}
+	 */
+	private formatParameters (declaration: ConstructorDeclaration | MethodDeclaration): IParameter[] {
+		return declaration.parameters.map(param => this.formatParameter(param));
+	}
+
+	/**
+	 * Takes the arguments from a CallExpression and returns an array of IArguments.
+	 * @param {CallExpression} declaration
+	 * @returns {IArgument[]}
+	 */
+	private formatArguments (declaration: CallExpression): IArgument[] {
+		return declaration.arguments.map(arg => this.formatArgument(arg));
+	}
+
+	/**
 	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
 	 * @param {ConstructorDeclaration|MethodDeclaration} declaration
 	 * @param {string} fileContents
 	 * @returns {IMemberDeclaration}
 	 */
-	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration, fileContents: string): IMemberDeclaration & IArgumentsable {
+	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration, fileContents: string): IMemberDeclaration & IParametersable {
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
 		const body = declaration.body;
+		const argumentsStartsAt = declaration.parameters.pos;
+		const argumentsEndsAt = declaration.parameters.end;
 
 		const bodyStartsAt = body == null ? -1 : body.pos;
 		const bodyEndsAt = body == null ? -1 : body.end;
 		const contents = fileContents.slice(startsAt, endsAt);
 		const bodyContents = body == null ? null : fileContents.slice(bodyStartsAt, bodyEndsAt);
 
-		const args: IArgument[] = declaration.parameters.map(parameter => {
-			const argumentStartsAt = parameter.pos;
-			const argumentEndsAt = parameter.end;
-			const argumentName = <string>this.getNameOfMember(parameter.name, false, true);
-			const argumentTypeExpression = parameter.type == null ? null : this.getTypeExpression(parameter);
-			// TODO: Compute from TypeExpression instead!
-			const argumentTypeFlattened = parameter.type == null ? null : this.stringifyTypeDeclaration(parameter);
-			const argumentValueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
-			// TODO: Compute this!
-			const argumentValueResolved = "";
-			return {
-				startsAt: argumentStartsAt,
-				endsAt: argumentEndsAt,
-				name: argumentName,
-				typeExpression: argumentTypeExpression,
-				typeFlattened: argumentTypeFlattened,
-				valueExpression: argumentValueExpression,
-				valueResolved: argumentValueResolved
-			};
-		});
-
 		return {
 			startsAt,
 			endsAt,
 			contents,
-			bodyContents,
-			bodyStartsAt,
-			bodyEndsAt,
-			arguments: args
+			body: {
+				startsAt: bodyStartsAt,
+				endsAt: bodyEndsAt,
+				contents: bodyContents
+			},
+			parameters: {
+				startsAt: argumentsStartsAt,
+				endsAt: argumentsEndsAt,
+				parametersList: this.formatParameters(declaration)
+			}
 		};
 	}
 
@@ -1995,7 +1980,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Gets a class declaration, including its methods, positions, which class it derives from,
-	 * props and constructor arguments.
+	 * props and constructor parameters.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @param {string} filepath
 	 * @param {string} fileContents
@@ -2020,10 +2005,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			constructor: null,
 			startsAt: classDeclarationStartsAt,
 			endsAt: classDeclarationEndsAt,
-			bodyStartsAt: classBodyStartsAt,
-			bodyEndsAt: classBodyEndsAt,
 			contents: fullClassContents,
-			bodyContents: bodyClassContents,
+			body: {
+				startsAt: classBodyStartsAt,
+				endsAt: classBodyEndsAt,
+				contents: bodyClassContents
+			},
 			props: {}
 		};
 

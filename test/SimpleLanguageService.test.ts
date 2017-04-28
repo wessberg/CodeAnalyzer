@@ -91,7 +91,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #1`, t
 		const foo: number = 0;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, [0]);
+	t.deepEqual(assignments["foo"].value.expression, [0]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #2`, t => {
@@ -101,7 +101,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #2`, t
 		const foo: number = Infinity;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, [Infinity]);
+	t.deepEqual(assignments["foo"].value.expression, [Infinity]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #3`, t => {
@@ -111,7 +111,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #3`, t
 		const foo: number = NaN;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, [NaN]);
+	t.deepEqual(assignments["foo"].value.expression, [NaN]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #4`, t => {
@@ -122,7 +122,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #4`, t
 		const foo: string = \`this has the substitution \${substitution}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, ["`", "this has the substitution ", "${", new BindingIdentifier("substitution"), "}", "`"]);
+	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "${", new BindingIdentifier("substitution"), "}", "`"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #5`, t => {
@@ -133,7 +133,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #5`, t
 		const foo: string = \`this has the substitution \${2}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].valueExpression, ["`", "this has the substitution ", "2", "`"]);
+	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "2", "`"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #6`, t => {
@@ -143,7 +143,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #6`, t
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["bar"].valueExpression, [true]);
+	t.deepEqual(assignments["bar"].value.expression, [true]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #7`, t => {
@@ -154,7 +154,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #7`, t
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["baz"].valueExpression, ["[", 1, ",", 2, ",", 3, "]"]);
+	t.deepEqual(assignments["baz"].value.expression, ["[", 1, ",", 2, ",", 3, "]"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #8`, t => {
@@ -164,9 +164,9 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #8`, t
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [true]);
-	t.deepEqual(assignments["b"].valueExpression, [false]);
-	t.deepEqual(assignments["c"].valueExpression, [Infinity]);
+	t.deepEqual(assignments["a"].value.expression, [true]);
+	t.deepEqual(assignments["b"].value.expression, [false]);
+	t.deepEqual(assignments["c"].value.expression, [Infinity]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #9`, t => {
@@ -177,7 +177,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #9`, t
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["this is a template string"]);
+	t.deepEqual(assignments["a"].value.expression, ["this is a template string"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #10`, t => {
@@ -188,7 +188,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #10`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["[", 1, ",", "foo", ",", false, ",", "[", 1, ",", 2, ",", 3, "]", "]",]);
+	t.deepEqual(assignments["a"].value.expression, ["[", 1, ",", "foo", ",", false, ",", "[", 1, ",", 2, ",", 3, "]", "]",]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #11`, t => {
@@ -199,7 +199,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #11`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "a", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "a", ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #12`, t => {
@@ -211,7 +211,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #12`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "[", new BindingIdentifier("key"), "]", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("key"), "]", ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #13`, t => {
@@ -223,7 +223,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #13`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", 0, ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", 0, ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #14`, t => {
@@ -235,7 +235,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #14`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", 123, ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", 123, ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #15`, t => {
@@ -247,7 +247,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #15`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("Symbol"), "(", "Hello world!", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Symbol"), "(", "Hello world!", ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #16`, t => {
@@ -258,7 +258,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #16`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "a", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "a", ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #17`, t => {
@@ -269,7 +269,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #17`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "0", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "0", ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #18`, t => {
@@ -281,7 +281,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #18`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "[", new BindingIdentifier("getKey"), "(", ")", "]", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", ")", "]", ":", 1, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #19`, t => {
@@ -293,7 +293,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #19`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "[", new BindingIdentifier("getKey"), "(", "1", ",", false, ",", "[",123, "]", ")", "]", ":", Infinity, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", "1", ",", false, ",", "[",123, "]", ")", "]", ":", Infinity, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #20`, t => {
@@ -304,7 +304,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #20`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "foo", ":", "{", "bar", ":", "{", "baz", ":", "new ", new BindingIdentifier("Foo"), "(", true, ",", false, ")", "}", "}", "}" ]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "foo", ":", "{", "bar", ":", "{", "baz", ":", "new ", new BindingIdentifier("Foo"), "(", true, ",", false, ")", "}", "}", "}" ]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #21`, t => {
@@ -315,7 +315,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #21`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [true, "?", 1, ":", 0]);
+	t.deepEqual(assignments["a"].value.expression, [true, "?", 1, ":", 0]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #22`, t => {
@@ -327,7 +327,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #22`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("sub"), "?", 1, ":", 0]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub"), "?", 1, ":", 0]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #23`, t => {
@@ -339,7 +339,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #23`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("sub"), "&&", true, "?", false, "&&", 1, "?", false, ":", null, ":", null]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub"), "&&", true, "?", false, "&&", 1, "?", false, ":", null, ":", null]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #24`, t => {
@@ -350,7 +350,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #24`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["new ", new BindingIdentifier("Foo"), "(", true, ")"]);
+	t.deepEqual(assignments["a"].value.expression, ["new ", new BindingIdentifier("Foo"), "(", true, ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #25`, t => {
@@ -361,7 +361,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #25`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("Foo.A")]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo.A")]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #26`, t => {
@@ -372,7 +372,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #26`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("Foo.A.B.C.D")]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo.A.B.C.D")]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #27`, t => {
@@ -383,7 +383,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #27`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["(", ")", "=>", true]);
+	t.deepEqual(assignments["a"].value.expression, ["(", ")", "=>", true]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #28`, t => {
@@ -394,7 +394,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #28`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["(", "foo", ")", "=>", true]);
+	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", true]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #29`, t => {
@@ -405,7 +405,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #29`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["(", "foo", ")", "=>", "function", "(", ")", "{", "return", true, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", "function", "(", ")", "{", "return", true, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #30`, t => {
@@ -416,7 +416,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #30`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("Something.Other.Than"), "(", "baz", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something.Other.Than"), "(", "baz", ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #31`, t => {
@@ -427,7 +427,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #31`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("Something[2].Other.Than"), "(", "baz", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something[2].Other.Than"), "(", "baz", ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #32`, t => {
@@ -438,7 +438,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #32`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [new BindingIdentifier("test"), "(", "(", "foobar", ")", "=>", false, ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("test"), "(", "(", "foobar", ")", "=>", false, ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #33`, t => {
@@ -449,7 +449,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #33`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [2, "+", 3]);
+	t.deepEqual(assignments["a"].value.expression, [2, "+", 3]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #34`, t => {
@@ -460,7 +460,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #34`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [2, "+", 3, "*", "(", 10, "*", 5, ")"]);
+	t.deepEqual(assignments["a"].value.expression, [2, "+", 3, "*", "(", 10, "*", 5, ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #35`, t => {
@@ -471,7 +471,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #35`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #36`, t => {
@@ -482,7 +482,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #36`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, ["{", "...", "{", "foo", ":", 1, "}", ",", "...", new BindingIdentifier("bar"), "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "...", "{", "foo", ":", 1, "}", ",", "...", new BindingIdentifier("bar"), "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #37`, t => {
@@ -493,7 +493,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #37`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, [ "[", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "]" ]);
+	t.deepEqual(assignments["a"].value.expression, [ "[", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "]" ]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #38`, t => {
@@ -508,10 +508,10 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #38`, 
 
 	const assignments = service.getVariableAssignments(statements);
 
-	t.deepEqual(assignments["assignmentMap"].valueExpression, [ "{", "}"  ]);
-	t.deepEqual(assignments["declarations"].valueExpression, [ new BindingIdentifier("statement.declarationList.declarations") ]);
-	t.deepEqual(assignments["boundName"].valueExpression, [ new BindingIdentifier("declaration.name.text") ]);
-	t.deepEqual(assignments["value"].valueExpression, [ new BindingIdentifier("this.getInitializedValue"), "(", new BindingIdentifier("declaration.initializer"), ")" ]);
+	t.deepEqual(assignments["assignmentMap"].value.expression, [ "{", "}"  ]);
+	t.deepEqual(assignments["declarations"].value.expression, [ new BindingIdentifier("statement.declarationList.declarations") ]);
+	t.deepEqual(assignments["boundName"].value.expression, [ new BindingIdentifier("declaration.name.text") ]);
+	t.deepEqual(assignments["value"].value.expression, [ new BindingIdentifier("this.getInitializedValue"), "(", new BindingIdentifier("declaration.initializer"), ")" ]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #39`, t => {
@@ -522,7 +522,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #39`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].valueExpression, null);
+	t.deepEqual(assignments["a"].value.expression, null);
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
@@ -533,7 +533,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, null);
+	t.deepEqual(assignments["a"].type.flattened, null);
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
@@ -544,7 +544,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "string");
+	t.deepEqual(assignments["a"].type.flattened, "string");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
@@ -555,7 +555,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "string|symbol");
+	t.deepEqual(assignments["a"].type.flattened, "string|symbol");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
@@ -566,7 +566,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "Foo[]");
+	t.deepEqual(assignments["a"].type.flattened, "Foo[]");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
@@ -577,7 +577,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "{[key: string]: any}");
+	t.deepEqual(assignments["a"].type.flattened, "{[key: string]: any}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
@@ -588,7 +588,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "{[key: string]: any, foo: number}");
+	t.deepEqual(assignments["a"].type.flattened, "{[key: string]: any, foo: number}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
@@ -599,7 +599,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "{foo?: number}");
+	t.deepEqual(assignments["a"].type.flattened, "{foo?: number}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
@@ -610,7 +610,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "{foo?: number} & {bar: boolean}");
+	t.deepEqual(assignments["a"].type.flattened, "{foo?: number} & {bar: boolean}");
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
@@ -621,7 +621,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].typeFlattened, "Foobar");
+	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
@@ -658,9 +658,9 @@ test(`getClassDeclarations() -> Constructor -> Detects types of constructor argu
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[0].typeFlattened === "string");
-	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[1].typeFlattened === "number");
-	t.true(classDeclaration.constructor != null && classDeclaration.constructor.arguments[2].typeFlattened === "Foo");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.parameters.parametersList[0].type.flattened === "string");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.parameters.parametersList[1].type.flattened === "number");
+	t.true(classDeclaration.constructor != null && classDeclaration.constructor.parameters.parametersList[2].type.flattened === "Foo");
 });
 
 test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
@@ -692,7 +692,7 @@ test(`getClassDeclarations() -> Fields -> Detects the valueExpressions of class 
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.deepEqual(classDeclaration.props["field1"].valueExpression, ["(", ")", "=>", true]);
+	t.deepEqual(classDeclaration.props["field1"].value.expression, ["(", ")", "=>", true]);
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #1`, t => {
@@ -708,9 +708,9 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.true(classDeclaration.props["field1"].typeFlattened === "string");
-	t.true(classDeclaration.props["field2"].typeFlattened === "number");
-	t.true(classDeclaration.props["field3"].typeFlattened === "Foo");
+	t.true(classDeclaration.props["field1"].type.flattened === "string");
+	t.true(classDeclaration.props["field2"].type.flattened === "number");
+	t.true(classDeclaration.props["field3"].type.flattened === "Foo");
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #2`, t => {
@@ -724,7 +724,21 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 	const statements = parse(code);
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
-	t.true(classDeclaration.props["field1"].typeFlattened === "Foo<Foo>");
+	t.true(classDeclaration.props["field1"].type.flattened === "Foo<Foo>");
+});
+
+test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #3`, t => {
+	setupMany([ ["field1", "field1"], ["Foo", "Foo"], ["Bar", "Bar"], ["Baz", "Baz"] ]);
+	const code = `
+		class MyClass {
+			field1: Foo<Bar, Baz>;
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, fileName, code);
+	const [classDeclaration] = assignments;
+	t.true(classDeclaration.props["field1"].type.flattened === "Foo<Bar, Baz>");
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #1`, t => {
@@ -806,4 +820,15 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 	const assignments = service.getClassDeclarations(statements, fileName, code);
 	const [classDeclaration] = assignments;
 	t.true(classDeclaration.methods["myMethod"] != null);
+});
+
+test(`getCallExpressions() -> Methods -> Detects method declarations correctly. #2`, t => {
+	setupMany([ ["myMethod", "myMethod"], ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["service", "service"], ["registerTransient", "registerTransient"] ]);
+	const code = `
+		service.registerTransient<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	// const assignments = service.getCallExpressions(statements);
+	t.true(statements !== null);
 });

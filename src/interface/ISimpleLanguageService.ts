@@ -344,39 +344,50 @@ export interface IModuleDependency {
 	bindings: string[];
 }
 
-export interface ICallExpressionArgument extends IPositionable {
-	value: TypeArgument;
+export interface ICallExpression extends IArgumentsable {
+	property: ArbitraryValue;
+	method: ArbitraryValue;
+	type: ITypeable;
 }
 
-export interface IPropertyCallExpression {
-	property: string;
-	method: string;
-	typeArguments: string[];
-	callBlockPosition: IPositionable;
-	args: ICallExpressionArgument[];
+export interface IBody extends IContentsable, IPositionable {
 }
 
-export interface IBodyPositionable {
-	bodyStartsAt: number;
-	bodyEndsAt: number;
+export interface IBodyable {
+	body: IBody;
 }
 
-export interface IMemberDeclaration extends IPositionable, IBodyPositionable {
+export interface IContentsable {
+	contents: string | null;
+}
+
+export interface IMemberDeclaration extends IPositionable, IBodyable {
 	contents: string;
-	bodyContents: string | null;
+}
+
+export interface IParametersable {
+	parameters: IParametersBody;
 }
 
 export interface IArgumentsable {
-	arguments: IArgument[];
+	arguments: IArgumentsBody;
 }
 
-export interface IMethodDeclaration extends INameable, IMemberDeclaration, IArgumentsable {
+export interface IParametersBody extends IPositionable {
+	parametersList: IParameter[];
+}
+
+export interface IArgumentsBody extends IPositionable {
+	argumentsList: IArgument[];
+}
+
+export interface IMethodDeclaration extends INameable, IMemberDeclaration, IParametersable {
 	returnStatementStartsAt: number;
 	returnStatementEndsAt: number;
 	returnStatementContents: string | null;
 }
 
-export interface IConstructorDeclaration extends IMemberDeclaration, IArgumentsable {
+export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable {
 
 }
 
@@ -398,10 +409,14 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IArgument extends IPositionable, INameable, ITypeable, IValueable {
+export declare interface IParameter extends IPositionable, INameable {
+	type: ITypeable;
+	value: IValueable;
 }
 
-export declare interface IConstructorArgument extends IArgument {}
+export declare interface IArgument extends IPositionable {
+	value: IValueable;
+}
 
 export interface IArbitraryObject<T> {
 	[key: string]: T;
@@ -412,7 +427,9 @@ export interface IDecoratorsable {
 	decorators: string[];
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IValueable, ITypeable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable {
+	type: ITypeable;
+	value: IValueable;
 }
 
 export interface INameable {
@@ -426,17 +443,19 @@ export interface ITypeBinding extends INameable {
 export declare type TypeExpression = InitializationValue;
 
 export interface ITypeable {
-	typeExpression: TypeExpression | null;
-	typeFlattened: string | null;
-
+	expression: TypeExpression | null;
+	flattened: string | null;
+	bindings: ITypeBinding[] | null;
 }
 
 export interface IValueable {
-	valueResolved: ArbitraryValue | null;
-	valueExpression: InitializationValue | null;
+	resolved: ArbitraryValue | null;
+	expression: InitializationValue | null;
 }
 
-export interface IVariableAssignment extends IPositionable, IValueable, ITypeable, INameable {
+export interface IVariableAssignment extends IPositionable, INameable {
+	value: IValueable;
+	type: ITypeable;
 }
 
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
@@ -524,7 +543,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getVariableAssignments (statements: NodeArray<Statement>): AssignmentMap;
 	getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[];
 	getExportDeclarations (statements: NodeArray<Statement>): Set<string>;
-	getPropertyCallExpressions (statements: NodeArray<Statement>): IPropertyCallExpression[];
+	getCallExpressions (statements: NodeArray<Statement>): ICallExpression[];
 	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): InitializationValue;
 	join (value: InitializationValue, stringifyIdentifiers?: boolean): string | null;
 }
