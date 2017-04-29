@@ -2,10 +2,6 @@ import {ArrayBindingPattern, ClassExpression, ArrayLiteralExpression, ArrayTypeN
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
-export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
-export declare type AssignmentMap = { [key: string]: IVariableAssignment };
-export declare type TypeArgument = string | boolean | symbol | number | null | undefined;
-
 export interface IModuleDependency {
 	relativePath: string;
 	fullPath: string;
@@ -36,7 +32,7 @@ export interface IContentsable {
 	contents: string | null;
 }
 
-export interface IMemberDeclaration extends IPositionable, IBodyable {
+export interface IMemberDeclaration extends IPositionable, IBodyable, IDecoratorsable {
 	contents: string;
 }
 
@@ -97,8 +93,12 @@ export interface IArbitraryObject<T> {
 	[key: number]: T;
 }
 
+export interface IDecorator {
+	name: string;
+}
+
 export interface IDecoratorsable {
-	decorators: string[];
+	decorators: DecoratorIndexer;
 }
 
 export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable {
@@ -143,6 +143,11 @@ export interface IFileContentsable {
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
 }
 
+export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
+export declare type ClassIndexer = { [key: string]: IClassDeclaration };
+export declare type VariableIndexer = { [key: string]: IVariableAssignment };
+export declare type DecoratorIndexer = { [key: string]: IDecorator };
+export declare type TypeArgument = string | boolean | symbol | number | null | undefined;
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
 export declare type NonNullableArbitraryValue = string | boolean | symbol | number | Function | object | IBindingIdentifier | ITypeBinding | {};
 export declare type ArbitraryValue = NonNullableArbitraryValue | null | undefined;
@@ -232,8 +237,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency;
 	getClassDeclaration (statement: Statement | Declaration | Expression | Node): IClassDeclaration | null;
-	getClassDeclarations (statements: Statement[]): IClassDeclaration[];
-	getVariableAssignments (statements: Statement[], deep?: boolean): AssignmentMap;
+	getClassDeclarations (statements: Statement[]): ClassIndexer;
+	getVariableAssignments (statements: Statement[], deep?: boolean): VariableIndexer;
 	getImportDeclarations (statements: Statement[]): IModuleDependency[];
 	getExportDeclarations (statements: Statement[]): Set<string>;
 	getCallExpressions(statements: Statement[]): ICallExpression[];

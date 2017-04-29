@@ -3,7 +3,7 @@ import {dirname, join} from "path";
 import * as ts from "typescript";
 import {ArrayBindingPattern, ArrayLiteralExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
 /**
@@ -1314,13 +1314,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
-	 * and returns them in an AssignmentMap. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {Statement[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {AssignmentMap}
+	 * @returns {VariableIndexer}
 	 */
-	public getVariableAssignments (statements: Statement[], deep: boolean = false): AssignmentMap {
-		const assignmentMap: AssignmentMap = {};
+	public getVariableAssignments (statements: Statement[], deep: boolean = false): VariableIndexer {
+		const assignmentMap: VariableIndexer = {};
 
 		for (const statement of statements) {
 			if (this.isVariableStatement(statement)) {
@@ -1384,6 +1384,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isLabeledStatement(statement)) {
 			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isBinaryExpression(statement)) {
+			const left = this.findChildStatements(statement.left);
+			const right = this.findChildStatements(statement.right);
+			return [...left, ...right];	
 		}
 
 		if (this.isFunctionDeclaration(statement)) {
@@ -1453,6 +1459,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return statements;
 		}
 
+		if (this.isIdentifierObject(statement)) {
+			return [];
+		}
+
+		if (this.isCallExpression(statement)) {
+			return [];
+		}
+
 		if (this.isStringLiteral(statement)) {
 			return [];
 		}
@@ -1479,17 +1493,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Gets all class declarations (if any) that occurs in the given array of statements
-	 * and returns them as an array.
+	 * and returns them as a ClassIndexer.
 	 * @param {Statement[]} statements
 	 * @param {string} filepath
 	 * @param {string} code
-	 * @returns {IClassDeclaration[]}
+	 * @returns {ClassIndexer}
 	 */
-	public getClassDeclarations (statements: Statement[]): IClassDeclaration[] {
-		const declarations: IClassDeclaration[] = [];
+	public getClassDeclarations (statements: Statement[]): ClassIndexer {
+		const declarations: ClassIndexer = {};
 		for (const statement of statements) {
 			const declaration = this.isClassDeclaration(statement) ? this.getClassDeclaration(statement) : null;
-			if (declaration != null) declarations.push(declaration);
+			if (declaration != null) {
+				declarations[declaration.name] = declaration;
+			}
 		}
 		return declarations;
 	}
@@ -1606,7 +1622,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isCallExpression(rawStatement) || this.isNewExpression(rawStatement)) {
 			const name = this.getNameOfMember(rawStatement.expression);
 			const arr: InitializationValue = [];
-			if (this.isNewExpression(rawStatement)) arr.push("new ");
+			if (this.isNewExpression(rawStatement)) {
+				arr.push("new");
+				arr.push(" ");
+			}
 			arr.push(name);
 			arr.push("(");
 			const args = rawStatement.arguments;
@@ -2178,6 +2197,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
+	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration} declaration
+	 * @returns {DecoratorIndexer}
+	 */
+	private formatDecorators(declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration): DecoratorIndexer {
+		const obj: DecoratorIndexer = {};
+		if (declaration.decorators == null) return obj;
+
+		declaration.decorators.forEach(decorator => {
+			const name = <string>this.getNameOfMember(decorator.expression, false, true);
+			obj[name] = { name };
+		});
+		return obj;
+	}
+
+	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
 	 * @param {PropertyDeclaration} declaration
 	 * @returns {IPropDeclaration}
@@ -2189,7 +2224,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
 		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const decorators = declaration.decorators == null ? [] : declaration.decorators.map(decorator => <string>this.getNameOfMember(decorator.expression, false, true));
 		const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
 		// TODO: Resolve value!
 		const valueResolved = "";
@@ -2202,7 +2236,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				flattened: typeFlattened,
 				bindings: typeBindings
 			},
-			decorators,
+			decorators: this.formatDecorators(declaration),
 			value: {
 				expression: valueExpression,
 				resolved: valueResolved
@@ -2335,6 +2369,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			startsAt,
 			endsAt,
 			contents,
+			decorators: this.formatDecorators(declaration),
 			body: {
 				startsAt: bodyStartsAt,
 				endsAt: bodyEndsAt,
@@ -2438,6 +2473,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			filePath,
 			methods: {},
 			heritage: statement.heritageClauses == null ? null : this.formatHeritageClauses(statement.heritageClauses),
+			decorators: this.formatDecorators(statement),
 			constructor: null,
 			startsAt: classDeclarationStartsAt,
 			endsAt: classDeclarationEndsAt,

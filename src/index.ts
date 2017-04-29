@@ -15,7 +15,9 @@ export {
 	IPositionable,
 	ICallExpression,
 	TypeArgument,
-	AssignmentMap,
+	VariableIndexer,
+	ClassIndexer,
+	DecoratorIndexer,
 	ResolvedMethodMap,
 	INewExpression
 } from "./interface/ISimpleLanguageService";
