@@ -3,7 +3,7 @@ import {dirname, join} from "path";
 import * as ts from "typescript";
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
 /**
@@ -1039,12 +1039,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Formats a CallExpression into an ICallExpression.
-	 * @param {CallExpression}
-	 * @returns {ICallExpression}
+	 * Formats the typeArguments given to a CallExpression or a NewExpression and returns an ITypeable.
+	 * @param {CallExpression|NewExpression} statement
+	 * @returns {ITypeable}
 	 */
-	private formatCallExpression(statement: CallExpression): ICallExpression {
-		const exp = statement.expression;
+	private formatTypeArguments(statement: CallExpression | NewExpression): ITypeable {
 		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.getTypeExpression(typeArg));
 		let typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {
@@ -1055,35 +1054,76 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.takeTypeBindings(typeExpression);
+
+		return {
+			expression: typeExpression.length < 1 ? null : typeExpression,
+			flattened: typeFlattened,
+			bindings: typeBindings
+		};
+	}
+
+	/**
+	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
+	 * @param {CallExpression|NewExpression} statement
+	 * @returns {ICallable}
+	 */
+	private formatCallable(statement: CallExpression | NewExpression): ICallable {
+		const exp = statement.expression;
 		let property: ArbitraryValue = null;
-		let method: ArbitraryValue = null;
+		let identifier: ArbitraryValue = null;
 		
 		if (this.isIdentifierObject(exp)) {
-			method = this.getNameOfMember(exp, false, true);
+			identifier = this.getNameOfMember(exp, false, true);
 		}
 
 		if (this.isPropertyAccessExpression(exp)) {
 			property = this.getNameOfMember(exp.expression);
-			method = this.getNameOfMember(exp.name, false, true);
+			identifier = this.getNameOfMember(exp.name, false, true);
 		}
 
-		if (method == null) {
-			throw new TypeError(`${this.formatCallExpression.name} could not format a CallExpression with an expression of kind ${SyntaxKind[exp.kind]}`);
+		if (identifier == null) {
+			throw new TypeError(`${this.formatCallable.name} could not format a CallExpression|NewExpression with an expression of kind ${SyntaxKind[exp.kind]}`);
 		}
+		return {
+			property,
+			identifier
+		};
+	}
+
+	/**
+	 * Formats a CallExpression into an ICallExpression.
+	 * @param {CallExpression}
+	 * @returns {ICallExpression}
+	 */
+	private formatCallExpression(statement: CallExpression): ICallExpression {
 		
 		return {
+			...this.formatCallable(statement),
 			arguments: {
 				startsAt: statement.arguments.pos,
 				endsAt: statement.arguments.end,
 				argumentsList: this.formatArguments(statement)
 			},
-			property,
-			method,
-			type: {
-				expression: typeExpression.length < 1 ? null : typeExpression,
-				flattened: typeFlattened,
-				bindings: typeBindings
-			}
+			type: this.formatTypeArguments(statement)
+		};
+
+	}
+
+	/**
+	 * Formats a NewExpression into an INewExpression.
+	 * @param {NewExpression}
+	 * @returns {INewExpression}
+	 */
+	private formatNewExpression(statement: NewExpression): INewExpression {
+		
+		return {
+			...this.formatCallable(statement),			
+			arguments: {
+				startsAt: statement.arguments == null ? -1 : statement.arguments.pos,
+				endsAt: statement.arguments == null ? -1 : statement.arguments.end,
+				argumentsList: this.formatArguments(statement)
+			},
+			type: this.formatTypeArguments(statement)
 		};
 
 	}
@@ -1102,7 +1142,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.getCallExpression(statement.expression);
 		}
 		throw new TypeError(`${this.getCallExpression.name} could not format a CallExpression of kind ${SyntaxKind[statement.kind]}`);
-	 }
+	}
+
+	/**
+	 *Formats the given Statement into an INewExpression.
+	 * @param {Statement|Expression} statement
+	 * @returns {INewExpression}
+	 */
+	private getNewExpression(statement: Statement|Expression): INewExpression {
+		if (this.isNewExpression(statement)) {
+			return this.formatNewExpression(statement);
+		}
+		throw new TypeError(`${this.getNewExpression.name} could not format a NewExpression of kind ${SyntaxKind[statement.kind]}`);
+	}
 
 	/**
 	 * Gets and formats all CallExpressions associated with the given statements.
@@ -1117,6 +1169,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		statements.forEach(statement => {
 			if (this.isCallExpression(statement) || this.isExpressionStatement(statement)) {
 				expressions.push(this.getCallExpression(statement));
+			}
+		});
+		return expressions;
+	}
+
+	/**
+	 * Gets and formats all NewExpressions associated with the given statements.
+	 * These hold information such as the arguments the constructor is invoked with, generic type
+	 * arguments and such.
+	 * @param {NodeArray<Statement>} statements
+	 * @returns {INewExpression[]}
+	 */
+	public getNewExpressions (statements: NodeArray<Statement>): INewExpression[] {
+		const expressions: INewExpression[] = [];
+
+		statements.forEach(statement => {
+			if (this.isExpressionStatement(statement) && this.isNewExpression(statement.expression)) {
+				expressions.push(this.getNewExpression(statement.expression));
 			}
 		});
 		return expressions;
@@ -1955,8 +2025,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {CallExpression} declaration
 	 * @returns {IArgument[]}
 	 */
-	private formatArguments (declaration: CallExpression): IArgument[] {
-		return declaration.arguments.map(arg => this.formatArgument(arg));
+	private formatArguments (declaration: CallExpression|NewExpression): IArgument[] {
+		return declaration.arguments == null ? [] : declaration.arguments.map(arg => this.formatArgument(arg));
 	}
 
 	/**

@@ -12,9 +12,16 @@ export interface IModuleDependency {
 	bindings: string[];
 }
 
-export interface ICallExpression extends IArgumentsable {
+export interface ICallExpression extends IArgumentsable, ICallable {
+	type: ITypeable;
+}
+
+export interface ICallable {
 	property: ArbitraryValue;
-	method: NonNullableArbitraryValue;
+	identifier: NonNullableArbitraryValue;
+}
+
+export interface INewExpression extends IArgumentsable, ICallable {
 	type: ITypeable;
 }
 
@@ -212,7 +219,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getVariableAssignments (statements: NodeArray<Statement>): AssignmentMap;
 	getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[];
 	getExportDeclarations (statements: NodeArray<Statement>): Set<string>;
-	getCallExpressions (statements: NodeArray<Statement>): ICallExpression[];
+	getCallExpressions(statements: NodeArray<Statement>): ICallExpression[];
+	getNewExpressions(statements: NodeArray<Statement>): INewExpression[];
 	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): InitializationValue;
 	join (value: InitializationValue, stringifyIdentifiers?: boolean): string | null;
 }

@@ -830,7 +830,7 @@ test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
 
 	const statements = parse(code);
 	const callExpressions = service.getCallExpressions(statements);
-	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
 
@@ -842,7 +842,7 @@ test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
 
 	const statements = parse(code);
 	const callExpressions = service.getCallExpressions(statements);
-	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
 
@@ -866,7 +866,7 @@ test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
 
 	const statements = parse(code);
 	const callExpressions = service.getCallExpressions(statements);
-	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
 
@@ -982,4 +982,37 @@ test(`getCallExpressions() -> Flattens property paths correctly. #3`, t => {
 	const statements = parse(code);
 	const callExpressions = service.getCallExpressions(statements);
 	t.true(callExpressions.some(callExpression => callExpression.property != null && callExpression.property.toString() === "service"));
+});
+
+test(`getNewExpressions() -> Detects new-statements correctly. #1`, t => {
+	setupMany([ ["HelloWorld", "HelloWorld"] ]);
+	const code = `
+		new HelloWorld();
+	`;
+
+	const statements = parse(code);
+	const newExpressions = service.getNewExpressions(statements);
+	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
+});
+
+test(`getNewExpressions() -> Detects new-statements correctly. #2`, t => {
+	setupMany([ ["HelloWorld", "HelloWorld"], ["hmm", "hmm"] ]);
+	const code = `
+		new hmm.HelloWorld();
+	`;
+
+	const statements = parse(code);
+	const newExpressions = service.getNewExpressions(statements);
+	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
+});
+
+test(`getNewExpressions() -> Detects new-statements correctly. #3`, t => {
+	setupMany([ ["HelloWorld", "HelloWorld"], ["hmm", "hmm"] ]);
+	const code = `
+		new hmm.HelloWorld;
+	`;
+
+	const statements = parse(code);
+	const newExpressions = service.getNewExpressions(statements);
+	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
 });

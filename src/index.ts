@@ -9,12 +9,14 @@ export {
 	IArgument,
 	IParameter,
 	IMethodDeclaration,
+	ICallable,
 	IMemberDeclaration,
 	PropIndexer,
 	IPositionable,
 	ICallExpression,
 	TypeArgument,
 	AssignmentMap,
-	ResolvedMethodMap
+	ResolvedMethodMap,
+	INewExpression
 } from "./interface/ISimpleLanguageService";
 export {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
