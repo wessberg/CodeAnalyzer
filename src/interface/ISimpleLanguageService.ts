@@ -1,4 +1,4 @@
-import {ArrayBindingPattern, PostfixUnaryExpression, CatchClause, TryStatement, TypeOfExpression, ClassExpression, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, SyntaxKind, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SourceFile, IfStatement, FunctionDeclaration, LabeledStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import { ArrayBindingPattern, BreakStatement, ContinueStatement, CaseBlock, CaseClause, DefaultClause, SwitchStatement, WhileStatement, VariableDeclarationList, ForStatement, PostfixUnaryExpression, CatchClause, TryStatement, TypeOfExpression, ClassExpression, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, SyntaxKind, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SourceFile, IfStatement, FunctionDeclaration, LabeledStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
@@ -226,17 +226,26 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isDeclarationName(statement: Expression | Node): statement is DeclarationName;
 	isExpressionWithTypeArguments(statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is ExpressionWithTypeArguments;
 	isPostfixUnaryExpression(statement: Statement | Declaration | Expression | Node): statement is PostfixUnaryExpression;
-	isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern;
+	isBindingPattern(statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern;
+	isVariableDeclarationList(statement: Statement | Declaration | Expression | Node): statement is VariableDeclarationList;
 	isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern;
 	isObjectBindingPattern(statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern;
 	isIfStatement(statement: Statement | Declaration | Expression | Node): statement is IfStatement;
 	isTypeOfExpression(statement: Statement | Declaration | Expression | Node): statement is TypeOfExpression;
+	isSwitchStatement(statement: Statement | Declaration | Expression | Node): statement is SwitchStatement;
+	isWhileStatement(statement: Statement | Declaration | Expression | Node): statement is WhileStatement;
+	isCaseBlock(statement: Statement | Declaration | Expression | Node): statement is CaseBlock;
 	isTryStatement(statement: Statement | Declaration | Expression | Node): statement is TryStatement;
 	isCatchClause(statement: Statement | Declaration | Expression | Node): statement is CatchClause;
 	isSourceFile(statement: Statement | Declaration | Expression | Node): statement is SourceFile;
 	isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction;
 	isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement;
-	isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
+	isFunctionExpression(statement: Statement | Declaration | Expression | Node): statement is FunctionExpression;
+	isCaseClause(statement: BindingName | EntityName | Expression | Node): statement is CaseClause;
+	isDefaultClause(statement: BindingName | EntityName | Expression | Node): statement is DefaultClause;
+	isForStatement(statement: Statement | Declaration | Expression | Node): statement is ForStatement;
+	isBreakStatement(statement: Statement | Declaration | Expression | Node): statement is BreakStatement;
+	isContinueStatement(statement: Statement | Declaration | Expression | Node): statement is ContinueStatement;
 	serializeToken (token: SyntaxKind): string;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency;

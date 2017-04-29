@@ -3,7 +3,8 @@ import {test} from "ava";
 import * as TypeMoq from "typemoq";
 import {BindingIdentifier} from "../src/BindingIdentifier";
 import {ArbitraryValueIndexable, InitializationValue, ISimpleLanguageService} from "../src/interface/ISimpleLanguageService";
-import {SimpleLanguageService} from "../src/SimpleLanguageService";
+import { SimpleLanguageService } from "../src/SimpleLanguageService";
+import { FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2 } from "./FullCodeExamples";
 const Mock = TypeMoq.Mock;
 const It = TypeMoq.It;
 
@@ -11,69 +12,6 @@ const It = TypeMoq.It;
 const fileName = "a_file.ts";
 let marshaller = Mock.ofType<IMarshaller>();
 let service: ISimpleLanguageService;
-
-// Code snippets
-const FULL_CODE_EXAMPLE_1 = `
-
-		var parseXML = function( data ) {
-  var xml, tmp;
-  if ( !data || typeof data !== "string" ) {
-    return null;
-  }
-  try {
-    if ( window.DOMParser ) { // Standard
-      tmp = new DOMParser();
-      xml = tmp.parseFromString( data , "text/xml" );
-    } else { // IE
-      xml = new ActiveXObject( "Microsoft.XMLDOM" );
-      xml.async = false;
-      xml.loadXML( data );
-    }
-  } catch( e ) {
-    xml = undefined;
-  }
-  if ( !xml || !xml.documentElement || xml.getElementsByTagName( "parsererror" ).length ) {
-    jQuery.error( "Invalid XML: " + data );
-  }
-  return xml;
-};
-
-// Bind a function to a context, optionally partially applying any arguments.
-var proxy = function( fn, context ) {
-  var tmp, args, proxy;
-
-  if ( typeof context === "string" ) {
-    tmp = fn[ context ];
-    context = fn;
-    fn = tmp;
-  }
-
-  // Quick check to determine if target is callable, in the spec
-  // this throws a TypeError, but we will just return undefined.
-  if ( !jQuery.isFunction( fn ) ) {
-    return undefined;
-  }
-
-  // Simulated bind
-  args = core_slice.call( arguments, 2 );
-  proxy = function() {
-    return fn.apply( context || this, args.concat( core_slice.call( arguments ) ) );
-  };
-
-  // Set the guid of unique handler to the same of original handler, so it can be removed
-  proxy.guid = fn.guid = fn.guid || jQuery.guid++;
-
-  return proxy;
-};
-
-Sound.play = function() {}
-Sound.prototype = { something; }
-Sound.prototype.play = function() {}
-Sound.prototype.play = myfunc
-var parser = document.createElement('a');
-parser.href = "http://example.com:3000/pathname/?search=test#hash";
-parser.hostname; // => "example.com"
-	`;
 
 // Helpers
 const parse = (code: string) => service.addFile(fileName, code);
@@ -281,6 +219,63 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	t.true(assignments["proxy"] != null);
 	t.true(assignments["tmp"] != null);
 	t.true(assignments["xml"] != null);
+});
+
+test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #10`, t => {
+	setupMany([
+	["assert", "assert"],
+	["types", "types"],
+	["forVar", "forVar"],
+	["util", "util"],
+	["n", "n"],
+	["isArray", "isArray"],
+	["isNumber", "isNumber"],
+	["copy", "copy"],
+	["stack", "stack"],
+	["s", "s"],
+	["len", "len"],
+	["value", "value"],
+	["idx", "idx"],
+	["isTsNode", "isTsNode"],
+	["origLen", "origLen"],
+	["argc", "argc"],
+	["name", "name"],
+	["result", "result"],
+	["node", "node"],
+	["length", "length"],
+	["2", 2],
+	["i", "i"],
+	["0", 0],
+	["10", 10],
+	["doStuff", "doStuff"],
+	["switchVar", "switchVar"],
+	["true", true],
+	["false", false],
+	["lol", "lol"]
+]);
+	
+	const statements = parse(FULL_CODE_EXAMPLE_2);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.true(assignments["i"] != null);
+	t.true(assignments["node"] != null);
+	t.true(assignments["forVar"] != null);
+	t.true(assignments["result"] != null);
+	t.true(assignments["name"] != null);
+	t.true(assignments["argc"] != null);
+	t.true(assignments["origLen"] != null);
+	t.true(assignments["isTsNode"] != null);
+	t.true(assignments["idx"] != null);
+	t.true(assignments["value"] != null);
+	t.true(assignments["len"] != null);
+	t.true(assignments["s"] != null);
+	t.true(assignments["stack"] != null);
+	t.true(assignments["copy"] != null);
+	t.true(assignments["isNumber"] != null);
+	t.true(assignments["isArray"] != null);
+	t.true(assignments["n"] != null);
+	t.true(assignments["util"] != null);
+	t.true(assignments["types"] != null);
+	t.true(assignments["assert"] != null);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #1`, t => {
@@ -604,7 +599,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #29`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", "function", " ", "(", ")", "{", "return", true, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", "function", " ", "(", ")", "{", "return", " ", true, "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #30`, t => {

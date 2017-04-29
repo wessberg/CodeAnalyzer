@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, PostfixUnaryExpression, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import {ArrayBindingPattern, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
 import {ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
@@ -244,7 +244,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * A predicate function that returns true if the given Statement is an ConditionalExpression.
 	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {boolean}
+	 * @returns {booean}
 	 */
 	public isConditionalExpression (statement: Statement | Declaration | Expression | Node): statement is ConditionalExpression {
 		return statement.kind === SyntaxKind.ConditionalExpression;
@@ -559,6 +559,51 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is the keyword 'this'.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isForStatement (statement: Statement | Declaration | Expression | Node): statement is ForStatement {
+		return statement.kind === SyntaxKind.ForStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a SwitchStatement.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isSwitchStatement (statement: Statement | Declaration | Expression | Node): statement is SwitchStatement {
+		return statement.kind === SyntaxKind.SwitchStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a CaseBlock.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isCaseBlock (statement: Statement | Declaration | Expression | Node): statement is CaseBlock {
+		return statement.kind === SyntaxKind.CaseBlock;
+	}	
+
+	/**
+	 * A predicate function that returns true if the given Statement is a WhileStatement.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isWhileStatement (statement: Statement | Declaration | Expression | Node): statement is WhileStatement {
+		return statement.kind === SyntaxKind.WhileStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a VariableDeclarationList.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isVariableDeclarationList (statement: Statement | Declaration | Expression | Node): statement is VariableDeclarationList {
+		return statement.kind === SyntaxKind.VariableDeclarationList;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a TypeNode
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {boolean}
@@ -755,6 +800,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is a BreakStatement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isBreakStatement (statement: Statement | Declaration | Expression | Node): statement is BreakStatement {
+		return statement.kind === SyntaxKind.BreakStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a ContinueStatement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isContinueStatement (statement: Statement | Declaration | Expression | Node): statement is ContinueStatement {
+		return statement.kind === SyntaxKind.ContinueStatement;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a ReturnStatement.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
@@ -808,6 +871,23 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return statement.kind === SyntaxKind.FirstLiteralToken;
 	}
 
+	/**
+	 * A predicate function that returns true if the given Statement is a CaseClause.
+	 * @param {BindingName|EntityName|Expression} statement
+	 * @returns {boolean}
+	 */
+	public isCaseClause (statement: BindingName | EntityName | Expression | Node): statement is CaseClause {
+		return statement.kind === SyntaxKind.CaseClause;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a DefaultClause.
+	 * @param {BindingName|EntityName|Expression} statement
+	 * @returns {boolean}
+	 */
+	public isDefaultClause (statement: BindingName | EntityName | Expression | Node): statement is DefaultClause {
+		return statement.kind === SyntaxKind.DefaultClause;
+	}
 
 	/**
 	 * A predicate function that returns true if the given Statement is a ComputedPropertyName.
@@ -863,7 +943,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {SyntaxKind} token
 	 * @returns {ArbitraryValue}
 	 */
-	public marshalToken (token: SyntaxKind): ArbitraryValue {
+	public marshalToken (token: SyntaxKind|BinaryOperator|TypeNode): ArbitraryValue {
 		switch (token) {
 			case SyntaxKind.NullKeyword:
 				return null;
@@ -900,6 +980,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public serializeToken (token: ts.SyntaxKind | TypeNode): string {
 		switch (token) {
+			case SyntaxKind.BreakStatement:
+				return "break";
+			case SyntaxKind.ContinueStatement:
+				return "continue";	
 			case SyntaxKind.ObjectKeyword:
 				return "object";
 			case SyntaxKind.NumberKeyword:
@@ -1408,10 +1492,42 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Expression} statement
 	 * @returns {Statement[]}
 	 */
-	private findChildStatements (statement: Statement|Expression|Declaration): Statement[] {
+	private findChildStatements (statement: Statement|Expression|Declaration|Node): Statement[] {
 
 		if (this.isIfStatement(statement)) {
 			return this.findChildStatements(statement.thenStatement);
+		}
+
+		if (this.isDefaultClause(statement) || this.isCaseClause(statement)) {
+			const statements: Statement[] = [];
+
+			statement.statements.forEach(child => {
+				this.findChildStatements(child).forEach(childStatement => statements.push(childStatement));
+			});
+
+			return statements;
+		}
+
+		if (this.isWhileStatement(statement)) {
+			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isParenthesizedExpression(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
+		if (this.isCaseBlock(statement)) {
+			const statements: Statement[] = [];
+
+			statement.clauses.forEach(clause => {
+				this.findChildStatements(clause).forEach(childStatement => statements.push(childStatement));
+			});
+
+			return statements;
+		}
+
+		if (this.isSwitchStatement(statement)) {
+			return this.findChildStatements(statement.caseBlock);
 		}
 
 		if (this.isBlockDeclaration(statement)) {
@@ -1525,6 +1641,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			});
 
 			return statements;
+		}
+
+		if (this.isThisKeyword(statement)) {
+			return [];
+		}
+
+		if (this.isForStatement(statement)) {
+			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isBreakStatement(statement)) {
+			return [];
+		}
+
+		if (this.isContinueStatement(statement)) {
+			return [];
 		}
 
 		if (this.isNewExpression(statement)) {
@@ -1697,9 +1829,80 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [...this.getInitializedValue(rawStatement.operand), this.serializeToken(rawStatement.operator)];
 		}
 
+		if (this.isVariableDeclarationList(rawStatement)) {
+			const keyword = this.serializeFlag(rawStatement.flags) || "var";
+			const values: InitializationValue = [keyword, " "];
+			
+			rawStatement.declarations.forEach((declaration, index) => {
+				const content = this.getInitializedValue(declaration);
+				// Remove empty strings from the contents and add everything else to the value array.
+				content.forEach(part => values.push(part));
+				if (index !== rawStatement.declarations.length - 1) values.push(",");
+			});
+
+			return values;
+		}
+
 		if (this.isIfStatement(rawStatement)) {
 			const arr: InitializationValue = ["if", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.thenStatement), "}"];
 			return arr;
+		}
+
+		if (this.isForStatement(rawStatement)) {
+			const arr: InitializationValue = [
+				"for", "(",
+				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), ";",
+				...(rawStatement.condition == null ? [] : this.getInitializedValue(rawStatement.condition)), ";",
+				...(rawStatement.incrementor == null ? [] : this.getInitializedValue(rawStatement.incrementor)), ")", "{",
+				...this.getInitializedValue(rawStatement.statement),
+				"}"
+			];
+			return arr;
+		}
+
+		if (this.isBreakStatement(rawStatement)) {
+			return [this.marshalToken(rawStatement.kind)];
+		}
+
+		if (this.isContinueStatement(rawStatement)) {
+			return [this.marshalToken(rawStatement.kind)];
+		}
+
+		if (this.isDefaultClause(rawStatement)) {
+			const arr: InitializationValue = ["default", ":", "{"];
+			rawStatement.statements.forEach(statement => {
+				const value = this.getInitializedValue(statement);
+				value.forEach(part => arr.push(part));
+			});
+			arr.push("}");
+			return arr;
+		}
+
+		if (this.isWhileStatement(rawStatement)) {
+			return ["while", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.statement), "}"];
+		}
+
+		if (this.isCaseClause(rawStatement)) {
+			const arr: InitializationValue = ["case", " ", ...this.getInitializedValue(rawStatement.expression), ":", "{"];
+			rawStatement.statements.forEach(statement => {
+				const value = this.getInitializedValue(statement);
+				value.forEach(part => arr.push(part));
+			});
+			arr.push("}");
+			return arr;
+		}
+
+		if (this.isCaseBlock(rawStatement)) {
+			const arr: InitializationValue = [];
+			rawStatement.clauses.forEach(block => {
+				const value = this.getInitializedValue(block);
+				value.forEach(part => arr.push(part));
+			});
+			return arr;
+		}
+
+		if (this.isSwitchStatement(rawStatement)) {
+			return ["switch", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.caseBlock), "}"];
 		}
 
 		if (this.isBinaryExpression(rawStatement)) {
@@ -1875,16 +2078,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isVariableStatement(rawStatement)) {
-			const keyword = this.serializeFlag(rawStatement.declarationList.flags) || "var";
-			const values: InitializationValue = [keyword, " "];
-			
-			rawStatement.declarationList.declarations.forEach(declaration => {
-				const content = this.getInitializedValue(declaration);
-				// Remove empty strings from the contents and add everything else to the value array.
-				content.forEach(part => values.push(part));
-			});
-
-			return values;
+			return this.getInitializedValue(rawStatement.declarationList);
 		}
 
 		if (this.isParameterDeclaration(rawStatement)) {
@@ -1964,7 +2158,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isReturnStatement(rawStatement)) {
-			return [this.marshalToken(rawStatement.kind), ...(rawStatement.expression == null ? [] : this.getInitializedValue(rawStatement.expression))];
+			return [this.marshalToken(rawStatement.kind), " ", ...(rawStatement.expression == null ? [] : this.getInitializedValue(rawStatement.expression))];
 		}
 
 		if (this.isTokenObject(rawStatement)) {
@@ -1975,7 +2169,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [this.getNameOfMember(rawStatement, true)];
 		}
 
-		throw new TypeError(`${this.getInitializedValue.toString()} could not extract a value for a statement! of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]}`);
+		throw new TypeError(`${this.getInitializedValue.toString()} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]}`);
 	}
 
 	/**
@@ -1992,7 +2186,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {ElementAccessExpression|Identifier|Expression}
 	 * @returns {ArbitraryValue[]}
 	 */
-	private getPathOfExpression(expression: ElementAccessExpression | Identifier | Expression): ArbitraryValue[] {
+	private getPathOfExpression(expression: ElementAccessExpression | Identifier | Expression | BinaryExpression): ArbitraryValue[] {
+		if (this.isBinaryExpression(expression)) {
+			return [...this.getPathOfExpression(expression.left), this.serializeToken(expression.operatorToken.kind), ...this.getPathOfExpression(expression.right)];
+		}
+
 		return [this.getNameOfMember(expression, true, true)];
 	}
 
