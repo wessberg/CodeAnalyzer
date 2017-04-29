@@ -1,10 +1,9 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, LeftHandSideExpression, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, SyntaxKind, TypeExpression} from "./interface/ISimpleLanguageService";
-
+import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
 /**
@@ -245,7 +244,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * A predicate function that returns true if the given Statement is a ParenthesizedExpression.
 	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {boolean}
 	 */
 	public isParenthesizedExpression (statement: Statement | Declaration | Expression | Node): statement is ParenthesizedExpression {
 		return statement.kind === SyntaxKind.ParenthesizedExpression;
@@ -527,7 +525,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement {
+	public isExpressionStatement(statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement {
 		return statement.kind === SyntaxKind.ExpressionStatement;
 	}
 
@@ -786,7 +784,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {SyntaxKind} token
 	 * @returns {string}
 	 */
-	public serializeToken (token: SyntaxKind | TypeNode): string {
+	public serializeToken (token: ts.SyntaxKind | TypeNode): string {
 		switch (token) {
 			case SyntaxKind.ObjectKeyword:
 				return "object";
@@ -1051,6 +1049,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
+		
 			if (this.isExpressionStatement(statement)) {
 				const exp = statement.expression;
 
@@ -1392,13 +1391,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isPropertyAccessExpression(rawStatement)) {
-			return [this.getPropertyAccessExpressionName(rawStatement)];
+			return [this.getNameOfMember(rawStatement)];
 		}
 
 		if (this.isElementAccessExpression(rawStatement)) {
-			const baseName = this.getNameOfMember(rawStatement.expression);
-			const argExpression = rawStatement.argumentExpression == null ? [] : this.getInitializedValue(rawStatement.argumentExpression);
-			return [new BindingIdentifier([this.stringifyIdentifier(<BindingIdentifier>baseName), "[", ...argExpression, "]"].join(""))];
+			return [this.getNameOfMember(rawStatement)];
 		}
 
 		if (this.isParameterDeclaration(rawStatement)) {
@@ -1484,21 +1481,39 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Returns the name of an identifier.
-	 * @param {BindingIdentifier|string} identifier
-	 * @returns {string}
-	 */
-	private stringifyIdentifier (identifier: BindingIdentifier | string): string {
-		return identifier instanceof BindingIdentifier ? identifier.name : identifier;
-	}
-
-	/**
 	 * Computes the mot probable native type of the given string.
 	 * @param {string} text
 	 * @returns {string}
 	 */
 	private mostProbableTypeOf (text: string): string {
 		return typeof this.marshaller.marshal<string, ArbitraryValue>(text);
+	}
+
+	/**
+	 * Returns the path of an expression.
+	 * @param {ElementAccessExpression|Identifier|Expression}
+	 * @returns {ArbitraryValue[]}
+	 */
+	private getPathOfExpression(expression: ElementAccessExpression | Identifier | Expression): ArbitraryValue[] {
+		return [this.getNameOfMember(expression, true, true)];
+	}
+
+	/**
+	 * Takes the base identifier of an expression. For instance, if it has a path, it returns the base name of it.
+	 * @param {ArbitraryValue} expression
+	 * @returns {string}
+	 */
+	private takeBase (expression: ArbitraryValue): string {
+		return expression instanceof BindingIdentifier ? expression.name : expression == null ? "" : expression.toString();
+	}
+
+	/**
+	 * Takes the path identifier of an expression. For instance, if it has a path, it returns it.
+	 * @param {ArbitraryValue} expression
+	 * @returns {string}
+	 */
+	private takePath (expression: ArbitraryValue): string {
+		return expression instanceof BindingIdentifier && expression.path != null ? expression.path : "";
 	}
 
 	/**
@@ -1509,7 +1524,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {boolean} [forceNoBindingIdentifier=false]
 	 * @returns {ArbitraryValue}
 	 */
-	private getNameOfMember (name: DeclarationName | LeftHandSideExpression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
+	private getNameOfMember(name: DeclarationName | Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
 
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {
@@ -1534,7 +1549,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
 			if (this.mostProbableTypeOf(name.text) === "string" && !forceNoBindingIdentifier) {
-				return new BindingIdentifier(name.text);
+				return new BindingIdentifier(name.text, null);
 			}
 			return marshalled;
 		}
@@ -1547,26 +1562,41 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return name.text;
 		}
 
+		if (this.isThisKeyword(name)) {
+			return "this";
+		}
+
 		if (this.isPropertyAccessExpression(name)) {
-			return this.getPropertyAccessExpressionName(name);
+			const baseName = this.getNameOfMember(name.expression, false, false);
+			const baseNameStringified = this.takeBase(baseName);
+			const pathStringified = this.takePath(baseName);
+
+			const path = name.name == null ? null : [pathStringified, ...this.getPathOfExpression(name.name)].filter(part => {
+				if (typeof part === "string") return part.length > 0;
+				return part != null;
+			});
+			
+			return new BindingIdentifier(baseNameStringified, path == null || path.length === 0 ? null : this.flattenPath(path));
 		}
 
 		if (this.isCallExpression(name)) {
 			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
 		}
 
-		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
-	}
+		if (this.isElementAccessExpression(name)) {
+			const baseName = this.getNameOfMember(name.expression, false, false);
+			const baseNameStringified = this.takeBase(baseName);
+			const pathStringified = this.takePath(baseName);
 
-	/**
-	 * Returns a BindingIdentifier containing a full property access.
-	 * @param {PropertyAccessExpression} name
-	 * @returns {BindingIdentifier}
-	 */
-	private getPropertyAccessExpressionName (name: PropertyAccessExpression): BindingIdentifier {
-		const baseProp = this.getInitializedValue(name.expression);
-		const path = this.getInitializedValue(name.name);
-		return new BindingIdentifier([...baseProp.map(this.stringifyIdentifier), ...path.map(this.stringifyIdentifier)].join("."));
+			const path = name.argumentExpression == null ? null : [pathStringified, ...this.getPathOfExpression(name.argumentExpression)].filter(part => {
+				if (typeof part === "string") return part.length > 0;
+				return part != null;
+			});
+			
+			return new BindingIdentifier(baseNameStringified, path == null || path.length === 0 ? null : this.flattenPath(path));
+		}
+
+		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
 	}
 
 	/**
@@ -1829,6 +1859,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 		});
 		return obj;
+	}
+
+	/**
+	 * Flattens the given path down to a string.
+	 * @param {ArbitraryValue[]} path
+	 * @returns {string}
+	 */
+	private flattenPath(path: ArbitraryValue[]): string {
+		return path.map(part => {
+			if (typeof part === "string") {
+				if (part.startsWith("[") && part.endsWith("]")) return part;
+				return `["${part}"]`;
+			}
+			
+			return `[${part}]`;
+		}).join("");
 	}
 
 	/**
