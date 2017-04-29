@@ -361,7 +361,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #25`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", '["A"]')]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", ["A"])]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #26`, t => {
@@ -372,7 +372,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #26`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", '["A"]["B"]["C"]["D"]')]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", ["A", "B", "C", "D"])]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #27`, t => {
@@ -416,7 +416,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #30`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", '["Other"]["Than"]'), "(", "baz", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", ["Other", "Than"]), "(", "baz", ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #31`, t => {
@@ -427,7 +427,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #31`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", '[2]["Other"]["Than"]'), "(", "baz", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", [2, "Other", "Than"]), "(", "baz", ")"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #32`, t => {
@@ -509,9 +509,9 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #38`, 
 	const assignments = service.getVariableAssignments(statements);
 
 	t.deepEqual(assignments["assignmentMap"].value.expression, [ "{", "}"  ]);
-	t.deepEqual(assignments["declarations"].value.expression, [ new BindingIdentifier("statement", '["declarationList"]["declarations"]') ]);
-	t.deepEqual(assignments["boundName"].value.expression, [ new BindingIdentifier("declaration", '["name"]["text"]') ]);
-	t.deepEqual(assignments["value"].value.expression, [ new BindingIdentifier("this", '["getInitializedValue"]'), "(", new BindingIdentifier("declaration", '["initializer"]'), ")" ]);
+	t.deepEqual(assignments["declarations"].value.expression, [ new BindingIdentifier("statement", ["declarationList", "declarations"]) ]);
+	t.deepEqual(assignments["boundName"].value.expression, [ new BindingIdentifier("declaration", ["name", "text"]) ]);
+	t.deepEqual(assignments["value"].value.expression, [ new BindingIdentifier("this", ["getInitializedValue"]), "(", new BindingIdentifier("declaration", ["initializer"]), ")" ]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #39`, t => {
@@ -822,8 +822,137 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 	t.true(classDeclaration.methods["myMethod"] != null);
 });
 
-test(`getCallExpressions() -> Methods -> Detects method declarations correctly. #2`, t => {
-	setupMany([ ["myMethod", "myMethod"], ["0", 0], ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"] ]);
+test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
+	setupMany([ ["0", 0], ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"] ]);
+	const code = `
+		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"] ]);
+	const code = `
+		helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"] ]);
+	const code = `
+		helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions.find(exp => exp.property == null);
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions.find(exp => exp.method === "helloWorld");
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.type != null && exp.type.bindings != null && exp.type.bindings.length === 2);
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects typeArguments correctly. #2`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.type != null && exp.type.bindings != null && exp.type.bindings
+		.some(binding => binding.name === "Foo") && exp.type.bindings
+			.some(binding => binding.name === "Bar"));
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects typeArguments correctly. #3`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.type != null && exp.type.bindings != null && exp.type.bindings.length === 1);
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects typeArguments correctly. #4`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.type != null && exp.type.bindings != null && exp.type.bindings
+			.some(binding => binding.name === "Foo"));
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects arguments correctly. #1`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.arguments.argumentsList.length === 1);
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects arguments correctly. #2`, t => {
+	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
+	const code = `
+		service.helloWorld<Foo>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	const expression = callExpressions
+		.find(exp => exp.arguments.argumentsList.find(arg => arg.value.expression != null && arg.value.expression.includes("Hello world!")) != null);
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Flattens property paths correctly. #1`, t => {
+	setupMany([ ["0", 0], ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"] ]);
 	const code = `
 		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -831,4 +960,26 @@ test(`getCallExpressions() -> Methods -> Detects method declarations correctly. 
 	const statements = parse(code);
 	const callExpressions = service.getCallExpressions(statements);
 	t.true(callExpressions.some(callExpression => callExpression.property instanceof BindingIdentifier && callExpression.property.toString() === 'service["registerTransient"][0]'));
+});
+
+test(`getCallExpressions() -> Flattens property paths correctly. #2`, t => {
+	setupMany([ ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"] ]);
+	const code = `
+		service.registerTransient.helloWorld());
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	t.true(callExpressions.some(callExpression => callExpression.property instanceof BindingIdentifier && callExpression.property.toString() === 'service["registerTransient"]'));
+});
+
+test(`getCallExpressions() -> Flattens property paths correctly. #3`, t => {
+	setupMany([ ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"] ]);
+	const code = `
+		service.helloWorld());
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements);
+	t.true(callExpressions.some(callExpression => callExpression.property != null && callExpression.property.toString() === "service"));
 });

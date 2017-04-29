@@ -14,7 +14,7 @@ export interface IModuleDependency {
 
 export interface ICallExpression extends IArgumentsable {
 	property: ArbitraryValue;
-	method: ArbitraryValue;
+	method: NonNullableArbitraryValue;
 	type: ITypeable;
 }
 

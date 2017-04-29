@@ -1,5 +1,7 @@
+import { ArbitraryValue } from "src/interface/ISimpleLanguageService";
 
 export interface IBindingIdentifier {
 	name: string;
-	path: string | null;
+	path: ArbitraryValue[] | null;
+	flattenPath(): string;
 }

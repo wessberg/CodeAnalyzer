@@ -1039,6 +1039,72 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Formats a CallExpression into an ICallExpression.
+	 * @param {CallExpression}
+	 * @returns {ICallExpression}
+	 */
+	private formatCallExpression(statement: CallExpression): ICallExpression {
+		const exp = statement.expression;
+		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.getTypeExpression(typeArg));
+		let typeExpression: TypeExpression = [];
+		if (typeExpressions != null) {
+			typeExpressions.forEach((typeExp, index) => {
+				typeExp.forEach(part => typeExpression.push(part));
+				if (index !== typeExpressions.length - 1) typeExpression.push(", ");
+			});
+		}
+		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.takeTypeBindings(typeExpression);
+		let property: ArbitraryValue = null;
+		let method: ArbitraryValue = null;
+		
+		if (this.isIdentifierObject(exp)) {
+			method = this.getNameOfMember(exp, false, true);
+		}
+
+		if (this.isPropertyAccessExpression(exp)) {
+			property = this.getNameOfMember(exp.expression);
+			method = this.getNameOfMember(exp.name, false, true);
+		}
+
+		if (method == null) {
+			throw new TypeError(`${this.formatCallExpression.name} could not format a CallExpression with an expression of kind ${SyntaxKind[exp.kind]}`);
+		}
+		
+		return {
+			arguments: {
+				startsAt: statement.arguments.pos,
+				endsAt: statement.arguments.end,
+				argumentsList: this.formatArguments(statement)
+			},
+			property,
+			method,
+			type: {
+				expression: typeExpression.length < 1 ? null : typeExpression,
+				flattened: typeFlattened,
+				bindings: typeBindings
+			}
+		};
+
+	}
+
+	/**
+	 *Formats the given Statement into an ICallExpression.
+	 * @param {Statement|Expression} statement
+	 * @returns {ICallExpression}
+	 */
+	private getCallExpression(statement: Statement|Expression): ICallExpression {
+		if (this.isCallExpression(statement)) {
+			return this.formatCallExpression(statement);
+		}
+
+		if (this.isExpressionStatement(statement)) {
+			return this.getCallExpression(statement.expression);
+		}
+		throw new TypeError(`${this.getCallExpression.name} could not format a CallExpression of kind ${SyntaxKind[statement.kind]}`);
+	 }
+
+	/**
 	 * Gets and formats all CallExpressions associated with the given statements.
 	 * These hold information such as the arguments the members are invoked with, generic type
 	 * arguments and such.
@@ -1049,46 +1115,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
-		
-			if (this.isExpressionStatement(statement)) {
-				const exp = statement.expression;
-
-				if (this.isCallExpression(exp)) {
-					const expExp = exp.expression;
-
-					if (this.isPropertyAccessExpression(expExp)) {
-						const property = this.getNameOfMember(expExp.expression);
-						const method = this.getNameOfMember(expExp.name, false, true);
-						const typeExpressions = exp.typeArguments == null ? null : exp.typeArguments.map(typeArg => this.getTypeExpression(typeArg));
-						let typeExpression: TypeExpression = [];
-
-						if (typeExpressions != null) {
-							typeExpressions.forEach((typeExp, index) => {
-								typeExp.forEach(part => typeExpression.push(part));
-								if (index !== typeExpressions.length - 1) typeExpression.push(", ");
-							});
-						}
-
-						const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.serializeTypeExpression(typeExpression);
-						const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.takeTypeBindings(typeExpression);
-
-						expressions.push({
-							arguments: {
-								startsAt: exp.arguments.pos,
-								endsAt: exp.arguments.end,
-								argumentsList: this.formatArguments(exp)
-							},
-							property,
-							method,
-							type: {
-								expression: typeExpression.length < 1 ? null : typeExpression,
-								flattened: typeFlattened,
-								bindings: typeBindings
-
-							}
-						});
-					}
-				}
+			if (this.isCallExpression(statement) || this.isExpressionStatement(statement)) {
+				expressions.push(this.getCallExpression(statement));
 			}
 		});
 		return expressions;
@@ -1510,10 +1538,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Takes the path identifier of an expression. For instance, if it has a path, it returns it.
 	 * @param {ArbitraryValue} expression
-	 * @returns {string}
+	 * @returns {ArbitraryValue[]}
 	 */
-	private takePath (expression: ArbitraryValue): string {
-		return expression instanceof BindingIdentifier && expression.path != null ? expression.path : "";
+	private takePath (expression: ArbitraryValue): ArbitraryValue[] {
+		return expression instanceof BindingIdentifier && expression.path != null ? expression.path : [];
 	}
 
 	/**
@@ -1571,12 +1599,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const baseNameStringified = this.takeBase(baseName);
 			const pathStringified = this.takePath(baseName);
 
-			const path = name.name == null ? null : [pathStringified, ...this.getPathOfExpression(name.name)].filter(part => {
+			const path = name.name == null ? null : [...pathStringified, ...this.getPathOfExpression(name.name)].filter(part => {
 				if (typeof part === "string") return part.length > 0;
 				return part != null;
 			});
 			
-			return new BindingIdentifier(baseNameStringified, path == null || path.length === 0 ? null : this.flattenPath(path));
+			return new BindingIdentifier(baseNameStringified, path);
 		}
 
 		if (this.isCallExpression(name)) {
@@ -1588,12 +1616,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const baseNameStringified = this.takeBase(baseName);
 			const pathStringified = this.takePath(baseName);
 
-			const path = name.argumentExpression == null ? null : [pathStringified, ...this.getPathOfExpression(name.argumentExpression)].filter(part => {
+			const path = name.argumentExpression == null ? null : [...pathStringified, ...this.getPathOfExpression(name.argumentExpression)].filter(part => {
 				if (typeof part === "string") return part.length > 0;
 				return part != null;
 			});
 			
-			return new BindingIdentifier(baseNameStringified, path == null || path.length === 0 ? null : this.flattenPath(path));
+			return new BindingIdentifier(baseNameStringified, path);
 		}
 
 		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
@@ -1859,22 +1887,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 		});
 		return obj;
-	}
-
-	/**
-	 * Flattens the given path down to a string.
-	 * @param {ArbitraryValue[]} path
-	 * @returns {string}
-	 */
-	private flattenPath(path: ArbitraryValue[]): string {
-		return path.map(part => {
-			if (typeof part === "string") {
-				if (part.startsWith("[") && part.endsWith("]")) return part;
-				return `["${part}"]`;
-			}
-			
-			return `[${part}]`;
-		}).join("");
 	}
 
 	/**
