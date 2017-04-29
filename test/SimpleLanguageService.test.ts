@@ -12,6 +12,69 @@ const fileName = "a_file.ts";
 let marshaller = Mock.ofType<IMarshaller>();
 let service: ISimpleLanguageService;
 
+// Code snippets
+const FULL_CODE_EXAMPLE_1 = `
+
+		var parseXML = function( data ) {
+  var xml, tmp;
+  if ( !data || typeof data !== "string" ) {
+    return null;
+  }
+  try {
+    if ( window.DOMParser ) { // Standard
+      tmp = new DOMParser();
+      xml = tmp.parseFromString( data , "text/xml" );
+    } else { // IE
+      xml = new ActiveXObject( "Microsoft.XMLDOM" );
+      xml.async = false;
+      xml.loadXML( data );
+    }
+  } catch( e ) {
+    xml = undefined;
+  }
+  if ( !xml || !xml.documentElement || xml.getElementsByTagName( "parsererror" ).length ) {
+    jQuery.error( "Invalid XML: " + data );
+  }
+  return xml;
+};
+
+// Bind a function to a context, optionally partially applying any arguments.
+var proxy = function( fn, context ) {
+  var tmp, args, proxy;
+
+  if ( typeof context === "string" ) {
+    tmp = fn[ context ];
+    context = fn;
+    fn = tmp;
+  }
+
+  // Quick check to determine if target is callable, in the spec
+  // this throws a TypeError, but we will just return undefined.
+  if ( !jQuery.isFunction( fn ) ) {
+    return undefined;
+  }
+
+  // Simulated bind
+  args = core_slice.call( arguments, 2 );
+  proxy = function() {
+    return fn.apply( context || this, args.concat( core_slice.call( arguments ) ) );
+  };
+
+  // Set the guid of unique handler to the same of original handler, so it can be removed
+  proxy.guid = fn.guid = fn.guid || jQuery.guid++;
+
+  return proxy;
+};
+
+Sound.play = function() {}
+Sound.prototype = { something; }
+Sound.prototype.play = function() {}
+Sound.prototype.play = myfunc
+var parser = document.createElement('a');
+parser.href = "http://example.com:3000/pathname/?search=test#hash";
+parser.hostname; // => "example.com"
+	`;
+
 // Helpers
 const parse = (code: string) => service.addFile(fileName, code);
 
@@ -205,6 +268,19 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
 	t.true(assignments["foo"] != null);
+});
+
+test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #9`, t => {
+	setupMany([ ["parseXML", "parseXML"], ["e", "e"], ["xml", "xml"], ["ActiveXObject", "ActiveXObject"], ["Microsoft.XMLDOM", "Microsoft.XMLDOM"], ["loadXML", "loadXML"], ["tmp", "tmp"], ["args", "args"], ["proxy", "proxy"], ["parseFromString", "parseFromString"], ["data", "data"], ["text/xml", "text/xml"], ["parser", "parser"], ["window", "window"], ["DOMParser", "DOMParser"] ]);
+	
+	const statements = parse(FULL_CODE_EXAMPLE_1);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.true(assignments["args"] != null);
+	t.true(assignments["parseXML"] != null);
+	t.true(assignments["parser"] != null);
+	t.true(assignments["proxy"] != null);
+	t.true(assignments["tmp"] != null);
+	t.true(assignments["xml"] != null);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #1`, t => {
@@ -1194,17 +1270,6 @@ test(`getNewExpressions() -> Detects new-statements correctly. #2`, t => {
 	setupMany([ ["HelloWorld", "HelloWorld"], ["hmm", "hmm"] ]);
 	const code = `
 		new hmm.HelloWorld();
-	`;
-
-	const statements = parse(code);
-	const newExpressions = service.getNewExpressions(statements);
-	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
-});
-
-test(`getNewExpressions() -> Detects new-statements correctly. #3`, t => {
-	setupMany([ ["HelloWorld", "HelloWorld"], ["hmm", "hmm"] ]);
-	const code = `
-		new hmm.HelloWorld;
 	`;
 
 	const statements = parse(code);

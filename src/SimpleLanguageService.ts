@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, ArrayLiteralExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import {ArrayBindingPattern, PostfixUnaryExpression, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
 import {ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
@@ -266,6 +266,42 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isPrefixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PrefixUnaryExpression {
 		return statement.kind === SyntaxKind.PrefixUnaryExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a PostfixUnaryExpression.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isPostfixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PostfixUnaryExpression {
+		return statement.kind === SyntaxKind.PostfixUnaryExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a TypeOfExpression.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isTypeOfExpression (statement: Statement | Declaration | Expression | Node): statement is TypeOfExpression {
+		return statement.kind === SyntaxKind.TypeOfExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a TryStatement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isTryStatement (statement: Statement | Declaration | Expression | Node): statement is TryStatement {
+		return statement.kind === SyntaxKind.TryStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a CatchClause.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isCatchClause (statement: Statement | Declaration | Expression | Node): statement is CatchClause {
+		return statement.kind === SyntaxKind.CatchClause;
 	}
 
 	/**
@@ -1356,7 +1392,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			if (deep) {
-				Object.assign(assignmentMap, this.getVariableAssignments(this.findChildStatements(statement), deep));
+				const otherAssignments = this.getVariableAssignments(this.findChildStatements(statement), deep);
+				Object.keys(otherAssignments).forEach(key => {
+					// Only assign the deep variable to the assignmentMap if there isn't a match in the scope above it.
+					if (assignmentMap[key] == null) Object.assign(assignmentMap, { [key]: otherAssignments[key] });
+				});
 			}
 
 		}		
@@ -1376,6 +1416,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isBlockDeclaration(statement)) {
 			return statement.statements;
+		}
+
+		if (this.isReturnStatement(statement)) {
+			return statement.expression == null ? [] : this.findChildStatements(statement.expression);
 		}
 
 		if (this.isArrowFunction(statement)) {
@@ -1400,6 +1444,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.findChildStatements(statement.expression);
 		}
 
+		if (this.isTryStatement(statement)) {
+			const tryBlock = this.findChildStatements(statement.tryBlock);
+			const catchClause = statement.catchClause == null ? [] : this.findChildStatements(statement.catchClause.block);
+			const finallyBlock = statement.finallyBlock == null ? [] : this.findChildStatements(statement.finallyBlock);
+
+			return [...tryBlock, ...catchClause, ...finallyBlock];
+		}
+
 		if (this.isVariableStatement(statement)) {
 			const statements: Statement[] = [];
 
@@ -1411,6 +1463,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isVariableDeclaration(statement)) {
 			return statement.initializer == null ? [] : this.findChildStatements(statement.initializer);
+		}
+
+		if (this.isElementAccessExpression(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
+		if (this.isPropertyAccessExpression(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
+		if (this.isPrefixUnaryExpression(statement)) {
+			return this.findChildStatements(statement.operand);
+		}
+
+		if (this.isPostfixUnaryExpression(statement)) {
+			return this.findChildStatements(statement.operand);
 		}
 
 		if (this.isFunctionExpression(statement)) {
@@ -1457,6 +1525,18 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			});
 
 			return statements;
+		}
+
+		if (this.isNewExpression(statement)) {
+			return [];
+		}
+
+		if (this.isNullKeyword(statement)) {
+			return [];
+		}
+
+		if (this.isUndefinedKeyword(statement)) {
+			return [];
 		}
 
 		if (this.isIdentifierObject(statement)) {
@@ -1588,6 +1668,38 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			});
 
 			return [...headNormalized, ...tail];
+		}
+
+		if (this.isCatchClause(rawStatement)) {
+			return ["catch", "(", ...this.getInitializedValue(rawStatement.variableDeclaration), ")", "{", ...this.getInitializedValue(rawStatement.block), "}"];
+		}
+
+		if (this.isExpressionStatement(rawStatement)) {
+			return this.getInitializedValue(rawStatement.expression);
+		}
+
+		if (this.isTryStatement(rawStatement)) {
+			let arr: InitializationValue = ["try", "{", ...this.getInitializedValue(rawStatement.tryBlock), "}"];
+			if (rawStatement.catchClause != null ) arr = [...arr, ...this.getInitializedValue(rawStatement.catchClause)];
+			if (rawStatement.finallyBlock != null) arr = [...arr, "finally", "{", ...this.getInitializedValue(rawStatement.finallyBlock), "}"];
+			return arr;
+		}
+
+		if (this.isTypeOfExpression(rawStatement)) {
+			return ["typeof", " ", ...this.getInitializedValue(rawStatement.expression)];
+		}
+
+		if (this.isPrefixUnaryExpression(rawStatement)) {
+			return [this.serializeToken(rawStatement.operator), ...this.getInitializedValue(rawStatement.operand)];
+		}
+
+		if (this.isPostfixUnaryExpression(rawStatement)) {
+			return [...this.getInitializedValue(rawStatement.operand), this.serializeToken(rawStatement.operator)];
+		}
+
+		if (this.isIfStatement(rawStatement)) {
+			const arr: InitializationValue = ["if", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.thenStatement), "}"];
+			return arr;
 		}
 
 		if (this.isBinaryExpression(rawStatement)) {
