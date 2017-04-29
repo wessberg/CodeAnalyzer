@@ -1,9 +1,9 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, AssignmentMap, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
 /**
@@ -111,8 +111,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
-	public isVariableDeclaration (statement: Statement | Declaration | Expression | Node): statement is VariableStatement {
+	public isVariableStatement (statement: Statement | Declaration | Expression | Node): statement is VariableStatement {
 		return statement.kind === SyntaxKind.VariableStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a VariableDeclaration.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isVariableDeclaration (statement: Statement | Declaration | Expression | Node): statement is VariableDeclaration {
+		return statement.kind === SyntaxKind.VariableDeclaration;
 	}
 
 	/**
@@ -197,12 +206,30 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * A predicate function that returns true if the given Statement is a a FunctionExpression.
+	 * A predicate function that returns true if the given Statement is a a LabeledStatement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isLabeledStatement (statement: Statement | Declaration | Expression | Node): statement is LabeledStatement {
+		return statement.kind === SyntaxKind.LabeledStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a FunctionExpression.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
 	public isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression {
 		return statement.kind === SyntaxKind.FunctionExpression;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a FunctionDeclaration.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isFunctionDeclaration (statement: Statement | Declaration | Expression | Node): statement is FunctionDeclaration {
+		return statement.kind === SyntaxKind.FunctionDeclaration;
 	}
 
 	/**
@@ -274,6 +301,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isImportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportDeclaration {
 		return statement.kind === SyntaxKind.ImportDeclaration;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an IfStatement.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isIfStatement (statement: Statement | Declaration | Expression | Node): statement is IfStatement {
+		return statement.kind === SyntaxKind.IfStatement;
 	}
 
 	/**
@@ -557,6 +593,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is an ExpressionWithTypeArguments.
+	 * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
+	 * @returns {boolean}
+	 */
+	public isExpressionWithTypeArguments (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is ExpressionWithTypeArguments {
+		return statement.kind === SyntaxKind.ExpressionWithTypeArguments;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a TypeLiteralNode.
 	 * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
 	 * @returns {boolean}
@@ -581,6 +626,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isClassDeclaration (statement: Statement | Declaration | Expression | Node): statement is ClassDeclaration {
 		return statement.kind === SyntaxKind.ClassDeclaration;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a ClassExpression.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isClassExpression (statement: Statement | Declaration | Expression | Node): statement is ClassExpression {
+		return statement.kind === SyntaxKind.ClassExpression;
 	}
 
 	/**
@@ -683,6 +737,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is a SourceFile.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isSourceFile (statement: Statement | Declaration | Expression | Node): statement is SourceFile {
+		return statement.kind === SyntaxKind.SourceFile;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is an Identifier.
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
@@ -777,6 +840,21 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			default:
 				return this.serializeToken(token);
 		}
+	}
+
+	/**
+	 * Serializes the given flag and returns the textual representation of it.
+	 * @param {NodeFlags} flag
+	 * @returns {string|null}
+	 */
+	public serializeFlag(flag: NodeFlags): string|null {
+		switch (flag) {
+			case NodeFlags.Const:
+				return "const";
+			case NodeFlags.Let:
+				return "let";
+		}
+		return null;
 	}
 
 	/**
@@ -1160,10 +1238,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Gets and formats all CallExpressions associated with the given statements.
 	 * These hold information such as the arguments the members are invoked with, generic type
 	 * arguments and such.
-	 * @param {NodeArray<Statement>} statements
+	 * @param {Statement[]} statements
 	 * @returns {ICallExpression[]}
 	 */
-	public getCallExpressions (statements: NodeArray<Statement>): ICallExpression[] {
+	public getCallExpressions (statements: Statement[]): ICallExpression[] {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
@@ -1178,10 +1256,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Gets and formats all NewExpressions associated with the given statements.
 	 * These hold information such as the arguments the constructor is invoked with, generic type
 	 * arguments and such.
-	 * @param {NodeArray<Statement>} statements
+	 * @param {Statement[]} statements
 	 * @returns {INewExpression[]}
 	 */
-	public getNewExpressions (statements: NodeArray<Statement>): INewExpression[] {
+	public getNewExpressions (statements: Statement[]): INewExpression[] {
 		const expressions: INewExpression[] = [];
 
 		statements.forEach(statement => {
@@ -1196,15 +1274,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * If given an ImportDeclaration, a formatted IModuleDependency will be returned holding the relative and full import-path
 	 * as well as any bindings that will live in the local scope of the given file.
 	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @param {string} filepath
 	 * @returns {IModuleDependency}
 	 */
-	public getImportDeclaration (statement: Statement | Declaration | Expression | Node, filepath: string): IModuleDependency {
+	public getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency {
 		if (!this.isImportDeclaration(statement)) throw new Error(`Could not get an import declaration for statement that isn't an ImportDeclaration!`);
+		const sourceFileProperties = this.getSourceFileProperties(statement);
+		const filePath = sourceFileProperties.filePath;
 
 		// TODO: Remove any declaration
 		const relativePath = (<any>statement.moduleSpecifier).text;
-		const fullPath = join(dirname(filepath), relativePath);
+		const fullPath = join(dirname(filePath), relativePath);
 		const clause = statement.importClause;
 
 		if (clause == null || clause.namedBindings == null) {
@@ -1235,14 +1314,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
-	 * and returns them in an AssignmentMap.
-	 * @param {NodeArray<Statement>} statements
+	 * and returns them in an AssignmentMap. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
 	 * @returns {AssignmentMap}
 	 */
-	public getVariableAssignments (statements: NodeArray<Statement>): AssignmentMap {
+	public getVariableAssignments (statements: Statement[], deep: boolean = false): AssignmentMap {
 		const assignmentMap: AssignmentMap = {};
+
 		for (const statement of statements) {
-			if (this.isVariableDeclaration(statement)) {
+			if (this.isVariableStatement(statement)) {
 				const declarations = statement.declarationList.declarations;
 				declarations.forEach(declaration => {
 
@@ -1273,22 +1354,141 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					}
 				});
 			}
-		}
+
+			if (deep) {
+				Object.assign(assignmentMap, this.getVariableAssignments(this.findChildStatements(statement), deep));
+			}
+
+		}		
 		return assignmentMap;
+	}
+
+	/**
+	 * Finds all "children" of the given statement, if it has any.
+	 * @param {Statement|Expression} statement
+	 * @returns {Statement[]}
+	 */
+	private findChildStatements (statement: Statement|Expression|Declaration): Statement[] {
+
+		if (this.isIfStatement(statement)) {
+			return this.findChildStatements(statement.thenStatement);
+		}
+
+		if (this.isBlockDeclaration(statement)) {
+			return statement.statements;
+		}
+
+		if (this.isArrowFunction(statement)) {
+			return this.findChildStatements(statement.body);
+		}
+
+		if (this.isLabeledStatement(statement)) {
+			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isFunctionDeclaration(statement)) {
+			return statement.body == null ? [] : this.findChildStatements(statement.body);
+		}
+
+		if (this.isExpressionStatement(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
+		if (this.isVariableStatement(statement)) {
+			const statements: Statement[] = [];
+
+			statement.declarationList.declarations.forEach(declaration => {
+				this.findChildStatements(declaration).forEach(childStatement => statements.push(childStatement));
+			});
+			return statements;
+		}
+
+		if (this.isVariableDeclaration(statement)) {
+			return statement.initializer == null ? [] : this.findChildStatements(statement.initializer);
+		}
+
+		if (this.isFunctionExpression(statement)) {
+			return this.findChildStatements(statement.body);
+		}
+
+		if (this.isMethodDeclaration(statement)) {
+			return statement.body == null ? [] : this.findChildStatements(statement.body);
+		}
+
+		if (this.isObjectLiteralExpression(statement)) {
+			const statements: Statement[] = [];
+
+			statement.properties.forEach(property => {
+				this.findChildStatements(property).forEach(childStatement => statements.push(childStatement));
+			});
+
+			return statements;
+		}
+
+		if (this.isPropertyAssignment(statement)) {
+			return this.findChildStatements(statement.initializer);
+		}
+
+		if (this.isConstructorDeclaration(statement)) {
+			return statement.body == null ? [] : this.findChildStatements(statement.body);
+		}
+
+		if (this.isArrayLiteralExpression(statement)) {
+			const statements: Statement[] = [];
+
+			statement.elements.forEach(element => {
+				this.findChildStatements(element).forEach(childStatement => statements.push(childStatement));
+			});
+
+			return statements;
+		}
+
+		if (this.isClassExpression(statement)) {
+			const statements: Statement[] = [];
+
+			statement.members.forEach(member => {
+				this.findChildStatements(member).forEach(childStatement => statements.push(childStatement));
+			});
+
+			return statements;
+		}
+
+		if (this.isStringLiteral(statement)) {
+			return [];
+		}
+
+		if (this.isNumericLiteral(statement)) {
+			return [];
+		}
+
+		if (this.isFirstLiteralToken(statement)) {
+			return [];
+		}
+
+		if (this.isTrueKeyword(statement)) {
+			return [];
+		}
+
+		if (this.isFalseKeyword(statement)) {
+			return [];
+		}
+
+		throw new TypeError(`${this.findChildStatements.name} could not find child statements for a statement of kind ${SyntaxKind[statement.kind]}`);
+		// return [];
 	}
 
 	/**
 	 * Gets all class declarations (if any) that occurs in the given array of statements
 	 * and returns them as an array.
-	 * @param {NodeArray<Statement>} statements
+	 * @param {Statement[]} statements
 	 * @param {string} filepath
 	 * @param {string} code
 	 * @returns {IClassDeclaration[]}
 	 */
-	public getClassDeclarations (statements: NodeArray<Statement>, filepath: string, code: string): IClassDeclaration[] {
+	public getClassDeclarations (statements: Statement[]): IClassDeclaration[] {
 		const declarations: IClassDeclaration[] = [];
 		for (const statement of statements) {
-			const declaration = this.isClassDeclaration(statement) ? this.getClassDeclaration(statement, filepath, code) : null;
+			const declaration = this.isClassDeclaration(statement) ? this.getClassDeclaration(statement) : null;
 			if (declaration != null) declarations.push(declaration);
 		}
 		return declarations;
@@ -1296,15 +1496,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given file and array of statements.
-	 * @param {NodeArray<Statement>} statements
-	 * @param {string} filepath
+	 * @param {Statement[]} statements
 	 * @returns {IModuleDependency[]}
 	 */
-	public getImportDeclarations (statements: NodeArray<Statement>, filepath: string): IModuleDependency[] {
+	public getImportDeclarations (statements: Statement[]): IModuleDependency[] {
 		const declarations: IModuleDependency[] = [];
 		for (const statement of statements) {
 			if (this.isImportDeclaration(statement)) {
-				const declaration = this.getImportDeclaration(statement, filepath);
+				const declaration = this.getImportDeclaration(statement);
 				declarations.push(declaration);
 			}
 		}
@@ -1314,10 +1513,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Gets all ExportDeclarations (if any) that occur in the given array of statements and returns a Set
 	 * of all the identifiers that are being exported.
-	 * @param {NodeArray<Statement>} statements
+	 * @param {Statement[]} statements
 	 * @returns {Set<string>}
 	 */
-	public getExportDeclarations (statements: NodeArray<Statement>): Set<string> {
+	public getExportDeclarations (statements: Statement[]): Set<string> {
 		const declarations: Set<string> = new Set();
 		for (const statement of statements) {
 			if (this.isExportDeclaration(statement)) {
@@ -1337,7 +1536,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Expression|Node} rawStatement
 	 * @returns {NullableInitializationValue}
 	 */
-	public getInitializedValue (rawStatement: Statement | Expression | Node): InitializationValue {
+	public getInitializedValue(rawStatement: Statement | Expression | Node): InitializationValue {
 
 		if (this.isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
@@ -1431,29 +1630,34 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					const exp = this.getInitializedValue(property.expression);
 					exp.forEach(item => obj.push(item));
 				} else {
-					if (property.name == null) return;
 
-					let value = this.isPropertyAssignment(property) ? this.getInitializedValue(property.initializer) : null;
-					if (property.name == null) return;
+					if (this.isPropertyAssignment(property)) {
+						if (property.name == null) return;
 
-					// Check if the property name is computed (.eg. [key]: "foo").
-					if (this.isComputedPropertyName(property.name)) obj.push("[");
+						// Check if the property name is computed (.eg. [key]: "foo").
+						if (this.isComputedPropertyName(property.name)) obj.push("[");
 
-					// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
-					if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
-						const callExpression = this.getInitializedValue(property.name.expression);
-						callExpression.forEach(item => obj.push(item));
+						// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
+						if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
+							const callExpression = this.getInitializedValue(property.name.expression);
+							callExpression.forEach(item => obj.push(item));
+						} else {
+							// Otherwise, just push the name of it.
+							obj.push(this.getNameOfMember(property.name, true, true));
+						}
+
+						if (this.isComputedPropertyName(property.name)) obj.push("]");
+
+						obj.push(":");
+						const value = this.getInitializedValue(property.initializer);
+						value.forEach(item => obj.push(item));
 					}
 
-					else {
-						// Otherwise, just push the name of it.
-						obj.push(this.getNameOfMember(property.name, true));
+					else if (this.isMethodDeclaration(property)) {
+						const value = this.getInitializedValue(property);
+						value.forEach(item => obj.push(item));
 					}
 
-					if (this.isComputedPropertyName(property.name)) obj.push("]");
-					obj.push(":");
-					if (value == null) obj.push(value);
-					else value.forEach(item => obj.push(item));
 				}
 				if (index !== rawStatement.properties.length - 1) obj.push(",");
 			});
@@ -1496,6 +1700,62 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [this.getNameOfMember(rawStatement)];
 		}
 
+		if (this.isConstructorDeclaration(rawStatement)) {
+			const arr: InitializationValue = ["constructor"];
+			arr.push("(");
+			const args = rawStatement.parameters;
+			if (args != null) args.forEach((arg, index) => {
+				const value = this.getInitializedValue(arg);
+				value.forEach(item => {
+					arr.push(item);
+					if (index !== args.length - 1) arr.push(",");
+				});
+			});
+			arr.push(")");
+			arr.push("{");
+			const body = rawStatement.body == null ? [] : this.getInitializedValue(rawStatement.body);
+			body.forEach(part => arr.push(part));
+			arr.push("}");
+			return arr;
+		}
+
+		if (this.isClassExpression(rawStatement)) {
+			const name = rawStatement.name == null ? [] : [this.getNameOfMember(rawStatement.name, false, true)];
+			const heritage = rawStatement.heritageClauses == null ? null : this.formatHeritageClauses(rawStatement.heritageClauses).extendsClass;
+			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage];
+			const members: InitializationValue = ["{"];
+			
+			rawStatement.members.forEach(member => {
+				const content = this.getInitializedValue(member);
+				// Remove empty strings from the contents and add everything else to the value array.
+				content.forEach(part => members.push(part));
+			});
+			members.push("}");
+
+			return ["class", " ", ...name, ...heritageFormatted,  ...members];
+		}
+
+		if (this.isVariableDeclaration(rawStatement)) {
+			
+			const name = this.getNameOfMember(rawStatement.name, false, true);
+			const type = rawStatement.type == null ? [] : [":", ...this.getTypeExpression(rawStatement.type)];
+			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getInitializedValue(rawStatement.initializer)];
+			return [name, ...type, ...initializer];
+		}
+
+		if (this.isVariableStatement(rawStatement)) {
+			const keyword = this.serializeFlag(rawStatement.declarationList.flags) || "var";
+			const values: InitializationValue = [keyword, " "];
+			
+			rawStatement.declarationList.declarations.forEach(declaration => {
+				const content = this.getInitializedValue(declaration);
+				// Remove empty strings from the contents and add everything else to the value array.
+				content.forEach(part => values.push(part));
+			});
+
+			return values;
+		}
+
 		if (this.isParameterDeclaration(rawStatement)) {
 			const name = this.getNameOfMember(rawStatement.name);
 			const initializer = rawStatement.initializer == null ? null : this.getInitializedValue(rawStatement.initializer);
@@ -1520,13 +1780,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			arr.push(")");
 			equalsGreaterThanToken.forEach(item => arr.push(item));
-			body.forEach(item => arr.push(item));
+
+			if (this.isBlockDeclaration(rawStatement.body)) {
+				arr.push("{");
+				body.forEach(item => arr.push(item));
+				arr.push("}");
+			} 
+			else {
+				body.forEach(item => arr.push(item));
+			}
+
 			return arr;
 		}
 
-		if (this.isFunctionExpression(rawStatement)) {
-			const arr: InitializationValue = ["function"];
-			const body = this.getInitializedValue(rawStatement.body);
+		if (this.isFunctionExpression(rawStatement) || this.isMethodDeclaration(rawStatement)) {
+			const arr: InitializationValue = this.isFunctionExpression(rawStatement) ? ["function", " "] : [];
+			const body = rawStatement.body == null ? null : this.getInitializedValue(rawStatement.body);
 
 			if (rawStatement.name != null) {
 				arr.push(this.getNameOfMember(rawStatement.name));
@@ -1541,7 +1810,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			});
 			arr.push(")");
 			arr.push("{");
-			body.forEach(item => arr.push(item));
+			if (body != null) body.forEach(item => arr.push(item));
 			arr.push("}");
 			return arr;
 		}
@@ -1615,6 +1884,21 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Returns true if the name of an identifier cannot be computed or refer to another identifier.
+	 * @param {Statement} statement
+	 * @returns {boolean}
+	 */
+	private memberHasNoBindingIdentifier(statement: Statement|Identifier): boolean {
+		return statement.parent != null && (
+			this.isPropertyAssignment(statement.parent) ||
+			this.isParameterDeclaration(statement.parent) ||
+			this.isMethodDeclaration(statement.parent) ||
+			this.isFunctionDeclaration(statement.parent) ||
+			this.isFunctionExpression(statement.parent)
+		);
+	}
+
+	/**
 	 * Detects the name/key of a member of something (for example, an ObjectLiteral). If the second argument is truthy,
 	 * the name may also be a non-string entity.
 	 * @param {DeclarationName} name
@@ -1640,7 +1924,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isIdentifierObject(name)) {
 			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
 
-			if (name.parent != null && (this.isPropertyAssignment(name.parent) || this.isParameterDeclaration(name.parent))) {
+			if (this.memberHasNoBindingIdentifier(name)) {
 				// Then this is the key of a property-assignment. We already know it isn't computed, so it can't be an identifier to another variable.
 				return marshalled;
 			}
@@ -1698,28 +1982,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Flattens and returns an initialization value.
-	 * @param {InitializationValue} value
-	 * @param {boolean} [stringifyIdentifiers=false]
-	 * @returns {string|null}
-	 */
-	public join (value: InitializationValue, stringifyIdentifiers: boolean = false): string | null {
-		let str = "";
-		value.map(item => {
-			const trimmed = typeof item === "string" ? item.trim() : stringifyIdentifiers && item instanceof BindingIdentifier ? item.name : item;
-			const whitespaced = trimmed === "new" ? `${trimmed} ` : trimmed;
-			str += `${whitespaced}`;
-		});
-		return str;
-	}
-
-	/**
 	 * Tokenizes the type information from the given statement and returns a TypeExpression.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {TypeExpression}
 	 */
 	private getTypeExpression (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): TypeExpression {
-
 
 		if (this.isTypeNode(statement)) {
 			if ((this.isTypeReferenceNode(statement) || this.isTypeReference(statement)) && this.isIdentifierObject(statement.typeName)) {
@@ -1832,6 +2099,23 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isTypeReference(statement) && this.isIdentifierObject(statement.typeName)) {
 			const name = statement.typeName.text;
+			let typeArguments: TypeExpression | null = null;
+			const typeArgs = statement.typeArguments;
+			if (typeArgs != null) {
+				typeArgs.forEach((typeArgument, index) => {
+					const value = this.getTypeExpression(typeArgument);
+					value.forEach(part => {
+						if (typeArguments == null) typeArguments = [];
+						typeArguments.push(part);
+						if (index !== typeArgs.length - 1) typeArguments.push(", ");
+					});
+				});
+			}
+			return [{name, typeArguments}];
+		}
+
+		if (this.isExpressionWithTypeArguments(statement)) {
+			const name = this.getNameOfMember(statement.expression, false, true);
 			let typeArguments: TypeExpression | null = null;
 			const typeArgs = statement.typeArguments;
 			if (typeArgs != null) {
@@ -2107,15 +2391,39 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Walks up the inheritance chain from the given statement until it finds a SourceFile and returns an ISourceFileProperties object.
+	 * @param {Statement} statement
+	 * @returns {ISourceFileProperties}
+	 */
+	private getSourceFileProperties(statement: Statement): ISourceFileProperties {
+		let current: Statement|Node = statement;
+		
+		while (!this.isSourceFile(current)) {
+			if (current.parent == null) break;
+			current = current.parent;
+		}
+
+		if (!this.isSourceFile(current)) {
+			throw new TypeError(`${this.getSourceFileProperties.name} could not find a source file from a given statement of kind ${SyntaxKind[statement.kind]}`);
+		}
+
+		return {
+			filePath: current.fileName,
+			fileContents: current.text
+		}
+	}
+
+	/**
 	 * Gets a class declaration, including its methods, positions, which class it derives from,
 	 * props and constructor parameters.
 	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @param {string} filepath
-	 * @param {string} fileContents
 	 * @returns {IClassDeclaration}
 	 */
-	public getClassDeclaration (statement: ClassDeclaration, filepath: string, fileContents: string): IClassDeclaration | null {
+	public getClassDeclaration (statement: ClassDeclaration): IClassDeclaration | null {
 		if (statement.name == null) return null;
+		const sourceFileProperties = this.getSourceFileProperties(statement);
+		const filePath = sourceFileProperties.filePath;
+		const fileContents = sourceFileProperties.fileContents;
 
 		const className = statement.name.text;
 		const classDeclarationStartsAt = statement.pos;
@@ -2127,7 +2435,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const declaration: IClassDeclaration = {
 			name: className,
-			filepath,
+			filePath,
 			methods: {},
 			heritage: statement.heritageClauses == null ? null : this.formatHeritageClauses(statement.heritageClauses),
 			constructor: null,
