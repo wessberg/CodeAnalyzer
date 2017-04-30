@@ -28,10 +28,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {string} fileName
 	 * @param {string} content
 	 * @param {number} [version=0]
-	 * @returns {void}
+	 * @returns {NodeArray<Statement>}
 	 */
 	public addFile (fileName: string, content: string, version: number = 0): NodeArray<Statement> {
 		this.files.set(fileName, {version, content});
+		return this.getFile(fileName);
+	}
+
+	/**
+	 * Gets the Statements associated with the given filename.
+	 * @param {string} fileName
+	 * @returns {NodeArray<Statement>}
+	 */
+	public getFile(fileName: string): NodeArray<Statement> {
 		return this.languageService.getProgram().getSourceFile(fileName).statements;
 	}
 
@@ -1537,21 +1546,56 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Gets and formats all CallExpressions associated with the given file.
+	 * These hold information such as the arguments the members are invoked with, generic type
+	 * arguments and such.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {ICallExpression[]}
+	 */	
+	public getCallExpressionsForFile(fileName: string, deep: boolean = false): ICallExpression[] {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getCallExpressionsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getCallExpressions(statements, deep);
+	}
+
+	/**
 	 * Gets and formats all CallExpressions associated with the given statements.
 	 * These hold information such as the arguments the members are invoked with, generic type
 	 * arguments and such.
 	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
 	 * @returns {ICallExpression[]}
 	 */
-	public getCallExpressions (statements: Statement[]): ICallExpression[] {
+	public getCallExpressions (statements: Statement[], deep: boolean = false): ICallExpression[] {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
 			if (this.isCallExpression(statement) || this.isExpressionStatement(statement)) {
 				expressions.push(this.getCallExpression(statement));
 			}
+
+			if (deep) {
+				const otherCallExpressions = this.getCallExpressions(this.findChildStatements(statement), deep);
+				otherCallExpressions.forEach(exp => expressions.push(exp));
+			}
+
 		});
 		return expressions;
+	}
+
+	/**
+	 * Gets and formats all NewExpressions associated with the given file.
+	 * These hold information such as the arguments the constructor is invoked with, generic type
+	 * arguments and such.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {INewExpression[]}
+	 */
+	public getNewExpressionsForFile(fileName: string, deep: boolean = false): INewExpression[] {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getNewExpressionsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getNewExpressions(statements, deep);
 	}
 
 	/**
@@ -1559,15 +1603,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * These hold information such as the arguments the constructor is invoked with, generic type
 	 * arguments and such.
 	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
 	 * @returns {INewExpression[]}
 	 */
-	public getNewExpressions (statements: Statement[]): INewExpression[] {
+	public getNewExpressions (statements: Statement[], deep: boolean = false): INewExpression[] {
 		const expressions: INewExpression[] = [];
 
 		statements.forEach(statement => {
 			if (this.isExpressionStatement(statement) && this.isNewExpression(statement.expression)) {
 				expressions.push(this.getNewExpression(statement.expression));
 			}
+
+			if (deep) {
+				const otherNewExpressions = this.getNewExpressions(this.findChildStatements(statement), deep);
+				otherNewExpressions.forEach(exp => expressions.push(exp));
+			}
+
 		});
 		return expressions;
 	}
@@ -1578,7 +1629,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {IModuleDependency}
 	 */
-	public getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency {
+	private getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency {
 		if (!this.isImportDeclaration(statement)) throw new Error(`Could not get an import declaration for statement that isn't an ImportDeclaration!`);
 		const sourceFileProperties = this.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -1615,6 +1666,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Gets all variable assignments (if any) that occurs in the given file
+	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {VariableIndexer}
+	 */	
+	public getVariableAssignmentsForFile(fileName: string, deep: boolean = false): VariableIndexer {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getVariableAssignmentsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getVariableAssignments(statements, deep);
+	}
+
+	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
 	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {Statement[]} statements
@@ -1631,7 +1695,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 					if (this.isIdentifierObject(declaration.name)) {
 						const name = declaration.name.text;
-						const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
+						const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
 						const startsAt = declaration.pos;
 						const endsAt = declaration.end;
 						const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
@@ -1966,26 +2030,56 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Gets all class declarations (if any) that occurs in the given file
+	 * and returns them as a ClassIndexer.
+	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {ClassIndexer}
+	 */	
+	public getClassDeclarationsForFile(fileName: string, deep: boolean = false): ClassIndexer {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getClassDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getClassDeclarations(statements, deep);
+	}
+
+	/**
 	 * Gets all class declarations (if any) that occurs in the given array of statements
 	 * and returns them as a ClassIndexer.
 	 * @param {Statement[]} statements
-	 * @param {string} filepath
-	 * @param {string} code
+	 * @param {boolean} [deep=false]
 	 * @returns {ClassIndexer}
 	 */
-	public getClassDeclarations (statements: Statement[]): ClassIndexer {
+	public getClassDeclarations (statements: Statement[], deep: boolean = false): ClassIndexer {
 		const declarations: ClassIndexer = {};
 		for (const statement of statements) {
 			const declaration = this.isClassDeclaration(statement) ? this.getClassDeclaration(statement) : null;
 			if (declaration != null) {
 				declarations[declaration.name] = declaration;
 			}
+			if (deep) {
+				const otherDeclarations = this.getClassDeclarations(this.findChildStatements(statement), deep);
+				Object.keys(otherDeclarations).forEach(key => {
+					// Only assign the deep class to the declarations if there isn't a match in the scope above it.
+					if (declarations[key] == null) Object.assign(declarations, { [key]: otherDeclarations[key] });
+				});
+			}
 		}
 		return declarations;
 	}
 
 	/**
-	 * Gets and returns all ImportDeclarations (if any) that occur in the given file and array of statements.
+	 * Gets and returns all ImportDeclarations (if any) that occur in the given file
+	 * @param {string} fileName
+	 * @returns {IModuleDependency[]}
+	 */
+	public getImportDeclarationsForFile(fileName: string): IModuleDependency[] {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getImportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getImportDeclarations(statements);
+	}
+
+	/**
+	 * Gets and returns all ImportDeclarations (if any) that occur in the given array of statements.
 	 * @param {Statement[]} statements
 	 * @returns {IModuleDependency[]}
 	 */
@@ -1998,6 +2092,18 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 		}
 		return declarations;
+	}
+
+	/**
+	 * Gets all ExportDeclarations (if any) that occur in the given file and returns a Set
+	 * of all the identifiers that are being exported.
+	 * @param {string} fileName
+	 * @returns {Set<string>}
+	 */	
+	public getExportDeclarationsForFile(fileName: string): Set<string> {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getExportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getExportDeclarations(statements);
 	}
 
 	/**
@@ -2026,7 +2132,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Expression|Node} rawStatement
 	 * @returns {NullableInitializationValue}
 	 */
-	public getInitializedValue(rawStatement: Statement | Expression | Node): InitializationValue {
+	public getValueExpression(rawStatement: Statement | Expression | Node): InitializationValue {
 
 		if (this.isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
@@ -2053,16 +2159,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isTypeAssertionExpression(rawStatement)) {
-			return this.getInitializedValue(rawStatement.expression);
+			return this.getValueExpression(rawStatement.expression);
 		}
 
 		if (this.isAwaitExpression(rawStatement)) {
-			return ["await", " ", ...this.getInitializedValue(rawStatement.expression)];
+			return ["await", " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (this.isTemplateSpan(rawStatement)) {
-			const head = this.getInitializedValue(rawStatement.expression);
-			const tail = this.getInitializedValue(rawStatement.literal);
+			const head = this.getValueExpression(rawStatement.expression);
+			const tail = this.getValueExpression(rawStatement.literal);
 			const headNormalized: InitializationValue = [];
 			head.forEach(part => {
 				if (part instanceof BindingIdentifier) {
@@ -2077,34 +2183,34 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isCatchClause(rawStatement)) {
-			return ["catch", "(", ...this.getInitializedValue(rawStatement.variableDeclaration), ")", "{", ...this.getInitializedValue(rawStatement.block), "}"];
+			return ["catch", "(", ...this.getValueExpression(rawStatement.variableDeclaration), ")", "{", ...this.getValueExpression(rawStatement.block), "}"];
 		}
 
 		if (this.isExpressionStatement(rawStatement)) {
-			return this.getInitializedValue(rawStatement.expression);
+			return this.getValueExpression(rawStatement.expression);
 		}
 
 		if (this.isTryStatement(rawStatement)) {
-			let arr: InitializationValue = ["try", "{", ...this.getInitializedValue(rawStatement.tryBlock), "}"];
-			if (rawStatement.catchClause != null ) arr = [...arr, ...this.getInitializedValue(rawStatement.catchClause)];
-			if (rawStatement.finallyBlock != null) arr = [...arr, "finally", "{", ...this.getInitializedValue(rawStatement.finallyBlock), "}"];
+			let arr: InitializationValue = ["try", "{", ...this.getValueExpression(rawStatement.tryBlock), "}"];
+			if (rawStatement.catchClause != null ) arr = [...arr, ...this.getValueExpression(rawStatement.catchClause)];
+			if (rawStatement.finallyBlock != null) arr = [...arr, "finally", "{", ...this.getValueExpression(rawStatement.finallyBlock), "}"];
 			return arr;
 		}
 
 		if (this.isTypeOfExpression(rawStatement)) {
-			return ["typeof", " ", ...this.getInitializedValue(rawStatement.expression)];
+			return ["typeof", " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (this.isPrefixUnaryExpression(rawStatement)) {
-			return [this.serializeToken(rawStatement.operator), ...this.getInitializedValue(rawStatement.operand)];
+			return [this.serializeToken(rawStatement.operator), ...this.getValueExpression(rawStatement.operand)];
 		}
 
 		if (this.isPostfixUnaryExpression(rawStatement)) {
-			return [...this.getInitializedValue(rawStatement.operand), this.serializeToken(rawStatement.operator)];
+			return [...this.getValueExpression(rawStatement.operand), this.serializeToken(rawStatement.operator)];
 		}
 
 		if (this.isDeleteExpression(rawStatement)) {
-			return [this.marshalToken(rawStatement.kind), " ", ...this.getInitializedValue(rawStatement.expression)];
+			return [this.marshalToken(rawStatement.kind), " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (this.isEmptyStatement(rawStatement)) {
@@ -2116,7 +2222,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const values: InitializationValue = [keyword, " "];
 			
 			rawStatement.declarations.forEach((declaration, index) => {
-				const content = this.getInitializedValue(declaration);
+				const content = this.getValueExpression(declaration);
 				// Remove empty strings from the contents and add everything else to the value array.
 				content.forEach(part => values.push(part));
 				if (index !== rawStatement.declarations.length - 1) values.push(",");
@@ -2126,19 +2232,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isIfStatement(rawStatement)) {
-			const arr: InitializationValue = ["if", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.thenStatement), "}"];
+			const arr: InitializationValue = ["if", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.thenStatement), "}"];
 			return arr;
 		}
 
 		if (this.isForOfStatement(rawStatement)) {
 			const arr: InitializationValue = [
 				"for",
-				...(rawStatement.awaitModifier == null ? [] : [" ", ...this.getInitializedValue(rawStatement.awaitModifier)]),
+				...(rawStatement.awaitModifier == null ? [] : [" ", ...this.getValueExpression(rawStatement.awaitModifier)]),
 				"(",
-				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), " ", "of", " ",
-				...this.getInitializedValue(rawStatement.expression),
+				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), " ", "of", " ",
+				...this.getValueExpression(rawStatement.expression),
 				")", "{",
-				...this.getInitializedValue(rawStatement.statement),
+				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
 			return arr;
@@ -2147,9 +2253,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isForInStatement(rawStatement)) {
 			const arr: InitializationValue = [
 				"for", "(",
-				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), " ", "in", " ",
-				...this.getInitializedValue(rawStatement.expression), ")", "{",
-				...this.getInitializedValue(rawStatement.statement),
+				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), " ", "in", " ",
+				...this.getValueExpression(rawStatement.expression), ")", "{",
+				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
 			return arr;
@@ -2158,17 +2264,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isForStatement(rawStatement)) {
 			const arr: InitializationValue = [
 				"for", "(",
-				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), ";",
-				...(rawStatement.condition == null ? [] : this.getInitializedValue(rawStatement.condition)), ";",
-				...(rawStatement.incrementor == null ? [] : this.getInitializedValue(rawStatement.incrementor)), ")", "{",
-				...this.getInitializedValue(rawStatement.statement),
+				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), ";",
+				...(rawStatement.condition == null ? [] : this.getValueExpression(rawStatement.condition)), ";",
+				...(rawStatement.incrementor == null ? [] : this.getValueExpression(rawStatement.incrementor)), ")", "{",
+				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
 			return arr;
 		}
 
 		if (this.isThrowStatement(rawStatement)) {
-			return [this.marshalToken(rawStatement.kind), " ", ...this.getInitializedValue(rawStatement.expression)];
+			return [this.marshalToken(rawStatement.kind), " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (this.isBreakStatement(rawStatement)) {
@@ -2180,13 +2286,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isDoStatement(rawStatement)) {
-			return [this.marshalToken(rawStatement.kind), "{", ...this.getInitializedValue(rawStatement.expression), "}"];
+			return [this.marshalToken(rawStatement.kind), "{", ...this.getValueExpression(rawStatement.expression), "}"];
 		}
 
 		if (this.isDefaultClause(rawStatement)) {
 			const arr: InitializationValue = ["default", ":", "{"];
 			rawStatement.statements.forEach(statement => {
-				const value = this.getInitializedValue(statement);
+				const value = this.getValueExpression(statement);
 				value.forEach(part => arr.push(part));
 			});
 			arr.push("}");
@@ -2194,13 +2300,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isWhileStatement(rawStatement)) {
-			return ["while", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.statement), "}"];
+			return ["while", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.statement), "}"];
 		}
 
 		if (this.isCaseClause(rawStatement)) {
-			const arr: InitializationValue = ["case", " ", ...this.getInitializedValue(rawStatement.expression), ":", "{"];
+			const arr: InitializationValue = ["case", " ", ...this.getValueExpression(rawStatement.expression), ":", "{"];
 			rawStatement.statements.forEach(statement => {
-				const value = this.getInitializedValue(statement);
+				const value = this.getValueExpression(statement);
 				value.forEach(part => arr.push(part));
 			});
 			arr.push("}");
@@ -2210,22 +2316,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isCaseBlock(rawStatement)) {
 			const arr: InitializationValue = [];
 			rawStatement.clauses.forEach(block => {
-				const value = this.getInitializedValue(block);
+				const value = this.getValueExpression(block);
 				value.forEach(part => arr.push(part));
 			});
 			return arr;
 		}
 
 		if (this.isSwitchStatement(rawStatement)) {
-			return ["switch", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.caseBlock), "}"];
+			return ["switch", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.caseBlock), "}"];
 		}
 
 		if (this.isBinaryExpression(rawStatement)) {
 			const arr: InitializationValue = [];
 
-			const left = this.getInitializedValue(rawStatement.left);
-			const operator = this.getInitializedValue(rawStatement.operatorToken);
-			const right = this.getInitializedValue(rawStatement.right);
+			const left = this.getValueExpression(rawStatement.left);
+			const operator = this.getValueExpression(rawStatement.operatorToken);
+			const right = this.getValueExpression(rawStatement.right);
 
 			left.forEach(item => arr.push(item));
 			operator.forEach(item => arr.push(item));
@@ -2235,11 +2341,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isConditionalExpression(rawStatement)) {
 			const arr: InitializationValue = [];
-			const condition = this.getInitializedValue(rawStatement.condition);
-			const question = this.getInitializedValue(rawStatement.questionToken);
-			const colon = this.getInitializedValue(rawStatement.colonToken);
-			const whenTrue = this.getInitializedValue(rawStatement.whenTrue);
-			const whenFalse = this.getInitializedValue(rawStatement.whenFalse);
+			const condition = this.getValueExpression(rawStatement.condition);
+			const question = this.getValueExpression(rawStatement.questionToken);
+			const colon = this.getValueExpression(rawStatement.colonToken);
+			const whenTrue = this.getValueExpression(rawStatement.whenTrue);
+			const whenFalse = this.getValueExpression(rawStatement.whenFalse);
 
 			condition.forEach(item => arr.push(item));
 			question.forEach(item => arr.push(item));
@@ -2250,7 +2356,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isCallExpression(rawStatement) || this.isNewExpression(rawStatement)) {
-			const left = this.getInitializedValue(rawStatement.expression);
+			const left = this.getValueExpression(rawStatement.expression);
 			const arr: InitializationValue = [];
 			if (this.isNewExpression(rawStatement)) {
 				arr.push("new");
@@ -2260,7 +2366,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			arr.push("(");
 			const args = rawStatement.arguments;
 			if (args != null) args.forEach((arg, index) => {
-				const value = this.getInitializedValue(arg);
+				const value = this.getValueExpression(arg);
 				value.forEach(item => {
 					arr.push(item);
 					if (index !== args.length - 1) arr.push(",");
@@ -2276,7 +2382,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				if (this.isSpreadAssignment(property)) {
 					obj.push("...");
-					const exp = this.getInitializedValue(property.expression);
+					const exp = this.getValueExpression(property.expression);
 					exp.forEach(item => obj.push(item));
 				} else {
 
@@ -2288,7 +2394,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 						// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
 						if (this.isComputedPropertyName(property.name) && this.isCallExpression(property.name.expression)) {
-							const callExpression = this.getInitializedValue(property.name.expression);
+							const callExpression = this.getValueExpression(property.name.expression);
 							callExpression.forEach(item => obj.push(item));
 						} else {
 							// Otherwise, just push the name of it.
@@ -2298,12 +2404,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						if (this.isComputedPropertyName(property.name)) obj.push("]");
 
 						obj.push(":");
-						const value = this.getInitializedValue(property.initializer);
+						const value = this.getValueExpression(property.initializer);
 						value.forEach(item => obj.push(item));
 					}
 
 					else if (this.isMethodDeclaration(property)) {
-						const value = this.getInitializedValue(property);
+						const value = this.getValueExpression(property);
 						value.forEach(item => obj.push(item));
 					}
 
@@ -2317,7 +2423,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isArrayLiteralExpression(rawStatement)) {
 			const arr: InitializationValue = ["["];
 			rawStatement.elements.forEach((element, index) => {
-				const value = this.getInitializedValue(element);
+				const value = this.getValueExpression(element);
 				value.forEach(part => arr.push(part));
 				const lastPart = value[value.length - 1];
 				if (index !== rawStatement.elements.length - 1 && lastPart !== "...") arr.push(",");
@@ -2329,10 +2435,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isTemplateExpression(rawStatement)) {
 
-			let values: InitializationValue = [...this.getInitializedValue(rawStatement.head)];
+			let values: InitializationValue = [...this.getValueExpression(rawStatement.head)];
 
 			rawStatement.templateSpans.forEach(span => {
-				const content = this.getInitializedValue(span);
+				const content = this.getValueExpression(span);
 				// Remove empty strings from the contents and add everything else to the value array.
 				content.filter(item => !(typeof item === "string" && item.length < 1)).forEach(checkedItem => values.push(checkedItem));
 			});
@@ -2343,10 +2449,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isPropertyAccessExpression(rawStatement) || this.isElementAccessExpression(rawStatement)) {
 			const arr: InitializationValue = [];
-			const left = this.getInitializedValue(rawStatement.expression);
+			const left = this.getValueExpression(rawStatement.expression);
 			const right = this.isPropertyAccessExpression(rawStatement) 
-				? this.getInitializedValue(rawStatement.name)
-				: rawStatement.argumentExpression == null ? [] : ["[", ...this.getInitializedValue(rawStatement.argumentExpression), "]"];
+				? this.getValueExpression(rawStatement.name)
+				: rawStatement.argumentExpression == null ? [] : ["[", ...this.getValueExpression(rawStatement.argumentExpression), "]"];
 			
 			const lastLeft = left[left.length - 1];
 			const firstRight = right[0];
@@ -2375,7 +2481,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			arr.push("(");
 			const args = rawStatement.parameters;
 			if (args != null) args.forEach((arg, index) => {
-				const value = this.getInitializedValue(arg);
+				const value = this.getValueExpression(arg);
 				value.forEach(item => {
 					arr.push(item);
 					if (index !== args.length - 1) arr.push(",");
@@ -2383,7 +2489,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			});
 			arr.push(")");
 			arr.push("{");
-			const body = rawStatement.body == null ? [] : this.getInitializedValue(rawStatement.body);
+			const body = rawStatement.body == null ? [] : this.getValueExpression(rawStatement.body);
 			body.forEach(part => arr.push(part));
 			arr.push("}");
 			return arr;
@@ -2396,7 +2502,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const members: InitializationValue = ["{"];
 			
 			rawStatement.members.forEach(member => {
-				const content = this.getInitializedValue(member);
+				const content = this.getValueExpression(member);
 				// Remove empty strings from the contents and add everything else to the value array.
 				content.forEach(part => members.push(part));
 			});
@@ -2409,17 +2515,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			
 			const name = this.getNameOfMember(rawStatement.name, false, true);
 			const type = rawStatement.type == null ? [] : [":", ...this.getTypeExpression(rawStatement.type)];
-			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getInitializedValue(rawStatement.initializer)];
+			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getValueExpression(rawStatement.initializer)];
 			return [name, ...type, ...initializer];
 		}
 
 		if (this.isVariableStatement(rawStatement)) {
-			return this.getInitializedValue(rawStatement.declarationList);
+			return this.getValueExpression(rawStatement.declarationList);
 		}
 
 		if (this.isParameterDeclaration(rawStatement)) {
 			const name = this.getNameOfMember(rawStatement.name);
-			const initializer = rawStatement.initializer == null ? null : this.getInitializedValue(rawStatement.initializer);
+			const initializer = rawStatement.initializer == null ? null : this.getValueExpression(rawStatement.initializer);
 			const arr: InitializationValue = [name];
 			if (initializer != null) {
 				arr.push("=");
@@ -2430,11 +2536,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isArrowFunction(rawStatement)) {
 			const arr: InitializationValue = ["("];
-			const equalsGreaterThanToken = this.getInitializedValue(rawStatement.equalsGreaterThanToken);
-			const body = this.getInitializedValue(rawStatement.body);
+			const equalsGreaterThanToken = this.getValueExpression(rawStatement.equalsGreaterThanToken);
+			const body = this.getValueExpression(rawStatement.body);
 
 			rawStatement.parameters.forEach((parameter, index) => {
-				const value = this.getInitializedValue(parameter);
+				const value = this.getValueExpression(parameter);
 				value.forEach(item => arr.push(item));
 				if (index !== rawStatement.parameters.length - 1) arr.push(",");
 			});
@@ -2456,7 +2562,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isFunctionExpression(rawStatement) || this.isMethodDeclaration(rawStatement)) {
 			const arr: InitializationValue = this.isFunctionExpression(rawStatement) ? ["function", " "] : [];
-			const body = rawStatement.body == null ? null : this.getInitializedValue(rawStatement.body);
+			const body = rawStatement.body == null ? null : this.getValueExpression(rawStatement.body);
 
 			if (rawStatement.name != null) {
 				arr.push(this.getNameOfMember(rawStatement.name));
@@ -2465,7 +2571,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			arr.push("(");
 
 			rawStatement.parameters.forEach((parameter, index) => {
-				const value = this.getInitializedValue(parameter);
+				const value = this.getValueExpression(parameter);
 				value.forEach(item => arr.push(item));
 				if (index !== rawStatement.parameters.length - 1) arr.push(",");
 			});
@@ -2479,22 +2585,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isBlockDeclaration(rawStatement)) {
 			const arr: InitializationValue = [];
 			rawStatement.statements.forEach(statement => {
-				const value = this.getInitializedValue(statement);
+				const value = this.getValueExpression(statement);
 				value.forEach(item => arr.push(item));
 			});
 			return arr;
 		}
 
 		if (this.isSpreadElement(rawStatement)) {
-			return ["...", ...this.getInitializedValue(rawStatement.expression)];
+			return ["...", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (this.isParenthesizedExpression(rawStatement)) {
-			return ["(", ...this.getInitializedValue(rawStatement.expression), ")"];
+			return ["(", ...this.getValueExpression(rawStatement.expression), ")"];
 		}
 
 		if (this.isReturnStatement(rawStatement)) {
-			return [this.marshalToken(rawStatement.kind), " ", ...(rawStatement.expression == null ? [] : this.getInitializedValue(rawStatement.expression))];
+			return [this.marshalToken(rawStatement.kind), " ", ...(rawStatement.expression == null ? [] : this.getValueExpression(rawStatement.expression))];
 		}
 
 		if (this.isTokenObject(rawStatement)) {
@@ -2505,7 +2611,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [this.getNameOfMember(rawStatement, true)];
 		}
 
-		throw new TypeError(`${this.getInitializedValue.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
+		throw new TypeError(`${this.getValueExpression.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
 	}
 
 	/**
@@ -2889,7 +2995,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
 		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const valueExpression = declaration.initializer == null ? null : this.getInitializedValue(declaration.initializer);
+		const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
 		// TODO: Resolve value!
 		const valueResolved = "";
 		return {
@@ -2954,7 +3060,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const typeExpression = parameter.type == null ? null : this.getTypeExpression(parameter);
 		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const valueExpression = parameter.initializer != null ? this.getInitializedValue(parameter.initializer) : null;
+		const valueExpression = parameter.initializer != null ? this.getValueExpression(parameter.initializer) : null;
 		// TODO: Compute this!
 		const valueResolved = "";
 		return {
@@ -2981,7 +3087,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	private formatArgument (argument: Expression): IArgument {
 		const startsAt = argument.pos;
 		const endsAt = argument.end;
-		const valueExpression = this.getInitializedValue(argument);
+		const valueExpression = this.getValueExpression(argument);
 		// TODO: Compute this!
 		const valueResolved = "";
 		return {
@@ -3156,7 +3262,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {IClassDeclaration}
 	 */
-	public getClassDeclaration (statement: ClassDeclaration): IClassDeclaration | null {
+	private getClassDeclaration (statement: ClassDeclaration): IClassDeclaration | null {
 		if (statement.name == null) return null;
 		const sourceFileProperties = this.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -3230,7 +3336,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	//  * @param {EnumDeclaration} statement
 	//  * @returns NullableInitializationValue}
 	//  */
-	// private getInitializedValuesForEnum (statement: EnumDeclaration): NullableInitializationValue {
+	// private getValueExpressionsForEnum (statement: EnumDeclaration): NullableInitializationValue {
 	// 	const props: { [key: string]: NullableInitializationValue } = {};
 	// 	const taken: Set<number> = new Set();
 	// 	statement.members.forEach(member => {

@@ -13,7 +13,8 @@
     "build:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
     "build": "npm run build:pre && npm run build:cjs && npm run build:es2015",
     "test:pre": "tsc --module commonjs --target es2017 --sourceMap",
-    "test": "NODE_ENV=TEST npm run test:pre && ava"
+    "test": "NODE_ENV=TEST npm run test:pre && ava",
+    "test:integration": "NODE_ENV=TEST npm run test:pre --integration && ava"
   },
   "keywords": [
     "ast",

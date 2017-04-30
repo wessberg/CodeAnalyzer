@@ -157,6 +157,7 @@ export declare type InitializationValue = ArbitraryValueArray;
 
 export interface ISimpleLanguageService extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
+	getFile(fileName: string): NodeArray<Statement>;
 	isObjectLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression;
 	isVariableStatement(statement: Statement | Declaration | Expression | Node): statement is VariableStatement;
 	isVariableDeclaration(statement: Statement | Declaration | Expression | Node): statement is VariableDeclaration;
@@ -260,13 +261,16 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isDeleteExpression(statement: Statement | Declaration | Expression | Node): statement is DeleteExpression;
 	serializeToken (token: SyntaxKind): string|IBindingIdentifier;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
-	getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency;
-	getClassDeclaration (statement: Statement | Declaration | Expression | Node): IClassDeclaration | null;
-	getClassDeclarations (statements: Statement[]): ClassIndexer;
-	getVariableAssignments (statements: Statement[], deep?: boolean): VariableIndexer;
-	getImportDeclarations (statements: Statement[]): IModuleDependency[];
+	getClassDeclarations(statements: Statement[], deep?: boolean): ClassIndexer;
+	getClassDeclarationsForFile (fileName: string, deep?: boolean): ClassIndexer;
+	getVariableAssignments(statements: Statement[], deep?: boolean): VariableIndexer;
+	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
+	getImportDeclarationsForFile (fileName: string): IModuleDependency[];
+	getImportDeclarations(statements: Statement[]): IModuleDependency[];
+	getExportDeclarationsForFile (fileName: string): Set<string>;
 	getExportDeclarations (statements: Statement[]): Set<string>;
-	getCallExpressions(statements: Statement[]): ICallExpression[];
-	getNewExpressions(statements: Statement[]): INewExpression[];
-	getInitializedValue (rawStatement: Statement | Expression | Node, currentScope: string | null): InitializationValue;
+	getCallExpressions(statements: Statement[], deep?: boolean): ICallExpression[];
+	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
+	getNewExpressions(statements: Statement[], deep?: boolean): INewExpression[];
+	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
 }
