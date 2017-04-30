@@ -3,7 +3,7 @@ import {dirname, join} from "path";
 import * as ts from "typescript";
 import {ArrayBindingPattern, ExternalModuleReference, ImportClause, NamespaceImport, AwaitExpression, ImportEqualsDeclaration, ForOfStatement, TemplateMiddle, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ModuleDependencyKind, FunctionIndexer, IFunctionDeclaration, ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties, ImportKind, ImportIndexer, IFunctionLike} from "./interface/ISimpleLanguageService";
+import {ModuleDependencyKind, FunctionIndexer, IFunctionDeclaration, ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties, ImportKind, ImportIndexer, IFunctionLike, EnumIndexer, IEnumDeclaration} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 import { IBindingIdentifier } from "src/interface/IBindingIdentifier";
 
@@ -1712,6 +1712,77 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Gets all enum declarations (if any) that occurs in the given file
+	 * and returns them in a EnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {EnumIndexer}
+	 */	
+	public getEnumDeclarationsForFile(fileName: string, deep: boolean = false): EnumIndexer {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getEnumDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getEnumDeclarations(statements, deep);
+	}
+
+	/**
+	 * Gets all enum declarations (if any) that occurs in the given array of statements
+	 * and returns them in a EnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {EnumIndexer}
+	 */
+	public getEnumDeclarations (statements: Statement[], deep: boolean = false): EnumIndexer {
+		const enumIndexer: EnumIndexer = {};
+
+		for (const statement of statements) {
+			if (this.isEnumDeclaration(statement)) {
+				const formatted = this.formatEnumDeclaration(statement);
+				Object.assign(enumIndexer, { [formatted.name]: formatted });
+			}
+
+			if (deep) {
+				const otherDeclarations = this.getEnumDeclarations(this.findChildStatements(statement), deep);
+				Object.keys(otherDeclarations).forEach(key => {
+					// Only assign the deep declaration to the enumIndexer if there isn't a match in the scope above it.
+					if (enumIndexer[key] == null) Object.assign(enumIndexer, { [key]: otherDeclarations[key] });
+				});
+			}
+
+		}		
+		return enumIndexer;
+	}
+
+	/**
+	 * Formats the given EnumDeclaration and returns an IEnumDeclaration.
+	 * @param {EnumDeclaration} statement
+	 * @returns {IEnumDeclaration}
+	 */
+	private formatEnumDeclaration(statement: EnumDeclaration): IEnumDeclaration {
+		const startsAt = statement.pos;
+		const endsAt = statement.end;
+		const name = <string>this.getNameOfMember(statement.name, false, true);
+
+		const taken: Set<number> = new Set();
+		const members: { [key: string]: number | string } = {};
+		statement.members.forEach(member => {
+			const memberName = <string>this.getNameOfMember(member.name, false, true);
+	 		const initializer = member.initializer;
+	 		const initializerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : <number>this.getNameOfMember(initializer, true, false);
+	
+	 		taken.add(initializerValue);
+			if (memberName != null) members[memberName] = initializerValue;
+		});
+
+		return {
+			startsAt,
+			endsAt,
+			name,
+			members,
+			decorators: this.formatDecorators(statement)
+		}
+	}
+
+	/**
 	 * Gets all variable assignments (if any) that occurs in the given file
 	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
@@ -2916,6 +2987,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	private getNameOfMember(name: DeclarationName | Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
 
+		if (this.isTypeAssertionExpression(name)) {
+			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
+		}
+
 		if (this.isComputedPropertyName(name)) {
 			if (this.isPropertyName(name.expression)) {
 				if (this.isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression, allowNonStringNames, false);
@@ -3185,10 +3260,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
-	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration} declaration
+	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration} declaration
 	 * @returns {DecoratorIndexer}
 	 */
-	private formatDecorators(declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration): DecoratorIndexer {
+	private formatDecorators(declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration | EnumDeclaration): DecoratorIndexer {
 		const obj: DecoratorIndexer = {};
 		if (declaration.decorators == null) return obj;
 
@@ -3557,41 +3632,19 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return declaration;
 	}
 
-	// /**
-	//  * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
-	//  * @param {Set<number>} taken
-	//  * @returns {number}
-	//  */
-	// private findFreeEnumIntegerValue (taken: Set<number>): number {
-	// 	const sorted = [...taken].sort();
-	//
-	// 	for (let i = 0; i < sorted.length; i++) {
-	// 		if (taken.has(i)) continue;
-	// 		return i;
-	// 	}
-	// 	return sorted.length;
-	// }
-	//
-	// /**
-	//  * Walks through an enumeration and checks the associated ordinal values.
-	//  * @param {EnumDeclaration} statement
-	//  * @returns NullableInitializationValue}
-	//  */
-	// private getValueExpressionsForEnum (statement: EnumDeclaration): NullableInitializationValue {
-	// 	const props: { [key: string]: NullableInitializationValue } = {};
-	// 	const taken: Set<number> = new Set();
-	// 	statement.members.forEach(member => {
-	// 		// TODO: Typescript doesn't think that a 'text' key exists here. Why?
-	// 		const value = (<Identifier>member.name).text;
-	// 		const initializer = member.initializer;
-	// 		// TODO: Remove any declaration.
-	// 		const integerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : parseInt((<any>initializer).text);
-	//
-	// 		taken.add(integerValue);
-	//
-	// 		if (value != null) props[value] = [integerValue];
-	// 	});
-	// 	return [props];
-	// }
+	 /**
+	  * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
+	  * @param {Set<number>} taken
+	  * @returns {number}
+	  */
+	 private findFreeEnumIntegerValue (taken: Set<number>): number {
+	 	const sorted = [...taken].sort();
+	
+	 	for (let i = 0; i < sorted.length; i++) {
+	 		if (taken.has(i)) continue;
+	 		return i;
+	 	}
+	 	return sorted.length;
+	 }
 
 }

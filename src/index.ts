@@ -15,6 +15,8 @@ export {
 	ModuleSource,
 	FunctionIndexer,
 	IFunctionDeclaration,
+	IEnumDeclaration,
+	EnumIndexer,
 	IMemberDeclaration,
 	PropIndexer,
 	IPositionable,

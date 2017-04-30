@@ -32,6 +32,10 @@ export interface ICallExpression extends IArgumentsable, ICallable {
 	type: ITypeable;
 }
 
+export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable {
+	members: { [key: string]: number | string };
+}
+
 export interface ICallable {
 	property: ArbitraryValue;
 	identifier: NonNullableArbitraryValue;
@@ -170,6 +174,7 @@ export interface IFileContentsable {
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
 }
 
+export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportIndexer = { [key: string]: IImportBinding };
@@ -299,6 +304,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	// getAllIdentifiers(statements: Statement[], deep?: boolean): 
 	getVariableAssignments(statements: Statement[], deep?: boolean): VariableIndexer;
 	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
+	getEnumDeclarations(statements: Statement[], deep?: boolean): EnumIndexer;
+	getEnumDeclarationsForFile(fileName: string, deep?: boolean): EnumIndexer;
 	getFunctionDeclarations(statements: Statement[], deep?: boolean): FunctionIndexer;
 	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
 	getImportDeclarationsForFile (fileName: string): IModuleDependency[];
