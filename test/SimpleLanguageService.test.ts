@@ -4,7 +4,7 @@ import * as TypeMoq from "typemoq";
 import {BindingIdentifier} from "../src/BindingIdentifier";
 import {ArbitraryValueIndexable, InitializationValue, ISimpleLanguageService} from "../src/interface/ISimpleLanguageService";
 import { SimpleLanguageService } from "../src/SimpleLanguageService";
-import { FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2 } from "./FullCodeExamples";
+import { FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3 } from "./FullCodeExamples";
 const Mock = TypeMoq.Mock;
 const It = TypeMoq.It;
 
@@ -209,7 +209,27 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #9`, t => {
-	setupMany([ ["parseXML", "parseXML"], ["e", "e"], ["xml", "xml"], ["ActiveXObject", "ActiveXObject"], ["Microsoft.XMLDOM", "Microsoft.XMLDOM"], ["loadXML", "loadXML"], ["tmp", "tmp"], ["args", "args"], ["proxy", "proxy"], ["parseFromString", "parseFromString"], ["data", "data"], ["text/xml", "text/xml"], ["parser", "parser"], ["window", "window"], ["DOMParser", "DOMParser"] ]);
+	setupMany([
+		["documentElement", "documentElement"],
+		["getElementsByTagName", "getElementsByTagName"],
+		["length", "length"],
+		["parseXML", "parseXML"],
+		["e", "e"],
+		["xml", "xml"],
+		["ActiveXObject", "ActiveXObject"],
+		["Microsoft.XMLDOM", "Microsoft.XMLDOM"],
+		["parsererror", "parsererror"],
+		["loadXML", "loadXML"],
+		["tmp", "tmp"],
+		["args", "args"],
+		["proxy", "proxy"],
+		["parseFromString", "parseFromString"],
+		["data", "data"],
+		["text/xml", "text/xml"],
+		["parser", "parser"],
+		["window", "window"],
+		["DOMParser", "DOMParser"]
+	]);
 	
 	const statements = parse(FULL_CODE_EXAMPLE_1);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -276,6 +296,25 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	t.true(assignments["util"] != null);
 	t.true(assignments["types"] != null);
 	t.true(assignments["assert"] != null);
+});
+
+test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #11`, t => {
+	setupMany([
+		["rawContent", "rawContent"],
+		["match", "match"],
+		["preferred", "preferred"],
+		["regex", "regex"],
+		["length", "length"],
+		["node", "node"],
+		["extra", "extra"],
+		["alternate", "alternate"],
+		["raw", "raw"],
+		["/(^[A-Z])|^[_$]+$/", /(^[A-Z])|^[_$]+$/]
+]);
+	
+	const statements = parse(FULL_CODE_EXAMPLE_3);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.true(assignments["i"] != null);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #1`, t => {
