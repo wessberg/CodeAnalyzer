@@ -117,6 +117,50 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #5`
 	t.true(assignments["collection"] != null);
 });
 
+test(`getVariableAssignments() -> Computes all resolved values correctly. #1`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3]
+	]);
+	const statements = parse(`
+		const val = 2 + 3;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #2`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["5", 5],
+		["10", 10]
+	]);
+	const statements = parse(`
+		const val = 2 + 3 * (5 / 10);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #3`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["5", 5],
+		["10", 10]
+	]);
+	const statements = parse(`
+		const sub = 10;
+		const val = 2 + 3 * (5 /sub);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+});
+
 // Tests
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #1`, t => {
 	setupMany([["0", 0], ["1", 1]]);
@@ -1818,4 +1862,36 @@ test(`getFunctionDeclarations() -> Detects all enum ordinal values correctly. #2
 	t.true(assignments["Foo"].members["B"] === 1);
 	t.true(assignments["Foo"].members["C"] === 0);
 	t.true(assignments["Foo"] != null);
+});
+
+test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
+	setupMany([
+		["Foo", "Foo"],
+		["A", "A"],
+		["Baz", "Baz"],
+		["bar", "bar"],
+		["MyClass", "MyClass"],
+		["doStuff", "doStuff"]
+	]);
+
+	const statements = parse(`
+		import {Baz} from "./bumbum";
+
+		enum Foo {
+		}
+
+		function bar () {
+		}
+
+		class MyClass {
+		}
+
+		doStuff();
+	`);
+	const assignments = service.getAllIdentifiers(statements);
+	t.true(assignments.classes["MyClass"] != null);
+	t.true(assignments.functions["bar"] != null);
+	t.true(assignments.enums["Foo"] != null);
+	t.true(assignments.imports.find(declaration => declaration.bindings["Baz"] != null) != null);
+	t.true(assignments.callExpressions.find(exp => exp.identifier.toString() === "doStuff") != null);
 });

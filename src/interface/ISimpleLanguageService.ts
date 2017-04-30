@@ -22,17 +22,17 @@ export interface IModulePath {
 
 export declare type ModuleSource = IBindingIdentifier | IModulePath;
 
-export interface IModuleDependency {
+export interface IModuleDependency extends IFilePathable {
 	kind: ModuleDependencyKind;
 	source: ModuleSource;
 	bindings: ImportIndexer;
 }
 
-export interface ICallExpression extends IArgumentsable, ICallable {
+export interface ICallExpression extends IArgumentsable, ICallable, IFilePathable {
 	type: ITypeable;
 }
 
-export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable {
+export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable {
 	members: { [key: string]: number | string };
 }
 
@@ -41,7 +41,7 @@ export interface ICallable {
 	identifier: NonNullableArbitraryValue;
 }
 
-export interface INewExpression extends IArgumentsable, ICallable {
+export interface INewExpression extends IArgumentsable, ICallable, IFilePathable {
 	type: ITypeable;
 }
 
@@ -82,14 +82,18 @@ export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 	returnStatementContents: string | null;
 }
 
-export declare interface IFunctionDeclaration extends IFunctionLike {
+export interface IFunctionDeclaration extends IFunctionLike, IFilePathable {
 	name: string|null;
 }
 
-export interface IMethodDeclaration extends INameable, IFunctionLike {
+export interface IClassNameable {
+	className: string;
 }
 
-export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable {
+export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable {
+}
+
+export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable, IFilePathable, IClassNameable {
 
 }
 
@@ -132,7 +136,7 @@ export interface IDecoratorsable {
 	decorators: DecoratorIndexer;
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable {
 	type: ITypeable;
 	value: IValueable;
 }
@@ -154,11 +158,11 @@ export interface ITypeable {
 }
 
 export interface IValueable {
-	resolved: ArbitraryValue | null;
+	resolve: () => string|null;
 	expression: InitializationValue | null;
 }
 
-export interface IVariableAssignment extends IPositionable, INameable {
+export interface IVariableAssignment extends IPositionable, INameable, IFilePathable {
 	value: IValueable;
 	type: ITypeable;
 }
@@ -172,6 +176,16 @@ export interface IFileContentsable {
 }
 
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
+}
+
+export declare interface IIdentifierMap {
+	enums: EnumIndexer;
+	classes: ClassIndexer;
+	variables: VariableIndexer;
+	functions: FunctionIndexer;
+	callExpressions: ICallExpression[];
+	imports: IModuleDependency[];
+	exports: Set<string>;
 }
 
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
@@ -301,7 +315,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getClassDeclarations(statements: Statement[], deep?: boolean): ClassIndexer;
 	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
-	// getAllIdentifiers(statements: Statement[], deep?: boolean): 
+	getAllIdentifiers(statements: Statement[], deep?: boolean): IIdentifierMap;
+	getAllIdentifiersForFile(fileName: string, deep?: boolean): IIdentifierMap;
 	getVariableAssignments(statements: Statement[], deep?: boolean): VariableIndexer;
 	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
 	getEnumDeclarations(statements: Statement[], deep?: boolean): EnumIndexer;

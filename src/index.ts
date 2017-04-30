@@ -17,6 +17,8 @@ export {
 	IFunctionDeclaration,
 	IEnumDeclaration,
 	EnumIndexer,
+	IVariableAssignment,
+	IIdentifierMap,
 	IMemberDeclaration,
 	PropIndexer,
 	IPositionable,
