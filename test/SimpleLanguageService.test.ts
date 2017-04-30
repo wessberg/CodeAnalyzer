@@ -4,7 +4,7 @@ import * as TypeMoq from "typemoq";
 import {BindingIdentifier} from "../src/BindingIdentifier";
 import {ArbitraryValueIndexable, InitializationValue, ISimpleLanguageService} from "../src/interface/ISimpleLanguageService";
 import { SimpleLanguageService } from "../src/SimpleLanguageService";
-import { FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3 } from "./FullCodeExamples";
+import { FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3, FULL_CODE_EXAMPLE_4, FULL_CODE_EXAMPLE_6 } from "./FullCodeExamples";
 const Mock = TypeMoq.Mock;
 const It = TypeMoq.It;
 
@@ -315,6 +315,90 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	const statements = parse(FULL_CODE_EXAMPLE_3);
 	const assignments = service.getVariableAssignments(statements, true);
 	t.true(assignments["i"] != null);
+	t.true(assignments["isAsync"] != null);
+	t.true(assignments["name"] != null);
+	t.true(assignments["maybeASIProblem"] != null);
+	t.true(assignments["flags"] != null);
+	t.true(assignments["regex"] != null);
+	t.true(assignments["otherQuote"] != null);
+	t.true(assignments["enclosingQuote"] != null);
+	t.true(assignments["numAlternateQuotes"] != null);
+	t.true(assignments["numPreferredQuotes"] != null);
+	t.true(assignments["shouldUseAlternateQuote"] != null);
+	t.true(assignments["alternate"] != null);
+	t.true(assignments["preferred"] != null);
+	t.true(assignments["single"] != null);
+	t.true(assignments["double"] != null);
+	t.true(assignments["rawContent"] != null);
+	t.true(assignments["raw"] != null);
+	t.true(assignments["str"] != null);
+	t.true(assignments["shouldGroup"] != null);
+	t.true(assignments["right"] != null);
+	t.true(assignments["NO_WRAP_PARENTS"] != null);
+	t.true(assignments["multiLineElem"] != null);
+	t.true(assignments["childrenGroupedByLine"] != null);
+	t.true(assignments["numLeadingHard"] != null);
+	t.true(assignments["numTrailingHard"] != null);
+	t.true(assignments["jsxWhitespace"] != null);
+	t.true(assignments["forcedBreak"] != null);
+	t.true(assignments["closingLines"] != null);
+	t.true(assignments["openingLines"] != null);
+	t.true(assignments["next"] != null);
+	t.true(assignments["children"] != null);
+	t.true(assignments["expanded"] != null);
+	t.true(assignments["hasComment"] != null);
+	t.true(assignments["oneLine"] != null);
+	t.true(assignments["printedGroups"] != null);
+	t.true(assignments["shouldMerge"] != null);
+	t.true(assignments["hasSeenCallExpression"] != null);
+	t.true(assignments["currentGroup"] != null);
+	t.true(assignments["groups"] != null);
+	t.true(assignments["printedNodes"] != null);
+	t.true(assignments["property"] != null);
+	t.true(assignments["partsGroup"] != null);
+	t.true(assignments["variance"] != null);
+	t.true(assignments["parentExportDecl"] != null);
+	t.true(assignments["decl"] != null);
+	t.true(assignments["objMethod"] != null);
+	t.true(assignments["canHaveTrailingComma"] != null);
+	t.true(assignments["isFlowShorthandWithOneArg"] != null);
+	t.true(assignments["flowTypeAnnotations"] != null);
+	t.true(assignments["lastParam"] != null);
+	t.true(assignments["paramsField"] != null);
+	t.true(assignments["fun"] != null);
+	t.true(assignments["printedExpanded"] != null);
+	t.true(assignments["shouldBreak"] != null);
+});
+
+test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #12`, t => {
+	setupMany([]);
+	
+	const statements = parse(FULL_CODE_EXAMPLE_4);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.true(assignments["myVar"] != null);
+	t.true(assignments["version"] != null);
+	t.true(assignments["pathWithExtension"] != null);
+	t.true(assignments["versionWithExtension"] != null);
+	t.true(assignments["normalizedPath"] != null);
+	t.true(assignments["source"] != null);
+	t.true(assignments["resolvedMap"] != null);
+	t.true(assignments["stringified"] != null);
+	t.true(assignments["statements"] != null);
+	t.true(assignments["match"] != null);
+	t.true(assignments["path"] != null);
+	t.true(assignments["snapshot"] != null);
+	t.true(assignments["obj"] != null);
+	t.true(assignments["substitutions"] != null);
+	t.true(assignments["newIdentifier"] != null);
+});
+
+test.only(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #13`, t => {
+	setupMany([]);
+	
+	const statements = parse(FULL_CODE_EXAMPLE_6);
+	const assignments = service.getVariableAssignments(statements, true);
+	console.log(assignments);
+	t.true(assignments != null);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #1`, t => {

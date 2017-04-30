@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import {ArrayBindingPattern, AwaitExpression, ForOfStatement, TemplateMiddle, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
 import {ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
@@ -233,6 +233,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is an AwaitExpression.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isAwaitExpression (statement: Statement | Declaration | Expression | Node): statement is AwaitExpression {
+		return statement.kind === SyntaxKind.AwaitExpression;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is an TemplateSpan.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
@@ -242,7 +251,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * A predicate function that returns true if the given Statement is an ConditionalExpression.
+	 * A predicate fuction that returns true if the given Statement is an ConditionalExpression.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {booean}
 	 */
@@ -523,6 +532,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is a TemplateMiddle.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isTemplateMiddle (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateMiddle {
+		return statement.kind === SyntaxKind.TemplateMiddle;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a TemplateTail.
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
@@ -559,12 +577,30 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * A predicate function that returns true if the given Statement is the keyword 'this'.
+	 * A predicate function that returns true if the given Statement is a ForStatement
 	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
 	 */
 	public isForStatement (statement: Statement | Declaration | Expression | Node): statement is ForStatement {
 		return statement.kind === SyntaxKind.ForStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a ForOfStatement
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isForOfStatement (statement: Statement | Declaration | Expression | Node): statement is ForOfStatement {
+		return statement.kind === SyntaxKind.ForOfStatement;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a ForInStatement
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isForInStatement (statement: Statement | Declaration | Expression | Node): statement is ForInStatement {
+		return statement.kind === SyntaxKind.ForInStatement;
 	}
 
 	/**
@@ -878,6 +914,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isSourceFile (statement: Statement | Declaration | Expression | Node): statement is SourceFile {
 		return statement.kind === SyntaxKind.SourceFile;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a FirstLiteralToken|LastLiteralToken.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isLiteralToken (statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken|SyntaxKind.LastLiteralToken> {
+		return statement.kind === SyntaxKind.FirstLiteralToken || statement.kind === SyntaxKind.LastLiteralToken;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a FirstLiteralToken|LastLiteralToken.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isTemplateToken (statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstTemplateToken|SyntaxKind.LastTemplateToken> {
+		return statement.kind === SyntaxKind.FirstTemplateToken || statement.kind === SyntaxKind.LastTemplateToken;
 	}
 
 	/**
@@ -1590,6 +1644,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return statements;
 		}
 
+		if (this.isAwaitExpression(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
 		if (this.isSwitchStatement(statement)) {
 			return this.findChildStatements(statement.caseBlock);
 		}
@@ -1636,6 +1694,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const finallyBlock = statement.finallyBlock == null ? [] : this.findChildStatements(statement.finallyBlock);
 
 			return [...tryBlock, ...catchClause, ...finallyBlock];
+		}
+
+		if (this.isSpreadAssignment(statement) || this.isSpreadElement(statement)) {
+			return this.findChildStatements(statement.expression);
 		}
 
 		if (this.isVariableStatement(statement)) {
@@ -1717,7 +1779,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return statements;
 		}
 
-		if (this.isClassExpression(statement)) {
+		if (this.isPropertyDeclaration(statement)) {
+			return statement.initializer == null ? [] : this.findChildStatements(statement.initializer);
+		}
+
+		if (this.isClassExpression(statement) || this.isClassDeclaration(statement)) {
 			const statements: Statement[] = [];
 
 			statement.members.forEach(member => {
@@ -1731,8 +1797,24 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.findChildStatements(statement.statement);
 		}
 
+		if (this.isForInStatement(statement)) {
+			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isForOfStatement(statement)) {
+			return this.findChildStatements(statement.statement);
+		}
+
+		if (this.isTypeAssertionExpression(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
 		if (this.isDoStatement(statement)) {
 			return this.findChildStatements(statement.expression);
+		}
+
+		if (this.isImportDeclaration(statement)) {
+			return [];
 		}
 
 		if (this.isEmptyStatement(statement)) {
@@ -1800,6 +1882,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isFalseKeyword(statement)) {
+			return [];
+		}
+
+		if (this.isLiteralToken(statement)) {
+			return [];
+		}
+
+		if (this.isTemplateToken(statement)) {
 			return [];
 		}
 
@@ -1890,9 +1980,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [marshalled];
 		}
 
-		if (this.isTemplateHead(rawStatement) || this.isTemplateTail(rawStatement)) {
+		if (this.isTemplateHead(rawStatement) || this.isTemplateMiddle(rawStatement) || this.isTemplateTail(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text, "");
 			return [marshalled];
+		}
+
+		if (this.isTypeAssertionExpression(rawStatement)) {
+			return this.getInitializedValue(rawStatement.expression);
+		}
+
+		if (this.isAwaitExpression(rawStatement)) {
+			return ["await", " ", ...this.getInitializedValue(rawStatement.expression)];
 		}
 
 		if (this.isTemplateSpan(rawStatement)) {
@@ -1962,6 +2060,31 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isIfStatement(rawStatement)) {
 			const arr: InitializationValue = ["if", "(", ...this.getInitializedValue(rawStatement.expression), ")", "{", ...this.getInitializedValue(rawStatement.thenStatement), "}"];
+			return arr;
+		}
+
+		if (this.isForOfStatement(rawStatement)) {
+			const arr: InitializationValue = [
+				"for",
+				...(rawStatement.awaitModifier == null ? [] : [" ", ...this.getInitializedValue(rawStatement.awaitModifier)]),
+				"(",
+				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), " ", "of", " ",
+				...this.getInitializedValue(rawStatement.expression),
+				")", "{",
+				...this.getInitializedValue(rawStatement.statement),
+				"}"
+			];
+			return arr;
+		}
+
+		if (this.isForInStatement(rawStatement)) {
+			const arr: InitializationValue = [
+				"for", "(",
+				...(rawStatement.initializer == null ? [] : this.getInitializedValue(rawStatement.initializer)), " ", "in", " ",
+				...this.getInitializedValue(rawStatement.expression), ")", "{",
+				...this.getInitializedValue(rawStatement.statement),
+				"}"
+			];
 			return arr;
 		}
 
@@ -2168,6 +2291,17 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isElementAccessExpression(rawStatement)) {
+			if (this.isParenthesizedExpression(rawStatement.expression)) {
+				const name = rawStatement.argumentExpression == null ? null : this.getNameOfMember(rawStatement.argumentExpression, true, true);
+				const exp = this.getInitializedValue(rawStatement.expression);
+				const lastExp = exp[exp.length - 1];
+				if (lastExp instanceof BindingIdentifier) {
+					lastExp.path = lastExp.path || [];
+					lastExp.path.push(name);
+				}
+				if (name == null) return [...exp];
+				return [...exp, typeof name === "string" ? `["${name}"]` : `[${name}]`];
+			}
 			return [this.getNameOfMember(rawStatement)];
 		}
 
@@ -2306,7 +2440,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [this.getNameOfMember(rawStatement, true)];
 		}
 
-		throw new TypeError(`${this.getInitializedValue.toString()} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
+		throw new TypeError(`${this.getInitializedValue.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
 	}
 
 	/**
@@ -2414,6 +2548,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return "this";
 		}
 
+		if (this.isRegularExpressionLiteral(name)) {
+			return this.marshaller.marshal<string, RegExpConstructor>(name.text, RegExp);
+		}
+
 		if (this.isPropertyAccessExpression(name)) {
 			const baseName = this.getNameOfMember(name.expression, false, false);
 			const baseNameStringified = this.takeBase(baseName);
@@ -2435,6 +2573,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
 		}
 
+		if (this.isFunctionExpression(name)) {
+			return name.name == null ? null : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
+		}
+
 		if (this.isElementAccessExpression(name)) {
 			const baseName = this.getNameOfMember(name.expression, false, false);
 			const baseNameStringified = this.takeBase(baseName);
@@ -2447,8 +2589,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			
 			return new BindingIdentifier(baseNameStringified, path);
 		}
-
-		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);
+	
+		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]} around here: ${this.getSourceFileProperties(name).fileContents.slice(name.pos, name.end)}.`);
 	}
 
 	/**
