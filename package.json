@@ -25,11 +25,12 @@
   "license": "MIT",
   "devDependencies": {
     "@types/node": "^7.0.13",
+    "@wessberg/typedetector": "^1.0.2",
     "ava": "^0.19.1",
     "typemoq": "^1.4.2",
     "typescript": "next"
   },
   "dependencies": {
-    "@wessberg/marshaller": "^1.0.0"
+    "@wessberg/marshaller": "^1.0.5"
   }
 }

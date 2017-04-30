@@ -258,7 +258,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isLiteralToken(statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken | SyntaxKind.LastLiteralToken>;
 	isTemplateToken(statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstTemplateToken | SyntaxKind.LastTemplateToken>;
 	isDeleteExpression(statement: Statement | Declaration | Expression | Node): statement is DeleteExpression;
-	serializeToken (token: SyntaxKind): string;
+	serializeToken (token: SyntaxKind): string|IBindingIdentifier;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency;
 	getClassDeclaration (statement: Statement | Declaration | Expression | Node): IClassDeclaration | null;
