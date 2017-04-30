@@ -1334,7 +1334,7 @@ test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
 	`;
 
 	const statements = parse(code);
-	const callExpressions = service.getCallExpressions(statements);
+	const callExpressions = service.getCallExpressions(statements, true);
 	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
@@ -1346,7 +1346,7 @@ test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
 	`;
 
 	const statements = parse(code);
-	const callExpressions = service.getCallExpressions(statements);
+	const callExpressions = service.getCallExpressions(statements, true);
 	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
@@ -1358,19 +1358,19 @@ test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
 	`;
 
 	const statements = parse(code);
-	const callExpressions = service.getCallExpressions(statements);
+	const callExpressions = service.getCallExpressions(statements, true);
 	const expression = callExpressions.find(exp => exp.property == null);
 	t.true(expression != null);
 });
 
-test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
+test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
 	setupMany([ ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"] ]);
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
 
 	const statements = parse(code);
-	const callExpressions = service.getCallExpressions(statements);
+	const callExpressions = service.getCallExpressions(statements, true);
 	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
 	t.true(expression != null);
 });
@@ -1476,4 +1476,109 @@ test(`getNewExpressions() -> Detects new-statements correctly. #2`, t => {
 	const statements = parse(code);
 	const newExpressions = service.getNewExpressions(statements);
 	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
+	setupMany([]);
+	const code = `
+		import "./test";
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t => {
+	setupMany([]);
+	const code = `
+		import {Foo} from "./test/hello";
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t => {
+	setupMany([]);
+	const code = `
+		import * as Bar from "../Bar";
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t => {
+	setupMany([]);
+	const code = `
+		import Bar from "../Bar/foo.ts";
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t => {
+	setupMany([]);
+	const code = `
+		import Foo = require("./bar");
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
+	setupMany([]);
+	const code = `
+		import Foo = require("./bar");
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t => {
+	setupMany([
+		["Bar", "Bar"]
+	]);
+	const code = `
+		import Foo = Bar;
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t => {
+	setupMany([
+		["require", "require"]
+	]);
+	const code = `
+		const foo = require("./bar");
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
+	setupMany([
+		["require", "require"]
+	]);
+	const code = `
+		require("./bar");
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
 });

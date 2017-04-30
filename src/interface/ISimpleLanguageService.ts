@@ -1,11 +1,31 @@
-import { ArrayBindingPattern, TemplateMiddle, AwaitExpression, ForOfStatement, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, DoStatement, RegularExpressionLiteral, BreakStatement, ContinueStatement, ThrowStatement, CaseBlock, CaseClause, DefaultClause, SwitchStatement, WhileStatement, VariableDeclarationList, ForStatement, PostfixUnaryExpression, CatchClause, TryStatement, TypeOfExpression, ClassExpression, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, SyntaxKind, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SourceFile, IfStatement, FunctionDeclaration, LabeledStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import { ArrayBindingPattern, ExternalModuleReference, ImportClause, NamespaceImport, ImportEqualsDeclaration, TemplateMiddle, AwaitExpression, ForOfStatement, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, DoStatement, RegularExpressionLiteral, BreakStatement, ContinueStatement, ThrowStatement, CaseBlock, CaseClause, DefaultClause, SwitchStatement, WhileStatement, VariableDeclarationList, ForStatement, PostfixUnaryExpression, CatchClause, TryStatement, TypeOfExpression, ClassExpression, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, SyntaxKind, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SourceFile, IfStatement, FunctionDeclaration, LabeledStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 
-import {IBindingIdentifier} from "./IBindingIdentifier";
+import { IBindingIdentifier } from "./IBindingIdentifier";
 
-export interface IModuleDependency {
+export enum ImportKind {
+	NAMESPACE, DEFAULT, NAMED
+}
+
+export enum ModuleDependencyKind {
+	ES_MODULE, REQUIRE, IMPORT_REQUIRE
+}
+
+export interface IImportBinding {
+	name: string;
+	kind: ImportKind;
+}
+
+export interface IModulePath {
 	relativePath: string;
 	fullPath: string;
-	bindings: string[];
+}
+
+export declare type ModuleSource = IBindingIdentifier | IModulePath;
+
+export interface IModuleDependency {
+	kind: ModuleDependencyKind;
+	source: ModuleSource;
+	bindings: ImportIndexer;
 }
 
 export interface ICallExpression extends IArgumentsable, ICallable {
@@ -144,6 +164,7 @@ export interface ISourceFileProperties extends IFilePathable, IFileContentsable 
 }
 
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
+export declare type ImportIndexer = { [key: string]: IImportBinding };
 export declare type ClassIndexer = { [key: string]: IClassDeclaration };
 export declare type VariableIndexer = { [key: string]: IVariableAssignment };
 export declare type DecoratorIndexer = { [key: string]: IDecorator };
@@ -250,14 +271,18 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isBreakStatement(statement: Statement | Declaration | Expression | Node): statement is BreakStatement;
 	isContinueStatement(statement: Statement | Declaration | Expression | Node): statement is ContinueStatement;
 	isThrowStatement(statement: Statement | Declaration | Expression | Node): statement is ThrowStatement;
+	isNamespaceImport(statement: Statement | Declaration | Expression | Node): statement is NamespaceImport;
 	isTemplateMiddle(statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateMiddle;
 	isDoStatement(statement: Statement | Declaration | Expression | Node): statement is DoStatement;
 	isAwaitExpression (statement: Statement | Declaration | Expression | Node): statement is AwaitExpression;
 	isRegularExpressionLiteral(statement: BindingName | EntityName | Expression | Node): statement is RegularExpressionLiteral;
 	isShorthandPropertyAssignment(statement: BindingName | EntityName | Expression | Node): statement is ShorthandPropertyAssignment;
+	isImportEqualsDeclaration(statement: Statement | Declaration | Expression | Node): statement is ImportEqualsDeclaration;
 	isEmptyStatement(statement: Statement | Declaration | Expression | Node): statement is EmptyStatement;
 	isLiteralToken(statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken | SyntaxKind.LastLiteralToken>;
 	isTemplateToken(statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstTemplateToken | SyntaxKind.LastTemplateToken>;
+	isImportClause(statement: Statement | Declaration | Expression | Node): statement is ImportClause;
+	isExternalModuleReference(statement: Statement | Declaration | Expression | Node): statement is ExternalModuleReference;
 	isDeleteExpression(statement: Statement | Declaration | Expression | Node): statement is DeleteExpression;
 	serializeToken (token: SyntaxKind): string|IBindingIdentifier;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
@@ -266,8 +291,8 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getVariableAssignments(statements: Statement[], deep?: boolean): VariableIndexer;
 	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
 	getImportDeclarationsForFile (fileName: string): IModuleDependency[];
-	getImportDeclarations(statements: Statement[]): IModuleDependency[];
-	getExportDeclarationsForFile (fileName: string): Set<string>;
+	getImportDeclarations(statements: Statement[], deep?: boolean): IModuleDependency[];
+	getExportDeclarationsForFile (fileName: string, deep?: boolean): Set<string>;
 	getExportDeclarations (statements: Statement[]): Set<string>;
 	getCallExpressions(statements: Statement[], deep?: boolean): ICallExpression[];
 	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];

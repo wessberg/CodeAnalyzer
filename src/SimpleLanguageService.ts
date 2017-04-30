@@ -1,9 +1,9 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import * as ts from "typescript";
-import {ArrayBindingPattern, AwaitExpression, ForOfStatement, TemplateMiddle, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import {ArrayBindingPattern, ExternalModuleReference, ImportClause, NamespaceImport, AwaitExpression, ImportEqualsDeclaration, ForOfStatement, TemplateMiddle, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties} from "./interface/ISimpleLanguageService";
+import {ModuleDependencyKind, ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties, ImportKind, ImportIndexer} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 import { IBindingIdentifier } from "src/interface/IBindingIdentifier";
 
@@ -189,6 +189,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is an ExternalModuleReference.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isExternalModuleReference (statement: Statement | Declaration | Expression | Node): statement is ExternalModuleReference {
+		return statement.kind === SyntaxKind.ExternalModuleReference;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is an NoSubstitutionTemplateLiteral.
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {boolean}
@@ -356,6 +365,33 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isImportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportDeclaration {
 		return statement.kind === SyntaxKind.ImportDeclaration;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is a NamespaceImport.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isNamespaceImport (statement: Statement | Declaration | Expression | Node): statement is NamespaceImport {
+		return statement.kind === SyntaxKind.NamespaceImport;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an ImportClause.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isImportClause (statement: Statement | Declaration | Expression | Node): statement is ImportClause {
+		return statement.kind === SyntaxKind.ImportClause;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is an ImportEqualsDeclaration.
+	 * @param {Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isImportEqualsDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportEqualsDeclaration {
+		return statement.kind === SyntaxKind.ImportEqualsDeclaration;
 	}
 
 	/**
@@ -1624,38 +1660,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * If given an ImportDeclaration, a formatted IModuleDependency will be returned holding the relative and full import-path
-	 * as well as any bindings that will live in the local scope of the given file.
-	 * @param {Statement|Declaration|Expression|Node} statement
-	 * @returns {IModuleDependency}
-	 */
-	private getImportDeclaration (statement: Statement | Declaration | Expression | Node): IModuleDependency {
-		if (!this.isImportDeclaration(statement)) throw new Error(`Could not get an import declaration for statement that isn't an ImportDeclaration!`);
-		const sourceFileProperties = this.getSourceFileProperties(statement);
-		const filePath = sourceFileProperties.filePath;
-
-		// TODO: Remove any declaration
-		const relativePath = (<any>statement.moduleSpecifier).text;
-		const fullPath = join(dirname(filePath), relativePath);
-		const clause = statement.importClause;
-
-		if (clause == null || clause.namedBindings == null) {
-			// A path import, e.g: "import './foo.ts'".
-			return {
-				relativePath,
-				fullPath,
-				bindings: []
-			};
-		}
-
-		return {
-			relativePath,
-			fullPath,
-			bindings: this.isNamedImports(clause.namedBindings) ? clause.namedBindings.elements.map(binding => binding.name.text) : []
-		};
-	}
-
-	/**
 	 * Gets the member name for call expression.
 	 * @param {CallExpression} statement
 	 * @returns {string}
@@ -1690,7 +1694,30 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		for (const statement of statements) {
 			if (this.isVariableStatement(statement)) {
-				const declarations = statement.declarationList.declarations;
+				Object.assign(assignmentMap, this.formatVariableAssignment(statement));
+			}
+
+			if (deep) {
+				const otherAssignments = this.getVariableAssignments(this.findChildStatements(statement), deep);
+				Object.keys(otherAssignments).forEach(key => {
+					// Only assign the deep variable to the assignmentMap if there isn't a match in the scope above it.
+					if (assignmentMap[key] == null) Object.assign(assignmentMap, { [key]: otherAssignments[key] });
+				});
+			}
+
+		}		
+		return assignmentMap;
+	}
+
+	/**
+	 * Formats the given VariableStatement and returns a VariableIndexer.
+	 * @param {VariableStatement} statement
+	 * @returns {VariableIndexer}
+	 */
+	private formatVariableAssignment(statement: VariableStatement): VariableIndexer {
+		const assignmentMap: VariableIndexer = {};
+
+		const declarations = statement.declarationList.declarations;
 				declarations.forEach(declaration => {
 
 					if (this.isIdentifierObject(declaration.name)) {
@@ -1719,17 +1746,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						};
 					}
 				});
-			}
-
-			if (deep) {
-				const otherAssignments = this.getVariableAssignments(this.findChildStatements(statement), deep);
-				Object.keys(otherAssignments).forEach(key => {
-					// Only assign the deep variable to the assignmentMap if there isn't a match in the scope above it.
-					if (assignmentMap[key] == null) Object.assign(assignmentMap, { [key]: otherAssignments[key] });
-				});
-			}
-
-		}		
 		return assignmentMap;
 	}
 
@@ -1949,6 +1965,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [];
 		}
 
+		if (this.isImportEqualsDeclaration(statement)) {
+			return [];
+		}
+
 		if (this.isEmptyStatement(statement)) {
 			return [];
 		}
@@ -2070,28 +2090,169 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given file
 	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
 	 * @returns {IModuleDependency[]}
 	 */
-	public getImportDeclarationsForFile(fileName: string): IModuleDependency[] {
+	public getImportDeclarationsForFile(fileName: string, deep: boolean = false): IModuleDependency[] {
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getImportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
-		return this.getImportDeclarations(statements);
+		return this.getImportDeclarations(statements, deep);
 	}
 
 	/**
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given array of statements.
 	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
 	 * @returns {IModuleDependency[]}
 	 */
-	public getImportDeclarations (statements: Statement[]): IModuleDependency[] {
+	public getImportDeclarations (statements: Statement[], deep: boolean = false): IModuleDependency[] {
 		const declarations: IModuleDependency[] = [];
 		for (const statement of statements) {
-			if (this.isImportDeclaration(statement)) {
+			if (this.isImportDeclaration(statement) || this.isImportEqualsDeclaration(statement) || this.isVariableStatement(statement)) {
 				const declaration = this.getImportDeclaration(statement);
-				declarations.push(declaration);
+				if (declaration != null) declarations.push(declaration);
+			}
+
+			if (this.isExpressionStatement(statement) && this.isCallExpression(statement.expression)) {
+				const declaration = this.getImportDeclaration(statement.expression);
+				if (declaration != null) declarations.push(declaration);
+			}
+
+			if (deep) {
+				const otherImportDeclarations = this.getImportDeclarations(this.findChildStatements(statement), deep);
+				otherImportDeclarations.forEach(declaration => declarations.push(declaration));
 			}
 		}
 		return declarations;
+	}
+
+	/**
+	 * formats the given ImportClause and returns an ImportIndexer.
+	 * @param {ImportClause} clause
+	 * @returns {ImportIndexer}
+	 */	
+	private formatImportClause(clause: ImportClause): ImportIndexer {
+		const indexer: ImportIndexer = {};
+
+		if (clause.namedBindings != null && this.isNamespaceImport(clause.namedBindings)) {
+			indexer[clause.namedBindings.name.text] = {
+				name: clause.namedBindings.name.text,
+				kind: ImportKind.NAMESPACE
+			}
+		}
+
+		else if (clause.namedBindings != null && this.isNamedImports(clause.namedBindings)) {
+			clause.namedBindings.elements.forEach(element => {
+				indexer[element.name.text] = {
+					name: element.name.text,
+					kind: ImportKind.NAMED
+				}
+			});
+		}
+
+		else if (clause.name != null) {
+			indexer[clause.name.text] = {
+				name: clause.name.text,
+				kind: ImportKind.DEFAULT
+			}
+		}
+
+		return indexer;
+	}
+
+	/**
+	 * If given an ImportDeclaration|ImportEqualsDeclaration, a formatted IModuleDependency will be returned holding the relative and full import-path
+	 * as well as any bindings that will live in the local scope of the given file.
+	 * @param {ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression} statement
+	 * @returns {IModuleDependency}
+	 */
+	private getImportDeclaration (statement: ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression): IModuleDependency|null {
+		const sourceFileProperties = this.getSourceFileProperties(statement);
+		const filePath = sourceFileProperties.filePath;
+
+		if (this.isImportDeclaration(statement)) {
+			const relativePath = <string>this.getNameOfMember(statement.moduleSpecifier, false, true);
+			const fullPath = join(dirname(filePath), relativePath);
+
+			return {
+				kind: ModuleDependencyKind.ES_MODULE,
+				source: {
+					relativePath,
+					fullPath
+				},
+				bindings: statement.importClause == null ? {} : this.formatImportClause(statement.importClause)
+			};
+		}
+
+		if (this.isImportEqualsDeclaration(statement)) {
+			if (this.isExternalModuleReference(statement.moduleReference)) {
+				const relativePath = statement.moduleReference.expression == null ? "" : <string>this.getNameOfMember(statement.moduleReference.expression, false, true);
+				const fullPath = join(dirname(filePath), relativePath);
+				return {
+					kind: ModuleDependencyKind.IMPORT_REQUIRE,
+					source: {
+						relativePath,
+						fullPath
+					},
+					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportKind.DEFAULT}}
+				}
+			} else {
+				if (!this.isIdentifierObject(statement.moduleReference)) {
+					throw new TypeError(`${this.getImportDeclaration.name} could not find the name for a module reference!`);
+				}
+
+				const source = <IBindingIdentifier>this.getNameOfMember(statement.moduleReference, false, false);
+				return {
+					kind: ModuleDependencyKind.IMPORT_REQUIRE,
+					source,
+					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportKind.DEFAULT}}
+				}
+			}
+		}
+
+		if (this.isVariableStatement(statement)) {
+			const variableIndexer = this.formatVariableAssignment(statement);
+			for (const key of Object.keys(variableIndexer)) {
+				const match = variableIndexer[key];
+				const matchingRequireCallIndex = match.value.expression == null ? -1 : match.value.expression.findIndex(exp => exp instanceof BindingIdentifier && exp.name === "require");
+				if (matchingRequireCallIndex >= 0) {
+					const name = match.name;
+					const relativePath = match.value.expression == null ? "" : <string>match.value.expression.find((exp, index) => index > matchingRequireCallIndex && exp !== "(");
+					const fullPath = join(dirname(filePath), relativePath);
+
+					return {
+						kind: ModuleDependencyKind.REQUIRE,
+						source: {
+							relativePath,
+							fullPath
+						},
+						bindings: {[name]: {name, kind: ImportKind.DEFAULT}}
+					}
+				}
+			}
+			return null;
+		}
+
+		if (this.isCallExpression(statement)) {
+			const callExpression = this.formatCallExpression(statement);
+			if (callExpression.identifier === "require" && callExpression.property == null) {
+				const firstArgumentValue = callExpression.arguments.argumentsList[0].value;
+				const relativePath = firstArgumentValue == null || firstArgumentValue.resolved == null ? "" : firstArgumentValue.resolved.toString();
+				const fullPath = join(dirname(filePath), relativePath);
+				
+				return {
+						kind: ModuleDependencyKind.REQUIRE,
+						source: {
+							relativePath,
+							fullPath
+						},
+						bindings: {}
+					}
+			}
+			return null;
+		}
+		
+		throw new TypeError(`${this.getImportDeclaration.name} could not get an IModuleDependency for a statement of kind ${SyntaxKind[(<Identifier>statement).kind]}!`);
 	}
 
 	/**
