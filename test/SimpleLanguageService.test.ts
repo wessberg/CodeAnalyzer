@@ -11,6 +11,7 @@ const It = TypeMoq.It;
 
 // Setup
 const fileName = "a_file.ts";
+const INTEGRATION_TEST = process.env.npm_config_integration === "true";
 let marshaller = Mock.ofType<IMarshaller>();
 let marshallerIntegrated = new Marshaller(new TypeDetector());
 let service: ISimpleLanguageService;
@@ -33,20 +34,25 @@ function setupMock<T> (input?: InitializationValue | ArbitraryValueIndexable, ou
 
 function setup<T> (input?: InitializationValue | ArbitraryValueIndexable, output?: T, treatUndefinedAsExpectedValue: boolean = false): void {
 	// Mock the Marshaller behavior.
-	marshaller = Mock.ofType<IMarshaller>();
-	setupMock<T>(input, output, treatUndefinedAsExpectedValue);
-	service = new SimpleLanguageService(marshaller.object);
+	if (INTEGRATION_TEST) {
+		service = new SimpleLanguageService(marshallerIntegrated);
+	} else {
+		marshaller = Mock.ofType<IMarshaller>();
+		setupMock<T>(input, output, treatUndefinedAsExpectedValue);
+		service = new SimpleLanguageService(marshaller.object);
+	}
+	
 }
 
 function setupMany (inputOutputs: [InitializationValue | ArbitraryValueIndexable, InitializationValue | ArbitraryValueIndexable][], treatUndefinedAsExpectedValue: boolean = false): void {
 	// Mock the Marshaller behavior.
-	marshaller = Mock.ofType<IMarshaller>();
-	inputOutputs.forEach(pair => setupMock<typeof pair[1]>(pair[0], pair[1], treatUndefinedAsExpectedValue));
-	service = new SimpleLanguageService(marshaller.object);
-}
-
-function setupIntegrated(): void {
-	service = new SimpleLanguageService(marshallerIntegrated);
+	if (INTEGRATION_TEST) {
+		service = new SimpleLanguageService(marshallerIntegrated);
+	} else {
+		marshaller = Mock.ofType<IMarshaller>();
+		inputOutputs.forEach(pair => setupMock<typeof pair[1]>(pair[0], pair[1], treatUndefinedAsExpectedValue));
+		service = new SimpleLanguageService(marshaller.object);
+	}
 }
 
 // Tests
@@ -434,16 +440,21 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #14`, t => {
-	setupIntegrated();
+	setupMany([
+		["matches", "matches"],
+		["foo", "foo"],
+		["length", "length"],
+		["1", 1]
+	]);
 	
 	const code = `
 
-		const val = matches[matches.length - 1];
+		const val = matches[foo.length - 1];
 	
 	`;
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["val"].value.expression, [new BindingIdentifier("matches"), "[", new BindingIdentifier("matches"), '["length"]', "-", 1, "]" ] );
+	t.deepEqual(assignments["val"].value.expression, [new BindingIdentifier("matches"), "[", new BindingIdentifier("foo"), '["length"]', "-", 1, "]" ] );
 });
 
 
@@ -489,14 +500,14 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #4`, t
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #5`, t => {
-	setupMany([["this has the substitution ", "this has the substitution "], ["2", "2"], ["", ""]]);
+	setupMany([["this has the substitution ", "this has the substitution "], ["2", 2], ["", ""]]);
 
 	const statements = parse(`
 		const substitution = 2;
 		const foo: string = \`this has the substitution \${2}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "2", "`"]);
+	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", 2, "`"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #6`, t => {
@@ -648,7 +659,15 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #18`, 
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #19`, t => {
-	setupMany([["a", "a"], ["getKey", "getKey"], ["test", "test"], ["1", "1"], ["Infinity", Infinity], ["false", false], ["123", 123] ]);
+	setupMany([
+			["a", "a"],
+			["getKey", "getKey"],
+			["test", "test"],
+			["1", "1"],
+			["Infinity", Infinity],
+			["false", false],
+			["123", 123]
+	]);
 
 	const statements = parse(`
 		function getKey (num: number, bool: boolean, arr: number[]) {return "test";}

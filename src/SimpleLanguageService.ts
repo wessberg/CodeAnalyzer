@@ -2034,8 +2034,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isStringLiteral(rawStatement)) {
-			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(rawStatement.text);
-			return [marshalled];
+			return [rawStatement.text];
 		}
 
 		if (this.isRegularExpressionLiteral(rawStatement)) {
