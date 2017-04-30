@@ -3,7 +3,7 @@ import {dirname, join} from "path";
 import * as ts from "typescript";
 import {ArrayBindingPattern, ExternalModuleReference, ImportClause, NamespaceImport, AwaitExpression, ImportEqualsDeclaration, ForOfStatement, TemplateMiddle, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, RegularExpressionLiteral, DoStatement, ThrowStatement, BreakStatement, ContinueStatement, CaseClause, DefaultClause, SwitchStatement, CaseBlock, WhileStatement, VariableDeclarationList, BinaryOperator, PostfixUnaryExpression, ForStatement, CatchClause, TryStatement, ArrayLiteralExpression, TypeOfExpression, FunctionDeclaration, ClassExpression, NodeFlags, LabeledStatement, ArrayTypeNode, ArrowFunction, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, ReturnStatement, ScriptTarget, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SyntaxKind, SourceFile, IfStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ModuleDependencyKind, ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties, ImportKind, ImportIndexer} from "./interface/ISimpleLanguageService";
+import {ModuleDependencyKind, FunctionIndexer, IFunctionDeclaration, ArbitraryValue, VariableIndexer, IArgument, DecoratorIndexer, ClassIndexer, ICallExpression, IClassDeclaration, IConstructorDeclaration, IHeritage, IMemberDeclaration, IMethodDeclaration, IModuleDependency, InitializationValue, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ITypeBinding, TypeExpression, INewExpression, ITypeable, ICallable, ISourceFileProperties, ImportKind, ImportIndexer, IFunctionLike} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 import { IBindingIdentifier } from "src/interface/IBindingIdentifier";
 
@@ -1670,6 +1670,48 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * Gets all function declarations (if any) that occurs in the given file
+	 * and returns them in a FunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {FunctionIndexer}
+	 */	
+	public getFunctionDeclarationsForFile(fileName: string, deep: boolean = false): FunctionIndexer {
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getFunctionDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+		return this.getFunctionDeclarations(statements, deep);
+	}
+
+	/**
+	 * Gets all function declarations (if any) that occurs in the given array of statements
+	 * and returns them in a FunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * @param {Statement[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {FunctionIndexer}
+	 */
+	public getFunctionDeclarations (statements: Statement[], deep: boolean = false): FunctionIndexer {
+		const functionIndexer: FunctionIndexer = {};
+		let anonymousCount = 0;
+
+		for (const statement of statements) {
+			if (this.isFunctionDeclaration(statement)) {
+				const formatted = this.formatFunctionDeclaration(statement);
+				Object.assign(functionIndexer, { [formatted.name == null ? `anonymous_${++anonymousCount}` : formatted.name]: formatted });
+			}
+
+			if (deep) {
+				const otherDeclarations = this.getFunctionDeclarations(this.findChildStatements(statement), deep);
+				Object.keys(otherDeclarations).forEach(key => {
+					// Only assign the deep function to the functionIndexer if there isn't a match in the scope above it.
+					if (functionIndexer[key] == null) Object.assign(functionIndexer, { [key]: otherDeclarations[key] });
+				});
+			}
+
+		}		
+		return functionIndexer;
+	}
+
+	/**
 	 * Gets all variable assignments (if any) that occurs in the given file
 	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
@@ -2172,7 +2214,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isImportDeclaration(statement)) {
 			const relativePath = <string>this.getNameOfMember(statement.moduleSpecifier, false, true);
-			const fullPath = join(dirname(filePath), relativePath);
+			if (relativePath.toString().length < 1) {
+				throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+			}
+			const fullPath = join(dirname(filePath), relativePath.toString());
 
 			return {
 				kind: ModuleDependencyKind.ES_MODULE,
@@ -2187,6 +2232,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (this.isImportEqualsDeclaration(statement)) {
 			if (this.isExternalModuleReference(statement.moduleReference)) {
 				const relativePath = statement.moduleReference.expression == null ? "" : <string>this.getNameOfMember(statement.moduleReference.expression, false, true);
+				if (relativePath.toString().length < 1) {
+					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+				}
 				const fullPath = join(dirname(filePath), relativePath);
 				return {
 					kind: ModuleDependencyKind.IMPORT_REQUIRE,
@@ -2218,6 +2266,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				if (matchingRequireCallIndex >= 0) {
 					const name = match.name;
 					const relativePath = match.value.expression == null ? "" : <string>match.value.expression.find((exp, index) => index > matchingRequireCallIndex && exp !== "(");
+					if (relativePath.toString().length < 1) {
+						throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+					}
 					const fullPath = join(dirname(filePath), relativePath);
 
 					return {
@@ -2238,8 +2289,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (callExpression.identifier === "require" && callExpression.property == null) {
 				const firstArgumentValue = callExpression.arguments.argumentsList[0].value;
 				const relativePath = firstArgumentValue == null || firstArgumentValue.resolved == null ? "" : firstArgumentValue.resolved.toString();
+
+				if (relativePath.toString().length < 1) {
+					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+				}
 				const fullPath = join(dirname(filePath), relativePath);
-				
+
 				return {
 						kind: ModuleDependencyKind.REQUIRE,
 						source: {
@@ -3130,10 +3185,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
-	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration} declaration
+	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration} declaration
 	 * @returns {DecoratorIndexer}
 	 */
-	private formatDecorators(declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration): DecoratorIndexer {
+	private formatDecorators(declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration): DecoratorIndexer {
 		const obj: DecoratorIndexer = {};
 		if (declaration.decorators == null) return obj;
 
@@ -3263,10 +3318,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
-	 * @param {ConstructorDeclaration | MethodDeclaration} declaration
+	 * @param {ConstructorDeclaration | MethodDeclaration | FunctionDeclaration} declaration
 	 * @returns {IParameter[]}
 	 */
-	private formatParameters (declaration: ConstructorDeclaration | MethodDeclaration): IParameter[] {
+	private formatParameters (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IParameter[] {
 		return declaration.parameters.map(param => this.formatParameter(param));
 	}
 
@@ -3318,11 +3373,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
-	 * @param {ConstructorDeclaration|MethodDeclaration} declaration
+	 * @param {ConstructorDeclaration|MethodDeclaration | FunctionDeclaration} declaration
 	 * @param {string} fileContents
 	 * @returns {IMemberDeclaration}
 	 */
-	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration, fileContents: string): IMemberDeclaration & IParametersable {
+	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IMemberDeclaration & IParametersable {
+		const fileContents = this.getSourceFileProperties(declaration).fileContents;
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
 		const body = declaration.body;
@@ -3355,22 +3411,33 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Takes a ConstructorDeclaration and returns an IConstructorDeclaration.
 	 * @param {ConstructorDeclaration} declaration
-	 * @param {string} fileContents
 	 * @returns {IConstructorDeclaration}
 	 */
-	private formatConstructorDeclaration (declaration: ConstructorDeclaration, fileContents: string): IConstructorDeclaration {
+	private formatConstructorDeclaration (declaration: ConstructorDeclaration): IConstructorDeclaration {
 		const name = "constructor";
-		return {...this.formatCallableMemberDeclaration(declaration, fileContents), ...{name}};
+		return {...this.formatCallableMemberDeclaration(declaration), ...{name}};
 	}
 
 	/**
-	 * Takes a MethodDeclaration and returns an IMethodDeclaration.
-	 * @param {MethodDeclaration} declaration
-	 * @param {string} fileContents
-	 * @returns {IMethodDeclaration}
+	 * Takes a FunctionDeclaration and returns an IFunctionDeclaration.
+	 * @param {FunctionDeclaration} declaration
+	 * @returns {IFunctionDeclaration}
 	 */
-	private formatMethodDeclaration (declaration: MethodDeclaration, fileContents: string): IMethodDeclaration {
-		const name = <string>this.getNameOfMember(declaration.name, false, true);
+	private formatFunctionDeclaration (declaration: FunctionDeclaration): IFunctionDeclaration {
+		const name = declaration.name == null ? null : <string>this.getNameOfMember(declaration.name, false, true);
+		return {
+			...this.formatFunctionLikeDeclaration(declaration),
+			name
+		};
+	}
+
+	/**
+	 * Formats a MethodDeclaration or a FunctionDeclaration and returns what they have in common.
+	 * @param {MethodDeclaration|FunctionDeclaration} declaration
+	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
+	 */
+	private formatFunctionLikeDeclaration(declaration: MethodDeclaration | FunctionDeclaration): IFunctionLike {
+		const fileContents = this.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;
 		let returnStatementContents: string | null = null;
@@ -3389,8 +3456,21 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		return {
-			...this.formatCallableMemberDeclaration(declaration, fileContents),
-			...{name, returnStatementStartsAt, returnStatementEndsAt, returnStatementContents}
+			...this.formatCallableMemberDeclaration(declaration),
+			...{returnStatementStartsAt, returnStatementEndsAt, returnStatementContents}
+		};
+	}
+
+	/**
+	 * Takes a MethodDeclaration and returns an IMethodDeclaration.
+	 * @param {MethodDeclaration} declaration
+	 * @returns {IMethodDeclaration}
+	 */
+	private formatMethodDeclaration (declaration: MethodDeclaration): IMethodDeclaration {
+		const name = <string>this.getNameOfMember(declaration.name, false, true);
+		return {
+			...this.formatFunctionLikeDeclaration(declaration),
+			...{ name }
 		};
 	}
 
@@ -3463,11 +3543,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			else if (this.isConstructorDeclaration(member)) {
-				declaration.constructor = this.formatConstructorDeclaration(member, fileContents);
+				declaration.constructor = this.formatConstructorDeclaration(member);
 			}
 
 			else if (this.isMethodDeclaration(member)) {
-				const formatted = this.formatMethodDeclaration(member, fileContents);
+				const formatted = this.formatMethodDeclaration(member);
 				declaration.methods[formatted.name] = formatted;
 			}
 

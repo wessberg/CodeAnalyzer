@@ -72,10 +72,17 @@ export interface IArgumentsBody extends IPositionable {
 	argumentsList: IArgument[];
 }
 
-export interface IMethodDeclaration extends INameable, IMemberDeclaration, IParametersable {
+export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 	returnStatementStartsAt: number;
 	returnStatementEndsAt: number;
 	returnStatementContents: string | null;
+}
+
+export declare interface IFunctionDeclaration extends IFunctionLike {
+	name: string|null;
+}
+
+export interface IMethodDeclaration extends INameable, IFunctionLike {
 }
 
 export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable {
@@ -163,6 +170,7 @@ export interface IFileContentsable {
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
 }
 
+export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportIndexer = { [key: string]: IImportBinding };
 export declare type ClassIndexer = { [key: string]: IClassDeclaration };
@@ -287,9 +295,12 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	serializeToken (token: SyntaxKind): string|IBindingIdentifier;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getClassDeclarations(statements: Statement[], deep?: boolean): ClassIndexer;
-	getClassDeclarationsForFile (fileName: string, deep?: boolean): ClassIndexer;
+	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
+	// getAllIdentifiers(statements: Statement[], deep?: boolean): 
 	getVariableAssignments(statements: Statement[], deep?: boolean): VariableIndexer;
 	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
+	getFunctionDeclarations(statements: Statement[], deep?: boolean): FunctionIndexer;
+	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
 	getImportDeclarationsForFile (fileName: string): IModuleDependency[];
 	getImportDeclarations(statements: Statement[], deep?: boolean): IModuleDependency[];
 	getExportDeclarationsForFile (fileName: string, deep?: boolean): Set<string>;

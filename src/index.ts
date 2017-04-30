@@ -13,6 +13,8 @@ export {
 	ModuleDependencyKind,
 	IModulePath,
 	ModuleSource,
+	FunctionIndexer,
+	IFunctionDeclaration,
 	IMemberDeclaration,
 	PropIndexer,
 	IPositionable,
