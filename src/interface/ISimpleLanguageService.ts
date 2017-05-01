@@ -1,6 +1,6 @@
-import { ArrayBindingPattern, ExternalModuleReference, ImportClause, NamespaceImport, ImportEqualsDeclaration, TemplateMiddle, AwaitExpression, ForOfStatement, ForInStatement, ShorthandPropertyAssignment, DeleteExpression, EmptyStatement, DoStatement, RegularExpressionLiteral, BreakStatement, ContinueStatement, ThrowStatement, CaseBlock, CaseClause, DefaultClause, SwitchStatement, WhileStatement, VariableDeclarationList, ForStatement, PostfixUnaryExpression, CatchClause, TryStatement, TypeOfExpression, ClassExpression, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, SyntaxKind, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, ClassDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, FunctionExpression, HeritageClause, Identifier, ImportDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LanguageServiceHost, MethodDeclaration, NamedImports, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, SpreadAssignment, SpreadElement, Statement, StringLiteral, TemplateExpression, TemplateHead, TemplateSpan, TemplateTail, ThisExpression, Token, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeReferenceNode, UnionTypeNode, VariableStatement, SourceFile, IfStatement, FunctionDeclaration, LabeledStatement, VariableDeclaration, ExpressionWithTypeArguments} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, LanguageServiceHost, MethodDeclaration, NamedImports, NamespaceImport, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
 
-import { IBindingIdentifier } from "./IBindingIdentifier";
+import {IBindingIdentifier} from "./IBindingIdentifier";
 
 export enum ImportKind {
 	NAMESPACE, DEFAULT, NAMED
@@ -8,6 +8,10 @@ export enum ImportKind {
 
 export enum ModuleDependencyKind {
 	ES_MODULE, REQUIRE, IMPORT_REQUIRE
+}
+
+export enum IdentifierMapKind {
+	VARIABLE, IMPORT, EXPORT, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, RESOLVED_CLASS_MEMBER_MAP, IDENTIFIER_MAP
 }
 
 export interface IImportBinding {
@@ -22,17 +26,21 @@ export interface IModulePath {
 
 export declare type ModuleSource = IBindingIdentifier | IModulePath;
 
-export interface IModuleDependency extends IFilePathable {
-	kind: ModuleDependencyKind;
+export interface IKindable {
+	___kind: IdentifierMapKind;
+}
+
+export interface IModuleDependency extends IFilePathable, IKindable {
+	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
 	bindings: ImportIndexer;
 }
 
-export interface ICallExpression extends IArgumentsable, ICallable, IFilePathable {
+export interface ICallExpression extends IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
 }
 
-export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable {
+export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable, IKindable {
 	members: { [key: string]: number | string };
 }
 
@@ -41,7 +49,7 @@ export interface ICallable {
 	identifier: NonNullableArbitraryValue;
 }
 
-export interface INewExpression extends IArgumentsable, ICallable, IFilePathable {
+export interface INewExpression extends IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
 }
 
@@ -82,18 +90,18 @@ export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 	returnStatementContents: string | null;
 }
 
-export interface IFunctionDeclaration extends IFunctionLike, IFilePathable {
-	name: string|null;
+export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKindable {
+	name: string | null;
 }
 
 export interface IClassNameable {
 	className: string;
 }
 
-export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable {
+export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable {
 }
 
-export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable, IFilePathable, IClassNameable {
+export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable, IFilePathable, IClassNameable, IKindable {
 
 }
 
@@ -102,7 +110,7 @@ export interface IHeritage {
 	implementsInterfaces: ITypeBinding[];
 }
 
-export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable {
+export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable, IKindable {
 	methods: ResolvedMethodMap;
 	props: PropIndexer;
 	constructor: IConstructorDeclaration | null;
@@ -114,12 +122,12 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IParameter extends IPositionable, INameable {
+export declare interface IParameter extends IPositionable, INameable, IKindable {
 	type: ITypeable;
 	value: IValueable;
 }
 
-export declare interface IArgument extends IPositionable {
+export declare interface IArgument extends IPositionable, IKindable {
 	value: IValueable;
 }
 
@@ -128,7 +136,7 @@ export interface IArbitraryObject<T> {
 	[key: number]: T;
 }
 
-export interface IDecorator {
+export interface IDecorator extends IKindable {
 	name: string;
 }
 
@@ -136,7 +144,7 @@ export interface IDecoratorsable {
 	decorators: DecoratorIndexer;
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable {
 	type: ITypeable;
 	value: IValueable;
 }
@@ -158,11 +166,11 @@ export interface ITypeable {
 }
 
 export interface IValueable {
-	resolve: () => string|null;
+	resolve: () => string | null;
 	expression: InitializationValue | null;
 }
 
-export interface IVariableAssignment extends IPositionable, INameable, IFilePathable {
+export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable {
 	value: IValueable;
 	type: ITypeable;
 }
@@ -178,7 +186,7 @@ export interface IFileContentsable {
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
 }
 
-export declare interface IIdentifierMap {
+export declare interface IIdentifierMap extends IKindable {
 	enums: EnumIndexer;
 	classes: ClassIndexer;
 	variables: VariableIndexer;
@@ -311,7 +319,7 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	isImportClause(statement: Statement | Declaration | Expression | Node): statement is ImportClause;
 	isExternalModuleReference(statement: Statement | Declaration | Expression | Node): statement is ExternalModuleReference;
 	isDeleteExpression(statement: Statement | Declaration | Expression | Node): statement is DeleteExpression;
-	serializeToken (token: SyntaxKind): string|IBindingIdentifier;
+	serializeToken (token: SyntaxKind): string | IBindingIdentifier;
 	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getClassDeclarations(statements: Statement[], deep?: boolean): ClassIndexer;
 	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;

@@ -154,7 +154,49 @@ test(`getVariableAssignments() -> Computes all resolved values correctly. #3`, t
 	]);
 	const statements = parse(`
 		const sub = 10;
-		const val = 2 + 3 * (5 /sub);
+		const val = 2 + 3 * (5 / sub);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #4`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["5", 5],
+		["10", 10],
+		["MyClass", "MyClass"],
+		["foo", "foo"]
+	]);
+	const statements = parse(`
+		class MyClass {
+			static foo: number = 10;
+		}
+		const val = 2 + 3 * (5 / MyClass.foo);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+});
+
+test.only(`getVariableAssignments() -> Computes all resolved values correctly. #5`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["5", 5],
+		["10", 10],
+		["50", 50],
+		["MyClass", "MyClass"],
+		["foo", "foo"]
+	]);
+	const statements = parse(`
+		class MyClass {
+			static bar: numer = 50;
+			static foo: number = MyClass.bar;
+		}
+		const val = 2 + 3 * (5 / MyClass.foo);
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
@@ -1601,7 +1643,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t =
 	t.true(importDeclarations.length === 1);
 });
 
-test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t => {
+test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
 	setupMany([
 		["require", "require"]
 	]);
