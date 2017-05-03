@@ -320,6 +320,90 @@ test(`getVariableAssignments() -> Computes all resolved values correctly. #9`, t
 	t.true(value != null && value.trim() === "Hi, I'm Kate, and I am 99 years old");
 });
 
+test(`getVariableAssignments() -> Computes all resolved values correctly. #10`, t => {
+	setupMany([
+		["age", "age"],
+		["99", 99],
+		["Hi, I'm Kate, and ", "Hi, I'm Kate, and "],
+		["I am 99 years old", "I am 99 years old"],
+		["I am ", "I am "],
+		[" years old", " years old"],
+		["sub", "sub"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		let age = 99;
+		
+		const sub = \`I am \${age} years old\`;
+		const val = \`Hi, I'm Kate, and \${sub}\`;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.true(value != null && value.trim() === "Hi, I'm Kate, and I am 99 years old");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #11`, t => {
+	setupMany([
+		["age", "age"],
+		["99", 99],
+		["Hi, I'm Kate, and ", "Hi, I'm Kate, and "],
+		["I am 99 years old", "I am 99 years old"],
+		["I am ", "I am "],
+		[" years old", " years old"],
+		["sub", "sub"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		const val = [1, 2, "foo"];
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.true(value != null && value.trim() === '[1,2,"foo"]');
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #12`, t => {
+	setupMany([
+		["foo", "foo"],
+		["1", 1],
+		["2", 2],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		function foo () {
+			return 1;
+		}
+		const val = 2 + foo();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "3");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #13`, t => {
+	setupMany([
+		["foo", "foo"],
+		["1", 1],
+		["2", 2],
+		["3", 3],
+		["bar", "bar"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+	const bar = 3;
+		function foo () {
+			return bar + 1;
+		}
+		const val = 2 + foo();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "6");
+});
+
 // Tests
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #1`, t => {
 	setupMany([["0", 0], ["1", 1]]);

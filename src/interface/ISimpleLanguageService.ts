@@ -92,6 +92,7 @@ export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 
 export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKindable {
 	name: string;
+	value: IValueable;
 }
 
 export interface IClassNameable {
@@ -99,6 +100,7 @@ export interface IClassNameable {
 }
 
 export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable, isStaticable {
+	value: IValueable;
 }
 
 export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable, IFilePathable, IClassNameable, IKindable {

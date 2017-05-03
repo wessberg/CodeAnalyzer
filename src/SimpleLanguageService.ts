@@ -1051,6 +1051,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
+	 * A predicate function that returns true if the given Statement is an IFunctionDeclaration.
+	 * @param {IIdentifier | null} statement
+	 * @returns {boolean}
+	 */
+	public isIFunctionDeclaration (statement: IIdentifier | null): statement is IFunctionDeclaration {
+		return statement != null && statement.___kind === IdentifierMapKind.FUNCTION;
+	}
+
+	/**
 	 * A predicate function that returns true if the given Statement is a FirstLiteralToken.
 	 * @param {BindingName|EntityName|Expression} statement
 	 * @returns {boolean}
@@ -2914,6 +2923,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const enumDeclaration = enumDeclarations[lookupIdentifier];
 		if (enumDeclaration != null) return enumDeclaration;
 
+		const functionDeclarations = this.getFunctionDeclarationsForFile(from, true);
+		const functionDeclaration = functionDeclarations[lookupIdentifier];
+		if (functionDeclaration != null) return functionDeclaration;
+
 		return null;
 	}
 
@@ -2938,7 +2951,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					sub = this.stringifyIEnumDeclaration(substitution);
 				}
 
-				else throw new TypeError(`${this.flattenValueExpression.name} could not flatten a declaration of kind: ${substitution == null ? null : IdentifierMapKind[(<{___kind: IdentifierMapKind}>substitution).___kind]}`);
+				else if (this.isIFunctionDeclaration(substitution)) {
+					sub = `(${this.stringifyIFunctionDeclaration(substitution)})`;
+				}
+
+				else {
+					throw new TypeError(`${this.flattenValueExpression.name} could not flatten a declaration of kind: ${substitution == null ? null : IdentifierMapKind[(<{___kind: IdentifierMapKind}>substitution).___kind]}`);
+				}
 
 				if (this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);
 				val += sub;
@@ -2962,8 +2981,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		valueable.resolving = true;
 		const flattened = this.flattenValueExpression(valueable.expression, from, scope);
 		console.log("valueExpression:", valueable.expression);
+		const isFunctionExpression = valueable.expression[0] === "return";
 		console.log("flattened:", flattened);
-		let result = this.computeValueResolved(flattened);
+		let result = this.computeValueResolved(flattened, isFunctionExpression);
 		valueable.resolving = false;
 		console.log("computed:", result);
 
@@ -2973,10 +2993,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * Computes/Evaluates the given expression to a concrete value.
 	 * @param {string} flattened
+	 * @param {boolean} [isFunctionExpression]
 	 * @returns {ArbitraryValue}
 	 */
-	private computeValueResolved (flattened: string): ArbitraryValue {
-		return new Function(`return ${flattened}`)();
+	private computeValueResolved (flattened: string, isFunctionExpression: boolean): ArbitraryValue {
+		return new Function(`return ${isFunctionExpression ? `() => {${flattened}}` : flattened}`)();
 	}
 
 	private quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
@@ -3103,12 +3124,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isIfStatement(rawStatement)) {
-			const arr: InitializationValue = ["if", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.thenStatement), "}"];
-			return arr;
+			return ["if", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.thenStatement), "}"];
 		}
 
 		if (this.isForOfStatement(rawStatement)) {
-			const arr: InitializationValue = [
+			return [
 				"for",
 				...(rawStatement.awaitModifier == null ? [] : [" ", ...this.getValueExpression(rawStatement.awaitModifier)]),
 				"(",
@@ -3118,22 +3138,20 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
-			return arr;
 		}
 
 		if (this.isForInStatement(rawStatement)) {
-			const arr: InitializationValue = [
+			return [
 				"for", "(",
 				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), " ", "in", " ",
 				...this.getValueExpression(rawStatement.expression), ")", "{",
 				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
-			return arr;
 		}
 
 		if (this.isForStatement(rawStatement)) {
-			const arr: InitializationValue = [
+			return [
 				"for", "(",
 				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), ";",
 				...(rawStatement.condition == null ? [] : this.getValueExpression(rawStatement.condition)), ";",
@@ -3141,7 +3159,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				...this.getValueExpression(rawStatement.statement),
 				"}"
 			];
-			return arr;
 		}
 
 		if (this.isThrowStatement(rawStatement)) {
@@ -3431,8 +3448,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return arr;
 		}
 
-		if (this.isFunctionExpression(rawStatement) || this.isMethodDeclaration(rawStatement)) {
-			const arr: InitializationValue = this.isFunctionExpression(rawStatement) ? ["function", " "] : [];
+		if (this.isFunctionExpression(rawStatement) || this.isFunctionDeclaration(rawStatement) || this.isMethodDeclaration(rawStatement)) {
+			const arr: InitializationValue = this.isFunctionExpression(rawStatement) || this.isFunctionDeclaration(rawStatement) ? ["function", " "] : [];
 			const body = rawStatement.body == null ? null : this.getValueExpression(rawStatement.body);
 
 			if (rawStatement.name != null) {
@@ -4153,9 +4170,27 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const cached = this.getCachedFunction(filePath, name);
 		if (cached != null && !this.cachedFunctionNeedsUpdate(cached.content)) return cached.content;
 
+		const valueExpression = declaration.body == null ? null : this.getValueExpression(declaration.body);
+		const that = this;
+		const scope = this.traceScope(declaration);
+
 		const map: IFunctionDeclaration = {
 			...this.formatFunctionLikeDeclaration(declaration),
-			...{___kind: IdentifierMapKind.FUNCTION, name, filePath}
+			...{
+				___kind: IdentifierMapKind.FUNCTION,
+				name,
+				filePath,
+				value: {
+					expression: valueExpression,
+					resolving: false,
+					resolved: undefined,
+					hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+					resolve () {
+						map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
+						return map.value.resolved;
+					}
+				}
+			}
 		};
 
 		// Make the kind non-enumerable.
@@ -4207,10 +4242,30 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const name = <string>this.getNameOfMember(declaration.name, false, true);
 
 		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => this.isStaticKeyword(modifier)) != null;
+		const filePath = this.getSourceFileProperties(declaration).filePath;
+		const valueExpression = declaration.body == null ? null : this.getValueExpression(declaration.body);
+		const that = this;
+		const scope = this.traceScope(declaration);
 
 		const map: IMethodDeclaration = {
 			...this.formatFunctionLikeDeclaration(declaration),
-			...{___kind: IdentifierMapKind.METHOD, isStatic, name, className, filePath: this.getSourceFileProperties(declaration).filePath}
+			...{
+				___kind: IdentifierMapKind.METHOD,
+				isStatic,
+				name,
+				className,
+				filePath,
+				value: {
+					expression: valueExpression,
+					resolving: false,
+					resolved: undefined,
+					hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+					resolve () {
+						map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
+						return map.value.resolved;
+					}
+				}
+			}
 		};
 
 		// Make the kind non-enumerable.
@@ -4350,6 +4405,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	private stringifyIEnumDeclaration (enumDeclaration: IEnumDeclaration): string {
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(enumDeclaration.members, "");
+	}
+
+	private stringifyIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): string {
+		const flattened = functionDeclaration.value.expression == null ? "undefined" : functionDeclaration.value.hasDoneFirstResolve()
+			? functionDeclaration.value.resolved
+			: functionDeclaration.value.resolve();
+		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
 	}
 
 	/**
