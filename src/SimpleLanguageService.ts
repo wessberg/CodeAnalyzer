@@ -2,7 +2,7 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import {IBindingIdentifier} from "src/interface/IBindingIdentifier";
 import * as ts from "typescript";
-import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BinaryOperator, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LabeledStatement, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NamespaceImport, NewExpression, Node, NodeArray, NodeFlags, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ScriptTarget, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, Modifier, BinaryExpression, BinaryOperator, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, CompilerOptions, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, ExportDeclaration, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, IndexSignatureDeclaration, IntersectionTypeNode, IScriptSnapshot, KeywordTypeNode, LabeledStatement, LanguageService, MethodDeclaration, ModuleKind, NamedImports, NamespaceImport, NewExpression, Node, NodeArray, NodeFlags, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ScriptTarget, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
 import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IModuleDependency, ImportIndexer, ImportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IVariableAssignment, ModuleDependencyKind, TypeExpression, VariableIndexer} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
@@ -15,6 +15,7 @@ import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceCo
  */
 export class SimpleLanguageService implements ISimpleLanguageService {
 	private languageService: LanguageService;
+	private static readonly GLOBAL: string = "global";
 	private files: Map<string, { version: number, content: string }> = new Map();
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 
@@ -425,6 +426,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	public isTrueKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BooleanLiteral {
 		return statement.kind === SyntaxKind.TrueKeyword;
+	}
+
+	/**
+	 * A predicate function that returns true if the given Statement is the keyword 'static'.
+	 * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+	 * @returns {boolean}
+	 */
+	public isStaticKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is Modifier {
+		return statement.kind === SyntaxKind.StaticKeyword;
 	}
 
 	/**
@@ -1859,7 +1869,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.ENUM,
 			enumerable: false
 		});
-		map.toString = () => this.stringifyIEnumDeclaration(map);
+
 		this.setCachedEnum(filePath, map);
 		return map;
 	}
@@ -1951,6 +1961,35 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignmentMap;
 	}
 
+	private traceScope (statement: Statement|Expression|Node): string|undefined {
+		let current: Statement|Expression|Node = statement;
+
+		while (
+			!this.isClassDeclaration(current) &&
+			!this.isClassExpression(current) &&
+			!this.isFunctionExpression(current) &&
+			!this.isFunctionDeclaration(current) &&
+			!this.isSourceFile(current)) {
+			// TODO: Also support ObjectLiteralExpressions!
+			if (current.parent == null) break;
+			current = current.parent;
+		}
+
+		if (this.isSourceFile(current)) {
+			return SimpleLanguageService.GLOBAL;
+		}
+
+		if (this.isFunctionExpression(current) || this.isFunctionDeclaration(current)) {
+			return current.name == null ? current.parent == null ? undefined : this.traceScope(current.parent) : <string>this.getNameOfMember(current.name, false, true);
+		}
+
+		if (this.isClassDeclaration(current) || this.isClassExpression(current)) {
+			return current.name == null ? current.parent == null ? undefined : this.traceScope(current.parent) : <string>this.getNameOfMember(current.name, false, true);
+		}
+
+		throw new TypeError(`${this.getSourceFileProperties.name} could not find a source file from a given statement of kind ${SyntaxKind[statement.kind]}`);
+	}
+
 	/**
 	 * Formats the given VariableStatement and returns a VariableIndexer.
 	 * @param {VariableStatement} statement
@@ -1977,6 +2016,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
 					const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
 					const that = this;
+					const scope = this.traceScope(declaration);
 
 					const map: IVariableAssignment = {
 						___kind: IdentifierMapKind.VARIABLE,
@@ -1988,7 +2028,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 							hasDoneFirstResolve () {return map.value.resolved !== undefined;},
 							resolving: false,
 							resolve () {
-								map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath);
+								map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
 								return map.value.resolved;
 							}
 						},
@@ -2007,7 +2047,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						enumerable: false
 					});
 
-					map.toString = () => this.stringifyIVariableAssignment(map);
 					assignmentMap[name] = map;
 					this.setCachedVariable(filePath, map);
 				}
@@ -2856,46 +2895,53 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * It starts from the given file.
 	 * @param {string} identifier
 	 * @param {string} from
+	 * @param {string|undefined} [scope]
 	 * @returns {IIdentifier|null}
 	 */
-	private traceIdentifier (identifier: string, from: string): IIdentifier | null {
+	private traceIdentifier (identifier: string, from: string, scope: string|undefined): IIdentifier | null {
+		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
+		const lookupIdentifier = identifier === "this" && scope != null && scope !== SimpleLanguageService.GLOBAL ? scope : identifier;
 
 		const variables = this.getVariableAssignmentsForFile(from, true);
-		const variable = variables[identifier];
+		const variable = variables[lookupIdentifier];
 		if (variable != null) return variable;
 
 		const classDeclarations = this.getClassDeclarationsForFile(from, true);
-		const classDeclaration = classDeclarations[identifier];
+		const classDeclaration = classDeclarations[lookupIdentifier];
 		if (classDeclaration != null) return classDeclaration;
 
 		const enumDeclarations = this.getEnumDeclarationsForFile(from, true);
-		const enumDeclaration = enumDeclarations[identifier];
+		const enumDeclaration = enumDeclarations[lookupIdentifier];
 		if (enumDeclaration != null) return enumDeclaration;
 
 		return null;
 	}
 
-	private flattenValueExpression (valueExpression: InitializationValue, from: string): string {
+	private flattenValueExpression (valueExpression: InitializationValue, from: string, scope: string|undefined): string {
 		let val: string = "";
 
 		valueExpression.forEach(part => {
 			if (part instanceof BindingIdentifier) {
-				const substitution = this.traceIdentifier(part.name, from);
+
+				const substitution = this.traceIdentifier(part.name, from, scope);
+				let sub: string;
 
 				if (this.isIVariableAssignment(substitution)) {
-					val += substitution.toString();
+					sub = this.stringifyIVariableAssignment(substitution);
 				}
 
 				else if (this.isIClassDeclaration(substitution)) {
-					val += substitution.toString();
+					sub = this.stringifyIClassDeclaration(substitution, part.name !== "this");
 				}
 
 				else if (this.isIEnumDeclaration(substitution)) {
-					val += substitution.toString();
+					sub = this.stringifyIEnumDeclaration(substitution);
 				}
 
 				else throw new TypeError(`${this.flattenValueExpression.name} could not flatten a declaration of kind: ${substitution == null ? null : IdentifierMapKind[(<{___kind: IdentifierMapKind}>substitution).___kind]}`);
 
+				if (this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);
+				val += sub;
 			} else {
 				val += this.isOperatorLike(part) ? <string>part : this.marshaller.marshal<ArbitraryValue, string>(part, "");
 			}
@@ -2907,18 +2953,20 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
 	 * @param {INonNullableValueable} valueable
 	 * @param {string} from
+	 * @param {string|undefined} scope
 	 * @returns {ArbitraryValue}
 	 */
-	private getValueResolved (valueable: INonNullableValueable, from: string): string | null {
+	private getValueResolved (valueable: INonNullableValueable, from: string, scope: string|undefined): string | null {
 		if (valueable.resolving) return null;
 
 		valueable.resolving = true;
-		const flattened = this.flattenValueExpression(valueable.expression, from);
+		const flattened = this.flattenValueExpression(valueable.expression, from, scope);
 		console.log("valueExpression:", valueable.expression);
 		console.log("flattened:", flattened);
-		const result = this.computeValueResolved(flattened);
-		console.log("computed:", result);
+		let result = this.computeValueResolved(flattened);
 		valueable.resolving = false;
+		console.log("computed:", result);
+
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(result, "");
 	}
 
@@ -2929,6 +2977,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	private computeValueResolved (flattened: string): ArbitraryValue {
 		return new Function(`return ${flattened}`)();
+	}
+
+	private quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
+		if (!(typeof content === "string")) return content;
+		const firstChar = content[0];
+		const lastChar = content[content.length - 1];
+		let str = "`";
+		const startsWithClashingQuote = firstChar === "`";
+		const endsWithClashingQuote = lastChar === "`";
+		const startOffset = startsWithClashingQuote ? 1 : 0;
+		const endOffset = endsWithClashingQuote ? 1 : 0;
+		if (startsWithClashingQuote) str += "\`";
+		str += content.slice(startOffset, content.length - endOffset);
+		if (endsWithClashingQuote) str += "\`";
+		str += "`";
+		return str;
 	}
 
 
@@ -2947,7 +3011,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (this.isStringLiteral(rawStatement)) {
-			return [rawStatement.text];
+			return [this.quoteIfNecessary(rawStatement.text)];
 		}
 
 		if (this.isRegularExpressionLiteral(rawStatement)) {
@@ -2957,7 +3021,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		if (this.isNoSubstitutionTemplateLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text);
-			return [marshalled];
+			return [this.quoteIfNecessary(marshalled)];
 		}
 
 		if (this.isTemplateHead(rawStatement) || this.isTemplateMiddle(rawStatement) || this.isTemplateTail(rawStatement)) {
@@ -3423,11 +3487,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 	/**
 	 * Computes the mot probable native type of the given string.
-	 * @param {string} text
+	 * @param {ArbitraryValue} text
 	 * @returns {string}
 	 */
-	private mostProbableTypeOf (text: string): string {
-		return typeof this.marshaller.marshal<string, ArbitraryValue>(text);
+	private mostProbableTypeOf (text: ArbitraryValue): string {
+		return typeof this.marshaller.marshal<ArbitraryValue, ArbitraryValue>(text);
 	}
 
 	/**
@@ -3812,9 +3876,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
 		const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
 		const that = this;
+		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => this.isStaticKeyword(modifier)) != null;
+		const scope = this.traceScope(declaration);
 
 		const map: IPropDeclaration = {
 			___kind: IdentifierMapKind.PROP,
+			isStatic,
 			startsAt,
 			endsAt,
 			name,
@@ -3832,7 +3899,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				resolved: undefined,
 				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
 				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath);
+					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
 					return map.value.resolved;
 				}
 			}
@@ -3894,6 +3961,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
 		const valueExpression = parameter.initializer != null ? this.getValueExpression(parameter.initializer) : null;
 		const that = this;
+		const scope = this.traceScope(parameter);
 
 		const map: IParameter = {
 			___kind: IdentifierMapKind.PARAMETER,
@@ -3911,7 +3979,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				resolved: undefined,
 				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
 				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath);
+					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
 					return map.value.resolved;
 				}
 			}
@@ -3935,6 +4003,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const endsAt = argument.end;
 		const valueExpression = this.getValueExpression(argument);
 		const that = this;
+		const scope = this.traceScope(argument);
 
 		const map: IArgument = {
 			___kind: IdentifierMapKind.ARGUMENT,
@@ -3946,7 +4015,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				resolved: undefined,
 				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
 				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath);
+					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, filePath, scope);
 					return map.value.resolved;
 				}
 			}
@@ -4137,9 +4206,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	private formatMethodDeclaration (declaration: MethodDeclaration, className: string): IMethodDeclaration {
 		const name = <string>this.getNameOfMember(declaration.name, false, true);
 
+		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => this.isStaticKeyword(modifier)) != null;
+
 		const map: IMethodDeclaration = {
 			...this.formatFunctionLikeDeclaration(declaration),
-			...{___kind: IdentifierMapKind.METHOD, name, className, filePath: this.getSourceFileProperties(declaration).filePath}
+			...{___kind: IdentifierMapKind.METHOD, isStatic, name, className, filePath: this.getSourceFileProperties(declaration).filePath}
 		};
 
 		// Make the kind non-enumerable.
@@ -4245,7 +4316,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			else throw new TypeError(`${this.getClassDeclaration.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
 		});
 
-		declaration.toString = () => this.stringifyIClassDeclaration(declaration);
 		this.setCachedClass(filePath, declaration);
 		return declaration;
 	}
@@ -4257,15 +4327,21 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
 	}
 
-	private stringifyIClassDeclaration (classDeclaration: IClassDeclaration): string {
+	private stringifyIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
 		const map: { [key: string]: string | null | undefined } = {};
 
 		Object.keys(classDeclaration.props).forEach(propKey => {
+			if (statics && !classDeclaration.props[propKey].isStatic) return;
+			if (!statics && classDeclaration.props[propKey].isStatic) return;
+
 			const value = classDeclaration.props[propKey].value;
 			map[propKey] = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		});
 
 		Object.keys(classDeclaration.methods).forEach(methodKey => {
+			if (statics && !classDeclaration.methods[methodKey].isStatic) return;
+			if (!statics && classDeclaration.methods[methodKey].isStatic) return;
+
 			map[methodKey] = classDeclaration.methods[methodKey].contents;
 		});
 
