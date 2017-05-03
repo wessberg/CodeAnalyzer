@@ -11,6 +11,7 @@ export {
 	IParameter,
 	IMethodDeclaration,
 	ICallable,
+	IIdentifier,
 	ModuleDependencyKind,
 	IModulePath,
 	ModuleSource,

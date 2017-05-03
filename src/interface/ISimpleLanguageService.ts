@@ -11,7 +11,7 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE, IMPORT, EXPORT, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, RESOLVED_CLASS_MEMBER_MAP, IDENTIFIER_MAP
+	VARIABLE, IMPORT, EXPORT, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
 }
 
 export interface IImportBinding {
@@ -91,7 +91,7 @@ export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 }
 
 export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKindable {
-	name: string | null;
+	name: string;
 }
 
 export interface IClassNameable {
@@ -166,8 +166,26 @@ export interface ITypeable {
 }
 
 export interface IValueable {
+	resolving: boolean;
 	resolve: () => string | null;
+	resolved: string|null|undefined;
+	hasDoneFirstResolve: () => boolean;
 	expression: InitializationValue | null;
+}
+
+export interface INonNullableValueable {
+	resolving: boolean;
+	resolve: () => string | null;
+	resolved: string|null;
+	expression: InitializationValue;
+}
+
+export interface IVersionable {
+	version: number;
+}
+
+export interface ICachedContent<T> extends IVersionable {
+	content: T;
 }
 
 export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable {
@@ -196,6 +214,7 @@ export declare interface IIdentifierMap extends IKindable {
 	exports: Set<string>;
 }
 
+export declare type IIdentifier = IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };

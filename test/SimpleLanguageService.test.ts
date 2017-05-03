@@ -181,7 +181,7 @@ test(`getVariableAssignments() -> Computes all resolved values correctly. #4`, t
 	t.deepEqual(assignments["val"].value.resolve(), "3.5");
 });
 
-test.only(`getVariableAssignments() -> Computes all resolved values correctly. #5`, t => {
+test(`getVariableAssignments() -> Computes all resolved values correctly. #5`, t => {
 	setupMany([
 		["2", 2],
 		["3", 3],
@@ -189,18 +189,66 @@ test.only(`getVariableAssignments() -> Computes all resolved values correctly. #
 		["10", 10],
 		["50", 50],
 		["MyClass", "MyClass"],
-		["foo", "foo"]
+		["foo", "foo"],
+		["bar", "bar"]
 	]);
 	const statements = parse(`
 		class MyClass {
-			static bar: numer = 50;
+			static bar: number = 50;
 			static foo: number = MyClass.bar;
 		}
 		const val = 2 + 3 * (5 / MyClass.foo);
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+	t.deepEqual(assignments["val"].value.resolve(), "2.3");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #6`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["25", 25],
+		["20", 20],
+		["a", "a"],
+		["obj", "obj"],
+		["obj2", "obj2"],
+		["b", "b"],
+		["c", "c"]
+	]);
+	const statements = parse(`
+		const obj = {
+			a: 25
+		};
+		
+		const obj2 = {
+			b: {
+				c: 20
+			}
+		};
+		const val = 2 + 3 * obj.a * obj2.b.c;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "1502");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #7`, t => {
+	setupMany([
+		["MyEnum", "MyEnum"],
+		["FOO", "FOO"],
+		["BAR", "BAR"],
+		["10", 10]
+	]);
+	const statements = parse(`
+		enum MyEnum {
+			FOO, BAR = 10
+		}
+		const val = 2 + MyEnum.BAR;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), "12");
 });
 
 // Tests
