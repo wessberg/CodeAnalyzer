@@ -463,3 +463,85 @@ test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
 	t.deepEqual(assignments["a"].value.resolve(), "1");
 	t.deepEqual(assignments["b"].value.resolve(), "2");
 });
+
+test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
+	setupMany([
+		["Foo", "Foo"],
+		["add", "add"],
+		["2", 2],
+		["3", 3],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		class Foo {
+			
+			static add () {
+				return 2 + 3;
+			}
+		}
+		const val = Foo.add();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "5");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
+	setupMany([
+		["foo", "foo"],
+		["arg1", "arg1"],
+		["arg2", "arg2"],
+		["1", 1],
+		["2", 2],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		function foo (arg1, arg2) {
+			return arg1 + arg2;
+		}
+		const val = foo(1, 2);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "3");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
+	setupMany([
+		["hello", "hello"],
+		["world", "world"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		function hello() { return 'hello' + ','; }
+  	function world() { return 'world'; }
+  	const val = hello() + ' ' + world();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "hello, world");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
+	setupMany([
+		["fibonacci", "fibonacci"],
+		["x", "x"],
+		["1", 1],
+		["2", 2]
+	]);
+
+	const statements = parse(`
+		function fibonacci(x) {
+    	return x <= 1 ? x : fibonacci(x - 1) + fibonacci(x - 2);
+  	}
+  	const val = fibonacci(23);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "28657");
+});
+

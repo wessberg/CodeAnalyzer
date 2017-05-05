@@ -1,4 +1,4 @@
-import {Expression, LanguageServiceHost, Node, NodeArray, Statement, SyntaxKind} from "typescript";
+import {Expression, LanguageServiceHost, Node, NodeArray, Statement} from "typescript";
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
@@ -251,8 +251,6 @@ export declare type InitializationValue = ArbitraryValueArray;
 export interface ISimpleLanguageService extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	getFile(fileName: string): NodeArray<Statement>;
-	serializeToken (token: SyntaxKind): string | IBindingIdentifier;
-	marshalToken (token: SyntaxKind): ArbitraryValue;
 	getClassDeclarations(statements: (Statement | Expression | Node)[], deep?: boolean): ClassIndexer;
 	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
 	getAllIdentifiers(statements: (Statement | Expression | Node)[], deep?: boolean): IIdentifierMap;
