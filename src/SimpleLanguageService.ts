@@ -6,7 +6,7 @@ import {ArrayBindingPattern, BinaryExpression, BinaryOperator, CallExpression, C
 import {BindingIdentifier} from "./BindingIdentifier";
 import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IModuleDependency, ImportIndexer, ImportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIVariableAssignment, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIParameter, isIVariableAssignment, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
 
 /**
  * A service that parses and reflects on the AST generated by Typescript's language service.
@@ -944,7 +944,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignmentMap;
 	}
 
-	private findNearestMatchingIdentifier (from: Statement | Expression | Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)) {
+	private findNearestMatchingIdentifier (from: Statement | Expression | Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)): IIdentifier|null {
 
 		const allMatches: IIdentifier[] = [];
 		const functionMatch = clojure.functions[identifier];
@@ -982,7 +982,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (variableMatch != null) allMatches.push(variableMatch);
 		if (classMatch != null) allMatches.push(classMatch);
 		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
-		// console.log(allMatches);
+
+		const closest = allMatches.sort((a, b) => {
+			const aDistanceFromStart = from.pos - a.startsAt;
+			const bDistanceFromStart = from.pos - b.startsAt;
+			if (aDistanceFromStart < bDistanceFromStart) return -1;
+			if (aDistanceFromStart > bDistanceFromStart) return 1;
+			return 0;
+		})[0];
+		return closest == null ? null : closest;
 	}
 
 	private isChildOfAnyOfKinds (kinds: SyntaxKind[], identifier: string, from: Statement | Expression | Node): boolean {
@@ -2120,23 +2128,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
-		this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
-
-
-		console.log(clojure, lookupIdentifier, "block:", block, "scope:", scope);
-		const variable = clojure.variables[lookupIdentifier];
-		if (variable != null) return variable;
-
-		const classDeclaration = clojure.classes[lookupIdentifier];
-		if (classDeclaration != null) return classDeclaration;
-
-		const enumDeclaration = clojure.enums[lookupIdentifier];
-		if (enumDeclaration != null) return enumDeclaration;
-
-		const functionDeclaration = clojure.functions[lookupIdentifier];
-		if (functionDeclaration != null) return functionDeclaration;
-
-		return null;
+		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
 	}
 
 	private convertNewExpressionToObjectLiteral (valueExpression: InitializationValue): [boolean, InitializationValue] {
@@ -2158,10 +2150,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return [hadNewExpression, hadNewExpression ? newExp : valueExpression];
 	}
 
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null): string {
+	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null): [string, boolean] {
 		let val: string = "";
 
 		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);
+		let shouldCompute: boolean = true;
 
 		expression.forEach(part => {
 			if (part instanceof BindingIdentifier) {
@@ -2169,7 +2162,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				const substitution = this.traceIdentifier(part.name, from, scope);
 				let sub: string;
 
-				if (isIVariableAssignment(substitution)) {
+				if (isIParameter(substitution)) {
+					const initializedTo = this.stringifyIParameter(substitution);
+					sub = `(${part.name} === undefined ? ${initializedTo} : ${part.name})`;
+					shouldCompute = false;
+				}
+
+				else if (isIVariableAssignment(substitution)) {
 					sub = this.stringifyIVariableAssignment(substitution);
 				}
 
@@ -2185,22 +2184,23 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				else if (isIFunctionDeclaration(substitution)) {
 					const stringified = this.stringifyIFunctionDeclaration(substitution);
 					const hasReturnStatement = substitution.returnStatementStartsAt >= 0;
-					const bracketed = hasReturnStatement ? `{return ${stringified}}` : stringified;
+					const startsWithReturn = hasReturnStatement && stringified.trim().startsWith("return");
+					const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${stringified}}` : stringified;
 					const parameters = this.stringifyIParameterBody(substitution.parameters);
 					sub = `((${parameters}) => ${bracketed})`;
 				}
 
 				else {
-					throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution of kind: ${substitution == null ? null : IdentifierMapKind[(<{ ___kind: IdentifierMapKind }>substitution).___kind]} (scope: ${scope}, identifier: ${part.name})`);
+					throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 				}
 
-				if (this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);
+				if (!isIParameter(substitution) && this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);
 				val += sub;
 			} else {
 				val += this.isOperatorLike(part) ? <string>part : this.marshaller.marshal<ArbitraryValue, string>(part, "");
 			}
 		});
-		return val;
+		return [val, shouldCompute];
 	}
 
 	/**
@@ -2215,13 +2215,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		if (valueable.resolving) return null;
 
 		valueable.resolving = true;
-		const flattened = this.flattenValueExpression(valueable.expression, from, scope);
-		//console.log("valueExpression:", valueable.expression);
+		const [flattened, shouldCompute] = this.flattenValueExpression(valueable.expression, from, scope);
+		console.log("valueExpression:", valueable.expression);
 
-		//console.log("flattened:", flattened);
-		let result = this.computeValueResolved(flattened);
+		console.log("flattened:", flattened);
+		let result = shouldCompute ? this.computeValueResolved(flattened) : flattened;
 		valueable.resolving = false;
-		//console.log("computed:", result);
+		console.log("computed:", result);
 		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");
 	}
@@ -3666,6 +3666,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return declaration;
 	}
 
+	private stringifyIParameter (parameter: IParameter): string {
+		const flattened = parameter.value.expression == null ? "undefined" : parameter.value.hasDoneFirstResolve()
+			? parameter.value.resolved
+			: parameter.value.resolve();
+		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
+	}
+
 	private stringifyIVariableAssignment (variableAssignment: IVariableAssignment): string {
 		const flattened = variableAssignment.value.expression == null ? "undefined" : variableAssignment.value.hasDoneFirstResolve()
 			? variableAssignment.value.resolved
@@ -3694,7 +3701,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			const hasReturnStatement = method.returnStatementStartsAt >= 0;
 			const resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
-			const bracketed = hasReturnStatement ? `{return ${resolvedValue}}` : resolvedValue;
+
+			const startsWithReturn = hasReturnStatement && resolvedValue != null && resolvedValue.trim().startsWith("return");
+			const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${resolvedValue}}` : resolvedValue;
 
 			const parameters = this.stringifyIParameterBody(method.parameters);
 

@@ -513,16 +513,22 @@ test(`getVariableAssignments() -> Computes all resolved values correctly. #18`, 
 	t.deepEqual(value, "8");
 });
 
-test.skip(`getVariableAssignments() -> Computes all resolved values correctly. #19`, t => {
+test(`getVariableAssignments() -> Computes all resolved values correctly. #19`, t => {
 	setupMany([
 		["Foo", "Foo"],
 		["add", "add"],
 		["2", 2],
 		["3", 3],
-		["val", "val"]
+		["10", 10],
+		["val", "val"],
+		["hmm", "hmm"]
 	]);
 	const statements = parse(`
 		class Foo {
+			static hmm (arg: number) {
+				return arg + 10;
+			}
+			
 			static add (arg: number) {
 				return arg + 3;
 			}
