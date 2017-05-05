@@ -32,6 +32,6 @@
     "typescript": "latest"
   },
   "dependencies": {
-    "@wessberg/marshaller": "^1.0.5"
+    "@wessberg/marshaller": "^1.0.7"
   }
 }

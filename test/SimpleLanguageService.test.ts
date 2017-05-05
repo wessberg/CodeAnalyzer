@@ -404,6 +404,177 @@ test(`getVariableAssignments() -> Computes all resolved values correctly. #13`, 
 	t.deepEqual(value, "6");
 });
 
+test(`getVariableAssignments() -> Computes all resolved values correctly. #14`, t => {
+	setupMany([
+		["2", 2],
+		["3", 3],
+		["bar", "bar"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		const bar = 3;
+		const val = 2 + (() => bar)();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #15`, t => {
+	setupMany([
+		["doOtherStuff", "doOtherStuff"],
+		["3", 3],
+		["val", "val"],
+		["val1", "val1"],
+		["val2", "val2"],
+		["2", 2],
+		["1", 1],
+		["doStuff", "doStuff"]
+	]);
+	const statements = parse(`
+		function doOtherStuff () {
+			return 3;
+		}
+		function doStuff () {
+			let val1 = 1;
+			let val2 = val1 * 2;
+			return val2 + doOtherStuff();
+		}
+		const val = doStuff();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #16`, t => {
+	setupMany([
+		["A", "A"],
+		["foo", "foo"],
+		["bar", "bar"],
+		["a", "a"],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		class A {
+			foo: string = "bar";
+		}
+		
+		const a = new A();
+		const val = a.foo;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "bar");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #17`, t => {
+	setupMany([
+		["A", "A"],
+		["foo", "foo"],
+		["bar", "bar"],
+		["a", "a"],
+		["val", "val"],
+		["foobar", "foobar"],
+		["baz", "baz"]
+	]);
+	const statements = parse(`
+		class A {
+			foo: string = "bar";
+			static foobar: string = "baz";
+		}
+		
+		const a = new A();
+		const val = A.foobar;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "baz");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #18`, t => {
+	setupMany([
+		["bool", "bool"],
+		["2", 2],
+		["3", 3],
+		["5", 5]
+	]);
+	const statements = parse(`
+		const bool = false;
+		const val = (bool ? 2 : 3) + 5;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "8");
+});
+
+test.skip(`getVariableAssignments() -> Computes all resolved values correctly. #19`, t => {
+	setupMany([
+		["Foo", "Foo"],
+		["add", "add"],
+		["2", 2],
+		["3", 3],
+		["val", "val"]
+	]);
+	const statements = parse(`
+		class Foo {
+			static add (arg: number) {
+				return arg + 3;
+			}
+		}
+		const val = Foo.add(2);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "5");
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #20`, t => {
+	setupMany([
+		["a", "a"],
+		["b", "b"],
+		["1", 1],
+		["2", 2],
+		["something", "something"]
+	]);
+
+	const code = `
+	const something = [1, 2];
+	const [a, b] = something;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.deepEqual(assignments["a"].value.resolve(), "1" );
+	t.deepEqual(assignments["b"].value.resolve(), "2" );
+});
+
+test(`getVariableAssignments() -> Computes all resolved values correctly. #21`, t => {
+	setupMany([
+		["a", "a"],
+		["b", "b"],
+		["1", 1],
+		["2", 2],
+		["something", "something"]
+	]);
+
+	const code = `
+	const something = {a: 1, b: 2};
+	const {a, b} = something;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.deepEqual(assignments["a"].value.resolve(), "1" );
+	t.deepEqual(assignments["b"].value.resolve(), "2" );
+});
+
 // Tests
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #1`, t => {
 	setupMany([["0", 0], ["1", 1]]);
@@ -1074,7 +1245,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #29`, 
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", "function", " ", "(", ")", "{", "return", " ", true, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["(", "foo", ")", "=>", "function", " ", "(", ")", "{", "return", " ", true, ";", "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #30`, t => {
@@ -1207,7 +1378,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #40`, 
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", ":", "string", "=", "`hehe`", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #41`, t => {
@@ -1223,7 +1394,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #41`, 
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", ":", "string", "=", "`hehe`", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #42`, t => {
@@ -1239,7 +1410,7 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #42`, 
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["wow"].value.expression, [ "class", " ", "MyClass", "{", "constructor", "(", ")", "{", "const", " ", "localVar", "=", "[", 1, "]", "}", "}" ]);
+	t.deepEqual(assignments["wow"].value.expression, [ "class", " ", "MyClass", "{", "constructor", "(", ")", "{", "const", " ", "localVar", "=", "[", 1, "]", ";", "}", "}" ]);
 });
 
 test(`getVariableAssignments() -> Detects all valueExpressions correctly. #43`, t => {
@@ -1303,6 +1474,24 @@ test(`getVariableAssignments() -> Detects all valueExpressions correctly. #46`, 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
 	t.deepEqual(assignments["val"].value.expression, [ "(", new BindingIdentifier("foo"), '["something"]', "||", "[", "]", ")", '["concat"]', "(", new BindingIdentifier("otherthing"), ")"  ]);
+});
+
+test(`getVariableAssignments() -> Detects all valueExpressions correctly. #47`, t => {
+	setupMany([
+		["a", "a"],
+		["b", "b"],
+		["something", "something"]
+	]);
+
+	const code = `
+	const something = [1, 2];
+	const [a, b] = something;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.deepEqual(assignments["a"].value.expression, [ new BindingIdentifier("something") ]);
+	t.deepEqual(assignments["b"].value.expression, [ new BindingIdentifier("something") ]);
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
