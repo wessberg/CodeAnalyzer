@@ -2235,7 +2235,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		try {
 			return new Function(`return ${flattened}`)();
 		} catch (ex) {
-			console.log(flattened);
 			return new Function(flattened)();
 		}
 
