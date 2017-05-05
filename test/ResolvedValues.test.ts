@@ -545,3 +545,25 @@ test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 	t.deepEqual(value, "28657");
 });
 
+test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
+	setupMany([
+		["fibonacci", "fibonacci"],
+		["x", "x"],
+		["1", 1],
+		["2", 2]
+	]);
+
+	const statements = parse(`
+	class Foo {
+		fibonacci(x) {
+    	return x <= 1 ? x : this.fibonacci(x - 1) + this.fibonacci(x - 2);
+  	}
+	}
+		const foo = new Foo();
+  	const val = foo.fibonacci(23);
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "28657");
+});

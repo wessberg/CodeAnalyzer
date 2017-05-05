@@ -654,6 +654,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		!isFunctionDeclaration(current) &&
 		!isMethodDeclaration(current) &&
 		!isArrowFunction(current) &&
+		!isPropertyDeclaration(current) &&
 		!isSourceFile(current)) {
 			if (current.parent == null) break;
 			current = current.parent;
@@ -680,6 +681,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				return name == null ? SimpleLanguageService.GLOBAL : name;
 			}
 
+			if (
+				isPropertyDeclaration(block)
+			) {
+				if (block.parent == null) {
+					const name = this.getName(block);
+					return name == null ? SimpleLanguageService.GLOBAL : name;
+				}
+				return this.traceBlockScopeName(block.parent);
+			}
+
 			if (isArrowFunction(block)) {
 				return SimpleLanguageService.ANONYMOUS;
 			}
@@ -704,12 +715,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			}
 
 			if (
-				isMethodDeclaration(block) ||
 				isClassDeclaration(block) ||
 				isClassExpression(block)
 			) {
 				const name = this.getName(block);
 				return name == null ? SimpleLanguageService.GLOBAL : name;
+			}
+
+			if (
+				isMethodDeclaration(block) ||
+				isPropertyDeclaration(block)
+			) {
+				if (block.parent == null) {
+					const name = this.getName(block);
+					return name == null ? SimpleLanguageService.GLOBAL : name;
+				}
+				return this.traceThis(block.parent);
 			}
 
 			if (isArrowFunction(block)) {
@@ -1808,7 +1829,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				else if (isIClassDeclaration(substitution)) {
 					const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
-					sub = this.stringifyIClassDeclaration(substitution, statics);
+					sub = this.stringifyIClassDeclaration(substitution, statics, part.name, scope);
 				}
 
 				else if (isIEnumDeclaration(substitution)) {
@@ -3329,27 +3350,30 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
 	}
 
-	private stringifyIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
+	private stringifyIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean, identifier: string, scope: string|null): string {
 		const map: { [key: string]: string | null | undefined } = {};
 
-		Object.keys(classDeclaration.props).forEach(propKey => {
-			if (statics && !classDeclaration.props[propKey].isStatic) return;
-			if (!statics && classDeclaration.props[propKey].isStatic) return;
+		for (const propKey of Object.keys(classDeclaration.props)) {
+			if (statics && !classDeclaration.props[propKey].isStatic) continue;
+			if (!statics && classDeclaration.props[propKey].isStatic) continue;
 
 			const value = classDeclaration.props[propKey].value;
 			map[propKey] = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+		}
 
-		});
-
-		Object.keys(classDeclaration.methods).forEach(methodKey => {
-			if (statics && !classDeclaration.methods[methodKey].isStatic) return;
-			if (!statics && classDeclaration.methods[methodKey].isStatic) return;
+		for (const methodKey of Object.keys(classDeclaration.methods)) {
+			if (statics && !classDeclaration.methods[methodKey].isStatic) continue;
+			if (!statics && classDeclaration.methods[methodKey].isStatic) continue;
 
 			const method = classDeclaration.methods[methodKey];
 			const value = method.value;
 
 			const hasReturnStatement = method.returnStatementStartsAt >= 0;
 			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+
+			// We have a self-reference here. Since 'this' refers to the mapped object, we just need to return "this".
+			if (identifier === "this" && scope === classDeclaration.name) return "this";
+
 			if (this.mostProbableTypeOf(resolvedValue) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>this.quoteIfNecessary(resolvedValue);
 
 			const startsWithReturn = hasReturnStatement && resolvedValue != null && resolvedValue.trim().startsWith("return");
@@ -3358,8 +3382,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const parameters = this.stringifyIParameterBody(method.parameters);
 
 			map[methodKey] = `(function ${SimpleLanguageService.FUNCTION_OUTER_SCOPE_NAME}(${parameters}) ${bracketed})`;
-
-		});
+		}
 
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(map, "");
 	}
