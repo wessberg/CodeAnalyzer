@@ -47,6 +47,28 @@ export function isTokenLike (item: ArbitraryValue): boolean {
 }
 
 /**
+ * Returns true if the given token expects an identifier. For example, '++' will throw exceptions
+ * if given a primitive value.
+ * @param {ArbitraryValue} item
+ * @returns {boolean}
+ */
+export function throwsIfPrimitive(item: ArbitraryValue): boolean {
+	switch (item == null ? "" : item.toString()) {
+		case "=":
+		case "++":
+		case "--":
+		case "+=":
+		case "-=":
+		case "*=":
+		case "**=":
+		case "...":
+			return true;
+		default:
+			return false;
+	}
+}
+
+/**
  * Returns true if the given item is a string of pure whitespace.
  * @param {ArbitraryValue} item
  * @returns {boolean}

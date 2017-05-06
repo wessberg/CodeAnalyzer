@@ -567,3 +567,32 @@ test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
 	const value = assignments["val"].value.resolve();
 	t.deepEqual(value, "28657");
 });
+
+test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
+	setupMany([
+		["val", "val"],
+		["arr", "arr"],
+		["i", "i"],
+		["1", 1],
+		["2", 2],
+		["3", 3],
+		["4", 4],
+		["5", 5],
+		["5", 5]
+	]);
+
+	const statements = parse(`
+	function foo () {
+		let arr = [];
+		for (let i = 1; i <= 5; i++) {
+			arr.push(i);
+		}
+		return arr;
+	}
+	const val = foo();
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, "[1,2,3,4,5]");
+});

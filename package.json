@@ -32,6 +32,7 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "@wessberg/globalobject": "^1.0.1",
     "@wessberg/marshaller": "^1.0.7"
   }
 }

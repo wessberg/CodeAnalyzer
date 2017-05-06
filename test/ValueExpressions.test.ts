@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {BindingIdentifier} from "../src/BindingIdentifier";
 import {parse, service, setup, setupMany} from "./util/Setup";
+import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 test(`ValueExpressions -> Detects all valueExpressions correctly. #1`, t => {
 	setup<number>("0", 0);
 
@@ -463,7 +464,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #40`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", GlobalObjectIdentifier, ".", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
@@ -479,7 +480,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", GlobalObjectIdentifier, ".", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
@@ -495,7 +496,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", "{", "constructor", "(", ")", "{", "const", " ", "localVar", "=", "[", 1, "]", ";", "}", "}"]);
+	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", "{", "constructor", "(", ")", "{", GlobalObjectIdentifier, ".", "localVar", "=", "[", 1, "]", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {
