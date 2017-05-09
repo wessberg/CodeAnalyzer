@@ -1,4 +1,4 @@
-import {Expression, LanguageServiceHost, Node, NodeArray, Statement} from "typescript";
+import {Expression, LanguageServiceHost, Node, NodeArray, Statement, ArrayLiteralExpression, StringLiteral, NumericLiteral, RegularExpressionLiteral, BooleanLiteral, NoSubstitutionTemplateLiteral, ObjectLiteralExpression} from "typescript";
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
@@ -231,7 +231,7 @@ export declare interface IIdentifierMap extends IKindable {
 	imports: IModuleDependency[];
 	exports: Set<string>;
 }
-
+export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
 export declare type IIdentifier = IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };

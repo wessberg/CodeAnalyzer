@@ -596,3 +596,33 @@ test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 	const value = assignments["val"].value.resolve();
 	t.deepEqual(value, "[1,2,3,4,5]");
 });
+
+test.only(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
+	setupMany([
+		["self", "self"],
+		["this", "this"],
+		["A", "A"],
+		["B", "B"],
+		["42", 42],
+		["name", "name"],
+		["x", "x"],
+		["toString", "toString"],
+		["toLowerCase", "toLowerCase"],
+		["y", "y"],
+		["parseInt", "parseInt"]
+	]);
+
+	const statements = parse(`
+	const foo = {};
+  ['A', 'B', 42].forEach(function(x) {
+    var name = '_' + x.toString()[0].toLowerCase();
+    var y = parseInt(x);
+    val[name] = y ? y : x;
+  });
+  const val = foo;
+	`);
+
+	const assignments = service.getVariableAssignments(statements);
+	const value = assignments["val"].value.resolve();
+	t.deepEqual(value, '{_a: "A", _b: "B", _4: 42}');
+});
