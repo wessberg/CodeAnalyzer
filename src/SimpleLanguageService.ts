@@ -2,11 +2,11 @@ import {IMarshaller, TypeOf} from "@wessberg/marshaller";
 import {dirname, join} from "path";
 import {IBindingIdentifier} from "src/interface/IBindingIdentifier";
 import * as ts from "typescript";
-import {ArrayBindingPattern, BinaryExpression, CallExpression, ClassDeclaration, CompilerOptions, ConstructorDeclaration, Declaration, DeclarationName, ElementAccessExpression, EnumDeclaration, Expression, FunctionDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, MethodDeclaration, ModuleKind, NewExpression, Node, NodeArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, ScriptTarget, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode, TypeReferenceNode, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
+import {ArrayBindingPattern, BinaryExpression, CallExpression, ExportAssignment, ClassDeclaration, CompilerOptions, ConstructorDeclaration, Declaration, DeclarationName, ExportDeclaration, ElementAccessExpression, EnumDeclaration, Expression, FunctionDeclaration, HeritageClause, Identifier, ImportClause, NamedExports, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, MethodDeclaration, ModuleKind, NewExpression, Node, NodeArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, ScriptTarget, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode, TypeReferenceNode, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IModuleDependency, ImportIndexer, ImportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IValueable, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IImportDeclaration, ImportExportIndexer, ImportExportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IValueable, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIParameter, isIVariableAssignment, isLabeledStatement, isLiteralExpression, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIParameter, isIVariableAssignment, isLabeledStatement, isLiteralExpression, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
 import {isOperatorLike, isTokenLike, isWhitespace, marshalToken, serializeToken, throwsIfPrimitive} from "./Util";
 import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 
@@ -883,6 +883,22 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignments;
 	}
 
+	private formatModifiers (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration): Set<string> {
+		if (isVariableDeclaration(statement) && statement.modifiers == null) {
+			const parent = statement.parent;
+			if (parent != null && isVariableDeclarationList(parent)) {
+				const parentsParent = parent.parent;
+				if (parentsParent != null && isVariableStatement(parentsParent)) {
+					return this.formatModifiers(parentsParent);
+				}
+			} else if (parent != null && isVariableStatement(parent)) {
+				return this.formatModifiers(parent);
+			}
+
+		}
+		return new Set(statement.modifiers == null ? [] :statement.modifiers.map(modifier => <string>serializeToken(modifier.kind)));
+	}
+
 	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableAssignment {
 		const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
 		const startsAt = declaration.pos;
@@ -898,6 +914,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: {
 				expression: valueExpression
 			},
+			modifiers: this.formatModifiers(declaration),
 			startsAt,
 			endsAt,
 			type: {
@@ -1369,8 +1386,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return this.getFromCache<FunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
 	}
 
-	private getCachedModuleDependencies (fileName: string): ICachedContent<IModuleDependency[]> | null {
-		return this.getFromCache<IModuleDependency[]>(this.getCachedModuleDependenciesName(fileName));
+	private getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]> | null {
+		return this.getFromCache<IImportDeclaration[]>(this.getCachedModuleDependenciesName(fileName));
 	}
 
 	private getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer> | null {
@@ -1420,7 +1437,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		this.cache.set(this.getCachedFunctionIndexerName(fileName), {version, content});
 	}
 
-	private setCachedModuleDependencies (fileName: string, content: IModuleDependency[]): void {
+	private setCachedModuleDependencies (fileName: string, content: IImportDeclaration[]): void {
 		const version = this.getFileVersion(fileName);
 		this.cache.set(this.getCachedModuleDependenciesName(fileName), {version, content});
 	}
@@ -1574,9 +1591,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given file
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {IModuleDependency[]}
+	 * @returns {IImportDeclaration[]}
 	 */
-	public getImportDeclarationsForFile (fileName: string, deep: boolean = false): IModuleDependency[] {
+	public getImportDeclarationsForFile (fileName: string, deep: boolean = false): IImportDeclaration[] {
 		const cached = this.getCachedModuleDependencies(fileName);
 		if (cached != null && !this.cachedModuleDependenciesNeedsUpdate(fileName)) return cached.content;
 
@@ -1592,10 +1609,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given array of statements.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {IModuleDependency[]}
+	 * @returns {IImportDeclaration[]}
 	 */
-	public getImportDeclarations (statements: (Statement | Expression | Node)[], deep: boolean = false): IModuleDependency[] {
-		const declarations: IModuleDependency[] = [];
+	public getImportDeclarations (statements: (Statement | Expression | Node)[], deep: boolean = false): IImportDeclaration[] {
+		const declarations: IImportDeclaration[] = [];
 		for (const statement of statements) {
 			if (this.isResolvingStatement(statement)) continue;
 
@@ -1629,15 +1646,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	/**
 	 * formats the given ImportClause and returns an ImportIndexer.
 	 * @param {ImportClause} clause
-	 * @returns {ImportIndexer}
+	 * @returns {ImportExportIndexer}
 	 */
-	private formatImportClause (clause: ImportClause): ImportIndexer {
-		const indexer: ImportIndexer = {};
+	private formatImportClause (clause: ImportClause): ImportExportIndexer {
+		const indexer: ImportExportIndexer = {};
 
 		if (clause.namedBindings != null && isNamespaceImport(clause.namedBindings)) {
 			indexer[clause.namedBindings.name.text] = {
 				name: clause.namedBindings.name.text,
-				kind: ImportKind.NAMESPACE
+				kind: ImportExportKind.NAMESPACE
 			};
 		}
 
@@ -1645,7 +1662,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			clause.namedBindings.elements.forEach(element => {
 				indexer[element.name.text] = {
 					name: element.name.text,
-					kind: ImportKind.NAMED
+					kind: ImportExportKind.NAMED
 				};
 			});
 		}
@@ -1653,20 +1670,39 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		else if (clause.name != null) {
 			indexer[clause.name.text] = {
 				name: clause.name.text,
-				kind: ImportKind.DEFAULT
+				kind: ImportExportKind.DEFAULT
 			};
 		}
 
 		return indexer;
 	}
 
+	private formatExportClause (clause: NamedExports|undefined): ImportExportIndexer {
+		const indexer: ImportExportIndexer = {};
+		if (clause == null) {
+			indexer["*"] = {
+				name: "*",
+				kind: ImportExportKind.NAMESPACE
+			};
+		} else {
+			clause.elements.forEach(element => {
+				indexer[element.name.text] = {
+					name: element.name.text,
+					kind: ImportExportKind.NAMED
+				};
+			});
+		}
+
+		return indexer;
+	}
+
 	/**
-	 * If given an ImportDeclaration|ImportEqualsDeclaration, a formatted IModuleDependency will be returned holding the relative and full import-path
+	 * If given an ImportDeclaration|ImportEqualsDeclaration, a formatted IImportDeclaration will be returned holding the relative and full import-path
 	 * as well as any bindings that will live in the local scope of the given file.
 	 * @param {ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression} statement
-	 * @returns {IModuleDependency}
+	 * @returns {IImportDeclaration}
 	 */
-	private getImportDeclaration (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IModuleDependency | null {
+	private getImportDeclaration (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IImportDeclaration | null {
 		const sourceFileProperties = this.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
@@ -1675,9 +1711,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (relativePath.toString().length < 1) {
 				throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
 			}
-			const fullPath = join(dirname(filePath), relativePath.toString());
+			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
 
-			const map: IModuleDependency = {
+			const map: IImportDeclaration = {
 				___kind: IdentifierMapKind.IMPORT,
 				startsAt: statement.pos,
 				endsAt: statement.end,
@@ -1686,7 +1722,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					relativePath,
 					fullPath
 				},
-				filePath: this.getSourceFileProperties(statement).filePath,
+				filePath,
 				bindings: statement.importClause == null ? {} : this.formatImportClause(statement.importClause)
 			};
 			// Make the kind non-enumerable.
@@ -1704,9 +1740,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				if (relativePath.toString().length < 1) {
 					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
 				}
-				const fullPath = join(dirname(filePath), relativePath);
+				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
 
-				const map: IModuleDependency = {
+				const map: IImportDeclaration = {
 					___kind: IdentifierMapKind.IMPORT,
 					startsAt: statement.pos,
 					endsAt: statement.end,
@@ -1715,8 +1751,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						relativePath,
 						fullPath
 					},
-					filePath: this.getSourceFileProperties(statement).filePath,
-					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportKind.DEFAULT}}
+					filePath,
+					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportExportKind.DEFAULT}}
 				};
 				// Make the kind non-enumerable.
 				Object.defineProperty(map, "___kind", {
@@ -1733,14 +1769,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				const source = <IBindingIdentifier>this.getNameOfMember(statement.moduleReference, false, false);
 
-				const map: IModuleDependency = {
+				const map: IImportDeclaration = {
 					___kind: IdentifierMapKind.IMPORT,
 					startsAt: statement.pos,
 					endsAt: statement.end,
 					moduleKind: ModuleDependencyKind.IMPORT_REQUIRE,
 					source,
-					filePath: this.getSourceFileProperties(statement).filePath,
-					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportKind.DEFAULT}}
+					filePath,
+					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportExportKind.DEFAULT}}
 				};
 				// Make the kind non-enumerable.
 				Object.defineProperty(map, "___kind", {
@@ -1764,9 +1800,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					if (relativePath.toString().length < 1) {
 						throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
 					}
-					const fullPath = join(dirname(filePath), relativePath);
+					const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
 
-					const map: IModuleDependency = {
+					const map: IImportDeclaration = {
 						___kind: IdentifierMapKind.IMPORT,
 						startsAt: statement.pos,
 						endsAt: statement.end,
@@ -1775,8 +1811,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 							relativePath,
 							fullPath
 						},
-						filePath: this.getSourceFileProperties(statement).filePath,
-						bindings: {[name]: {name, kind: ImportKind.DEFAULT}}
+						filePath,
+						bindings: {[name]: {name, kind: ImportExportKind.DEFAULT}}
 					};
 					// Make the kind non-enumerable.
 					Object.defineProperty(map, "___kind", {
@@ -1802,9 +1838,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				if (relativePath == null || relativePath.toString().length < 1) {
 					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
 				}
-				const fullPath = join(dirname(filePath), relativePath);
+				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
 
-				const map: IModuleDependency = {
+				const map: IImportDeclaration = {
 					___kind: IdentifierMapKind.IMPORT,
 					startsAt: statement.pos,
 					endsAt: statement.end,
@@ -1813,7 +1849,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						relativePath,
 						fullPath
 					},
-					filePath: this.getSourceFileProperties(statement).filePath,
+					filePath,
 					bindings: {}
 				};
 				// Make the kind non-enumerable.
@@ -1828,41 +1864,174 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return null;
 		}
 
-		throw new TypeError(`${this.getImportDeclaration.name} could not get an IModuleDependency for a statement of kind ${SyntaxKind[(<Identifier>statement).kind]}!`);
+		throw new TypeError(`${this.getImportDeclaration.name} could not get an IImportDeclaration for a statement of kind ${SyntaxKind[(<Identifier>statement).kind]}!`);
 	}
 
 	/**
 	 * Gets all ExportDeclarations (if any) that occur in the given file and returns a Set
 	 * of all the identifiers that are being exported.
 	 * @param {string} fileName
-	 * @returns {Set<string>}
+	 * @param {boolean} [deep=false]
+	 * @returns {IExportDeclaration[]}
 	 */
-	public getExportDeclarationsForFile (fileName: string): Set<string> {
+	public getExportDeclarationsForFile (fileName: string, deep: boolean = false): IExportDeclaration[] {
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getExportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
-		return this.getExportDeclarations(statements);
+		return this.getExportDeclarations(statements, deep);
 	}
 
 	/**
-	 * Gets all ExportDeclarations (if any) that occur in the given array of statements and returns a Set
-	 * of all the identifiers that are being exported.
+	 * Gets all ExportDeclarations (if any) that occur in the given array of statements and returns an array
+	 * of IExportDeclarations.
 	 * @param {(Statement|Expression|Node)[]} statements
-	 * @returns {Set<string>}
+	 * @param {boolean} [deep=false]
+	 * @returns {IExportDeclaration[]}
 	 */
-	public getExportDeclarations (statements: (Statement | Expression | Node)[]): Set<string> {
-		const declarations: Set<string> = new Set();
+	public getExportDeclarations (statements: (Statement | Expression | Node)[], deep: boolean = false): IExportDeclaration[] {
+		const declarations: IExportDeclaration[] = [];
 		for (const statement of statements) {
+
 			if (this.isResolvingStatement(statement)) continue;
 
-			if (isExportDeclaration(statement)) {
+			if (isExportDeclaration(statement) || isExportAssignment(statement) || isVariableStatement(statement)) {
 				this.setResolvingStatement(statement);
-				if (statement.exportClause != null) {
-					statement.exportClause.elements.forEach(element => declarations.add(element.name.text));
-				}
+				const declaration = this.getExportDeclaration(statement);
+				if (declaration != null) declarations.push(declaration);
 				this.removeResolvingStatement(statement);
+			}
+
+			if (deep) {
+				const otherExportDeclarations = this.getExportDeclarations(this.findChildStatements(statement), deep);
+				otherExportDeclarations.forEach(declaration => declarations.push(declaration));
 			}
 		}
 		return declarations;
+	}
+
+	private formatFullPathFromRelative (filePath: string, relativePath: string): string {
+		// TODO: Check if the relativePath is in fact an absolute path.
+		return join(dirname(filePath), relativePath.toString());
+	}
+
+	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment): IExportDeclaration | null {
+		const sourceFileProperties = this.getSourceFileProperties(statement);
+		const filePath = sourceFileProperties.filePath;
+
+		if (isExportAssignment(statement)) {
+			console.log(statement);
+			let payload: ArbitraryValue|IIdentifier;
+			if (isLiteralExpression(statement.expression)) {
+				const that = this;
+				const scope = this.traceThis(statement.expression);
+				const value: IValueable = {
+					expression: this.getValueExpression(statement.expression),
+					resolved: undefined,
+					hasDoneFirstResolve () {return value.resolved !== undefined;},
+					resolving: false,
+					resolve () {
+						value.resolved = value.expression == null ? null : that.getValueResolved(<INonNullableValueable>value, statement.expression, scope);
+						return value.resolved;
+					}
+				};
+				payload = value.resolve();
+			} else {
+				const identifier = this.getName(statement.expression);
+				const scope = this.traceThis(statement);
+				payload = identifier == null ? null : this.traceIdentifier(identifier, statement, scope);
+			}
+
+			const relativePath = filePath;
+			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+			const map: IExportDeclaration = {
+				___kind: IdentifierMapKind.EXPORT,
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				moduleKind: ModuleDependencyKind.ES_MODULE,
+				source: {
+					relativePath,
+					fullPath
+				},
+				filePath,
+				bindings: {"default": {name: "default", payload, kind: ImportExportKind.DEFAULT}}
+			};
+			// Make the kind non-enumerable.
+			Object.defineProperty(map, "___kind", {
+				value: IdentifierMapKind.EXPORT,
+				enumerable: false
+			});
+
+			SimpleLanguageService.AST_MAPPER.set(map, statement);
+			return map;
+		}
+
+		if (isVariableStatement(statement)) {
+			const variableIndexer = this.formatVariableAssignment(statement);
+			for (const key of Object.keys(variableIndexer)) {
+				const match = variableIndexer[key];
+				const isCandidate = match.modifiers.has("export");
+
+				if (isCandidate) {
+					const isDefault = match.modifiers.has("default");
+					const name = match.name;
+					const relativePath = filePath;
+					const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+					const map: IExportDeclaration = {
+						___kind: IdentifierMapKind.EXPORT,
+						startsAt: statement.pos,
+						endsAt: statement.end,
+						moduleKind: ModuleDependencyKind.ES_MODULE,
+						source: {
+							relativePath,
+							fullPath
+						},
+						filePath,
+						bindings: {[name]: {name, kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}}
+					};
+					// Make the kind non-enumerable.
+					Object.defineProperty(map, "___kind", {
+						value: IdentifierMapKind.EXPORT,
+						enumerable: false
+					});
+
+					SimpleLanguageService.AST_MAPPER.set(map, statement);
+					return map;
+				}
+			}
+			return null;
+		}
+
+		if (isExportDeclaration(statement)) {
+			const relativePath = statement.moduleSpecifier == null ? filePath : <string>this.getNameOfMember(statement.moduleSpecifier, false, true);
+			if (relativePath.toString().length < 1) {
+				throw new TypeError(`${this.getExportDeclaration.name} detected an export with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+			}
+			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+			const map: IExportDeclaration = {
+				___kind: IdentifierMapKind.EXPORT,
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				moduleKind: ModuleDependencyKind.ES_MODULE,
+				source: {
+					relativePath,
+					fullPath
+				},
+				filePath,
+				bindings: this.formatExportClause(statement.exportClause)
+			};
+			// Make the kind non-enumerable.
+			Object.defineProperty(map, "___kind", {
+				value: IdentifierMapKind.EXPORT,
+				enumerable: false
+			});
+			SimpleLanguageService.AST_MAPPER.set(map, statement);
+			return map;
+		}
+
+		const kind = (<{kind: SyntaxKind}>statement).kind;
+		throw new TypeError(`${this.getExportDeclaration.name} could not get an IExportDeclaration for a statement of kind ${SyntaxKind[kind]}!`);
 	}
 
 	/**
@@ -1957,7 +2126,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					}
 					else {
 						const stringified = this.stringifyIFunctionDeclaration(substitution);
-						const hasReturnStatement = substitution.returnStatementStartsAt >= 0;
+						const hasReturnStatement = substitution.returnStatement.startsAt >= 0;
 						const startsWithReturn = hasReturnStatement && stringified.trim().startsWith("return");
 						const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${stringified}}` : stringified;
 						const parameters = this.stringifyIParameterBody(substitution.parameters);
@@ -2985,6 +3154,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const map: IPropDeclaration = {
 			___kind: IdentifierMapKind.PROP,
 			isStatic,
+			modifiers: this.formatModifiers(declaration),
 			startsAt,
 			endsAt,
 			name,
@@ -3314,7 +3484,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		return {
 			...this.formatCallableMemberDeclaration(declaration),
-			...{returnStatementStartsAt, returnStatementEndsAt, returnStatementContents}
+			...{
+				modifiers: this.formatModifiers(declaration),
+				returnStatement: {
+					startsAt: returnStatementStartsAt,
+					endsAt: returnStatementEndsAt,
+					contents: returnStatementContents
+				}
+			}
 		};
 	}
 
@@ -3494,7 +3671,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			const method = classDeclaration.methods[methodKey];
 			const value = method.value;
 
-			const hasReturnStatement = method.returnStatementStartsAt >= 0;
+			const hasReturnStatement = method.returnStatement.startsAt >= 0;
 			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 
 			// We have a self-reference here. Since 'this' refers to the mapped object, we just need to return "this".

@@ -4425,7 +4425,7 @@ module.exports = { printAstToDoc };
 export const FULL_CODE_EXAMPLE_4 = `
 
 import {IMarshaller} from "@wessberg/marshaller";
-import {BindingIdentifier, IArbitraryObject, IClassDeclaration, IModuleDependency, InitializationValue, ISimpleLanguageService, NullableInitializationValue} from "@wessberg/simplelanguageservice";
+import {BindingIdentifier, IArbitraryObject, IClassDeclaration, IImportDeclaration, InitializationValue, ISimpleLanguageService, NullableInitializationValue} from "@wessberg/simplelanguageservice";
 import {ITypeDetector} from "@wessberg/typedetector";
 import {ClassElement, ClassLikeDeclaration, NodeArray, Statement, VariableDeclaration} from "typescript";
 import {IFoveaConfig} from "../../Static/Interface/IFoveaConfig";
@@ -4926,7 +4926,7 @@ export class StateSnapshotter implements IStateSnapshotter {
 		return null;
 	}
 
-	private findDependencyIndex (dependencies: IModuleDependency[], declaration: IModuleDependency): number {
+	private findDependencyIndex (dependencies: IImportDeclaration[], declaration: IImportDeclaration): number {
 		return dependencies.findIndex(existingDependency => existingDependency.fullPath === declaration.fullPath);
 	}
 

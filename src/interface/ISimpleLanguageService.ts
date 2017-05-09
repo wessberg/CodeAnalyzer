@@ -2,7 +2,7 @@ import {Expression, LanguageServiceHost, Node, NodeArray, Statement, ArrayLitera
 
 import {IBindingIdentifier} from "./IBindingIdentifier";
 
-export enum ImportKind {
+export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED
 }
 
@@ -14,9 +14,10 @@ export enum IdentifierMapKind {
 	VARIABLE, IMPORT, EXPORT, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
 }
 
-export interface IImportBinding {
+export interface IImportExportBinding {
 	name: string;
-	kind: ImportKind;
+	payload?: ArbitraryValue|IIdentifier;
+	kind: ImportExportKind;
 }
 
 export interface IModulePath {
@@ -30,10 +31,16 @@ export interface IKindable {
 	___kind: IdentifierMapKind;
 }
 
-export interface IModuleDependency extends IPositionable, IFilePathable, IKindable {
+export interface IExportDeclaration extends IPositionable, IFilePathable, IKindable {
 	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
-	bindings: ImportIndexer;
+	bindings: ImportExportIndexer;
+}
+
+export interface IImportDeclaration extends IPositionable, IFilePathable, IKindable {
+	moduleKind: ModuleDependencyKind;
+	source: ModuleSource;
+	bindings: ImportExportIndexer;
 }
 
 export interface ICallExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
@@ -84,10 +91,11 @@ export interface IArgumentsBody extends IPositionable {
 	argumentsList: IArgument[];
 }
 
-export interface IFunctionLike extends IParametersable, IMemberDeclaration {
-	returnStatementStartsAt: number;
-	returnStatementEndsAt: number;
-	returnStatementContents: string | null;
+export interface IReturnStatementable {
+	returnStatement: IPositionable & IContentsable;
+}
+
+export interface IFunctionLike extends IParametersable, IMemberDeclaration, IReturnStatementable, IModifiersable {
 }
 
 export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKindable {
@@ -150,7 +158,7 @@ export interface isStaticable {
 	isStatic: boolean;
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable, IModifiersable {
 	type: ITypeable;
 	value: IValueable;
 }
@@ -197,12 +205,16 @@ export interface ICachedContent<T> extends IVersionable {
 	content: T;
 }
 
-export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable {
+export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable, IModifiersable {
 	value: IUnresolvableValueable;
 	type: ITypeable;
 }
 
-export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable {
+export interface IModifiersable {
+	modifiers: Set<string>;
+}
+
+export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable, IModifiersable {
 	value: IValueable;
 	type: ITypeable;
 }
@@ -224,15 +236,15 @@ export declare interface IIdentifierMap extends IKindable {
 	variables: VariableIndexer;
 	functions: FunctionIndexer;
 	callExpressions: ICallExpression[];
-	imports: IModuleDependency[];
-	exports: Set<string>;
+	imports: IImportDeclaration[];
+	exports: IExportDeclaration[];
 }
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IArgument|IDecorator|IModuleDependency|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
+export declare type IIdentifier = IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
-export declare type ImportIndexer = { [key: string]: IImportBinding };
+export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };
 export declare type ClassIndexer = { [key: string]: IClassDeclaration };
 export declare type VariableIndexer = { [key: string]: IVariableAssignment };
 export declare type DecoratorIndexer = { [key: string]: IDecorator };
@@ -257,10 +269,10 @@ export interface ISimpleLanguageService extends LanguageServiceHost {
 	getEnumDeclarationsForFile(fileName: string, deep?: boolean): EnumIndexer;
 	getFunctionDeclarations(statements: (Statement | Expression | Node)[], deep?: boolean): FunctionIndexer;
 	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
-	getImportDeclarationsForFile (fileName: string): IModuleDependency[];
-	getImportDeclarations(statements: (Statement | Expression | Node)[], deep?: boolean): IModuleDependency[];
-	getExportDeclarationsForFile (fileName: string, deep?: boolean): Set<string>;
-	getExportDeclarations (statements: (Statement | Expression | Node)[]): Set<string>;
+	getImportDeclarationsForFile (fileName: string, deep?: boolean): IImportDeclaration[];
+	getImportDeclarations(statements: (Statement | Expression | Node)[], deep?: boolean): IImportDeclaration[];
+	getExportDeclarationsForFile (fileName: string, deep?: boolean): IExportDeclaration[];
+	getExportDeclarations (statements: (Statement | Expression | Node)[], deep?: boolean): IExportDeclaration[];
 	getCallExpressions(statements: (Statement | Expression | Node)[], deep?: boolean): ICallExpression[];
 	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
 	getNewExpressions(statements: (Statement | Expression | Node)[], deep?: boolean): INewExpression[];

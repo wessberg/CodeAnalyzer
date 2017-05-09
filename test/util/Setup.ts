@@ -14,7 +14,7 @@ let marshallerIntegrated = new Marshaller(new TypeDetector());
 let service: ISimpleLanguageService;
 
 // Helpers
-export const parse = (code: string) => service.addFile(fileName, code);
+export const parse = (code: string, file: string = fileName) => service.addFile(file, code);
 
 export function setupMock<T> (input?: InitializationValue | ArbitraryValueIndexable, output?: T, treatUndefinedAsExpectedValue: boolean = false): void {
 	if (input != null || treatUndefinedAsExpectedValue) {
