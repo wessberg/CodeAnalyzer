@@ -120,7 +120,7 @@ export interface IHeritage {
 	implementsInterfaces: ITypeBinding[];
 }
 
-export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable, IKindable {
+export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable, IKindable, IModifiersable {
 	methods: ResolvedMethodMap;
 	props: PropIndexer;
 	constructor: IConstructorDeclaration | null;

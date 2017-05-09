@@ -883,7 +883,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignments;
 	}
 
-	private formatModifiers (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration): Set<string> {
+	private formatModifiers (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration): Set<string> {
 		if (isVariableDeclaration(statement) && statement.modifiers == null) {
 			const parent = statement.parent;
 			if (parent != null && isVariableDeclarationList(parent)) {
@@ -1568,7 +1568,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (isClassDeclaration(statement)) {
 				this.setResolvingStatement(statement);
 				const declaration = this.getClassDeclaration(statement);
-				if (declaration != null) declarations[declaration.name] = declaration;
+				declarations[declaration.name] = declaration;
 				this.removeResolvingStatement(statement);
 			}
 
@@ -1893,7 +1893,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			if (this.isResolvingStatement(statement)) continue;
 
-			if (isExportDeclaration(statement) || isExportAssignment(statement) || isVariableStatement(statement)) {
+			if (
+				isExportDeclaration(statement) ||
+				isExportAssignment(statement) ||
+				isVariableStatement(statement) ||
+				isFunctionDeclaration(statement) ||
+				isClassDeclaration(statement)
+			) {
 				this.setResolvingStatement(statement);
 				const declaration = this.getExportDeclaration(statement);
 				if (declaration != null) declarations.push(declaration);
@@ -1913,12 +1919,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return join(dirname(filePath), relativePath.toString());
 	}
 
-	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment): IExportDeclaration | null {
+	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration): IExportDeclaration | null {
 		const sourceFileProperties = this.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
 		if (isExportAssignment(statement)) {
-			console.log(statement);
 			let payload: ArbitraryValue|IIdentifier;
 			if (isLiteralExpression(statement.expression)) {
 				const that = this;
@@ -1965,6 +1970,82 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return map;
 		}
 
+		if (isClassDeclaration(statement)) {
+			const classDeclaration = this.getClassDeclaration(statement);
+			const isCandidate = classDeclaration.modifiers.has("export");
+
+			if (isCandidate) {
+				const isDefault = classDeclaration.modifiers.has("default");
+				const name = classDeclaration.name;
+				const relativePath = filePath;
+				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+				const map: IExportDeclaration = {
+					___kind: IdentifierMapKind.EXPORT,
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					moduleKind: ModuleDependencyKind.ES_MODULE,
+					source: {
+						relativePath,
+						fullPath
+					},
+					filePath,
+					bindings: {[isDefault ? "default" : name]: {
+						name: isDefault ? "default" : name,
+						payload: classDeclaration,
+						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
+					}
+				};
+				// Make the kind non-enumerable.
+				Object.defineProperty(map, "___kind", {
+					value: IdentifierMapKind.EXPORT,
+					enumerable: false
+				});
+
+				SimpleLanguageService.AST_MAPPER.set(map, statement);
+				return map;
+			}
+			return null;
+		}
+
+		if (isFunctionDeclaration(statement)) {
+			const functionDeclaration = this.formatFunctionDeclaration(statement);
+			const isCandidate = functionDeclaration.modifiers.has("export");
+
+			if (isCandidate) {
+				const isDefault = functionDeclaration.modifiers.has("default");
+				const name = functionDeclaration.name;
+				const relativePath = filePath;
+				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+				const map: IExportDeclaration = {
+					___kind: IdentifierMapKind.EXPORT,
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					moduleKind: ModuleDependencyKind.ES_MODULE,
+					source: {
+						relativePath,
+						fullPath
+					},
+					filePath,
+					bindings: {[isDefault ? "default" : name]: {
+						name: isDefault ? "default" : name,
+						payload: functionDeclaration,
+						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
+					}
+				};
+				// Make the kind non-enumerable.
+				Object.defineProperty(map, "___kind", {
+					value: IdentifierMapKind.EXPORT,
+					enumerable: false
+				});
+
+				SimpleLanguageService.AST_MAPPER.set(map, statement);
+				return map;
+			}
+			return null;
+		}
+
 		if (isVariableStatement(statement)) {
 			const variableIndexer = this.formatVariableAssignment(statement);
 			for (const key of Object.keys(variableIndexer)) {
@@ -1987,7 +2068,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 							fullPath
 						},
 						filePath,
-						bindings: {[name]: {name, kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}}
+						bindings: {[isDefault ? "default" : name]: {
+							name: isDefault ? "default" : name,
+							payload: match,
+							kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
+						}
 					};
 					// Make the kind non-enumerable.
 					Object.defineProperty(map, "___kind", {
@@ -3568,12 +3653,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @param {Statement|Declaration|Expression|Node} statement
 	 * @returns {IClassDeclaration}
 	 */
-	private getClassDeclaration (statement: ClassDeclaration): IClassDeclaration | null {
-		if (statement.name == null) return null;
+	private getClassDeclaration (statement: ClassDeclaration): IClassDeclaration {
 		const sourceFileProperties = this.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const fileContents = sourceFileProperties.fileContents;
-		const className = statement.name.text;
+		const className = statement.name == null ? SimpleLanguageService.ANONYMOUS : statement.name.text;
 
 		const cached = this.getCachedClass(filePath, className);
 		if (cached != null && !this.cachedClassNeedsUpdate(cached.content)) return cached.content;
@@ -3590,6 +3674,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			name: className,
 			filePath,
 			methods: {},
+			modifiers: this.formatModifiers(statement),
 			heritage: statement.heritageClauses == null ? null : this.formatHeritageClauses(statement.heritageClauses),
 			decorators: this.formatDecorators(statement),
 			constructor: null,
