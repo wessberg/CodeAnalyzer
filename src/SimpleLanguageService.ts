@@ -24,6 +24,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	private files: Map<string, { version: number, content: string }> = new Map();
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
+	private static readonly RESOLVING_STATEMENTS: Set<Statement|Expression|Node> = new Set();
 
 	constructor (private marshaller: IMarshaller,
 							 private config: ISimpleLanguageServiceConfig = {},
@@ -299,8 +300,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
+			if (this.isResolvingStatement(statement)) return;
+
 			if (isCallExpression(statement) || isExpressionStatement(statement)) {
+				this.setResolvingStatement(statement);
 				expressions.push(this.getCallExpression(statement));
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -338,8 +343,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const expressions: INewExpression[] = [];
 
 		statements.forEach(statement => {
+			if (this.isResolvingStatement(statement)) return;
+
 			if (isExpressionStatement(statement) && isNewExpression(statement.expression)) {
+				this.setResolvingStatement(statement);
 				expressions.push(this.getNewExpression(statement.expression));
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -391,9 +400,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const functionIndexer: FunctionIndexer = {};
 
 		for (const statement of statements) {
+			if (this.isResolvingStatement(statement)) continue;
+
 			if (isFunctionDeclaration(statement)) {
+				this.setResolvingStatement(statement);
 				const formatted = this.formatFunctionDeclaration(statement);
 				Object.assign(functionIndexer, {[formatted.name]: formatted});
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -442,9 +455,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const enumIndexer: EnumIndexer = {};
 
 		for (const statement of statements) {
+			if (this.isResolvingStatement(statement)) continue;
 			if (isEnumDeclaration(statement)) {
+				this.setResolvingStatement(statement);
 				const formatted = this.formatEnumDeclaration(statement);
 				Object.assign(enumIndexer, {[formatted.name]: formatted});
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -569,6 +585,18 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignments;
 	}
 
+	private isResolvingStatement (statement: Statement|Expression|Node): boolean {
+		return SimpleLanguageService.RESOLVING_STATEMENTS.has(statement);
+	}
+
+	private setResolvingStatement (statement: Statement|Expression|Node): void {
+		SimpleLanguageService.RESOLVING_STATEMENTS.add(statement);
+	}
+
+	private removeResolvingStatement ( statement: Statement|Expression|Node): void {
+		SimpleLanguageService.RESOLVING_STATEMENTS.delete(statement);
+	}
+
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
 	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
@@ -580,8 +608,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const assignmentMap: VariableIndexer = {};
 
 		for (const statement of statements) {
+			if (this.isResolvingStatement(statement)) continue;
+
 			if (isVariableStatement(statement) || isVariableDeclarationList(statement) || isVariableDeclaration(statement)) {
+				this.setResolvingStatement(statement);
 				Object.assign(assignmentMap, this.formatVariableAssignment(statement));
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -1509,10 +1541,15 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	public getClassDeclarations (statements: (Statement | Expression | Node)[], deep: boolean = false): ClassIndexer {
 		const declarations: ClassIndexer = {};
 		for (const statement of statements) {
-			const declaration = isClassDeclaration(statement) ? this.getClassDeclaration(statement) : null;
-			if (declaration != null) {
-				declarations[declaration.name] = declaration;
+			if (this.isResolvingStatement(statement)) continue;
+
+			if (isClassDeclaration(statement)) {
+				this.setResolvingStatement(statement);
+				const declaration = this.getClassDeclaration(statement);
+				if (declaration != null) declarations[declaration.name] = declaration;
+				this.removeResolvingStatement(statement);
 			}
+
 			if (deep) {
 				const otherDeclarations = this.getClassDeclarations(this.findChildStatements(statement), deep);
 				Object.keys(otherDeclarations).forEach(key => {
@@ -1555,14 +1592,20 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	public getImportDeclarations (statements: (Statement | Expression | Node)[], deep: boolean = false): IModuleDependency[] {
 		const declarations: IModuleDependency[] = [];
 		for (const statement of statements) {
+			if (this.isResolvingStatement(statement)) continue;
+
 			if (isImportDeclaration(statement) || isImportEqualsDeclaration(statement) || isVariableStatement(statement)) {
+				this.setResolvingStatement(statement);
 				const declaration = this.getImportDeclaration(statement);
 				if (declaration != null) declarations.push(declaration);
+				this.removeResolvingStatement(statement);
 			}
 
 			if (isExpressionStatement(statement) && isCallExpression(statement.expression)) {
+				this.setResolvingStatement(statement);
 				const declaration = this.getImportDeclaration(statement.expression);
 				if (declaration != null) declarations.push(declaration);
+				this.removeResolvingStatement(statement);
 			}
 
 			if (deep) {
@@ -1790,10 +1833,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	public getExportDeclarations (statements: (Statement | Expression | Node)[]): Set<string> {
 		const declarations: Set<string> = new Set();
 		for (const statement of statements) {
+			if (this.isResolvingStatement(statement)) continue;
+
 			if (isExportDeclaration(statement)) {
+				this.setResolvingStatement(statement);
 				if (statement.exportClause != null) {
 					statement.exportClause.elements.forEach(element => declarations.add(element.name.text));
 				}
+				this.removeResolvingStatement(statement);
 			}
 		}
 		return declarations;
@@ -1859,7 +1906,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				else if (isIVariableAssignment(substitution)) {
 					const stringified = this.stringifyIVariableAssignment(substitution);
 					const probableType = this.mostProbableTypeOf(stringified);
-					console.log(stringified, probableType);
 					if (
 						probableType === "object" ||
 						probableType === "function"
@@ -1901,7 +1947,11 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				}
 
 				else {
-					throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
+					// The identifier could not be found. Assume that it is part of the environment.
+					sub = part.name;
+					forceNoQuoting = true;
+					console.log(`Assuming that '${part.name}' is part of the global environment...`);
+					// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 				}
 
 				if (!forceNoQuoting && this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);

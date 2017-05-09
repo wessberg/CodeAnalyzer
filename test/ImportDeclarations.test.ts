@@ -93,12 +93,29 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t =
 	t.true(importDeclarations.length === 1);
 });
 
-test.skip(`getImportDeclarations() -> Detects import declarations correctly. #9`, t => {
+test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t => {
 	setupMany([
 		["require", "require"]
 	]);
 	const code = `
 		require("./bar");
+	`;
+
+	const statements = parse(code);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t => {
+	setupMany([
+		["require", "require"],
+		["foo", "foo"],
+		["./bar", "./bar"],
+		["/baz", "/baz"]
+	]);
+	const code = `
+		const foo = "./bar";
+		require(foo + "/baz");
 	`;
 
 	const statements = parse(code);

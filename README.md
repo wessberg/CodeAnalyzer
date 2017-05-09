@@ -28,6 +28,40 @@ This is a simple LanguageService provider that boils the complex information dow
 more easily digestible metadata such as class props, methods, constructor arguments, imports
 and exports and other stuff.
 
+## Differences from [Prepack](https://prepack.io/)
+
+The `SimpleLanguageService` can resolve identifiers **to the value they are initialized to**, but it
+**doesn't track mutations**.
+
+This means that if your code gradually builds up a variable, say, an ObjectLiteral, the resolved value
+will be the one it is initialized to.
+
+Consider the following two examples:
+```typescript
+function foo () {
+		let arr = [];
+		for (let i = 1; i <= 5; i++) {
+			arr.push(i);
+		}
+		return arr;
+	}
+	const val = foo();
+```
+The value of the variable `val` will be `[1,2,3,4,5]` since this is the return value
+of the function `foo`.
+
+But:
+```typescript
+const val = {};
+  ['A', 'B', 42].forEach(function(x) {
+    var name = '_' + x.toString()[0].toLowerCase();
+    var y = parseInt(x);
+    val[name] = y ? y : x;
+  });
+```
+Here, the value of the variable `val` will be `{}` since this is the value it is initialized to.
+The LanguageService will not track any mutations for already-initialized variables.
+
 ## Changelog:
 
 **v1.0.8**:
