@@ -25,6 +25,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
 	private static readonly RESOLVING_STATEMENTS: Set<Statement|Expression|Node> = new Set();
+	private static readonly AST_MAPPER: Map<IIdentifier, Statement|Expression|Node> = new Map();
 
 	constructor (private marshaller: IMarshaller,
 							 private config: ISimpleLanguageServiceConfig = {},
@@ -201,7 +202,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const map: ICallExpression = {
 			...this.formatCallable(statement),
 			___kind: IdentifierMapKind.CALL_EXPRESSION,
-			originalStatement: statement,
+			startsAt: statement.pos,
+			endsAt: statement.end,
 			arguments: {
 				startsAt: statement.arguments.pos,
 				endsAt: statement.arguments.end,
@@ -216,6 +218,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.CALL_EXPRESSION,
 			enumerable: false
 		});
+		SimpleLanguageService.AST_MAPPER.set(map, statement);
 		return map;
 	}
 
@@ -230,6 +233,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			...this.formatCallable(statement),
 			___kind: IdentifierMapKind.NEW_EXPRESSION,
 			originalStatement: statement,
+			startsAt: statement.pos,
+			endsAt: statement.end,
 			arguments: {
 				startsAt: statement.arguments == null ? -1 : statement.arguments.pos,
 				endsAt: statement.arguments == null ? -1 : statement.arguments.end,
@@ -243,6 +248,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.NEW_EXPRESSION,
 			enumerable: false
 		});
+		SimpleLanguageService.AST_MAPPER.set(map, statement);
 		return map;
 	}
 
@@ -507,7 +513,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const map: IEnumDeclaration = {
 			___kind: IdentifierMapKind.ENUM,
-			originalStatement: statement,
 			startsAt,
 			endsAt,
 			name,
@@ -520,7 +525,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.ENUM,
 			enumerable: false
 		});
-
+		SimpleLanguageService.AST_MAPPER.set(map, statement);
 		this.setCachedEnum(filePath, map);
 		return map;
 	}
@@ -870,7 +875,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					value: IdentifierMapKind.VARIABLE,
 					enumerable: false
 				});
-
+				SimpleLanguageService.AST_MAPPER.set(map, declaration);
 				this.setCachedVariable(filePath, map);
 				assignments.push(map);
 			}
@@ -889,7 +894,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const map: IBaseVariableAssignment = {
 			___kind: IdentifierMapKind.VARIABLE,
-			originalStatement: declaration,
 			filePath,
 			value: {
 				expression: valueExpression
@@ -937,6 +941,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			enumerable: false
 		});
 
+		SimpleLanguageService.AST_MAPPER.set(map, declaration);
 		this.setCachedVariable(filePath, map);
 		return map;
 	}
@@ -1674,7 +1679,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			const map: IModuleDependency = {
 				___kind: IdentifierMapKind.IMPORT,
-				originalStatement: statement,
+				startsAt: statement.pos,
+				endsAt: statement.end,
 				moduleKind: ModuleDependencyKind.ES_MODULE,
 				source: {
 					relativePath,
@@ -1688,6 +1694,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				value: IdentifierMapKind.IMPORT,
 				enumerable: false
 			});
+			SimpleLanguageService.AST_MAPPER.set(map, statement);
 			return map;
 		}
 
@@ -1701,7 +1708,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				const map: IModuleDependency = {
 					___kind: IdentifierMapKind.IMPORT,
-					originalStatement: statement,
+					startsAt: statement.pos,
+					endsAt: statement.end,
 					moduleKind: ModuleDependencyKind.IMPORT_REQUIRE,
 					source: {
 						relativePath,
@@ -1715,6 +1723,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					value: IdentifierMapKind.IMPORT,
 					enumerable: false
 				});
+
+				SimpleLanguageService.AST_MAPPER.set(map, statement);
 				return map;
 			} else {
 				if (!isIdentifierObject(statement.moduleReference)) {
@@ -1725,7 +1735,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				const map: IModuleDependency = {
 					___kind: IdentifierMapKind.IMPORT,
-					originalStatement: statement,
+					startsAt: statement.pos,
+					endsAt: statement.end,
 					moduleKind: ModuleDependencyKind.IMPORT_REQUIRE,
 					source,
 					filePath: this.getSourceFileProperties(statement).filePath,
@@ -1736,6 +1747,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					value: IdentifierMapKind.IMPORT,
 					enumerable: false
 				});
+
+				SimpleLanguageService.AST_MAPPER.set(map, statement);
 				return map;
 			}
 		}
@@ -1755,7 +1768,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 					const map: IModuleDependency = {
 						___kind: IdentifierMapKind.IMPORT,
-						originalStatement: statement,
+						startsAt: statement.pos,
+						endsAt: statement.end,
 						moduleKind: ModuleDependencyKind.REQUIRE,
 						source: {
 							relativePath,
@@ -1769,6 +1783,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 						value: IdentifierMapKind.IMPORT,
 						enumerable: false
 					});
+
+					SimpleLanguageService.AST_MAPPER.set(map, statement);
 					return map;
 				}
 			}
@@ -1790,7 +1806,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 				const map: IModuleDependency = {
 					___kind: IdentifierMapKind.IMPORT,
-					originalStatement: statement,
+					startsAt: statement.pos,
+					endsAt: statement.end,
 					moduleKind: ModuleDependencyKind.REQUIRE,
 					source: {
 						relativePath,
@@ -1804,6 +1821,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					value: IdentifierMapKind.IMPORT,
 					enumerable: false
 				});
+
+				SimpleLanguageService.AST_MAPPER.set(map, statement);
 				return map;
 			}
 			return null;
@@ -2928,7 +2947,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			const map: IDecorator = {
 				___kind: IdentifierMapKind.DECORATOR,
-				originalStatement: decorator,
+				startsAt: decorator.pos,
+				endsAt: decorator.end,
 				name
 			};
 			// Make the kind non-enumerable.
@@ -2937,6 +2957,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 				enumerable: false
 			});
 
+			SimpleLanguageService.AST_MAPPER.set(map, decorator);
 			obj[name] = map;
 		});
 		return obj;
@@ -2963,7 +2984,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const map: IPropDeclaration = {
 			___kind: IdentifierMapKind.PROP,
-			originalStatement: declaration,
 			isStatic,
 			startsAt,
 			endsAt,
@@ -2992,7 +3012,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.PROP,
 			enumerable: false
 		});
-
+		SimpleLanguageService.AST_MAPPER.set(map, declaration);
 		return map;
 	}
 
@@ -3047,7 +3067,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const map: IParameter = {
 			___kind: IdentifierMapKind.PARAMETER,
-			originalStatement: parameter,
 			startsAt,
 			endsAt,
 			name,
@@ -3072,6 +3091,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.PARAMETER,
 			enumerable: false
 		});
+		SimpleLanguageService.AST_MAPPER.set(map, parameter);
 		return map;
 	}
 
@@ -3089,7 +3109,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const map: IArgument = {
 			___kind: IdentifierMapKind.ARGUMENT,
-			originalStatement: argument,
 			startsAt,
 			endsAt,
 			value: {
@@ -3108,6 +3127,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			value: IdentifierMapKind.ARGUMENT,
 			enumerable: false
 		});
+		SimpleLanguageService.AST_MAPPER.set(map, argument);
 		return map;
 	}
 
@@ -3186,7 +3206,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		const bodyContents = body == null ? null : fileContents.slice(bodyStartsAt, bodyEndsAt);
 
 		return {
-			originalStatement: declaration,
 			startsAt,
 			endsAt,
 			contents,
@@ -3391,7 +3410,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 		const declaration: IClassDeclaration = {
 			___kind: IdentifierMapKind.CLASS,
-			originalStatement: statement,
 			name: className,
 			filePath,
 			methods: {},
@@ -3439,6 +3457,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			else throw new TypeError(`${this.getClassDeclaration.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
 		});
 
+		SimpleLanguageService.AST_MAPPER.set(declaration, statement);
 		this.setCachedClass(filePath, declaration);
 		return declaration;
 	}

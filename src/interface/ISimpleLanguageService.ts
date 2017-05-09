@@ -30,17 +30,17 @@ export interface IKindable {
 	___kind: IdentifierMapKind;
 }
 
-export interface IModuleDependency extends IFilePathable, IKindable, IOriginalStatementable {
+export interface IModuleDependency extends IPositionable, IFilePathable, IKindable {
 	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
 	bindings: ImportIndexer;
 }
 
-export interface ICallExpression extends IArgumentsable, ICallable, IFilePathable, IKindable, IOriginalStatementable {
+export interface ICallExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
 }
 
-export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable, IKindable, IOriginalStatementable {
+export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable, IKindable {
 	members: { [key: string]: number | string };
 }
 
@@ -49,7 +49,7 @@ export interface ICallable {
 	identifier: NonNullableArbitraryValue;
 }
 
-export interface INewExpression extends IArgumentsable, ICallable, IFilePathable, IKindable, IOriginalStatementable {
+export interface INewExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
 }
 
@@ -64,7 +64,7 @@ export interface IContentsable {
 	contents: string | null;
 }
 
-export interface IMemberDeclaration extends IPositionable, IBodyable, IDecoratorsable, IOriginalStatementable {
+export interface IMemberDeclaration extends IPositionable, IBodyable, IDecoratorsable {
 	contents: string;
 }
 
@@ -88,10 +88,6 @@ export interface IFunctionLike extends IParametersable, IMemberDeclaration {
 	returnStatementStartsAt: number;
 	returnStatementEndsAt: number;
 	returnStatementContents: string | null;
-}
-
-export interface IOriginalStatementable {
-	originalStatement: Statement | Expression | Node;
 }
 
 export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKindable {
@@ -128,12 +124,12 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IParameter extends IPositionable, INameable, IKindable, IOriginalStatementable {
+export declare interface IParameter extends IPositionable, INameable, IKindable {
 	type: ITypeable;
 	value: IValueable;
 }
 
-export declare interface IArgument extends IPositionable, IKindable, IOriginalStatementable {
+export declare interface IArgument extends IPositionable, IKindable {
 	value: IValueable;
 }
 
@@ -142,7 +138,7 @@ export interface IArbitraryObject<T> {
 	[key: number]: T;
 }
 
-export interface IDecorator extends IKindable, IOriginalStatementable {
+export interface IDecorator extends IPositionable, IKindable {
 	name: string;
 }
 
@@ -154,7 +150,7 @@ export interface isStaticable {
 	isStatic: boolean;
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable, IOriginalStatementable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable {
 	type: ITypeable;
 	value: IValueable;
 }
@@ -201,12 +197,12 @@ export interface ICachedContent<T> extends IVersionable {
 	content: T;
 }
 
-export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable, IOriginalStatementable {
+export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable {
 	value: IUnresolvableValueable;
 	type: ITypeable;
 }
 
-export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable, IOriginalStatementable {
+export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable {
 	value: IValueable;
 	type: ITypeable;
 }
@@ -232,7 +228,7 @@ export declare interface IIdentifierMap extends IKindable {
 	exports: Set<string>;
 }
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
+export declare type IIdentifier = IArgument|IDecorator|IModuleDependency|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
