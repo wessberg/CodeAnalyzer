@@ -1,7 +1,29 @@
 import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
 import {IBindingIdentifier} from "./interface/IBindingIdentifier";
-import {ArbitraryValue} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, ITypeBinding, TypeExpression} from "./interface/ISimpleLanguageService";
+import {isTypeBinding} from "./PredicateFunctions";
+
+/**
+ * Formats and returns a string representation of a type.
+ * @param {TypeExpression} expression
+ * @returns {string}
+ */
+export function serializeTypeExpression (expression: TypeExpression): string {
+	let statement: string = "";
+	expression.forEach(token => {
+		if (isTypeBinding(token)) {
+			statement += token.name;
+			if (token.typeArguments != null) {
+				statement += `<${serializeTypeExpression(token.typeArguments)}>`;
+			}
+		} else {
+			statement += `${token}`;
+		}
+	});
+	return statement;
+}
+
 /**
  * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
  * @param {SyntaxKind} token
@@ -52,7 +74,7 @@ export function isTokenLike (item: ArbitraryValue): boolean {
  * @param {ArbitraryValue} item
  * @returns {boolean}
  */
-export function throwsIfPrimitive(item: ArbitraryValue): boolean {
+export function throwsIfPrimitive (item: ArbitraryValue): boolean {
 	switch (item == null ? "" : item.toString()) {
 		case "=":
 		case "++":
@@ -494,4 +516,66 @@ export function serializeToken (token: SyntaxKind | TypeNode): string | IBinding
 		default:
 			throw new TypeError(`${serializeToken.name} could not serialize a token of kind ${SyntaxKind[<SyntaxKind>token]}`);
 	}
+}
+
+function isQuote (content: string): boolean {
+	return /["'`]/.test(content);
+}
+
+export function stripQuotesIfNecessary (content: ArbitraryValue): ArbitraryValue {
+	if (!(typeof content === "string")) return content;
+	const trimmed = content;
+	const firstChar = trimmed[0];
+	const lastChar = trimmed[trimmed.length - 1];
+	const startsWithQuote = isQuote(firstChar);
+	const endsWithQuote = isQuote(lastChar);
+	const startOffset = startsWithQuote ? 1 : 0;
+	const endOffset = endsWithQuote ? 1 : 0;
+	return trimmed.slice(startOffset, trimmed.length - endOffset);
+}
+
+export function quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
+	if (!(typeof content === "string")) return content;
+	const REPLACEMENT_CHAR = "`";
+	const trimmed = content;
+	const firstChar = trimmed[0];
+	const lastChar = trimmed[trimmed.length - 1];
+	let str = REPLACEMENT_CHAR;
+	const startsWithClashingQuote = firstChar === REPLACEMENT_CHAR;
+	const endsWithClashingQuote = lastChar === REPLACEMENT_CHAR;
+
+	if (startsWithClashingQuote && endsWithClashingQuote) {
+		const insideQuotes = trimmed.match(new RegExp(`^${REPLACEMENT_CHAR}([^${REPLACEMENT_CHAR}]*)${REPLACEMENT_CHAR}`));
+		// If there are nothing but whitespace inside the quotes, just return them.
+		if (insideQuotes != null && isWhitespace(insideQuotes[1])) return content;
+	}
+
+	const startOffset = startsWithClashingQuote ? 1 : 0;
+	const endOffset = endsWithClashingQuote ? 1 : 0;
+	if (startsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
+	str += trimmed.slice(startOffset, trimmed.length - endOffset);
+	if (endsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
+	str += REPLACEMENT_CHAR;
+	return str;
+}
+
+/**
+ * Takes all ITypeBindings from a TypeExpression and returns an array of them.
+ * @param {TypeExpression} expression
+ * @param {boolean} [deep=false]
+ * @returns {ITypeBinding[]}
+ */
+export function takeTypeBindings (expression: TypeExpression, deep: boolean = false): ITypeBinding[] {
+	const bindings: ITypeBinding[] = [];
+
+	expression.forEach(token => {
+		if (isTypeBinding(token)) {
+			bindings.push(token);
+
+			if (token.typeArguments != null && deep) {
+				takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
+			}
+		}
+	});
+	return bindings;
 }

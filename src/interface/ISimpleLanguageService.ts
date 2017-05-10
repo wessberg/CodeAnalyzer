@@ -31,13 +31,10 @@ export interface IKindable {
 	___kind: IdentifierMapKind;
 }
 
-export interface IExportDeclaration extends IPositionable, IFilePathable, IKindable {
-	moduleKind: ModuleDependencyKind;
-	source: ModuleSource;
-	bindings: ImportExportIndexer;
-}
+export declare type IExportDeclaration = IModuleDeclaration;
+export declare type IImportDeclaration = IModuleDeclaration;
 
-export interface IImportDeclaration extends IPositionable, IFilePathable, IKindable {
+export interface IModuleDeclaration extends IPositionable, IFilePathable, IKindable {
 	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
 	bindings: ImportExportIndexer;
@@ -242,9 +239,9 @@ export declare interface IIdentifierMap extends IKindable {
 
 export declare type ImportExportBindingPayload = ArbitraryValue|IIdentifier;
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
+export declare type IIdentifier = IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
-export declare type NamespacedExportMap = { [key: string]: ImportExportBindingPayload };
+export declare type NamespacedModuleMap = { [key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };
@@ -262,6 +259,7 @@ export declare type InitializationValue = ArbitraryValueArray;
 export interface ISimpleLanguageService extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	getFile(fileName: string): NodeArray<Statement>;
+	getFileVersion (filePath: string): number;
 	getClassDeclarations(statements: (Statement | Expression | Node)[], deep?: boolean): ClassIndexer;
 	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
 	getAllIdentifiers(statements: (Statement | Expression | Node)[], deep?: boolean): IIdentifierMap;

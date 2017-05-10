@@ -1,5 +1,5 @@
 import {test} from "ava";
-import {parse, service, setupMany} from "./util/Setup";
+import {fileName, parse, service, setupMany} from "./util/Setup";
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
 	setupMany([]);
@@ -24,9 +24,16 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t => {
-	setupMany([]);
+	setupMany([
+		["Foo", "Foo"],
+		["hello", "hello"],
+		["Bar", "Bar"],
+		["2", 2]
+	]);
 	const code = `
-		import * as Bar from "../Bar";
+		export const Foo = "hello";
+		export const Bar = 2;
+		import * as Bar from "${fileName}";
 	`;
 
 	const statements = parse(code);
@@ -35,9 +42,14 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t => {
-	setupMany([]);
+	setupMany([
+		["Bar", "Bar"],
+		["hello", "hello"]
+	]);
 	const code = `
-		import Bar from "../Bar/foo.ts";
+		const Bar = "hello";
+		export default Bar;
+		import Bar from "${fileName}";
 	`;
 
 	const statements = parse(code);
@@ -46,9 +58,13 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t => {
-	setupMany([]);
+	setupMany([
+		["Foo", "Foo"],
+		["foo", "foo"]
+	]);
+	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
-		import Foo = require("./bar");
+		import Foo = require("./bar.ts");
 	`;
 
 	const statements = parse(code);
@@ -57,9 +73,13 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
-	setupMany([]);
+	setupMany([
+		["Foo", "Foo"],
+		["foo", "foo"]
+	]);
+	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
-		import Foo = require("./bar");
+		import Foo = require("./bar.ts");
 	`;
 
 	const statements = parse(code);
@@ -82,10 +102,15 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
 	setupMany([
+		["foo", "foo"],
+		["bar", "bar"],
 		["require", "require"]
 	]);
+	parse(`
+		export default function bar () {}
+	`, "bar.ts");
 	const code = `
-		const foo = require("./bar");
+		const foo = require("./bar.ts");
 	`;
 
 	const statements = parse(code);
@@ -97,8 +122,9 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t =
 	setupMany([
 		["require", "require"]
 	]);
+	parse(``, "bar.ts");
 	const code = `
-		require("./bar");
+		require("./bar.ts");
 	`;
 
 	const statements = parse(code);
@@ -113,9 +139,12 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t 
 		["./bar", "./bar"],
 		["/baz", "/baz"]
 	]);
+
+	parse(``, "bar/baz.ts");
+
 	const code = `
 		const foo = "./bar";
-		require(foo + "/baz");
+		require(foo + "/baz.ts");
 	`;
 
 	const statements = parse(code);

@@ -1,14 +1,59 @@
-import {IMarshaller, TypeOf} from "@wessberg/marshaller";
-import {dirname, join} from "path";
-import {IBindingIdentifier} from "src/interface/IBindingIdentifier";
+import {IMarshaller} from "@wessberg/marshaller";
+import {ISourceFilePropertiesGetter} from "./getter/interface/ISourceFilePropertiesGetter";
+import {TypeExpressionGetter} from "./getter/TypeExpressionGetter";
 import * as ts from "typescript";
-import {ArrayBindingPattern, BinaryExpression, CallExpression, ExportAssignment, ClassDeclaration, CompilerOptions, ConstructorDeclaration, Declaration, DeclarationName, ExportDeclaration, ElementAccessExpression, EnumDeclaration, Expression, FunctionDeclaration, HeritageClause, Identifier, ImportClause, NamedExports, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, MethodDeclaration, ModuleKind, NewExpression, Node, NodeArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, ScriptTarget, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode, TypeReferenceNode, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
-import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IImportDeclaration, ImportExportIndexer, ImportExportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IValueable, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer, NamespacedExportMap} from "./interface/ISimpleLanguageService";
+import {CallExpression, ClassDeclaration, CompilerOptions, Declaration, ExportAssignment, ExportDeclaration, Expression, FunctionDeclaration, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, ModuleKind, Node, NodeArray, ScriptTarget, Statement, SyntaxKind, VariableStatement} from "typescript";
+import {Cache} from "./cache/Cache";
+import {ICache} from "./cache/interface/ICache";
+import {ArgumentsFormatter} from "./formatter/ArgumentsFormatter";
+import {CallExpressionFormatter} from "./formatter/CallExpressionFormatter";
+import {ClassFormatter} from "./formatter/ClassFormatter";
+import {ConstructorFormatter} from "./formatter/ConstructorFormatter";
+import {DecoratorsFormatter} from "./formatter/DecoratorsFormatter";
+import {EnumFormatter} from "./formatter/EnumFormatter";
+import {ExportFormatter} from "./formatter/ExportFormatter";
+import {FunctionFormatter} from "./formatter/FunctionFormatter";
+import {HeritageClauseFormatter} from "./formatter/HeritageClauseFormatter";
+import {ImportFormatter} from "./formatter/ImportFormatter";
+import {IArgumentsFormatter} from "./formatter/interface/IArgumentsFormatter";
+import {ICallExpressionFormatter} from "./formatter/interface/ICallExpressionFormatter";
+import {IClassFormatter} from "./formatter/interface/IClassFormatter";
+import {IConstructorFormatter} from "./formatter/interface/IConstructorFormatter";
+import {IDecoratorsFormatter} from "./formatter/interface/IDecoratorsFormatter";
+import {IEnumFormatter} from "./formatter/interface/IEnumFormatter";
+import {IExportFormatter} from "./formatter/interface/IExportFormatter";
+import {IFunctionFormatter} from "./formatter/interface/IFunctionFormatter";
+import {IHeritageClauseFormatter} from "./formatter/interface/IHeritageClauseFormatter";
+import {IImportFormatter} from "./formatter/interface/IImportFormatter";
+import {IMethodFormatter} from "./formatter/interface/IMethodFormatter";
+import {IModifiersFormatter} from "./formatter/interface/IModifiersFormatter";
+import {INewExpressionFormatter} from "./formatter/interface/INewExpressionFormatter";
+import {IParametersFormatter} from "./formatter/interface/IParametersFormatter";
+import {IPropFormatter} from "./formatter/interface/IPropFormatter";
+import {IVariableFormatter} from "./formatter/interface/IVariableFormatter";
+import {MethodFormatter} from "./formatter/MethodFormatter";
+import {ModifiersFormatter} from "./formatter/ModifiersFormatter";
+import {NewExpressionFormatter} from "./formatter/NewExpressionFormatter";
+import {ParametersFormatter} from "./formatter/ParametersFormatter";
+import {PropFormatter} from "./formatter/PropFormatter";
+import {VariableFormatter} from "./formatter/VariableFormatter";
+import {INameGetter} from "./getter/interface/INameGetter";
+import {ITypeExpressionGetter} from "./getter/interface/ITypeExpressionGetter";
+import {IValueExpressionGetter} from "./getter/interface/IValueExpressionGetter";
+import {IValueResolvedGetter} from "./getter/interface/IValueResolvedGetter";
+import {NameGetter} from "./getter/NameGetter";
+import {SourceFilePropertiesGetter} from "./getter/SourceFilePropertiesGetter";
+import {ValueExpressionGetter} from "./getter/ValueExpressionGetter";
+import {ValueResolvedGetter} from "./getter/ValueResolvedGetter";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICallExpression, IClassDeclaration, IdentifierMapKind, IExportDeclaration, IIdentifierMap, IImportDeclaration, INewExpression, ISimpleLanguageService, VariableIndexer} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIParameter, isIVariableAssignment, isLabeledStatement, isLiteralExpression, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
-import {isOperatorLike, isTokenLike, isWhitespace, marshalToken, serializeToken, throwsIfPrimitive} from "./Util";
-import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
+import {IMapper} from "./mapper/interface/IMapper";
+import {Mapper} from "./mapper/Mapper";
+import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
+import {IdentifierSerializer} from "./serializer/IdentifierSerializer";
+import {IIdentifierSerializer} from "./serializer/interface/IIdentifierSerializer";
+import {ITracer} from "./tracer/interface/ITracer";
+import {Tracer} from "./tracer/Tracer";
 
 /**
  * A service that parses and reflects on the AST generated by Typescript's language service.
@@ -18,19 +63,63 @@ import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
  */
 export class SimpleLanguageService implements ISimpleLanguageService {
 	private languageService: LanguageService;
-	private static readonly GLOBAL: string = "global";
-	private static readonly ANONYMOUS: string = "__anonymous__";
-	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
+	private nameGetter: INameGetter;
+	private heritageClauseFormatter: IHeritageClauseFormatter;
+	private variableFormatter: IVariableFormatter;
+	private valueExpressionGetter: IValueExpressionGetter;
+	private valueResolvedGetter: IValueResolvedGetter;
+	private typeExpressionGetter: ITypeExpressionGetter;
+	private sourceFilePropertiesGetter: ISourceFilePropertiesGetter;
+	private mapper: IMapper;
+	private cache: ICache;
+	private tracer: ITracer;
+	private modifiersFormatter: IModifiersFormatter;
+	private importFormatter: IImportFormatter;
+	private exportFormatter: IExportFormatter;
+	private identifierSerializer: IIdentifierSerializer;
+	private classFormatter: IClassFormatter;
+	private decoratorsFormatter: IDecoratorsFormatter;
+	private propFormatter: IPropFormatter;
+	private parametersFormatter: IParametersFormatter;
+	private argumentsFormatter: IArgumentsFormatter;
+	private constructorFormatter: IConstructorFormatter;
+	private methodFormatter: IMethodFormatter;
+	private functionFormatter: IFunctionFormatter;
+	private callExpressionFormatter: ICallExpressionFormatter;
+	private newExpressionFormatter: INewExpressionFormatter;
+	private enumFormatter: IEnumFormatter;
 	private files: Map<string, { version: number, content: string }> = new Map();
-	private cache: Map<string, ICachedContent<{}>> = new Map();
-	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
-	private static readonly RESOLVING_STATEMENTS: Set<Statement|Expression|Node> = new Set();
-	private static readonly AST_MAPPER: Map<IIdentifier, Statement|Expression|Node> = new Map();
+	private static readonly RESOLVING_STATEMENTS: Set<Statement | Expression | Node> = new Set();
 
-	constructor (private marshaller: IMarshaller,
+	constructor (marshaller: IMarshaller,
 							 private config: ISimpleLanguageServiceConfig = {},
 							 private typescript: typeof ts = ts) {
 		this.languageService = this.typescript.createLanguageService(this, typescript.createDocumentRegistry());
+		this.nameGetter = new NameGetter(marshaller);
+		this.sourceFilePropertiesGetter = new SourceFilePropertiesGetter();
+		this.typeExpressionGetter = new TypeExpressionGetter(this.nameGetter);
+		this.heritageClauseFormatter = new HeritageClauseFormatter(this.typeExpressionGetter);
+		this.valueExpressionGetter = new ValueExpressionGetter(marshaller, this.heritageClauseFormatter, this.sourceFilePropertiesGetter, this.typeExpressionGetter, this.nameGetter);
+		this.mapper = new Mapper();
+		this.cache = new Cache(this);
+		this.identifierSerializer = new IdentifierSerializer(marshaller);
+		this.tracer = new Tracer(this, this.nameGetter, this.sourceFilePropertiesGetter);
+		this.valueResolvedGetter = new ValueResolvedGetter(marshaller, this.tracer, this.identifierSerializer);
+		this.modifiersFormatter = new ModifiersFormatter();
+		this.variableFormatter = new VariableFormatter(this.valueExpressionGetter, this.sourceFilePropertiesGetter, this.nameGetter, this.mapper, this.cache, this.tracer, this.valueResolvedGetter, this.modifiersFormatter, this.typeExpressionGetter);
+		this.decoratorsFormatter = new DecoratorsFormatter(this.mapper, this.nameGetter);
+		this.propFormatter = new PropFormatter(this.mapper, this.tracer, this.modifiersFormatter, this.decoratorsFormatter, this.sourceFilePropertiesGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.typeExpressionGetter, this.nameGetter);
+		this.parametersFormatter = new ParametersFormatter(this.mapper, this.tracer, this.nameGetter, this.typeExpressionGetter, this.valueResolvedGetter, this.valueExpressionGetter);
+		this.argumentsFormatter = new ArgumentsFormatter(this.mapper, this.tracer, this.valueResolvedGetter, this.valueExpressionGetter);
+		this.methodFormatter = new MethodFormatter(this.tracer, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
+		this.constructorFormatter = new ConstructorFormatter(this.mapper, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
+		this.functionFormatter = new FunctionFormatter(this.mapper, this.tracer, this.cache, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
+		this.classFormatter = new ClassFormatter(this.mapper, this.cache, this.decoratorsFormatter, this.propFormatter, this.methodFormatter, this.constructorFormatter, this.modifiersFormatter, this.heritageClauseFormatter, this.sourceFilePropertiesGetter);
+		this.callExpressionFormatter = new CallExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.tracer, this.valueExpressionGetter, this.valueResolvedGetter, this.nameGetter, this.typeExpressionGetter);
+		this.newExpressionFormatter = new NewExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.tracer, this.valueExpressionGetter, this.valueResolvedGetter, this.nameGetter, this.typeExpressionGetter);
+		this.enumFormatter = new EnumFormatter(this.mapper, this.cache, this.nameGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter);
+		this.importFormatter = new ImportFormatter(this, this.sourceFilePropertiesGetter, this.nameGetter, this.callExpressionFormatter, this.variableFormatter, this.mapper, this.tracer);
+		this.exportFormatter = new ExportFormatter(this, this.mapper, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.variableFormatter, this.classFormatter, this.functionFormatter, this.nameGetter, this.tracer);
 	}
 
 	/**
@@ -41,6 +130,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {NodeArray<Statement>}
 	 */
 	public addFile (fileName: string, content: string, version: number = 0): NodeArray<Statement> {
+		// TODO: Make sure to add an extension here! Otherwise, Typescript won't add the file.
 		this.files.set(fileName, {version, content});
 		return this.getFile(fileName);
 	}
@@ -125,143 +215,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * Formats the typeArguments given to a CallExpression or a NewExpression and returns an ITypeable.
-	 * @param {CallExpression|NewExpression} statement
-	 * @returns {ITypeable}
-	 */
-	private formatTypeArguments (statement: CallExpression | NewExpression): ITypeable {
-		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.getTypeExpression(typeArg));
-		let typeExpression: TypeExpression = [];
-		if (typeExpressions != null) {
-			typeExpressions.forEach((typeExp, index) => {
-				typeExp.forEach(part => typeExpression.push(part));
-				if (index !== typeExpressions.length - 1) typeExpression.push(", ");
-			});
-		}
-		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.takeTypeBindings(typeExpression);
-
-		return {
-			expression: typeExpression.length < 1 ? null : typeExpression,
-			flattened: typeFlattened,
-			bindings: typeBindings
-		};
-	}
-
-	/**
-	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
-	 * @param {CallExpression|NewExpression} statement
-	 * @returns {ICallable}
-	 */
-	private formatCallable (statement: CallExpression | NewExpression): ICallable {
-		const exp = statement.expression;
-		let property: ArbitraryValue = null;
-		let identifier: ArbitraryValue = null;
-
-		if (isIdentifierObject(exp)) {
-			identifier = this.getNameOfMember(exp, false, true);
-		}
-
-		if (isPropertyAccessExpression(exp)) {
-
-			// The left-hand side of the expression might be a literal (for example, "hello".toString()).
-			if (isLiteralExpression(exp.expression)) {
-				const that = this;
-				const scope = this.traceThis(exp.expression);
-				const value: IValueable = {
-					expression: this.getValueExpression(exp.expression),
-					resolved: undefined,
-					hasDoneFirstResolve () {return value.resolved !== undefined;},
-					resolving: false,
-					resolve () {
-						value.resolved = value.expression == null ? null : that.getValueResolved(<INonNullableValueable>value, exp.expression, scope);
-						return value.resolved;
-					}
-				};
-				property = value.resolve();
-			} else {
-				// The left-hand side is simply an identifier.
-				property = this.getNameOfMember(exp.expression);
-			}
-			identifier = this.getNameOfMember(exp.name, false, true);
-		}
-
-		if (identifier == null) {
-			throw new TypeError(`${this.formatCallable.name} could not format a CallExpression|NewExpression with an expression of kind ${SyntaxKind[exp.kind]}`);
-		}
-		return {
-			property,
-			identifier
-		};
-	}
-
-	/**
-	 * Formats a CallExpression into an ICallExpression.
-	 * @param {CallExpression} statement
-	 * @returns {ICallExpression}
-	 */
-	private formatCallExpression (statement: CallExpression): ICallExpression {
-		const map: ICallExpression = {
-			...this.formatCallable(statement),
-			___kind: IdentifierMapKind.CALL_EXPRESSION,
-			startsAt: statement.pos,
-			endsAt: statement.end,
-			arguments: {
-				startsAt: statement.arguments.pos,
-				endsAt: statement.arguments.end,
-				argumentsList: this.formatArguments(statement)
-			},
-			type: this.formatTypeArguments(statement),
-			filePath: this.getSourceFileProperties(statement).filePath
-		};
-
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.CALL_EXPRESSION,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, statement);
-		return map;
-	}
-
-	/**
-	 * Formats a NewExpression into an INewExpression.
-	 * @param {NewExpression} statement
-	 * @returns {INewExpression}
-	 */
-	private formatNewExpression (statement: NewExpression): INewExpression {
-
-		const map: INewExpression = {
-			...this.formatCallable(statement),
-			___kind: IdentifierMapKind.NEW_EXPRESSION,
-			originalStatement: statement,
-			startsAt: statement.pos,
-			endsAt: statement.end,
-			arguments: {
-				startsAt: statement.arguments == null ? -1 : statement.arguments.pos,
-				endsAt: statement.arguments == null ? -1 : statement.arguments.end,
-				argumentsList: this.formatArguments(statement)
-			},
-			type: this.formatTypeArguments(statement),
-			filePath: this.getSourceFileProperties(statement).filePath
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.NEW_EXPRESSION,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, statement);
-		return map;
-	}
-
-	/**
 	 *Formats the given Statement into an ICallExpression.
 	 * @param {Statement|Expression} statement
 	 * @returns {ICallExpression}
 	 */
 	private getCallExpression (statement: Statement | Expression): ICallExpression {
 		if (isCallExpression(statement)) {
-			return this.formatCallExpression(statement);
+			return this.callExpressionFormatter.format(statement);
 		}
 
 		if (isExpressionStatement(statement)) {
@@ -277,7 +237,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 */
 	private getNewExpression (statement: Statement | Expression): INewExpression {
 		if (isNewExpression(statement)) {
-			return this.formatNewExpression(statement);
+			return this.newExpressionFormatter.format(statement);
 		}
 		throw new TypeError(`${this.getNewExpression.name} could not format a NewExpression of kind ${SyntaxKind[statement.kind]}`);
 	}
@@ -386,14 +346,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {FunctionIndexer}
 	 */
 	public getFunctionDeclarationsForFile (fileName: string, deep: boolean = false): FunctionIndexer {
-		const cached = this.getCachedFunctionIndexer(fileName);
-		if (cached != null && !this.cachedFunctionIndexerNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedFunctionIndexer(fileName);
+		if (cached != null && !this.cache.cachedFunctionIndexerNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getFunctionDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 
 		const declarations = this.getFunctionDeclarations(statements, deep);
-		this.setCachedFunctionIndexer(fileName, declarations);
+		this.cache.setCachedFunctionIndexer(fileName, declarations);
 		return declarations;
 	}
 
@@ -412,7 +372,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			if (isFunctionDeclaration(statement)) {
 				this.setResolvingStatement(statement);
-				const formatted = this.formatFunctionDeclaration(statement);
+				const formatted = this.functionFormatter.format(statement);
 				Object.assign(functionIndexer, {[formatted.name]: formatted});
 				this.removeResolvingStatement(statement);
 			}
@@ -441,14 +401,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {EnumIndexer}
 	 */
 	public getEnumDeclarationsForFile (fileName: string, deep: boolean = false): EnumIndexer {
-		const cached = this.getCachedEnumIndexer(fileName);
-		if (cached != null && !this.cachedEnumIndexerNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedEnumIndexer(fileName);
+		if (cached != null && !this.cache.cachedEnumIndexerNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getEnumDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		const declarations = this.getEnumDeclarations(statements, deep);
 
-		this.setCachedEnumIndexer(fileName, declarations);
+		this.cache.setCachedEnumIndexer(fileName, declarations);
 		return declarations;
 	}
 
@@ -466,7 +426,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			if (this.isResolvingStatement(statement)) continue;
 			if (isEnumDeclaration(statement)) {
 				this.setResolvingStatement(statement);
-				const formatted = this.formatEnumDeclaration(statement);
+				const formatted = this.enumFormatter.format(statement);
 				Object.assign(enumIndexer, {[formatted.name]: formatted});
 				this.removeResolvingStatement(statement);
 			}
@@ -486,50 +446,6 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		});
 
 		return enumIndexer;
-	}
-
-	/**
-	 * Formats the given EnumDeclaration and returns an IEnumDeclaration.
-	 * @param {EnumDeclaration} statement
-	 * @returns {IEnumDeclaration}
-	 */
-	private formatEnumDeclaration (statement: EnumDeclaration): IEnumDeclaration {
-		const startsAt = statement.pos;
-		const endsAt = statement.end;
-		const name = <string>this.getNameOfMember(statement.name, false, true);
-		const filePath = this.getSourceFileProperties(statement).filePath;
-
-		const cached = this.getCachedEnum(filePath, name);
-		if (cached != null && !this.cachedEnumNeedsUpdate(cached.content)) return cached.content;
-
-		const taken: Set<number> = new Set();
-		const members: { [key: string]: number | string } = {};
-		statement.members.forEach(member => {
-			const memberName = <string>this.getNameOfMember(member.name, false, true);
-			const initializer = member.initializer;
-			const initializerValue = initializer == null ? this.findFreeEnumIntegerValue(taken) : <number>this.getNameOfMember(initializer, true, false);
-
-			taken.add(initializerValue);
-			if (memberName != null) members[memberName] = initializerValue;
-		});
-
-		const map: IEnumDeclaration = {
-			___kind: IdentifierMapKind.ENUM,
-			startsAt,
-			endsAt,
-			name,
-			members,
-			filePath,
-			decorators: this.formatDecorators(statement)
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.ENUM,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, statement);
-		this.setCachedEnum(filePath, map);
-		return map;
 	}
 
 	/**
@@ -582,25 +498,25 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {VariableIndexer}
 	 */
 	public getVariableAssignmentsForFile (fileName: string, deep: boolean = false): VariableIndexer {
-		const cached = this.getCachedVariableIndexer(fileName);
-		if (cached != null && !this.cachedVariableIndexerNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedVariableIndexer(fileName);
+		if (cached != null && !this.cache.cachedVariableIndexerNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getVariableAssignmentsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		const assignments = this.getVariableAssignments(statements, deep);
-		this.setCachedVariableIndexer(fileName, assignments);
+		this.cache.setCachedVariableIndexer(fileName, assignments);
 		return assignments;
 	}
 
-	private isResolvingStatement (statement: Statement|Expression|Node): boolean {
+	private isResolvingStatement (statement: Statement | Expression | Node): boolean {
 		return SimpleLanguageService.RESOLVING_STATEMENTS.has(statement);
 	}
 
-	private setResolvingStatement (statement: Statement|Expression|Node): void {
+	private setResolvingStatement (statement: Statement | Expression | Node): void {
 		SimpleLanguageService.RESOLVING_STATEMENTS.add(statement);
 	}
 
-	private removeResolvingStatement ( statement: Statement|Expression|Node): void {
+	private removeResolvingStatement (statement: Statement | Expression | Node): void {
 		SimpleLanguageService.RESOLVING_STATEMENTS.delete(statement);
 	}
 
@@ -619,7 +535,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 
 			if (isVariableStatement(statement) || isVariableDeclarationList(statement) || isVariableDeclaration(statement)) {
 				this.setResolvingStatement(statement);
-				Object.assign(assignmentMap, this.formatVariableAssignment(statement));
+				Object.assign(assignmentMap, this.variableFormatter.format(statement));
 				this.removeResolvingStatement(statement);
 			}
 
@@ -635,380 +551,12 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return assignmentMap;
 	}
 
-	private findNearestMatchingIdentifier (from: Statement | Expression | Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)): IIdentifier | null {
-
-		const allMatches: IIdentifier[] = [];
-		const functionMatch = clojure.functions[identifier];
-		const enumMatch = clojure.enums[identifier];
-		const variableMatch = clojure.variables[identifier];
-		const classMatch = clojure.classes[identifier];
-
-		let parameterMatches: IParameter[] = [];
-
-		if (this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
-			Object.keys(clojure.functions).forEach(key => {
-				const parameters = clojure.functions[key].parameters.parametersList;
-				const parameter = parameters.find(parameter => parameter.name === identifier);
-				if (parameter != null) parameterMatches.push(parameter);
-			});
-		}
-
-		if (this.isChildOfKind(SyntaxKind.MethodDeclaration, block, from)) {
-			Object.keys(clojure.classes).forEach(key => {
-				const methods = clojure.classes[key].methods;
-				Object.keys(methods).forEach(methodName => {
-					const parameters = methods[methodName].parameters.parametersList;
-					const parameter = parameters.find(parameter => parameter.name === identifier);
-					if (parameter != null) parameterMatches.push(parameter);
-				});
-			});
-		}
-
-		if (this.isChildOfKind(SyntaxKind.ArrowFunction, block, from)) {
-			// TODO: Add this functionality.
-		}
-
-		if (functionMatch != null) allMatches.push(functionMatch);
-		if (enumMatch != null) allMatches.push(enumMatch);
-		if (variableMatch != null) allMatches.push(variableMatch);
-		if (classMatch != null) allMatches.push(classMatch);
-		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
-
-		const closest = allMatches.sort((a, b) => {
-			const aDistanceFromStart = from.pos - a.startsAt;
-			const bDistanceFromStart = from.pos - b.startsAt;
-			if (aDistanceFromStart < bDistanceFromStart) return -1;
-			if (aDistanceFromStart > bDistanceFromStart) return 1;
-			return 0;
-		})[0];
-		return closest == null ? null : closest;
-	}
-
-	private isChildOfAnyOfKinds (kinds: SyntaxKind[], identifier: string, from: Statement | Expression | Node): boolean {
-		return kinds.some(kind => this.isChildOfKind(kind, identifier, from));
-	}
-
-	private isChildOfKind (kind: SyntaxKind, identifier: string, from: Statement | Expression | Node): boolean {
-		let current: Statement | Expression | Node | undefined = from;
-		while (current != null) {
-			if (current.kind === kind && this.getName(current) === identifier) return true;
-			current = current.parent;
-		}
-		return false;
-	}
-
-	private traceClojure (from: Statement | Expression | Node): IIdentifierMap {
-		const filePath = this.getSourceFileProperties(from).filePath;
-
-		// TODO: We shouldn't go deep and get ALL identifiers (which will ignore concepts such as conditional branches or even if the statement has access to the statement).
-		return this.getAllIdentifiersForFile(filePath, true);
-	}
-
-	private traceBlock (statement: Statement | Expression | Node, extractor: (statement: Statement | Expression | Node) => string): string {
-		let current: Statement | Expression | Node = statement;
-
-		while (
-		!isClassDeclaration(current) &&
-		!isClassExpression(current) &&
-		!isFunctionExpression(current) &&
-		!isFunctionDeclaration(current) &&
-		!isMethodDeclaration(current) &&
-		!isArrowFunction(current) &&
-		!isPropertyDeclaration(current) &&
-		!isSourceFile(current)) {
-			if (current.parent == null) break;
-			current = current.parent;
-		}
-
-		return extractor(current);
-	}
-
-	private traceBlockScopeName (statement: Statement | Expression | Node): string {
-		return this.traceBlock(statement, block => {
-
-			if (isSourceFile(block)) {
-				return SimpleLanguageService.GLOBAL;
-			}
-
-			if (
-				isFunctionExpression(block) ||
-				isFunctionDeclaration(block) ||
-				isMethodDeclaration(block) ||
-				isClassDeclaration(block) ||
-				isClassExpression(block)
-			) {
-				const name = this.getName(block);
-				return name == null ? SimpleLanguageService.GLOBAL : name;
-			}
-
-			if (
-				isPropertyDeclaration(block)
-			) {
-				if (block.parent == null) {
-					const name = this.getName(block);
-					return name == null ? SimpleLanguageService.GLOBAL : name;
-				}
-				return this.traceBlockScopeName(block.parent);
-			}
-
-			if (isArrowFunction(block)) {
-				return SimpleLanguageService.ANONYMOUS;
-			}
-
-			throw new TypeError(`${this.traceBlockScopeName.name} could not trace a block scope of a statement of knd ${SyntaxKind[statement.kind]}`);
-		});
-	}
-
-	private traceThis (statement: Statement | Expression | Node): string {
-		return this.traceBlock(statement, block => {
-
-			if (isSourceFile(block)) {
-				return SimpleLanguageService.GLOBAL;
-			}
-
-			if (
-				isFunctionExpression(block) ||
-				isFunctionDeclaration(block)
-			) {
-				const name = block.name == null ? block.parent == null ? SimpleLanguageService.GLOBAL : this.traceThis(block.parent) : this.getName(block);
-				return name == null ? SimpleLanguageService.GLOBAL : name;
-			}
-
-			if (
-				isClassDeclaration(block) ||
-				isClassExpression(block)
-			) {
-				const name = this.getName(block);
-				return name == null ? SimpleLanguageService.GLOBAL : name;
-			}
-
-			if (
-				isMethodDeclaration(block) ||
-				isPropertyDeclaration(block)
-			) {
-				if (block.parent == null) {
-					const name = this.getName(block);
-					return name == null ? SimpleLanguageService.GLOBAL : name;
-				}
-				return this.traceThis(block.parent);
-			}
-
-			if (isArrowFunction(block)) {
-				return block.parent == null ? SimpleLanguageService.GLOBAL : this.traceThis(block.parent);
-			}
-
-			throw new TypeError(`${this.traceThis.name} could not trace a 'this' value for a statement of knd ${SyntaxKind[statement.kind]}`);
-		});
-	}
-
-	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration & { name: ArrayBindingPattern }): IVariableAssignment[] {
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-		const assignments: IVariableAssignment[] = [];
-
-		declaration.name.elements.forEach((binding, index) => {
-			if (isOmittedExpression(binding)) return;
-
-			const name = <string>this.getName(binding);
-			const cached = name == null ? null : this.getCachedVariable(filePath, name);
-			if (cached != null && !this.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
-			else {
-				const base = this.formatBaseVariableAssignment(declaration);
-				const that = this;
-				const scope = this.traceThis(declaration);
-
-				const map: IVariableAssignment = {
-					...base,
-					name,
-					value: {
-						expression: base.value.expression,
-						resolved: undefined,
-						hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-						resolving: false,
-						resolve () {
-							map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope, index);
-							return map.value.resolved;
-						}
-					}
-				};
-
-				// Make the ___kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.VARIABLE,
-					enumerable: false
-				});
-
-				this.setCachedVariable(filePath, map);
-				assignments.push(map);
-			}
-		});
-		return assignments;
-	}
-
-	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration & { name: ObjectBindingPattern }): IVariableAssignment[] {
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-		const assignments: IVariableAssignment[] = [];
-
-		declaration.name.elements.forEach(binding => {
-			const name = <string>this.getName(binding);
-			const cached = name == null ? null : this.getCachedVariable(filePath, name);
-			if (cached != null && !this.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
-			else {
-				const base = this.formatBaseVariableAssignment(declaration);
-				const that = this;
-				const scope = this.traceThis(declaration);
-
-				const map: IVariableAssignment = {
-					...base,
-					name,
-					value: {
-						expression: base.value.expression,
-						resolved: undefined,
-						hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-						resolving: false,
-						resolve () {
-							map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope, name);
-							return map.value.resolved;
-						}
-					}
-				};
-
-				// Make the ___kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.VARIABLE,
-					enumerable: false
-				});
-				SimpleLanguageService.AST_MAPPER.set(map, declaration);
-				this.setCachedVariable(filePath, map);
-				assignments.push(map);
-			}
-		});
-		return assignments;
-	}
-
-	private formatModifiers (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration): Set<string> {
-		if (isVariableDeclaration(statement) && statement.modifiers == null) {
-			const parent = statement.parent;
-			if (parent != null && isVariableDeclarationList(parent)) {
-				const parentsParent = parent.parent;
-				if (parentsParent != null && isVariableStatement(parentsParent)) {
-					return this.formatModifiers(parentsParent);
-				}
-			} else if (parent != null && isVariableStatement(parent)) {
-				return this.formatModifiers(parent);
-			}
-
-		}
-		return new Set(statement.modifiers == null ? [] :statement.modifiers.map(modifier => <string>serializeToken(modifier.kind)));
-	}
-
-	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableAssignment {
-		const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
-		const startsAt = declaration.pos;
-		const endsAt = declaration.end;
-		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
-		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-
-		const map: IBaseVariableAssignment = {
-			___kind: IdentifierMapKind.VARIABLE,
-			filePath,
-			value: {
-				expression: valueExpression
-			},
-			modifiers: this.formatModifiers(declaration),
-			startsAt,
-			endsAt,
-			type: {
-				expression: typeExpression,
-				flattened: typeFlattened,
-				bindings: typeBindings
-			}
-		};
-
-		return map;
-	}
-
-	private formatStandardVariableDeclaration (declaration: VariableDeclaration & { name: Identifier }): IVariableAssignment {
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-		const name = declaration.name.text;
-
-		const cached = this.getCachedVariable(filePath, name);
-		if (cached != null && !this.cachedVariableNeedsUpdate(cached.content)) return cached.content;
-		const base = this.formatBaseVariableAssignment(declaration);
-		const that = this;
-		const scope = this.traceThis(declaration);
-
-		const map: IVariableAssignment = {
-			...base,
-			name,
-			value: {
-				expression: base.value.expression,
-				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-				resolving: false,
-				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-					return map.value.resolved;
-				}
-			}
-		};
-
-		// Make the ___kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.VARIABLE,
-			enumerable: false
-		});
-
-		SimpleLanguageService.AST_MAPPER.set(map, declaration);
-		this.setCachedVariable(filePath, map);
-		return map;
-	}
-
-	private formatVariableDeclaration (declaration: VariableDeclaration): IVariableAssignment[] {
-
-		if (isIdentifierObject(declaration.name)) {
-			return [this.formatStandardVariableDeclaration(<VariableDeclaration & { name: Identifier }>declaration)];
-		}
-
-		if (isArrayBindingPattern(declaration.name)) {
-			return this.formatArrayBindingPatternVariableDeclaration(<VariableDeclaration & { name: ArrayBindingPattern }>declaration);
-		}
-
-		if (isObjectBindingPattern(declaration.name)) {
-			return this.formatObjectBindingPatternVariableDeclaration(<VariableDeclaration & { name: ObjectBindingPattern }>declaration);
-		}
-
-		throw new TypeError(`${this.formatVariableDeclaration.name} could not format variable declaration because a name couldn't be determined!`);
-	}
-
-	/**
-	 * Formats the given VariableStatement and returns a VariableIndexer.
-	 * @param {VariableStatement|VariableDeclarationList|VariableDeclaration} statement
-	 * @returns {VariableIndexer}
-	 */
-	private formatVariableAssignment (statement: VariableStatement | VariableDeclarationList | VariableDeclaration): VariableIndexer {
-		const assignmentMap: VariableIndexer = {};
-
-		if (isVariableDeclaration(statement)) {
-			const assignments = this.formatVariableDeclaration(statement);
-			assignments.forEach(assignment => assignmentMap[assignment.name] = assignment);
-		} else {
-			const declarations = isVariableStatement(statement) ? statement.declarationList.declarations : statement.declarations;
-			declarations.forEach(declaration => {
-				const assignments = this.formatVariableDeclaration(declaration);
-				assignments.forEach(assignment => assignmentMap[assignment.name] = assignment);
-			});
-		}
-		return assignmentMap;
-	}
-
 	/**
 	 * Finds all "children" of the given statement, if it has any.
 	 * @param {Statement|Expression} statement
 	 * @returns {(Statement|Declaration)[]}
 	 */
-	private findChildStatements (statement: Statement | Expression | Declaration | Node): (Statement|Declaration)[] {
+	private findChildStatements (statement: Statement | Expression | Declaration | Node): (Statement | Declaration)[] {
 
 		if (isIfStatement(statement)) {
 			return this.findChildStatements(statement.thenStatement);
@@ -1019,7 +567,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isDefaultClause(statement) || isCaseClause(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.statements.forEach(child => {
 				this.findChildStatements(child).forEach(childStatement => statements.push(childStatement));
@@ -1032,12 +580,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.findChildStatements(statement.statement);
 		}
 
+		if (isExportAssignment(statement)) {
+			return this.findChildStatements(statement.expression);
+		}
+
 		if (isParenthesizedExpression(statement)) {
 			return this.findChildStatements(statement.expression);
 		}
 
 		if (isCaseBlock(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.clauses.forEach(clause => {
 				this.findChildStatements(clause).forEach(childStatement => statements.push(childStatement));
@@ -1103,7 +655,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isVariableStatement(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.declarationList.declarations.forEach(declaration => {
 				this.findChildStatements(declaration).forEach(childStatement => statements.push(childStatement));
@@ -1150,7 +702,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isTemplateExpression(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.templateSpans.forEach(span => {
 				this.findChildStatements(span.expression).forEach(childStatement => statements.push(childStatement));
@@ -1160,7 +712,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isObjectLiteralExpression(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.properties.forEach(property => {
 				this.findChildStatements(property).forEach(childStatement => statements.push(childStatement));
@@ -1178,7 +730,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isArrayLiteralExpression(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.elements.forEach(element => {
 				this.findChildStatements(element).forEach(childStatement => statements.push(childStatement));
@@ -1192,7 +744,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		}
 
 		if (isClassExpression(statement) || isClassDeclaration(statement)) {
-			const statements: (Statement|Declaration)[] = [];
+			const statements: (Statement | Declaration)[] = [];
 
 			statement.members.forEach(member => {
 				this.findChildStatements(member).forEach(childStatement => statements.push(childStatement));
@@ -1315,223 +867,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return [];
 		}
 
-		throw new TypeError(`${this.findChildStatements.name} could not find child statements for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
+		throw new TypeError(`${this.findChildStatements.name} could not find child statements for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
 		// return [];
-	}
-
-	private getCachedPropName (fileName: string, className: string, propName: string): string {
-		return `prop.${fileName}.${className}.${propName}`;
-	}
-
-	private getCachedVariableName (fileName: string, variableName: string): string {
-		return `variable.${fileName}.${variableName}`;
-	}
-
-	private getCachedEnumName (fileName: string, enumName: string): string {
-		return `enum.${fileName}.${enumName}`;
-	}
-
-	private getCachedClassName (fileName: string, className: string): string {
-		return `class.${fileName}.${className}`;
-	}
-
-	private getCachedFunctionName (fileName: string, className: string): string {
-		return `function.${fileName}.${className}`;
-	}
-
-	private getCachedClassIndexerName (fileName: string): string {
-		return `classIndexer.${fileName}`;
-	}
-
-	private getCachedModuleDependenciesName (fileName: string): string {
-		return `moduleDependencies.${fileName}`;
-	}
-
-	private getCachedFunctionIndexerName (fileName: string): string {
-		return `functionIndexer.${fileName}`;
-	}
-
-	private getCachedVariableIndexerName (fileName: string): string {
-		return `variableIndexer.${fileName}`;
-	}
-
-	private getCachedEnumIndexerName (fileName: string): string {
-		return `enumIndexer.${fileName}`;
-	}
-
-	private getFromCache<T> (key: string): ICachedContent<T> | null {
-		const record = this.cache.get(key);
-		return record == null ? null : <ICachedContent<T>>record;
-	}
-
-	private getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment> | null {
-		return this.getFromCache<IVariableAssignment>(this.getCachedVariableName(fileName, variableName));
-	}
-
-	private getCachedFunction (fileName: string, functionName: string): ICachedContent<IFunctionDeclaration> | null {
-		return this.getFromCache<IFunctionDeclaration>(this.getCachedFunctionName(fileName, functionName));
-	}
-
-	private getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration> | null {
-		return this.getFromCache<IEnumDeclaration>(this.getCachedEnumName(fileName, enumName));
-	}
-
-	private getCachedProp (fileName: string, className: string, propName: string): ICachedContent<IPropDeclaration> | null {
-		return this.getFromCache<IPropDeclaration>(this.getCachedPropName(fileName, className, propName));
-	}
-
-	private getCachedClass (fileName: string, className: string): ICachedContent<IClassDeclaration> | null {
-		return this.getFromCache<IClassDeclaration>(this.getCachedClassName(fileName, className));
-	}
-
-	private getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer> | null {
-		return this.getFromCache<FunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
-	}
-
-	private getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]> | null {
-		return this.getFromCache<IImportDeclaration[]>(this.getCachedModuleDependenciesName(fileName));
-	}
-
-	private getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer> | null {
-		return this.getFromCache<ClassIndexer>(this.getCachedClassIndexerName(fileName));
-	}
-
-	private getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer> | null {
-		return this.getFromCache<EnumIndexer>(this.getCachedEnumIndexerName(fileName));
-	}
-
-	private getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer> | null {
-		return this.getFromCache<VariableIndexer>(this.getCachedVariableIndexerName(fileName));
-	}
-
-	private setCachedProp (fileName: string, content: IPropDeclaration): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedPropName(fileName, content.className, content.name), {content, version});
-	}
-
-	private setCachedVariable (fileName: string, content: IVariableAssignment): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedVariableName(fileName, content.name), {content, version});
-	}
-
-	private setCachedEnum (fileName: string, content: IEnumDeclaration): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedEnumName(fileName, content.name), {content, version});
-	}
-
-	private setCachedClass (fileName: string, content: IClassDeclaration): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedClassName(fileName, content.name), {version, content});
-	}
-
-	private setCachedFunction (fileName: string, content: IFunctionDeclaration): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedFunctionName(fileName, content.name), {version, content});
-	}
-
-	private setCachedClassIndexer (fileName: string, content: ClassIndexer): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedClassIndexerName(fileName), {version, content});
-	}
-
-	private setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedFunctionIndexerName(fileName), {version, content});
-	}
-
-	private setCachedModuleDependencies (fileName: string, content: IImportDeclaration[]): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedModuleDependenciesName(fileName), {version, content});
-	}
-
-	private setCachedEnumIndexer (fileName: string, content: EnumIndexer): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedEnumIndexerName(fileName), {version, content});
-	}
-
-	private setCachedVariableIndexer (fileName: string, content: VariableIndexer): void {
-		const version = this.getFileVersion(fileName);
-		this.cache.set(this.getCachedVariableIndexerName(fileName), {version, content});
-	}
-
-	private cachedVariableNeedsUpdate (variable: IVariableAssignment): boolean {
-		const cache = this.getCachedVariable(variable.filePath, variable.name);
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(variable.filePath);
-		return version > cache.version;
-	}
-
-	private cachedEnumNeedsUpdate (enumDeclaration: IEnumDeclaration): boolean {
-		const cache = this.getCachedEnum(enumDeclaration.filePath, enumDeclaration.name);
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(enumDeclaration.filePath);
-		return version > cache.version;
-	}
-
-	private cachedFunctionNeedsUpdate (functionDeclaration: IFunctionDeclaration): boolean {
-		const cache = this.getCachedFunction(functionDeclaration.filePath, functionDeclaration.name);
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(functionDeclaration.filePath);
-		return version > cache.version;
-	}
-
-	private cachedPropNeedsUpdate (prop: IPropDeclaration): boolean {
-		const cache = this.getCachedProp(prop.filePath, prop.className, prop.name);
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(prop.filePath);
-		return version > cache.version;
-	}
-
-	private cachedClassNeedsUpdate (classDeclaration: IClassDeclaration): boolean {
-		const cache = this.getCachedClass(classDeclaration.filePath, classDeclaration.name);
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(classDeclaration.filePath);
-		return version > cache.version;
-	}
-
-	private cachedFunctionIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedFunctionIndexer(this.getCachedFunctionIndexerName(filePath));
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(filePath);
-		return version > cache.version;
-	}
-
-	private cachedModuleDependenciesNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedModuleDependencies(this.getCachedModuleDependenciesName(filePath));
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(filePath);
-		return version > cache.version;
-	}
-
-	private cachedClassIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedClassIndexer(this.getCachedClassIndexerName(filePath));
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(filePath);
-		return version > cache.version;
-	}
-
-	private cachedEnumIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedEnumIndexer(this.getCachedEnumIndexerName(filePath));
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(filePath);
-		return version > cache.version;
-	}
-
-	private cachedVariableIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedVariableIndexer(this.getCachedVariableIndexerName(filePath));
-		if (cache == null) return true;
-
-		const version = this.getFileVersion(filePath);
-		return version > cache.version;
 	}
 
 	/**
@@ -1542,16 +879,16 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {ClassIndexer}
 	 */
 	public getClassDeclarationsForFile (fileName: string, deep: boolean = false): ClassIndexer {
-		const cached = this.getCachedClassIndexer(fileName);
-		if (cached != null && !this.cachedClassIndexerNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedClassIndexer(fileName);
+		if (cached != null && !this.cache.cachedClassIndexerNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getClassDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		const declarations = this.getClassDeclarations(statements, deep);
 
-		Object.keys(declarations).forEach(key => this.setCachedClass(fileName, declarations[key]));
+		Object.keys(declarations).forEach(key => this.cache.setCachedClass(fileName, declarations[key]));
 
-		this.setCachedClassIndexer(fileName, declarations);
+		this.cache.setCachedClassIndexer(fileName, declarations);
 		return declarations;
 	}
 
@@ -1596,14 +933,14 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {IImportDeclaration[]}
 	 */
 	public getImportDeclarationsForFile (fileName: string, deep: boolean = false): IImportDeclaration[] {
-		const cached = this.getCachedModuleDependencies(fileName);
-		if (cached != null && !this.cachedModuleDependenciesNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedModuleDependencies(fileName);
+		if (cached != null && !this.cache.cachedModuleDependenciesNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getImportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		const declarations = this.getImportDeclarations(statements, deep);
 
-		this.setCachedModuleDependencies(fileName, declarations);
+		this.cache.setCachedModuleDependencies(fileName, declarations);
 		return declarations;
 	}
 
@@ -1646,246 +983,13 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	}
 
 	/**
-	 * formats the given ImportClause and returns an ImportIndexer.
-	 * @param {ImportClause} clause
-	 * @returns {ImportExportIndexer}
-	 */
-	private formatImportClause (clause: ImportClause): ImportExportIndexer {
-		const indexer: ImportExportIndexer = {};
-
-		if (clause.namedBindings != null && isNamespaceImport(clause.namedBindings)) {
-			indexer[clause.namedBindings.name.text] = {
-				name: clause.namedBindings.name.text,
-				kind: ImportExportKind.NAMESPACE
-			};
-		}
-
-		else if (clause.namedBindings != null && isNamedImports(clause.namedBindings)) {
-			clause.namedBindings.elements.forEach(element => {
-				indexer[element.name.text] = {
-					name: element.name.text,
-					kind: ImportExportKind.NAMED
-				};
-			});
-		}
-
-		else if (clause.name != null) {
-			indexer[clause.name.text] = {
-				name: clause.name.text,
-				kind: ImportExportKind.DEFAULT
-			};
-		}
-
-		return indexer;
-	}
-
-	private toNamespacedObjectLiteral (map: IIdentifierMap): NamespacedExportMap {
-		const indexer: NamespacedExportMap = {};
-
-		map.exports.forEach(exportDeclaration => {
-			Object.keys(exportDeclaration.bindings).forEach(key => {
-				const binding = exportDeclaration.bindings[key];
-				indexer[key] = binding.payload;
-			});
-		});
-
-		return indexer;
-	}
-
-	private formatExportClause (clause: NamedExports|undefined, modulePath: string): ImportExportIndexer {
-		const indexer: ImportExportIndexer = {};
-
-		if (clause == null) {
-			const payload = this.toNamespacedObjectLiteral(this.getAllIdentifiersForFile(modulePath, true));
-			indexer["*"] = {
-				name: "*",
-				payload,
-				kind: ImportExportKind.NAMESPACE
-			};
-		} else {
-			clause.elements.forEach(element => {
-				const block = this.traceBlockScopeName(clause);
-				const payload = this.findNearestMatchingIdentifier(clause, block, element.name.text);
-				indexer[element.name.text] = {
-					name: element.name.text,
-					payload,
-					kind: ImportExportKind.NAMED
-				};
-			});
-		}
-
-		return indexer;
-	}
-
-	/**
 	 * If given an ImportDeclaration|ImportEqualsDeclaration, a formatted IImportDeclaration will be returned holding the relative and full import-path
 	 * as well as any bindings that will live in the local scope of the given file.
 	 * @param {ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression} statement
 	 * @returns {IImportDeclaration}
 	 */
 	private getImportDeclaration (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IImportDeclaration | null {
-		const sourceFileProperties = this.getSourceFileProperties(statement);
-		const filePath = sourceFileProperties.filePath;
-
-		if (isImportDeclaration(statement)) {
-			const relativePath = <string>this.getNameOfMember(statement.moduleSpecifier, false, true);
-			if (relativePath.toString().length < 1) {
-				throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-			}
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-			const map: IImportDeclaration = {
-				___kind: IdentifierMapKind.IMPORT,
-				startsAt: statement.pos,
-				endsAt: statement.end,
-				moduleKind: ModuleDependencyKind.ES_MODULE,
-				source: {
-					relativePath,
-					fullPath
-				},
-				filePath,
-				bindings: statement.importClause == null ? {} : this.formatImportClause(statement.importClause)
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.IMPORT,
-				enumerable: false
-			});
-			SimpleLanguageService.AST_MAPPER.set(map, statement);
-			return map;
-		}
-
-		if (isImportEqualsDeclaration(statement)) {
-			if (isExternalModuleReference(statement.moduleReference)) {
-				const relativePath = statement.moduleReference.expression == null ? "" : <string>this.getNameOfMember(statement.moduleReference.expression, false, true);
-				if (relativePath.toString().length < 1) {
-					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-				}
-				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-				const map: IImportDeclaration = {
-					___kind: IdentifierMapKind.IMPORT,
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					moduleKind: ModuleDependencyKind.IMPORT_REQUIRE,
-					source: {
-						relativePath,
-						fullPath
-					},
-					filePath,
-					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportExportKind.DEFAULT}}
-				};
-				// Make the kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.IMPORT,
-					enumerable: false
-				});
-
-				SimpleLanguageService.AST_MAPPER.set(map, statement);
-				return map;
-			} else {
-				if (!isIdentifierObject(statement.moduleReference)) {
-					throw new TypeError(`${this.getImportDeclaration.name} could not find the name for a module reference!`);
-				}
-
-				const source = <IBindingIdentifier>this.getNameOfMember(statement.moduleReference, false, false);
-
-				const map: IImportDeclaration = {
-					___kind: IdentifierMapKind.IMPORT,
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					moduleKind: ModuleDependencyKind.IMPORT_REQUIRE,
-					source,
-					filePath,
-					bindings: {[statement.name.text]: {name: statement.name.text, kind: ImportExportKind.DEFAULT}}
-				};
-				// Make the kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.IMPORT,
-					enumerable: false
-				});
-
-				SimpleLanguageService.AST_MAPPER.set(map, statement);
-				return map;
-			}
-		}
-
-		if (isVariableStatement(statement)) {
-			const variableIndexer = this.formatVariableAssignment(statement);
-			for (const key of Object.keys(variableIndexer)) {
-				const match = variableIndexer[key];
-				const matchingRequireCallIndex = match.value.expression == null ? -1 : match.value.expression.findIndex(exp => exp instanceof BindingIdentifier && exp.name === "require");
-				if (matchingRequireCallIndex >= 0) {
-					const name = match.name;
-					const relativePath = match.value.expression == null ? "" : <string>match.value.expression.find((exp, index) => index > matchingRequireCallIndex && exp !== "(");
-					if (relativePath.toString().length < 1) {
-						throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-					}
-					const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-					const map: IImportDeclaration = {
-						___kind: IdentifierMapKind.IMPORT,
-						startsAt: statement.pos,
-						endsAt: statement.end,
-						moduleKind: ModuleDependencyKind.REQUIRE,
-						source: {
-							relativePath,
-							fullPath
-						},
-						filePath,
-						bindings: {[name]: {name, kind: ImportExportKind.DEFAULT}}
-					};
-					// Make the kind non-enumerable.
-					Object.defineProperty(map, "___kind", {
-						value: IdentifierMapKind.IMPORT,
-						enumerable: false
-					});
-
-					SimpleLanguageService.AST_MAPPER.set(map, statement);
-					return map;
-				}
-			}
-			return null;
-		}
-
-		if (isCallExpression(statement)) {
-			const callExpression = this.formatCallExpression(statement);
-			if (callExpression.identifier === "require" && callExpression.property == null) {
-				const firstArgumentValue = callExpression.arguments.argumentsList[0].value;
-				const relativePath = firstArgumentValue == null ? "" : firstArgumentValue.hasDoneFirstResolve()
-					? firstArgumentValue.resolved
-					: firstArgumentValue.resolve();
-
-				if (relativePath == null || relativePath.toString().length < 1) {
-					throw new TypeError(`${this.getImportDeclaration.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-				}
-				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-				const map: IImportDeclaration = {
-					___kind: IdentifierMapKind.IMPORT,
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					moduleKind: ModuleDependencyKind.REQUIRE,
-					source: {
-						relativePath,
-						fullPath
-					},
-					filePath,
-					bindings: {}
-				};
-				// Make the kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.IMPORT,
-					enumerable: false
-				});
-
-				SimpleLanguageService.AST_MAPPER.set(map, statement);
-				return map;
-			}
-			return null;
-		}
-
-		throw new TypeError(`${this.getImportDeclaration.name} could not get an IImportDeclaration for a statement of kind ${SyntaxKind[(<Identifier>statement).kind]}!`);
+		return this.importFormatter.format(statement);
 	}
 
 	/**
@@ -1935,1737 +1039,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return declarations;
 	}
 
-	private formatFullPathFromRelative (filePath: string, relativePath: string): string {
-		// TODO: Check if the relativePath is in fact an absolute path.
-		return join(dirname(filePath), relativePath.toString());
-	}
-
-	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration): IExportDeclaration | null {
-		const sourceFileProperties = this.getSourceFileProperties(statement);
-		const filePath = sourceFileProperties.filePath;
-
-		if (isExportAssignment(statement)) {
-			let payload: ArbitraryValue|IIdentifier;
-			if (isLiteralExpression(statement.expression)) {
-				const that = this;
-				const scope = this.traceThis(statement.expression);
-				const value: IValueable = {
-					expression: this.getValueExpression(statement.expression),
-					resolved: undefined,
-					hasDoneFirstResolve () {return value.resolved !== undefined;},
-					resolving: false,
-					resolve () {
-						value.resolved = value.expression == null ? null : that.getValueResolved(<INonNullableValueable>value, statement.expression, scope);
-						return value.resolved;
-					}
-				};
-				payload = value.resolve();
-			} else {
-				const identifier = this.getName(statement.expression);
-				const scope = this.traceThis(statement);
-				payload = identifier == null ? null : this.traceIdentifier(identifier, statement, scope);
-			}
-
-			const relativePath = filePath;
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-			const map: IExportDeclaration = {
-				___kind: IdentifierMapKind.EXPORT,
-				startsAt: statement.pos,
-				endsAt: statement.end,
-				moduleKind: ModuleDependencyKind.ES_MODULE,
-				source: {
-					relativePath,
-					fullPath
-				},
-				filePath,
-				bindings: {"default": {name: "default", payload, kind: ImportExportKind.DEFAULT}}
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.EXPORT,
-				enumerable: false
-			});
-
-			SimpleLanguageService.AST_MAPPER.set(map, statement);
-			return map;
-		}
-
-		if (isClassDeclaration(statement)) {
-			const classDeclaration = this.getClassDeclaration(statement);
-			const isCandidate = classDeclaration.modifiers.has("export");
-
-			if (isCandidate) {
-				const isDefault = classDeclaration.modifiers.has("default");
-				const name = classDeclaration.name;
-				const relativePath = filePath;
-				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-				const map: IExportDeclaration = {
-					___kind: IdentifierMapKind.EXPORT,
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					moduleKind: ModuleDependencyKind.ES_MODULE,
-					source: {
-						relativePath,
-						fullPath
-					},
-					filePath,
-					bindings: {[isDefault ? "default" : name]: {
-						name: isDefault ? "default" : name,
-						payload: classDeclaration,
-						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
-					}
-				};
-				// Make the kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.EXPORT,
-					enumerable: false
-				});
-
-				SimpleLanguageService.AST_MAPPER.set(map, statement);
-				return map;
-			}
-			return null;
-		}
-
-		if (isFunctionDeclaration(statement)) {
-			const functionDeclaration = this.formatFunctionDeclaration(statement);
-			const isCandidate = functionDeclaration.modifiers.has("export");
-
-			if (isCandidate) {
-				const isDefault = functionDeclaration.modifiers.has("default");
-				const name = functionDeclaration.name;
-				const relativePath = filePath;
-				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-				const map: IExportDeclaration = {
-					___kind: IdentifierMapKind.EXPORT,
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					moduleKind: ModuleDependencyKind.ES_MODULE,
-					source: {
-						relativePath,
-						fullPath
-					},
-					filePath,
-					bindings: {[isDefault ? "default" : name]: {
-						name: isDefault ? "default" : name,
-						payload: functionDeclaration,
-						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
-					}
-				};
-				// Make the kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.EXPORT,
-					enumerable: false
-				});
-
-				SimpleLanguageService.AST_MAPPER.set(map, statement);
-				return map;
-			}
-			return null;
-		}
-
-		if (isVariableStatement(statement)) {
-			const variableIndexer = this.formatVariableAssignment(statement);
-			for (const key of Object.keys(variableIndexer)) {
-				const match = variableIndexer[key];
-				const isCandidate = match.modifiers.has("export");
-
-				if (isCandidate) {
-					const isDefault = match.modifiers.has("default");
-					const name = match.name;
-					const relativePath = filePath;
-					const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-					const map: IExportDeclaration = {
-						___kind: IdentifierMapKind.EXPORT,
-						startsAt: statement.pos,
-						endsAt: statement.end,
-						moduleKind: ModuleDependencyKind.ES_MODULE,
-						source: {
-							relativePath,
-							fullPath
-						},
-						filePath,
-						bindings: {[isDefault ? "default" : name]: {
-							name: isDefault ? "default" : name,
-							payload: match,
-							kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED}
-						}
-					};
-					// Make the kind non-enumerable.
-					Object.defineProperty(map, "___kind", {
-						value: IdentifierMapKind.EXPORT,
-						enumerable: false
-					});
-
-					SimpleLanguageService.AST_MAPPER.set(map, statement);
-					return map;
-				}
-			}
-			return null;
-		}
-
-		if (isExportDeclaration(statement)) {
-			const relativePath = statement.moduleSpecifier == null ? filePath : <string>this.getNameOfMember(statement.moduleSpecifier, false, true);
-			if (relativePath.toString().length < 1) {
-				throw new TypeError(`${this.getExportDeclaration.name} detected an export with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-			}
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-			const map: IExportDeclaration = {
-				___kind: IdentifierMapKind.EXPORT,
-				startsAt: statement.pos,
-				endsAt: statement.end,
-				moduleKind: ModuleDependencyKind.ES_MODULE,
-				source: {
-					relativePath,
-					fullPath
-				},
-				filePath,
-				bindings: this.formatExportClause(statement.exportClause, fullPath)
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.EXPORT,
-				enumerable: false
-			});
-			SimpleLanguageService.AST_MAPPER.set(map, statement);
-			return map;
-		}
-
-		const kind = (<{kind: SyntaxKind}>statement).kind;
-		throw new TypeError(`${this.getExportDeclaration.name} could not get an IExportDeclaration for a statement of kind ${SyntaxKind[kind]}!`);
-	}
-
-	/**
-	 * Attempts to find the variable, class, function, import, enum, export, etc that is related to the given identifier.
-	 * It starts from the given file.
-	 * @param {string} identifier
-	 * @param {Statement|Expression|Node} from
-	 * @param {string|null} scope
-	 * @returns {IIdentifier|null}
-	 */
-	private traceIdentifier (identifier: string, from: Statement | Expression | Node, scope: string | null): IIdentifier | null {
-		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
-		const lookupIdentifier = identifier === "this" && scope != null && scope !== SimpleLanguageService.GLOBAL ? scope : identifier;
-
-		const clojure = this.traceClojure(from);
-		const block = this.traceBlockScopeName(from);
-		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
-	}
-
-	private convertNewExpressionToObjectLiteral (valueExpression: InitializationValue): [boolean, InitializationValue] {
-		const newExp: InitializationValue = [];
-		let newExpressionInProgress = false;
-		let hadNewExpression = false;
-		valueExpression.forEach((part) => {
-			if (part === "new") {
-				newExpressionInProgress = true;
-				hadNewExpression = true;
-			}
-			if (newExpressionInProgress && (part === ";")) {
-				newExpressionInProgress = false;
-			}
-			if (!newExpressionInProgress || part instanceof BindingIdentifier) {
-				newExp.push(part);
-			}
-		});
-		return [hadNewExpression, hadNewExpression ? newExp : valueExpression];
-	}
-
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null): [string, boolean] {
-		let val: string = "";
-
-		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);
-		let shouldCompute: boolean = true;
-		let forceNoQuoting: boolean = false;
-
-		expression.forEach((part, index) => {
-			if (part instanceof BindingIdentifier) {
-				const isRecursive = part.name === scope;
-
-				const substitution = this.traceIdentifier(part.name, from, scope);
-				let sub: string;
-
-				if (isIParameter(substitution)) {
-					const initializedTo = this.stringifyIParameter(substitution);
-					sub = `(${part.name} === undefined ? ${initializedTo} : ${part.name})`;
-					shouldCompute = false;
-					forceNoQuoting = true;
-				}
-
-				else if (isIVariableAssignment(substitution)) {
-					const stringified = this.stringifyIVariableAssignment(substitution);
-					const probableType = this.mostProbableTypeOf(stringified);
-					if (
-						probableType === "object" ||
-						probableType === "function"
-					) sub = stringified;
-					else {
-						const previousPart = index === 0 ? "" : expression[index - 1];
-						const nextPart = index === expression.length - 1 ? "" : expression[index + 1];
-						const requiresIdentifier = throwsIfPrimitive(previousPart) || throwsIfPrimitive(nextPart);
-						const stringifiedNormalized = this.mostProbableTypeOf(stringified) === "string" ? <string>this.quoteIfNecessary(stringified) : stringified;
-						if (requiresIdentifier) sub = `${GlobalObjectIdentifier}.${part.name}`;
-						else sub = `(${GlobalObjectIdentifier}.${part.name} = ${GlobalObjectIdentifier}.${part.name} === undefined ? ${stringifiedNormalized} : ${GlobalObjectIdentifier}.${part.name})`;
-						forceNoQuoting = true;
-						SimpleLanguageService.GLOBAL_OBJECT_MUTATIONS.add(part.name);
-					}
-				}
-
-				else if (isIClassDeclaration(substitution)) {
-					const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
-					sub = this.stringifyIClassDeclaration(substitution, statics, part.name, scope);
-				}
-
-				else if (isIEnumDeclaration(substitution)) {
-					sub = this.stringifyIEnumDeclaration(substitution);
-				}
-
-				else if (isIFunctionDeclaration(substitution)) {
-					if (isRecursive) {
-						sub = SimpleLanguageService.FUNCTION_OUTER_SCOPE_NAME;
-						forceNoQuoting = true;
-					}
-					else {
-						const stringified = this.stringifyIFunctionDeclaration(substitution);
-						const hasReturnStatement = substitution.returnStatement.startsAt >= 0;
-						const startsWithReturn = hasReturnStatement && stringified.trim().startsWith("return");
-						const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${stringified}}` : stringified;
-						const parameters = this.stringifyIParameterBody(substitution.parameters);
-						sub = `(function ${SimpleLanguageService.FUNCTION_OUTER_SCOPE_NAME}(${parameters}) ${bracketed})`;
-					}
-				}
-
-				else {
-					// The identifier could not be found. Assume that it is part of the environment.
-					sub = part.name;
-					forceNoQuoting = true;
-					console.log(`Assuming that '${part.name}' is part of the global environment...`);
-					// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
-				}
-
-				if (!forceNoQuoting && this.mostProbableTypeOf(sub) === "string") sub = <string>this.quoteIfNecessary(sub);
-				val += sub;
-			} else {
-				if (isTokenLike(part)) val += <string>part;
-				else val += this.marshaller.marshal<ArbitraryValue, string>(part, "");
-			}
-		});
-		return [val, shouldCompute];
-	}
-
-	/**
-	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
-	 * @param {INonNullableValueable} valueable
-	 * @param {Statement|Expression|Node} from
-	 * @param {string|null} scope
-	 * @param {string|number} [takeKey]
-	 * @returns {ArbitraryValue}
-	 */
-	private getValueResolved (valueable: INonNullableValueable, from: Statement | Expression | Node, scope: string | null, takeKey?: string | number): string | null {
-		if (valueable.resolving) return null;
-
-		valueable.resolving = true;
-		console.log("valueExpression:", valueable.expression);
-		const [flattened, shouldCompute] = this.flattenValueExpression(valueable.expression, from, scope);
-
-		console.log("flattened:", flattened);
-		let result = shouldCompute ? this.computeValueResolved(flattened) : flattened;
-		valueable.resolving = false;
-		console.log("computed:", result);
-		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
-		this.clearGlobalMutations();
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");
-	}
-
-	private clearGlobalMutations (): void {
-		SimpleLanguageService.GLOBAL_OBJECT_MUTATIONS.forEach(mutation => {
-			delete GlobalObject[<keyof Window>mutation];
-		});
-		SimpleLanguageService.GLOBAL_OBJECT_MUTATIONS.clear();
-	}
-
-	/**
-	 * Computes/Evaluates the given expression to a concrete value.
-	 * @param {string} flattened
-	 * @returns {ArbitraryValue}
-	 */
-	private computeValueResolved (flattened: string): ArbitraryValue {
-		try {
-			return new Function(`return (${flattened})`)();
-		} catch (ex) {
-			return new Function(flattened)();
-		}
-
-	}
-
-	private quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
-		if (!(typeof content === "string")) return content;
-		const REPLACEMENT_CHAR = "`";
-		const trimmed = content;
-		const firstChar = trimmed[0];
-		const lastChar = trimmed[trimmed.length - 1];
-		let str = REPLACEMENT_CHAR;
-		const startsWithClashingQuote = firstChar === REPLACEMENT_CHAR;
-		const endsWithClashingQuote = lastChar === REPLACEMENT_CHAR;
-
-		if (startsWithClashingQuote && endsWithClashingQuote) {
-			const insideQuotes = trimmed.match(new RegExp(`^${REPLACEMENT_CHAR}([^${REPLACEMENT_CHAR}]*)${REPLACEMENT_CHAR}`));
-			// If there are nothing but whitespace inside the quotes, just return them.
-			if (insideQuotes != null && isWhitespace(insideQuotes[1])) return content;
-		}
-
-		const startOffset = startsWithClashingQuote ? 1 : 0;
-		const endOffset = endsWithClashingQuote ? 1 : 0;
-		if (startsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
-		str += trimmed.slice(startOffset, trimmed.length - endOffset);
-		if (endsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
-		str += REPLACEMENT_CHAR;
-		return str;
-	}
-
-
-	/**
-	 * Checks and formats the initialization value of the given statement (if any) and returns it.
-	 * Since such a statement can be a combination of multiple operations and identifiers, an array of statements will be
-	 * returned.
-	 * @param {Statement|Expression|Node} rawStatement
-	 * @returns {InitializationValue}
-	 */
-	public getValueExpression (rawStatement: Statement | Expression | Node): InitializationValue {
-
-		if (isNumericLiteral(rawStatement)) {
-			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
-			return [marshalled];
-		}
-
-		if (isStringLiteral(rawStatement)) {
-			return [this.quoteIfNecessary(rawStatement.text)];
-		}
-
-		if (isRegularExpressionLiteral(rawStatement)) {
-			const marshalled = this.marshaller.marshal<string, RegExpConstructor>(rawStatement.text, RegExp);
-			return [marshalled];
-		}
-
-		if (isNoSubstitutionTemplateLiteral(rawStatement)) {
-			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text);
-			return [this.quoteIfNecessary(marshalled)];
-		}
-
-		if (isTemplateHead(rawStatement) || isTemplateMiddle(rawStatement) || isTemplateTail(rawStatement)) {
-			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text, "");
-			return [marshalled];
-		}
-
-		if (isTypeAssertionExpression(rawStatement)) {
-			return this.getValueExpression(rawStatement.expression);
-		}
-
-		if (isAwaitExpression(rawStatement)) {
-			return ["await", " ", ...this.getValueExpression(rawStatement.expression)];
-		}
-
-		if (isTemplateSpan(rawStatement)) {
-			const head = this.getValueExpression(rawStatement.expression);
-			const tail = this.getValueExpression(rawStatement.literal);
-			const headNormalized: InitializationValue = [];
-			head.forEach(part => {
-				if (part instanceof BindingIdentifier) {
-					headNormalized.push("${");
-					headNormalized.push(part);
-					headNormalized.push("}");
-				}
-				else headNormalized.push(part);
-			});
-
-			return [...headNormalized, ...tail];
-		}
-
-		if (isCatchClause(rawStatement)) {
-			return ["catch", "(", ...this.getValueExpression(rawStatement.variableDeclaration), ")", "{", ...this.getValueExpression(rawStatement.block), "}"];
-		}
-
-		if (isExpressionStatement(rawStatement)) {
-			return this.getValueExpression(rawStatement.expression);
-		}
-
-		if (isTryStatement(rawStatement)) {
-			let arr: InitializationValue = ["try", "{", ...this.getValueExpression(rawStatement.tryBlock), "}"];
-			if (rawStatement.catchClause != null) arr = [...arr, ...this.getValueExpression(rawStatement.catchClause)];
-			if (rawStatement.finallyBlock != null) arr = [...arr, "finally", "{", ...this.getValueExpression(rawStatement.finallyBlock), "}"];
-			return arr;
-		}
-
-		if (isTypeOfExpression(rawStatement)) {
-			return ["typeof", " ", ...this.getValueExpression(rawStatement.expression)];
-		}
-
-		if (isPrefixUnaryExpression(rawStatement)) {
-			return [serializeToken(rawStatement.operator), ...this.getValueExpression(rawStatement.operand)];
-		}
-
-		if (isPostfixUnaryExpression(rawStatement)) {
-			return [...this.getValueExpression(rawStatement.operand), serializeToken(rawStatement.operator)];
-		}
-
-		if (isDeleteExpression(rawStatement)) {
-			return [marshalToken(rawStatement.kind), " ", ...this.getValueExpression(rawStatement.expression)];
-		}
-
-		if (isEmptyStatement(rawStatement)) {
-			return [];
-		}
-
-		if (isVariableDeclarationList(rawStatement)) {
-			const keyword = GlobalObjectIdentifier;
-			const values: InitializationValue = [keyword, "."];
-
-			rawStatement.declarations.forEach((declaration, index) => {
-				const content = this.getValueExpression(declaration);
-				// Remove empty strings from the contents and add everything else to the value array.
-				content.forEach(part => values.push(part));
-				if (index !== rawStatement.declarations.length - 1) values.push(",");
-			});
-
-			return values;
-		}
-
-		if (isIfStatement(rawStatement)) {
-			return ["if", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.thenStatement), "}"];
-		}
-
-		if (isForOfStatement(rawStatement)) {
-			return [
-				"for",
-				...(rawStatement.awaitModifier == null ? [] : [" ", ...this.getValueExpression(rawStatement.awaitModifier)]),
-				"(",
-				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), " ", "of", " ",
-				...this.getValueExpression(rawStatement.expression),
-				")", "{",
-				...this.getValueExpression(rawStatement.statement),
-				"}"
-			];
-		}
-
-		if (isForInStatement(rawStatement)) {
-			return [
-				"for", "(",
-				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), " ", "in", " ",
-				...this.getValueExpression(rawStatement.expression), ")", "{",
-				...this.getValueExpression(rawStatement.statement),
-				"}"
-			];
-		}
-
-		if (isForStatement(rawStatement)) {
-			return [
-				"for", "(",
-				...(rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer)), ";",
-				...(rawStatement.condition == null ? [] : this.getValueExpression(rawStatement.condition)), ";",
-				...(rawStatement.incrementor == null ? [] : this.getValueExpression(rawStatement.incrementor)), ")", "{",
-				...this.getValueExpression(rawStatement.statement),
-				"}"
-			];
-		}
-
-		if (isThrowStatement(rawStatement)) {
-			return [marshalToken(rawStatement.kind), " ", ...this.getValueExpression(rawStatement.expression)];
-		}
-
-		if (isBreakStatement(rawStatement)) {
-			return [marshalToken(rawStatement.kind)];
-		}
-
-		if (isContinueStatement(rawStatement)) {
-			return [marshalToken(rawStatement.kind)];
-		}
-
-		if (isDoStatement(rawStatement)) {
-			return [marshalToken(rawStatement.kind), "{", ...this.getValueExpression(rawStatement.expression), "}"];
-		}
-
-		if (isDefaultClause(rawStatement)) {
-			const arr: InitializationValue = ["default", ":", "{"];
-			rawStatement.statements.forEach(statement => {
-				const value = this.getValueExpression(statement);
-				value.forEach(part => arr.push(part));
-			});
-			arr.push("}");
-			return arr;
-		}
-
-		if (isWhileStatement(rawStatement)) {
-			return ["while", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.statement), "}"];
-		}
-
-		if (isCaseClause(rawStatement)) {
-			const arr: InitializationValue = ["case", " ", ...this.getValueExpression(rawStatement.expression), ":", "{"];
-			rawStatement.statements.forEach(statement => {
-				const value = this.getValueExpression(statement);
-				value.forEach(part => arr.push(part));
-			});
-			arr.push("}");
-			return arr;
-		}
-
-		if (isCaseBlock(rawStatement)) {
-			const arr: InitializationValue = [];
-			rawStatement.clauses.forEach(block => {
-				const value = this.getValueExpression(block);
-				value.forEach(part => arr.push(part));
-			});
-			return arr;
-		}
-
-		if (isSwitchStatement(rawStatement)) {
-			return ["switch", "(", ...this.getValueExpression(rawStatement.expression), ")", "{", ...this.getValueExpression(rawStatement.caseBlock), "}"];
-		}
-
-		if (isBinaryExpression(rawStatement)) {
-			const arr: InitializationValue = [];
-
-			const left = this.getValueExpression(rawStatement.left);
-			const operator = this.getValueExpression(rawStatement.operatorToken);
-			const right = this.getValueExpression(rawStatement.right);
-
-			left.forEach(item => arr.push(item));
-			operator.forEach(item => arr.push(item));
-			right.forEach(item => arr.push(item));
-			return arr;
-		}
-
-		if (isConditionalExpression(rawStatement)) {
-			const arr: InitializationValue = [];
-			const condition = this.getValueExpression(rawStatement.condition);
-			const question = this.getValueExpression(rawStatement.questionToken);
-			const colon = this.getValueExpression(rawStatement.colonToken);
-			const whenTrue = this.getValueExpression(rawStatement.whenTrue);
-			const whenFalse = this.getValueExpression(rawStatement.whenFalse);
-
-			condition.forEach(item => arr.push(item));
-			question.forEach(item => arr.push(item));
-			whenTrue.forEach(item => arr.push(item));
-			colon.forEach(item => arr.push(item));
-			whenFalse.forEach(item => arr.push(item));
-			return arr;
-		}
-
-		if (isCallExpression(rawStatement) || isNewExpression(rawStatement)) {
-			const left = this.getValueExpression(rawStatement.expression);
-			const arr: InitializationValue = [];
-			if (isNewExpression(rawStatement)) {
-				arr.push("new");
-				arr.push(" ");
-			}
-			left.forEach(part => arr.push(part));
-			arr.push("(");
-			const args = rawStatement.arguments;
-			if (args != null) args.forEach((arg, index) => {
-				const value = this.getValueExpression(arg);
-				value.forEach(item => {
-					arr.push(item);
-					if (index !== args.length - 1) arr.push(",");
-				});
-			});
-			arr.push(")");
-			return arr;
-		}
-
-		if (isObjectLiteralExpression(rawStatement)) {
-			const obj: InitializationValue = ["{"];
-			rawStatement.properties.forEach((property, index) => {
-
-				if (isSpreadAssignment(property)) {
-					obj.push("...");
-					const exp = this.getValueExpression(property.expression);
-					exp.forEach(item => obj.push(item));
-				} else {
-
-					if (isPropertyAssignment(property)) {
-						if (property.name == null) return;
-
-						// Check if the property name is computed (.eg. [key]: "foo").
-						if (isComputedPropertyName(property.name)) obj.push("[");
-
-						// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
-						if (isComputedPropertyName(property.name) && isCallExpression(property.name.expression)) {
-							const callExpression = this.getValueExpression(property.name.expression);
-							callExpression.forEach(item => obj.push(item));
-						} else {
-							// Otherwise, just push the name of it.
-							obj.push(this.getNameOfMember(property.name, true, true));
-						}
-
-						if (isComputedPropertyName(property.name)) obj.push("]");
-
-						obj.push(":");
-						const value = this.getValueExpression(property.initializer);
-						value.forEach(item => obj.push(item));
-					}
-
-					else if (isMethodDeclaration(property)) {
-						const value = this.getValueExpression(property);
-						value.forEach(item => obj.push(item));
-					}
-
-				}
-				if (index !== rawStatement.properties.length - 1) obj.push(",");
-			});
-			obj.push("}");
-			return obj;
-		}
-
-		if (isArrayLiteralExpression(rawStatement)) {
-			const arr: InitializationValue = ["["];
-			rawStatement.elements.forEach((element, index) => {
-				const value = this.getValueExpression(element);
-				value.forEach(part => arr.push(part));
-				const lastPart = value[value.length - 1];
-				if (index !== rawStatement.elements.length - 1 && lastPart !== "...") arr.push(",");
-			});
-
-			arr.push("]");
-			return arr;
-		}
-
-		if (isTemplateExpression(rawStatement)) {
-
-			let values: InitializationValue = [...this.getValueExpression(rawStatement.head)];
-
-			rawStatement.templateSpans.forEach(span => {
-				const content = this.getValueExpression(span);
-				// Remove empty strings from the contents and add everything else to the value array.
-				content.filter(item => !(typeof item === "string" && item.length < 1)).forEach(checkedItem => values.push(checkedItem));
-			});
-
-
-			return ["\`", ...values, "\`"];
-		}
-
-		if (isPropertyAccessExpression(rawStatement) || isElementAccessExpression(rawStatement)) {
-			const arr: InitializationValue = [];
-			const left = this.getValueExpression(rawStatement.expression);
-			const right = isPropertyAccessExpression(rawStatement)
-				? this.getValueExpression(rawStatement.name)
-				: rawStatement.argumentExpression == null ? [] : ["[", ...this.getValueExpression(rawStatement.argumentExpression), "]"];
-
-			const lastLeft = left[left.length - 1];
-			const firstRight = right[0];
-			if (this.shouldBeIndexedLookup(lastLeft, firstRight)) {
-				right.splice(0, 1, firstRight == null ? "" : firstRight.toString());
-			}
-
-			if (isPropertyAccessExpression(rawStatement)) {
-				right.forEach((part) => {
-					if (!(part instanceof BindingIdentifier)) {
-						arr.push(this.convertToIndexedLookup(part));
-					} else {
-						arr.push(part);
-					}
-				});
-
-				return [...left, ...arr];
-			}
-
-			return [...left, ...right];
-
-		}
-
-		if (isConstructorDeclaration(rawStatement)) {
-			const arr: InitializationValue = ["constructor"];
-			arr.push("(");
-			const args = rawStatement.parameters;
-			if (args != null) args.forEach((arg, index) => {
-				const value = this.getValueExpression(arg);
-				value.forEach(item => {
-					arr.push(item);
-					if (index !== args.length - 1) arr.push(",");
-				});
-			});
-			arr.push(")");
-			arr.push("{");
-			const body = rawStatement.body == null ? [] : this.getValueExpression(rawStatement.body);
-			body.forEach(part => arr.push(part));
-			arr.push("}");
-			return arr;
-		}
-
-		if (isClassExpression(rawStatement)) {
-			const name = rawStatement.name == null ? [] : [this.getNameOfMember(rawStatement.name, false, true)];
-			const heritage = rawStatement.heritageClauses == null ? null : this.formatHeritageClauses(rawStatement.heritageClauses).extendsClass;
-			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage];
-			const members: InitializationValue = ["{"];
-
-			rawStatement.members.forEach(member => {
-				const content = this.getValueExpression(member);
-				// Remove empty strings from the contents and add everything else to the value array.
-				content.forEach(part => members.push(part));
-			});
-			members.push("}");
-
-			return ["class", " ", ...name, ...heritageFormatted, ...members];
-		}
-
-		if (isVariableDeclaration(rawStatement)) {
-
-			const name = this.getNameOfMember(rawStatement.name, false, true);
-			const type = rawStatement.type == null ? [] : [":", ...this.getTypeExpression(rawStatement.type)];
-			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getValueExpression(rawStatement.initializer)];
-			return [name, ...type, ...initializer];
-		}
-
-		if (isVariableStatement(rawStatement)) {
-			return this.getValueExpression(rawStatement.declarationList);
-		}
-
-		if (isParameterDeclaration(rawStatement)) {
-			const name = this.getNameOfMember(rawStatement.name);
-			const initializer = rawStatement.initializer == null ? null : this.getValueExpression(rawStatement.initializer);
-			const arr: InitializationValue = [name];
-			if (initializer != null) {
-				arr.push("=");
-				initializer.forEach(item => arr.push(item));
-			}
-			return arr;
-		}
-
-		if (isArrowFunction(rawStatement)) {
-			const arr: InitializationValue = ["("];
-			const equalsGreaterThanToken = this.getValueExpression(rawStatement.equalsGreaterThanToken);
-			const body = this.getValueExpression(rawStatement.body);
-
-			rawStatement.parameters.forEach((parameter, index) => {
-				const value = this.getValueExpression(parameter);
-				value.forEach(item => arr.push(item));
-				if (index !== rawStatement.parameters.length - 1) arr.push(",");
-			});
-
-			arr.push(")");
-			equalsGreaterThanToken.forEach(item => arr.push(item));
-
-			if (isBlockDeclaration(rawStatement.body)) {
-				arr.push("{");
-				body.forEach(item => arr.push(item));
-				arr.push("}");
-			}
-			else {
-				body.forEach(item => arr.push(item));
-			}
-
-			return arr;
-		}
-
-		if (isFunctionExpression(rawStatement) || isFunctionDeclaration(rawStatement) || isMethodDeclaration(rawStatement)) {
-			const arr: InitializationValue = isFunctionExpression(rawStatement) || isFunctionDeclaration(rawStatement) ? ["function", " "] : [];
-			const body = rawStatement.body == null ? null : this.getValueExpression(rawStatement.body);
-
-			if (rawStatement.name != null) {
-				arr.push(this.getNameOfMember(rawStatement.name));
-			}
-
-			arr.push("(");
-
-			rawStatement.parameters.forEach((parameter, index) => {
-				const value = this.getValueExpression(parameter);
-				value.forEach(item => arr.push(item));
-				if (index !== rawStatement.parameters.length - 1) arr.push(",");
-			});
-			arr.push(")");
-			arr.push("{");
-			if (body != null) body.forEach(item => arr.push(item));
-			arr.push("}");
-			return arr;
-		}
-
-		if (isBlockDeclaration(rawStatement)) {
-			const arr: InitializationValue = [];
-			rawStatement.statements.forEach(statement => {
-				const value = this.getValueExpression(statement);
-				value.forEach(item => arr.push(item));
-				arr.push(";");
-			});
-			return arr;
-		}
-
-		if (isSpreadElement(rawStatement)) {
-			return ["...", ...this.getValueExpression(rawStatement.expression)];
-		}
-
-		if (isParenthesizedExpression(rawStatement)) {
-			return ["(", ...this.getValueExpression(rawStatement.expression), ")"];
-		}
-
-		if (isReturnStatement(rawStatement)) {
-			return [marshalToken(rawStatement.kind), " ", ...(rawStatement.expression == null ? [] : this.getValueExpression(rawStatement.expression))];
-		}
-
-		if (isTokenObject(rawStatement)) {
-			return [marshalToken(rawStatement.kind)];
-		}
-
-		if (isIdentifierObject(rawStatement)) {
-			return [this.getNameOfMember(rawStatement, true)];
-		}
-
-		throw new TypeError(`${this.getValueExpression.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
-	}
-
-	/**
-	 * Computes the mot probable native type of the given string.
-	 * @param {ArbitraryValue} text
-	 * @returns {string}
-	 */
-	private mostProbableTypeOf (text: ArbitraryValue): TypeOf {
-		return this.marshaller.getTypeOf(this.marshaller.marshal<ArbitraryValue, ArbitraryValue>(text));
-	}
-
-	/**
-	 * Returns the path of an expression.
-	 * @param {ElementAccessExpression|Identifier|Expression|BinaryExpression} expression
-	 * @returns {ArbitraryValue[]}
-	 */
-	private getPathOfExpression (expression: ElementAccessExpression | Identifier | Expression | BinaryExpression): ArbitraryValue[] {
-		if (isBinaryExpression(expression)) {
-			return [...this.getPathOfExpression(expression.left), serializeToken(expression.operatorToken.kind), ...this.getPathOfExpression(expression.right)];
-		}
-
-		return [this.getNameOfMember(expression, true, true)];
-	}
-
-	/**
-	 * Returns true if the name of an identifier cannot be computed or refer to another identifier.
-	 * @param {Statement} statement
-	 * @returns {boolean}
-	 */
-	private memberHasNoBindingIdentifier (statement: Statement | Identifier): boolean {
-		const parent = statement.parent;
-		if (parent == null) return false;
-
-
-		// If this is an identifier and the parent is a property access expression on a
-		// parenthesized, array or object literal expression (e.g. (something || []).concat(otherThing)),
-		// The right-hand side property access should never be attached to a BindingIdentifier.
-		if (
-			isIdentifierObject(statement) &&
-			isPropertyAccessExpression(parent) &&
-			(
-				isCallExpression(parent.expression) ||
-				isParenthesizedExpression(parent.expression) ||
-				isStringLiteral(parent.expression) ||
-				isNumericLiteral(parent.expression) ||
-				isTemplateExpression(parent.expression) ||
-				isTemplateHead(parent.expression) ||
-				isTemplateMiddle(parent.expression) ||
-				isTemplateTail(parent.expression) ||
-				isArrayLiteralExpression(parent.expression) ||
-				isObjectLiteralExpression(parent.expression) ||
-				isPropertyAccessExpression(parent.expression)
-			)
-		) return true;
-
-		// If this is the name of a method, function or parameter, it cannot be a BindingIdentifier.
-		if (
-			isIdentifierObject(statement) &&
-			(
-				isMethodDeclaration(parent) ||
-				isFunctionDeclaration(parent) ||
-				isFunctionExpression(parent) ||
-				isParameterDeclaration(parent)
-			)
-		) return true;
-
-		return false;
-	}
-
-	private getName (statement: Statement | Expression | Node | TypeNode | TypeReferenceNode): string | null {
-		if (
-			isBindingElement(statement) ||
-			isParameterDeclaration(statement) ||
-			isPropertySignature(statement) ||
-			isPropertyDeclaration(statement) ||
-			isPropertyAssignment(statement) ||
-			isVariableDeclaration(statement) ||
-			isFunctionDeclaration(statement) ||
-			isFunctionExpression(statement) ||
-			isClassDeclaration(statement) ||
-			isClassExpression(statement) ||
-			isMethodDeclaration(statement) ||
-			isPropertyAccessExpression(statement) ||
-			isEnumDeclaration(statement) ||
-			isEnumMember(statement) ||
-			isImportSpecifier(statement) ||
-			isExportSpecifier(statement) ||
-			isNamespaceImport(statement)
-		) {
-			return statement.name == null ? null : <string>this.getNameOfMember(statement.name, false, true);
-		}
-
-		if (isIdentifierObject(statement)) {
-			return <string>this.getNameOfMember(statement, false, true);
-		}
-
-		if (
-			(isTypeReferenceNode(statement) || isTypeReference(statement)) &&
-			isIdentifierObject(statement.typeName)
-		) {
-			return <string>this.getNameOfMember(statement.typeName, false, true);
-		}
-
-		if (
-			isExpressionWithTypeArguments(statement) ||
-			isCallExpression(statement) ||
-			isDecorator(statement) ||
-			isExternalModuleReference(statement)
-		) {
-			return statement.expression == null ? null : <string>this.getNameOfMember(statement.expression, false, true);
-		}
-		return null;
-	}
-
-	/**
-	 * Detects the name/key of a member of something (for example, an ObjectLiteral). If the second argument is truthy,
-	 * the name may also be a non-string entity.
-	 * @param {DeclarationName} name
-	 * @param {boolean} [allowNonStringNames=false]
-	 * @param {boolean} [forceNoBindingIdentifier=false]
-	 * @returns {ArbitraryValue}
-	 */
-	private getNameOfMember (name: DeclarationName | Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
-
-		if (isTypeAssertionExpression(name)) {
-			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
-		}
-
-		if (isComputedPropertyName(name)) {
-			if (isPropertyName(name.expression)) {
-				if (isComputedPropertyName(name.expression)) return this.getNameOfMember(name.expression, allowNonStringNames, false);
-				return this.getNameOfMember(name.expression, allowNonStringNames, false);
-			}
-
-			if (isCallExpression(name.expression)) {
-				return this.getNameOfMember(name.expression.expression, allowNonStringNames, forceNoBindingIdentifier);
-			}
-
-			throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}: It wasn't a PropertyName or a CallExpression. Instead, it was a ${SyntaxKind[name.expression.kind]}`);
-		}
-
-		if (isIdentifierObject(name)) {
-			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
-
-			if (this.memberHasNoBindingIdentifier(name)) {
-				// Then this is the key of a property-assignment. We already know it isn't computed, so it can't be an identifier to another variable.
-				return marshalled;
-			}
-
-			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
-			if (this.mostProbableTypeOf(name.text) === "string" && !forceNoBindingIdentifier) {
-				return new BindingIdentifier(name.text);
-			}
-			return marshalled;
-		}
-
-		if (isFirstLiteralToken(name)) {
-			return this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
-		}
-
-		if (isStringLiteral(name)) {
-			return name.text;
-		}
-
-		if (isThisKeyword(name)) {
-			return new BindingIdentifier("this");
-		}
-
-		if (isRegularExpressionLiteral(name)) {
-			return this.marshaller.marshal<string, RegExpConstructor>(name.text, RegExp);
-		}
-
-		if (isPropertyAccessExpression(name)) {
-			const baseName = <string>this.getNameOfMember(name.expression, false, false);
-
-			return new BindingIdentifier(baseName.toString());
-		}
-
-		if (isCallExpression(name)) {
-			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
-		}
-
-		if (isParenthesizedExpression(name)) {
-			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
-		}
-
-		if (isFunctionExpression(name)) {
-			return name.name == null ? null : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
-		}
-
-		if (isElementAccessExpression(name)) {
-			const baseName = <string>this.getNameOfMember(name.expression, false, false);
-
-			return new BindingIdentifier(baseName.toString());
-		}
-
-		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]} around here: ${this.getSourceFileProperties(name).fileContents.slice(name.pos, name.end)}.`);
-	}
-
-	/**
-	 * Tokenizes the type information from the given statement and returns a TypeExpression.
-	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
-	 * @returns {TypeExpression}
-	 */
-	private getTypeExpression (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): TypeExpression {
-
-		if (isTypeNode(statement)) {
-			if ((isTypeReferenceNode(statement) || isTypeReference(statement)) && isIdentifierObject(statement.typeName)) {
-				const name = statement.typeName.text;
-				let typeArguments: TypeExpression | null = null;
-				const typeArgs = statement.typeArguments;
-
-				if (typeArgs != null) {
-					typeArgs.forEach((typeArgument, index) => {
-						const value = this.getTypeExpression(typeArgument);
-						value.forEach(part => {
-							if (typeArguments == null) typeArguments = [];
-							typeArguments.push(part);
-							if (index !== typeArgs.length - 1) typeArguments.push(", ");
-						});
-					});
-				}
-				return [{name, typeArguments}];
-			}
-
-			if (isArrayTypeNode(statement)) {
-				return [...this.getTypeExpression(statement.elementType), "[", "]"];
-			}
-
-			if (isTupleTypeNode(statement)) {
-				const exp: TypeExpression = [];
-				exp.push("[");
-
-				statement.elementTypes.forEach((type, index) => {
-					const value = this.getTypeExpression(type);
-					value.forEach(part => exp.push(part));
-					if (index !== statement.elementTypes.length - 1) exp.push(", ");
-				});
-				exp.push("]");
-				return exp;
-			}
-
-			if (isIntersectionTypeNode(statement)) {
-				const exp: TypeExpression = [];
-
-				statement.types.forEach((intersectionType, index) => {
-					const value = this.getTypeExpression(intersectionType);
-
-					value.forEach(part => exp.push(part));
-					if (index !== statement.types.length - 1) exp.push(" & ");
-				});
-				return exp;
-			}
-
-			if (isUnionTypeNode(statement)) {
-				const exp: TypeExpression = [];
-
-				statement.types.forEach((unionType, index) => {
-					const value = this.getTypeExpression(unionType);
-
-					value.forEach(part => exp.push(part));
-					if (index !== statement.types.length - 1) exp.push("|");
-				});
-				return exp;
-			}
-
-			return [serializeToken(statement.kind)];
-		}
-
-		if (isTypeLiteralNode(statement)) {
-			const exp: TypeExpression = ["{"];
-
-			statement.members.forEach((member, index) => {
-
-				if (isIndexSignatureDeclaration(member)) {
-					exp.push("[");
-
-					member.parameters.forEach(parameter => {
-						exp.push(<string>this.getNameOfMember(parameter.name, false, true));
-						if (parameter.type != null) {
-							exp.push(": ");
-							const type = this.getTypeExpression(parameter.type);
-							type.forEach(part => exp.push(part));
-						}
-						exp.push("]");
-
-					});
-					if (member.type != null) {
-						exp.push(": ");
-						const type = this.getTypeExpression(member.type);
-						type.forEach(part => exp.push(part));
-					}
-				}
-
-				if (isPropertySignature(member)) {
-					const name = <string>this.getNameOfMember(member.name, false, true);
-					const type = member.type == null ? null : this.getTypeExpression(member.type);
-					exp.push(name);
-
-					if (member.questionToken != null) {
-						exp.push(serializeToken(member.questionToken.kind));
-					}
-					if (type != null) {
-						exp.push(": ");
-						type.forEach(part => exp.push(part));
-					}
-				}
-
-				if (index !== statement.members.length - 1) exp.push(", ");
-
-			});
-			exp.push("}");
-			return exp;
-		}
-
-		if (isTypeReference(statement) && isIdentifierObject(statement.typeName)) {
-			const name = statement.typeName.text;
-			let typeArguments: TypeExpression | null = null;
-			const typeArgs = statement.typeArguments;
-			if (typeArgs != null) {
-				typeArgs.forEach((typeArgument, index) => {
-					const value = this.getTypeExpression(typeArgument);
-					value.forEach(part => {
-						if (typeArguments == null) typeArguments = [];
-						typeArguments.push(part);
-						if (index !== typeArgs.length - 1) typeArguments.push(", ");
-					});
-				});
-			}
-			return [{name, typeArguments}];
-		}
-
-		if (isExpressionWithTypeArguments(statement)) {
-			const name = this.getNameOfMember(statement.expression, false, true);
-			let typeArguments: TypeExpression | null = null;
-			const typeArgs = statement.typeArguments;
-			if (typeArgs != null) {
-				typeArgs.forEach((typeArgument, index) => {
-					const value = this.getTypeExpression(typeArgument);
-					value.forEach(part => {
-						if (typeArguments == null) typeArguments = [];
-						typeArguments.push(part);
-						if (index !== typeArgs.length - 1) typeArguments.push(", ");
-					});
-				});
-			}
-			return [{name, typeArguments}];
-		}
-
-		if (statement.type != null) return this.getTypeExpression(statement.type);
-		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
-	}
-
-	/**
-	 * Takes all ITypeBindings from a TypeExpression and returns an array of them.
-	 * @param {TypeExpression} expression
-	 * @param {boolean} [deep=false]
-	 * @returns {ITypeBinding[]}
-	 */
-	private takeTypeBindings (expression: TypeExpression, deep: boolean = false): ITypeBinding[] {
-		const bindings: ITypeBinding[] = [];
-
-		expression.forEach(token => {
-			if (isTypeBinding(token)) {
-				bindings.push(token);
-
-				if (token.typeArguments != null && deep) {
-					this.takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
-				}
-			}
-		});
-		return bindings;
-	}
-
-
-	/**
-	 * Formats and returns a string representation of a type.
-	 * @param {TypeExpression} expression
-	 * @returns {string}
-	 */
-	private serializeTypeExpression (expression: TypeExpression): string {
-		let statement: string = "";
-		expression.forEach(token => {
-			if (isTypeBinding(token)) {
-				statement += token.name;
-				if (token.typeArguments != null) {
-					statement += `<${this.serializeTypeExpression(token.typeArguments)}>`;
-				}
-			} else {
-				statement += `${token}`;
-			}
-		});
-		return statement;
-	}
-
-	/**
-	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
-	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration} declaration
-	 * @returns {DecoratorIndexer}
-	 */
-	private formatDecorators (declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration | EnumDeclaration): DecoratorIndexer {
-		const obj: DecoratorIndexer = {};
-		if (declaration.decorators == null) return obj;
-
-		declaration.decorators.forEach(decorator => {
-			const name = <string>this.getNameOfMember(decorator.expression, false, true);
-
-			const map: IDecorator = {
-				___kind: IdentifierMapKind.DECORATOR,
-				startsAt: decorator.pos,
-				endsAt: decorator.end,
-				name
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.DECORATOR,
-				enumerable: false
-			});
-
-			SimpleLanguageService.AST_MAPPER.set(map, decorator);
-			obj[name] = map;
-		});
-		return obj;
-	}
-
-	/**
-	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
-	 * @param {PropertyDeclaration} declaration
-	 * @param {string} className
-	 * @returns {IPropDeclaration}
-	 */
-	private formatPropertyDeclaration (declaration: PropertyDeclaration, className: string): IPropDeclaration {
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-		const startsAt = declaration.pos;
-		const endsAt = declaration.end;
-		const name = <string>this.getNameOfMember(declaration.name, false, true);
-		const typeExpression = declaration.type == null ? null : this.getTypeExpression(declaration.type);
-		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const valueExpression = declaration.initializer == null ? null : this.getValueExpression(declaration.initializer);
-		const that = this;
-		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
-		const scope = this.traceThis(declaration);
-
-		const map: IPropDeclaration = {
-			___kind: IdentifierMapKind.PROP,
-			isStatic,
-			modifiers: this.formatModifiers(declaration),
-			startsAt,
-			endsAt,
-			name,
-			filePath,
-			className,
-			type: {
-				expression: typeExpression,
-				flattened: typeFlattened,
-				bindings: typeBindings
-			},
-			decorators: this.formatDecorators(declaration),
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-					return map.value.resolved;
-				}
-			}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.PROP,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, declaration);
-		return map;
-	}
-
-	/**
-	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
-	 * @param {NodeArray<HeritageClause>} clauses
-	 * @returns {IPropDeclaration}
-	 */
-	private formatHeritageClauses (clauses: NodeArray<HeritageClause>): IHeritage {
-		const obj: IHeritage = {extendsClass: null, implementsInterfaces: []};
-
-		clauses.forEach(clause => {
-
-			if (isExtendsClause(clause)) {
-				// There can only be one extended class.
-				const [classIdentifier] = clause.types;
-				const [extendsClass] = this.getTypeExpression(classIdentifier);
-				if (isTypeBinding(extendsClass)) {
-					obj.extendsClass = extendsClass;
-				}
-			}
-
-			if (isImplementsClause(clause)) {
-				clause.types.forEach(identifier => {
-					const expression = this.getTypeExpression(identifier);
-					expression.forEach(part => {
-						if (isTypeBinding(part)) {
-							obj.implementsInterfaces.push(part);
-						}
-					});
-				});
-			}
-		});
-		return obj;
-	}
-
-	/**
-	 * Formats a concrete ParameterDeclaration and returns an IParameter.
-	 * @param {ParameterDeclaration} parameter
-	 * @returns {IParameter}
-	 */
-	private formatParameter (parameter: ParameterDeclaration): IParameter {
-		const startsAt = parameter.pos;
-		const endsAt = parameter.end;
-		const name = <string>this.getNameOfMember(parameter.name, false, true);
-		const typeExpression = parameter.type == null ? null : this.getTypeExpression(parameter);
-		const typeFlattened = typeExpression == null ? null : this.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : this.takeTypeBindings(typeExpression);
-		const valueExpression = parameter.initializer != null ? this.getValueExpression(parameter.initializer) : null;
-		const that = this;
-		const scope = this.traceThis(parameter);
-
-		const map: IParameter = {
-			___kind: IdentifierMapKind.PARAMETER,
-			startsAt,
-			endsAt,
-			name,
-			type: {
-				expression: typeExpression,
-				flattened: typeFlattened,
-				bindings: typeBindings
-			},
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, parameter, scope);
-					return map.value.resolved;
-				}
-			}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.PARAMETER,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, parameter);
-		return map;
-	}
-
-	/**
-	 * Formats a concrete ParameterDeclaration and returns an IArgument.
-	 * @param {Expression} argument
-	 * @returns {IArgument}
-	 */
-	private formatArgument (argument: Expression): IArgument {
-		const startsAt = argument.pos;
-		const endsAt = argument.end;
-		const valueExpression = this.getValueExpression(argument);
-		const that = this;
-		const scope = this.traceThis(argument);
-
-		const map: IArgument = {
-			___kind: IdentifierMapKind.ARGUMENT,
-			startsAt,
-			endsAt,
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, argument, scope);
-					return map.value.resolved;
-				}
-			}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.ARGUMENT,
-			enumerable: false
-		});
-		SimpleLanguageService.AST_MAPPER.set(map, argument);
-		return map;
-	}
-
-	/**
-	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
-	 * @param {ConstructorDeclaration | MethodDeclaration | FunctionDeclaration} declaration
-	 * @returns {IParameter[]}
-	 */
-	private formatParameters (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IParameter[] {
-		return declaration.parameters.map(param => this.formatParameter(param));
-	}
-
-	/**
-	 * Takes the arguments from a CallExpression and returns an array of IArguments.
-	 * @param {CallExpression} declaration
-	 * @returns {IArgument[]}
-	 */
-	private formatArguments (declaration: CallExpression | NewExpression): IArgument[] {
-		return declaration.arguments == null ? [] : declaration.arguments.map(arg => this.formatArgument(arg));
-	}
-
-	/**
-	 * Returns true if the current item should be converted to an indexed lookup.
-	 * @param {ArbitraryValue} previous
-	 * @param {ArbitraryValue} current
-	 * @returns {boolean}
-	 */
-	private shouldBeIndexedLookup (previous: ArbitraryValue, current: ArbitraryValue): boolean {
-		if ((previous instanceof BindingIdentifier) && current instanceof BindingIdentifier) return true;
-		if (this.isIndexedLookup(previous)) return true;
-		return false;
-	}
-
-	/**
-	 * Returns true if the given item is an indexed lookup.
-	 * @param {ArbitraryValue} item
-	 * @returns {boolean}
-	 */
-	private isIndexedLookup (item: ArbitraryValue): boolean {
-		return typeof item === "string" && (item.startsWith("[") || item.endsWith("]"));
-	}
-
-	/**
-	 * Normalizes an indexed lookup or a dotted lookup into an indexed one
-	 * @param {ArbitraryValue} path
-	 * @returns {string}
-	 */
-	public convertToIndexedLookup (path: ArbitraryValue): string {
-		if (isOperatorLike(path)) return path == null ? "" : path.toString();
-
-		if (typeof path === "string") {
-			if (this.isIndexedLookup(path)) return path;
-			return `["${path}"]`;
-		}
-
-		return `[${path}]`;
-	}
-
-	/**
-	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
-	 * @param {ConstructorDeclaration|MethodDeclaration | FunctionDeclaration} declaration
-	 * @param {string} fileContents
-	 * @returns {IMemberDeclaration}
-	 */
-	private formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IMemberDeclaration & IParametersable {
-		const fileContents = this.getSourceFileProperties(declaration).fileContents;
-		const startsAt = declaration.pos;
-		const endsAt = declaration.end;
-		const body = declaration.body;
-		const argumentsStartsAt = declaration.parameters.pos;
-		const argumentsEndsAt = declaration.parameters.end;
-
-		const bodyStartsAt = body == null ? -1 : body.pos;
-		const bodyEndsAt = body == null ? -1 : body.end;
-		const contents = fileContents.slice(startsAt, endsAt);
-		const bodyContents = body == null ? null : fileContents.slice(bodyStartsAt, bodyEndsAt);
-
-		return {
-			startsAt,
-			endsAt,
-			contents,
-			decorators: this.formatDecorators(declaration),
-			body: {
-				startsAt: bodyStartsAt,
-				endsAt: bodyEndsAt,
-				contents: bodyContents
-			},
-			parameters: {
-				startsAt: argumentsStartsAt,
-				endsAt: argumentsEndsAt,
-				parametersList: this.formatParameters(declaration)
-			}
-		};
-	}
-
-	/**
-	 * Takes a ConstructorDeclaration and returns an IConstructorDeclaration.
-	 * @param {ConstructorDeclaration} declaration
-	 * @param {string} className
-	 * @returns {IConstructorDeclaration}
-	 */
-	private formatConstructorDeclaration (declaration: ConstructorDeclaration, className: string): IConstructorDeclaration {
-		const name = "constructor";
-
-		const map: IConstructorDeclaration = {
-			...this.formatCallableMemberDeclaration(declaration),
-			...{___kind: IdentifierMapKind.CONSTRUCTOR, name, className, filePath: this.getSourceFileProperties(declaration).filePath}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.CONSTRUCTOR,
-			enumerable: false
-		});
-		return map;
-	}
-
-	/**
-	 * Takes a FunctionDeclaration and returns an IFunctionDeclaration.
-	 * @param {FunctionDeclaration} declaration
-	 * @returns {IFunctionDeclaration}
-	 */
-	private formatFunctionDeclaration (declaration: FunctionDeclaration): IFunctionDeclaration {
-		const name = declaration.name == null ? "anonymous" : <string>this.getNameOfMember(declaration.name, false, true);
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-
-		const cached = this.getCachedFunction(filePath, name);
-		if (cached != null && !this.cachedFunctionNeedsUpdate(cached.content)) return cached.content;
-
-		const valueExpression = declaration.body == null ? null : this.getValueExpression(declaration.body);
-		const that = this;
-		const scope = this.traceThis(declaration);
-
-		const map: IFunctionDeclaration = {
-			...this.formatFunctionLikeDeclaration(declaration),
-			...{
-				___kind: IdentifierMapKind.FUNCTION,
-				name,
-				filePath,
-				value: {
-					expression: valueExpression,
-					resolving: false,
-					resolved: undefined,
-					hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-					resolve () {
-						map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-						return map.value.resolved;
-					}
-				}
-			}
-		};
-
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.FUNCTION,
-			enumerable: false
-		});
-		this.setCachedFunction(filePath, map);
-		return map;
-	}
-
-	/**
-	 * Formats a MethodDeclaration or a FunctionDeclaration and returns what they have in common.
-	 * @param {MethodDeclaration|FunctionDeclaration} declaration
-	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
-	 */
-	private formatFunctionLikeDeclaration (declaration: MethodDeclaration | FunctionDeclaration): IFunctionLike {
-		const fileContents = this.getSourceFileProperties(declaration).fileContents;
-		let returnStatementStartsAt: number = -1;
-		let returnStatementEndsAt: number = -1;
-		let returnStatementContents: string | null = null;
-
-		if (declaration.body != null && declaration.body.statements != null) {
-			declaration.body.statements.forEach(bodyStatement => {
-
-				if (isReturnStatement(bodyStatement)) {
-					if (bodyStatement.expression != null) {
-						returnStatementStartsAt = bodyStatement.expression.pos;
-						returnStatementEndsAt = bodyStatement.expression.end;
-						returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
-					}
-				}
-			});
-		}
-
-		return {
-			...this.formatCallableMemberDeclaration(declaration),
-			...{
-				modifiers: this.formatModifiers(declaration),
-				returnStatement: {
-					startsAt: returnStatementStartsAt,
-					endsAt: returnStatementEndsAt,
-					contents: returnStatementContents
-				}
-			}
-		};
-	}
-
-	/**
-	 * Takes a MethodDeclaration and returns an IMethodDeclaration.
-	 * @param {MethodDeclaration} declaration
-	 * @param {string} className
-	 * @returns {IMethodDeclaration}
-	 */
-	private formatMethodDeclaration (declaration: MethodDeclaration, className: string): IMethodDeclaration {
-		const name = <string>this.getNameOfMember(declaration.name, false, true);
-
-		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
-		const filePath = this.getSourceFileProperties(declaration).filePath;
-		const valueExpression = declaration.body == null ? null : this.getValueExpression(declaration.body);
-		const that = this;
-		const scope = this.traceThis(declaration);
-
-		const map: IMethodDeclaration = {
-			...this.formatFunctionLikeDeclaration(declaration),
-			...{
-				___kind: IdentifierMapKind.METHOD,
-				isStatic,
-				name,
-				className,
-				filePath,
-				value: {
-					expression: valueExpression,
-					resolving: false,
-					resolved: undefined,
-					hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-					resolve () {
-						map.value.resolved = map.value.expression == null ? null : that.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-						return map.value.resolved;
-					}
-				}
-			}
-		};
-
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.METHOD,
-			enumerable: false
-		});
-		return map;
-	}
-
-	/**
-	 * Walks up the inheritance chain from the given statement until it finds a SourceFile and returns an ISourceFileProperties object.
-	 * @param {Statement} statement
-	 * @returns {ISourceFileProperties}
-	 */
-	private getSourceFileProperties (statement: Statement | Node | Expression): ISourceFileProperties {
-		let current: Statement | Node = statement;
-
-		while (!isSourceFile(current)) {
-			if (current.parent == null) break;
-			current = current.parent;
-		}
-
-		if (!isSourceFile(current)) {
-			throw new TypeError(`${this.getSourceFileProperties.name} could not find a source file from a given statement of kind ${SyntaxKind[statement.kind]}`);
-		}
-
-		return {
-			filePath: current.fileName,
-			fileContents: current.text
-		};
+	private getExportDeclaration (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null {
+		return this.exportFormatter.format(statement);
 	}
 
 	/**
@@ -3675,166 +1050,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {IClassDeclaration}
 	 */
 	private getClassDeclaration (statement: ClassDeclaration): IClassDeclaration {
-		const sourceFileProperties = this.getSourceFileProperties(statement);
-		const filePath = sourceFileProperties.filePath;
-		const fileContents = sourceFileProperties.fileContents;
-		const className = statement.name == null ? SimpleLanguageService.ANONYMOUS : statement.name.text;
-
-		const cached = this.getCachedClass(filePath, className);
-		if (cached != null && !this.cachedClassNeedsUpdate(cached.content)) return cached.content;
-
-		const classDeclarationStartsAt = statement.pos;
-		const classDeclarationEndsAt = statement.end;
-		const classBodyStartsAt = statement.members.pos;
-		const classBodyEndsAt = statement.members.end;
-		const fullClassContents = fileContents.slice(classDeclarationStartsAt, classDeclarationEndsAt);
-		const bodyClassContents = fileContents.slice(classBodyStartsAt, classBodyEndsAt);
-
-		const declaration: IClassDeclaration = {
-			___kind: IdentifierMapKind.CLASS,
-			name: className,
-			filePath,
-			methods: {},
-			modifiers: this.formatModifiers(statement),
-			heritage: statement.heritageClauses == null ? null : this.formatHeritageClauses(statement.heritageClauses),
-			decorators: this.formatDecorators(statement),
-			constructor: null,
-			startsAt: classDeclarationStartsAt,
-			endsAt: classDeclarationEndsAt,
-			contents: fullClassContents,
-			body: {
-				startsAt: classBodyStartsAt,
-				endsAt: classBodyEndsAt,
-				contents: bodyClassContents
-			},
-			props: {}
-		};
-
-		// Make the kind non-enumerable.
-		Object.defineProperty(declaration, "___kind", {
-			value: IdentifierMapKind.CLASS,
-			enumerable: false
-		});
-
-		statement.members.forEach(member => {
-
-			if (isPropertyDeclaration(member)) {
-				const formatted = this.formatPropertyDeclaration(member, className);
-				const cached = this.getCachedProp(filePath, declaration.name, formatted.name);
-				if (cached != null && !this.cachedPropNeedsUpdate(cached.content)) declaration.props[cached.content.name] = cached.content;
-				else {
-					declaration.props[formatted.name] = formatted;
-					this.setCachedProp(filePath, formatted);
-				}
-			}
-
-			else if (isConstructorDeclaration(member)) {
-				declaration.constructor = this.formatConstructorDeclaration(member, className);
-			}
-
-			else if (isMethodDeclaration(member)) {
-				const formatted = this.formatMethodDeclaration(member, className);
-				declaration.methods[formatted.name] = formatted;
-			}
-
-			else throw new TypeError(`${this.getClassDeclaration.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
-		});
-
-		SimpleLanguageService.AST_MAPPER.set(declaration, statement);
-		this.setCachedClass(filePath, declaration);
-		return declaration;
-	}
-
-	private stringifyIParameter (parameter: IParameter): string {
-		const flattened = parameter.value.expression == null ? "undefined" : parameter.value.hasDoneFirstResolve()
-			? parameter.value.resolved
-			: parameter.value.resolve();
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
-	}
-
-	private stringifyIVariableAssignment (variableAssignment: IVariableAssignment): string {
-		const flattened = variableAssignment.value.expression == null ? "undefined" : variableAssignment.value.hasDoneFirstResolve()
-			? variableAssignment.value.resolved
-			: variableAssignment.value.resolve();
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
-	}
-
-	private stringifyIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean, identifier: string, scope: string|null): string {
-		const map: { [key: string]: string | null | undefined } = {};
-
-		for (const propKey of Object.keys(classDeclaration.props)) {
-			if (statics && !classDeclaration.props[propKey].isStatic) continue;
-			if (!statics && classDeclaration.props[propKey].isStatic) continue;
-
-			const value = classDeclaration.props[propKey].value;
-			map[propKey] = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
-		}
-
-		for (const methodKey of Object.keys(classDeclaration.methods)) {
-			if (statics && !classDeclaration.methods[methodKey].isStatic) continue;
-			if (!statics && classDeclaration.methods[methodKey].isStatic) continue;
-
-			const method = classDeclaration.methods[methodKey];
-			const value = method.value;
-
-			const hasReturnStatement = method.returnStatement.startsAt >= 0;
-			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
-
-			// We have a self-reference here. Since 'this' refers to the mapped object, we just need to return "this".
-			if (identifier === "this" && scope === classDeclaration.name) return "this";
-
-			if (this.mostProbableTypeOf(resolvedValue) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>this.quoteIfNecessary(resolvedValue);
-
-			const startsWithReturn = hasReturnStatement && resolvedValue != null && resolvedValue.trim().startsWith("return");
-			const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${resolvedValue}}` : resolvedValue;
-
-			const parameters = this.stringifyIParameterBody(method.parameters);
-
-			map[methodKey] = `(function ${SimpleLanguageService.FUNCTION_OUTER_SCOPE_NAME}(${parameters}) ${bracketed})`;
-		}
-
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(map, "");
-	}
-
-	private stringifyIEnumDeclaration (enumDeclaration: IEnumDeclaration): string {
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(enumDeclaration.members, "");
-	}
-
-	private stringifyIParameterBody (parameterBody: IParametersBody): string {
-		let str = "";
-		parameterBody.parametersList.forEach((parameter, index) => {
-			str += parameter.name;
-			if (parameter.value != null && parameter.value.expression != null) {
-				const resolvedValue = parameter.value.hasDoneFirstResolve() ? parameter.value.resolved : parameter.value.resolve();
-				str += `=${resolvedValue}`;
-			}
-			if (index !== parameterBody.parametersList.length - 1) str += ",";
-		});
-		return str;
-	}
-
-	private stringifyIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): string {
-		let flattened = functionDeclaration.value.expression == null ? "undefined" : functionDeclaration.value.hasDoneFirstResolve()
-			? functionDeclaration.value.resolved
-			: functionDeclaration.value.resolve();
-
-		if (this.mostProbableTypeOf(flattened) === "string" && flattened != null && !(flattened.trim().startsWith("return"))) flattened = <string>this.quoteIfNecessary(flattened);
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
-	}
-
-	/**
-	 * Finds a free enum ordinal value. Free meaning that no other member of the enumeration is initialized to that value.
-	 * @param {Set<number>} taken
-	 * @returns {number}
-	 */
-	private findFreeEnumIntegerValue (taken: Set<number>): number {
-		const sorted = [...taken].sort();
-
-		for (let i = 0; i < sorted.length; i++) {
-			if (taken.has(i)) continue;
-			return i;
-		}
-		return sorted.length;
+		return this.classFormatter.format(statement);
 	}
 
 }
