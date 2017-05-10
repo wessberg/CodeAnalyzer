@@ -16,7 +16,7 @@ export enum IdentifierMapKind {
 
 export interface IImportExportBinding {
 	name: string;
-	payload?: ArbitraryValue|IIdentifier;
+	payload?: ImportExportBindingPayload;
 	kind: ImportExportKind;
 }
 
@@ -239,9 +239,12 @@ export declare interface IIdentifierMap extends IKindable {
 	imports: IImportDeclaration[];
 	exports: IExportDeclaration[];
 }
+
+export declare type ImportExportBindingPayload = ArbitraryValue|IIdentifier;
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
 export declare type IIdentifier = IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
+export declare type NamespacedExportMap = { [key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };

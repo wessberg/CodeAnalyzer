@@ -1,14 +1,13 @@
 import {test} from "ava";
-import {parse, service, setupMany} from "./util/Setup";
+import {fileName, parse, service, setupMany} from "./util/Setup";
 import {ImportExportKind} from "../src/interface/ISimpleLanguageService";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
 	setupMany([
-		["Foo", "Foo"],
-		["./test", "./test"]
+		["Foo", "Foo"]
 	]);
 	const code = `
-		export {Foo} from "./test";
+		export {Foo} from "${fileName}";
 	`;
 
 	const statements = parse(code);
@@ -20,10 +19,13 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #2`, t =
 	setupMany([
 		["Foo", "Foo"],
 		["Bar", "Bar"],
-		["./test", "./test"]
+		["hello", "hello"],
+		["2", 2]
 	]);
 	const code = `
-		export {Foo, Bar} from "./test";
+		const Foo = "hello";
+		const Bar = 2;
+		export {Foo, Bar} from "${fileName}";
 	`;
 
 	const statements = parse(code);
@@ -63,15 +65,19 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #4`, t =
 test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t => {
 	setupMany([
 		["*", "*"],
+		["hello", "hello"],
+		["2", 2],
 		["./Foo", "./Foo"]
 	]);
 	const code = `
-		export * from "./Foo";
+		export const foo = "hello";
+		export const bar = 2;
+		export * from "${fileName}";
 	`;
 
 	const statements = parse(code);
 	const exportDeclarations = service.getExportDeclarations(statements);
-	t.true(exportDeclarations.length === 1);
+	t.true(exportDeclarations[2] != null && Object.keys(exportDeclarations[2].bindings["*"].payload).length === 2);
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t => {

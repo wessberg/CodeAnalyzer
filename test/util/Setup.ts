@@ -7,7 +7,7 @@ const Mock = TypeMoq.Mock;
 const It = TypeMoq.It;
 
 // Setup
-const fileName = "a_file.ts";
+export const fileName = "a_file.ts";
 const INTEGRATION_TEST = process.env.npm_config_integration === "true";
 export let marshaller = Mock.ofType<IMarshaller>();
 let marshallerIntegrated = new Marshaller(new TypeDetector());

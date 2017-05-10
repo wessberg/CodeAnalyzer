@@ -4,7 +4,7 @@ import {IBindingIdentifier} from "src/interface/IBindingIdentifier";
 import * as ts from "typescript";
 import {ArrayBindingPattern, BinaryExpression, CallExpression, ExportAssignment, ClassDeclaration, CompilerOptions, ConstructorDeclaration, Declaration, DeclarationName, ExportDeclaration, ElementAccessExpression, EnumDeclaration, Expression, FunctionDeclaration, HeritageClause, Identifier, ImportClause, NamedExports, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, MethodDeclaration, ModuleKind, NewExpression, Node, NodeArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, ScriptTarget, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode, TypeReferenceNode, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
 import {BindingIdentifier} from "./BindingIdentifier";
-import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IImportDeclaration, ImportExportIndexer, ImportExportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IValueable, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer} from "./interface/ISimpleLanguageService";
+import {ArbitraryValue, ClassIndexer, DecoratorIndexer, EnumIndexer, FunctionIndexer, IArgument, IBaseVariableAssignment, ICachedContent, ICallable, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IFunctionLike, IHeritage, IIdentifier, IIdentifierMap, IMemberDeclaration, IMethodDeclaration, IImportDeclaration, ImportExportIndexer, ImportExportKind, INewExpression, InitializationValue, INonNullableValueable, IParameter, IParametersable, IParametersBody, IPropDeclaration, ISimpleLanguageService, ISourceFileProperties, ITypeable, ITypeBinding, IValueable, IVariableAssignment, ModuleDependencyKind, NonNullableArbitraryValue, TypeExpression, VariableIndexer, NamespacedExportMap} from "./interface/ISimpleLanguageService";
 import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 import {isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExtendsClause, isExternalModuleReference, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIClassDeclaration, isIdentifierObject, isIEnumDeclaration, isIfStatement, isIFunctionDeclaration, isImplementsClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isIParameter, isIVariableAssignment, isLabeledStatement, isLiteralExpression, isLiteralToken, isMethodDeclaration, isNamedImports, isNamespaceImport, isNewExpression, isNoSubstitutionTemplateLiteral, isNullKeyword, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isTemplateToken, isThisKeyword, isThrowStatement, isTokenObject, isTrueKeyword, isTryStatement, isTupleTypeNode, isTypeAssertionExpression, isTypeBinding, isTypeLiteralNode, isTypeNode, isTypeOfExpression, isTypeReference, isTypeReferenceNode, isUndefinedKeyword, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "./PredicateFunctions";
 import {isOperatorLike, isTokenLike, isWhitespace, marshalToken, serializeToken, throwsIfPrimitive} from "./Util";
@@ -51,7 +51,9 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 	 * @returns {NodeArray<Statement>}
 	 */
 	public getFile (fileName: string): NodeArray<Statement> {
-		return this.languageService.getProgram().getSourceFile(fileName).statements;
+		let file = this.languageService.getProgram().getSourceFile(fileName);
+		if (file == null) throw new ReferenceError(`${this.getFile.name} could not find file: '${fileName}' through the service. Have you added it to the service?`);
+		return file.statements;
 	}
 
 	/**
@@ -1677,17 +1679,36 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		return indexer;
 	}
 
-	private formatExportClause (clause: NamedExports|undefined): ImportExportIndexer {
+	private toNamespacedObjectLiteral (map: IIdentifierMap): NamespacedExportMap {
+		const indexer: NamespacedExportMap = {};
+
+		map.exports.forEach(exportDeclaration => {
+			Object.keys(exportDeclaration.bindings).forEach(key => {
+				const binding = exportDeclaration.bindings[key];
+				indexer[key] = binding.payload;
+			});
+		});
+
+		return indexer;
+	}
+
+	private formatExportClause (clause: NamedExports|undefined, modulePath: string): ImportExportIndexer {
 		const indexer: ImportExportIndexer = {};
+
 		if (clause == null) {
+			const payload = this.toNamespacedObjectLiteral(this.getAllIdentifiersForFile(modulePath, true));
 			indexer["*"] = {
 				name: "*",
+				payload,
 				kind: ImportExportKind.NAMESPACE
 			};
 		} else {
 			clause.elements.forEach(element => {
+				const block = this.traceBlockScopeName(clause);
+				const payload = this.findNearestMatchingIdentifier(clause, block, element.name.text);
 				indexer[element.name.text] = {
 					name: element.name.text,
+					payload,
 					kind: ImportExportKind.NAMED
 				};
 			});
@@ -2104,7 +2125,7 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 					fullPath
 				},
 				filePath,
-				bindings: this.formatExportClause(statement.exportClause)
+				bindings: this.formatExportClause(statement.exportClause, fullPath)
 			};
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
