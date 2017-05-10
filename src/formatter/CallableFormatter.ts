@@ -1,13 +1,14 @@
-import {ICallableFormatter} from "./interface/ICallableFormatter";
-import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../interface/ISimpleLanguageService";
 import {CallExpression, NewExpression, SyntaxKind} from "typescript";
-import {isIdentifierObject, isLiteralExpression, isPropertyAccessExpression} from "../PredicateFunctions";
+import {INameGetter} from "../getter/interface/INameGetter";
+import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {INameGetter} from "../getter/interface/INameGetter";
+import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {isIdentifierObject, isLiteralExpression, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ITracer} from "../tracer/interface/ITracer";
-import {serializeTypeExpression, takeTypeBindings} from "../Util";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
+import {ICallableFormatter} from "./interface/ICallableFormatter";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export abstract class CallableFormatter implements ICallableFormatter {
 
@@ -15,7 +16,9 @@ export abstract class CallableFormatter implements ICallableFormatter {
 							 private valueExpressionGetter: IValueExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private nameGetter: INameGetter,
-							 private typeExpressionGetter: ITypeExpressionGetter) {}
+							 private typeExpressionGetter: ITypeExpressionGetter,
+							 private tokenSerializer: ITokenSerializer,
+							 private typeUtil: ITypeUtil) {}
 
 	/**
 	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
@@ -78,8 +81,8 @@ export abstract class CallableFormatter implements ICallableFormatter {
 				if (index !== typeExpressions.length - 1) typeExpression.push(", ");
 			});
 		}
-		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : takeTypeBindings(typeExpression);
+		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.typeUtil.takeTypeBindings(typeExpression);
 
 		return {
 			expression: typeExpression.length < 1 ? null : typeExpression,

@@ -1,4 +1,4 @@
-import {IIdentifier, IIdentifierMap} from "../../interface/ISimpleLanguageService";
+import {IIdentifier, IIdentifierMap} from "../../service/interface/ISimpleLanguageService";
 import {Statement, Expression, Node} from "typescript";
 
 export interface ITracer {

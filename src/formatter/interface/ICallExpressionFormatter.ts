@@ -1,4 +1,4 @@
-import {ICallExpression} from "../../interface/ISimpleLanguageService";
+import {ICallExpression} from "../../service/interface/ISimpleLanguageService";
 import {CallExpression} from "typescript";
 
 export interface ICallExpressionFormatter {

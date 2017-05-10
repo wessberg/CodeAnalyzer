@@ -1,5 +1,5 @@
 import {ICache} from "./interface/ICache";
-import {ICachedContent, IFunctionDeclaration, IVariableAssignment, IEnumDeclaration, IPropDeclaration, IClassDeclaration, FunctionIndexer, IImportDeclaration, ClassIndexer, EnumIndexer, VariableIndexer, ISimpleLanguageService} from "../interface/ISimpleLanguageService";
+import {ICachedContent, IFunctionDeclaration, IVariableAssignment, IEnumDeclaration, IPropDeclaration, IClassDeclaration, FunctionIndexer, IImportDeclaration, ClassIndexer, EnumIndexer, VariableIndexer, ISimpleLanguageService} from "../service/interface/ISimpleLanguageService";
 
 export class Cache implements ICache {
 	private cache: Map<string, ICachedContent<{}>> = new Map();

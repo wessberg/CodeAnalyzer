@@ -1,13 +1,14 @@
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 import {ConstructorDeclaration, MethodDeclaration, FunctionDeclaration, ParameterDeclaration} from "typescript";
-import {IdentifierMapKind, INonNullableValueable, IParameter} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, INonNullableValueable, IParameter} from "../service/interface/ISimpleLanguageService";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {serializeTypeExpression, takeTypeBindings} from "../Util";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class ParametersFormatter implements IParametersFormatter {
 
@@ -16,7 +17,9 @@ export class ParametersFormatter implements IParametersFormatter {
 							 private nameGetter: INameGetter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter,
-							 private valueExpressionGetter: IValueExpressionGetter) {}
+							 private valueExpressionGetter: IValueExpressionGetter,
+							 private tokenSerializer: ITokenSerializer,
+							 private typeUtil: ITypeUtil) {}
 
 	/**
 	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
@@ -37,8 +40,8 @@ export class ParametersFormatter implements IParametersFormatter {
 		const endsAt = parameter.end;
 		const name = <string>this.nameGetter.getNameOfMember(parameter.name, false, true);
 		const typeExpression = parameter.type == null ? null : this.typeExpressionGetter.getTypeExpression(parameter);
-		const typeFlattened = typeExpression == null ? null : serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : takeTypeBindings(typeExpression);
+		const typeFlattened = typeExpression == null ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
 		const valueExpression = parameter.initializer != null ? this.valueExpressionGetter.getValueExpression(parameter.initializer) : null;
 		const that = this;
 		const scope = this.tracer.traceThis(parameter);

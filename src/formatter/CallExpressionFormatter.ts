@@ -1,6 +1,6 @@
 import {CallableFormatter} from "./CallableFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {ICallExpression, IdentifierMapKind} from "../interface/ISimpleLanguageService";
+import {ICallExpression, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {CallExpression} from "typescript";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
@@ -10,6 +10,8 @@ import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class CallExpressionFormatter extends CallableFormatter implements ICallExpressionFormatter {
 
@@ -20,8 +22,10 @@ export class CallExpressionFormatter extends CallableFormatter implements ICallE
 							 valueExpressionGetter: IValueExpressionGetter,
 							 valueResolvedGetter: IValueResolvedGetter,
 							 nameGetter: INameGetter,
-							 typeExpressionGetter: ITypeExpressionGetter) {
-		super(tracer, valueExpressionGetter, valueResolvedGetter, nameGetter, typeExpressionGetter);
+							 typeExpressionGetter: ITypeExpressionGetter,
+							 tokenSerializer: ITokenSerializer,
+							 typeUtil: ITypeUtil) {
+		super(tracer, valueExpressionGetter, valueResolvedGetter, nameGetter, typeExpressionGetter, tokenSerializer, typeUtil);
 	}
 
 	/**

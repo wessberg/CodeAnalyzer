@@ -1,6 +1,6 @@
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IFunctionFormatter} from "./interface/IFunctionFormatter";
-import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
 import {FunctionDeclaration} from "typescript";
 import {ICache} from "../cache/interface/ICache";
 import {IMapper} from "../mapper/interface/IMapper";
@@ -12,6 +12,7 @@ import {IDecoratorsFormatter} from "src/formatter/interface/IDecoratorsFormatter
 import {INameGetter} from "../getter/interface/INameGetter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
+import {Config} from "../static/Config";
 
 export class FunctionFormatter extends FunctionLikeFormatter implements IFunctionFormatter {
 
@@ -34,7 +35,7 @@ export class FunctionFormatter extends FunctionLikeFormatter implements IFunctio
 	 * @returns {IFunctionDeclaration}
 	 */
 	public format (declaration: FunctionDeclaration): IFunctionDeclaration {
-		const name = declaration.name == null ? "anonymous" : <string>this.nameGetter.getNameOfMember(declaration.name, false, true);
+		const name = declaration.name == null ? Config.name.anonymous : <string>this.nameGetter.getNameOfMember(declaration.name, false, true);
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 
 		const cached = this.cache.getCachedFunction(filePath, name);

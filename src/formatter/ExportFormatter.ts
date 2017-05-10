@@ -3,15 +3,16 @@ import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ISimpleLanguageService, IValueable, ModuleDependencyKind} from "../interface/ISimpleLanguageService";
+import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ISimpleLanguageService, IValueable, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
-import {isClassDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../PredicateFunctions";
+import {isClassDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IExportFormatter} from "./interface/IExportFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 import {IClassFormatter} from "./interface/IClassFormatter";
 import {IFunctionFormatter} from "./interface/IFunctionFormatter";
+import {IStringUtil} from "../util/interface/IStringUtil";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
@@ -24,8 +25,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 							 private classFormatter: IClassFormatter,
 							 private functionFormatter: IFunctionFormatter,
 							 private nameGetter: INameGetter,
-							 private tracer: ITracer) {
-		super();
+							 private tracer: ITracer,
+							 stringUtil: IStringUtil) {
+		super(stringUtil);
 	}
 
 	public format (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null {

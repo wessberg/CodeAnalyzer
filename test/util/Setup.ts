@@ -1,8 +1,8 @@
 import {IMarshaller, Marshaller} from "@wessberg/marshaller";
 import {TypeDetector} from "@wessberg/typedetector";
 import * as TypeMoq from "typemoq";
-import {ArbitraryValueIndexable, InitializationValue, ISimpleLanguageService} from "../../src/interface/ISimpleLanguageService";
-import {SimpleLanguageService} from "../../src/SimpleLanguageService";
+import {ArbitraryValueIndexable, InitializationValue, ISimpleLanguageService} from "../../src/service/interface/ISimpleLanguageService";
+import {SimpleLanguageService} from "../../src/service/SimpleLanguageService";
 const Mock = TypeMoq.Mock;
 const It = TypeMoq.It;
 

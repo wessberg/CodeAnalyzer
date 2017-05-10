@@ -1,21 +1,24 @@
-import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode} from "typescript";
-import {BindingIdentifier} from "./BindingIdentifier";
-import {IBindingIdentifier} from "./interface/IBindingIdentifier";
-import {ArbitraryValue, ITypeBinding, TypeExpression} from "./interface/ISimpleLanguageService";
-import {isTypeBinding} from "./PredicateFunctions";
+import {ITokenSerializer} from "./interface/ITokenSerializer";
+import {SyntaxKind, BinaryOperator, NodeFlags, TypeNode} from "typescript";
+import {ArbitraryValue, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {isTypeBinding} from "../predicate/PredicateFunctions";
+import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
+import {BindingIdentifier} from "../model/BindingIdentifier";
 
-/**
- * Formats and returns a string representation of a type.
- * @param {TypeExpression} expression
- * @returns {string}
- */
-export function serializeTypeExpression (expression: TypeExpression): string {
+export class TokenSerializer implements ITokenSerializer {
+
+	/**
+	 * Formats and returns a string representation of a type.
+	 * @param {TypeExpression} expression
+	 * @returns {string}
+	 */
+	public serializeTypeExpression (expression: TypeExpression): string {
 	let statement: string = "";
 	expression.forEach(token => {
 		if (isTypeBinding(token)) {
 			statement += token.name;
 			if (token.typeArguments != null) {
-				statement += `<${serializeTypeExpression(token.typeArguments)}>`;
+				statement += `<${this.serializeTypeExpression(token.typeArguments)}>`;
 			}
 		} else {
 			statement += `${token}`;
@@ -24,12 +27,12 @@ export function serializeTypeExpression (expression: TypeExpression): string {
 	return statement;
 }
 
-/**
- * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
- * @param {SyntaxKind} token
- * @returns {ArbitraryValue}
- */
-export function marshalToken (token: SyntaxKind | BinaryOperator | TypeNode): ArbitraryValue {
+	/**
+	 * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
+	 * @param {SyntaxKind} token
+	 * @returns {ArbitraryValue}
+	 */
+	public marshalToken (token: SyntaxKind | BinaryOperator | TypeNode): ArbitraryValue {
 	switch (token) {
 		case SyntaxKind.NullKeyword:
 			return null;
@@ -40,16 +43,16 @@ export function marshalToken (token: SyntaxKind | BinaryOperator | TypeNode): Ar
 		case SyntaxKind.FalseKeyword:
 			return false;
 		default:
-			return serializeToken(token);
+			return this.serializeToken(token);
 	}
 }
 
-/**
- * Serializes the given flag and returns the textual representation of it.
- * @param {NodeFlags} flag
- * @returns {string|null}
- */
-export function serializeFlag (flag: NodeFlags): string | null {
+	/**
+	 * Serializes the given flag and returns the textual representation of it.
+	 * @param {NodeFlags} flag
+	 * @returns {string|null}
+	 */
+	public serializeFlag (flag: NodeFlags): string | null {
 	switch (flag) {
 		case NodeFlags.Const:
 			return "const";
@@ -59,202 +62,13 @@ export function serializeFlag (flag: NodeFlags): string | null {
 	return null;
 }
 
-/**
- * Returns true if the given item is a stringified keyword or a stringified operator.
- * @param {ArbitraryValue} item
- * @returns {boolean}
- */
-export function isTokenLike (item: ArbitraryValue): boolean {
-	return isWhitespace(item) || isKeywordLike(item) || isOperatorLike(item);
-}
 
-/**
- * Returns true if the given token expects an identifier. For example, '++' will throw exceptions
- * if given a primitive value.
- * @param {ArbitraryValue} item
- * @returns {boolean}
- */
-export function throwsIfPrimitive (item: ArbitraryValue): boolean {
-	switch (item == null ? "" : item.toString()) {
-		case "=":
-		case "++":
-		case "--":
-		case "+=":
-		case "-=":
-		case "*=":
-		case "**=":
-		case "...":
-			return true;
-		default:
-			return false;
-	}
-}
-
-/**
- * Returns true if the given item is a string of pure whitespace.
- * @param {ArbitraryValue} item
- * @returns {boolean}
- */
-export function isWhitespace (item: ArbitraryValue): boolean {
-	if (typeof item !== "string") return false;
-	return /^[\t\n\r\s]+$/.test(item);
-}
-
-/**
- * Returns true if the given item is a stringified keyword.
- * @param {ArbitraryValue} item
- * @returns {boolean}
- */
-export function isKeywordLike (item: ArbitraryValue): boolean {
-	switch (item == null ? "" : item.toString()) {
-		case "object":
-		case "number":
-		case "never":
-		case "boolean":
-		case "any":
-		case "void":
-		case "symbol":
-		case "null":
-		case "undefined":
-		case "string":
-		case "true":
-		case "false":
-		case "break":
-		case "catch":
-		case "case":
-		case "class":
-		case "const":
-		case "continue":
-		case "debugger":
-		case "default":
-		case "delete":
-		case "do":
-		case "else":
-		case "enum":
-		case "export":
-		case "extends":
-		case "finally":
-		case "for":
-		case "function":
-		case "if":
-		case "import":
-		case "in":
-		case "instanceof":
-		case "new":
-		case "return":
-		case "super":
-		case "this":
-		case "throw":
-		case "try":
-		case "typeof":
-		case "var":
-		case "with":
-		case "implements":
-		case "interface":
-		case "let":
-		case "package":
-		case "private":
-		case "protected":
-		case "public":
-		case "static":
-		case "yield":
-		case "abstract":
-		case "as":
-		case "async":
-		case "await":
-		case "constructor":
-		case "declare":
-		case "get":
-		case "is":
-		case "keyof":
-		case "module":
-		case "namespace":
-		case "readonly":
-		case "require":
-		case "set":
-		case "type":
-		case "from":
-		case "global":
-		case "of":
-			return true;
-		default:
-			return false;
-	}
-}
-
-/**
- * Returns true if the given item is a stringified operator.
- * @param {ArbitraryValue} item
- * @returns {boolean}
- */
-export function isOperatorLike (item: ArbitraryValue): boolean {
-	switch (item == null ? "" : item.toString()) {
-		case "+":
-		case "-":
-		case "=":
-		case "=>":
-		case "==":
-		case "===":
-		case "++":
-		case "--":
-		case "+=":
-		case "-=":
-		case "*":
-		case "/":
-		case "*=":
-		case "**=":
-		case "**":
-		case "!==":
-		case "!=":
-		case "!":
-		case "||":
-		case "|":
-		case "|=":
-		case "&&":
-		case "&":
-		case "&=":
-		case "%":
-		case "/=":
-		case "</":
-		case "%=":
-		case ":":
-		case ";":
-		case "<=":
-		case ">":
-		case "<":
-		case "<<=":
-		case "<<":
-		case ">=":
-		case ">>=":
-		case ">>>":
-		case "<<<":
-		case ">>":
-		case ">>>=":
-		case "?":
-		case "~":
-		case "^":
-		case "^=":
-		case ",":
-		case "{":
-		case "}":
-		case "(":
-		case ")":
-		case "[":
-		case "]":
-		case ".":
-		case "...":
-			return true;
-		default:
-			return false;
-	}
-}
-
-/**
- * Serializes the given token (operand) and returns the textual representation of it.
- * @param {SyntaxKind} token
- * @returns {string|BindingIdentifier}
- */
-export function serializeToken (token: SyntaxKind | TypeNode): string | IBindingIdentifier {
+	/**
+	 * Serializes the given token (operand) and returns the textual representation of it.
+	 * @param {SyntaxKind} token
+	 * @returns {string|BindingIdentifier}
+	 */
+	public serializeToken (token: SyntaxKind | TypeNode): string | IBindingIdentifier {
 	switch (token) {
 		case SyntaxKind.BreakStatement:
 			return "break";
@@ -514,68 +328,7 @@ export function serializeToken (token: SyntaxKind | TypeNode): string | IBinding
 		case SyntaxKind.DotDotDotToken:
 			return "...";
 		default:
-			throw new TypeError(`${serializeToken.name} could not serialize a token of kind ${SyntaxKind[<SyntaxKind>token]}`);
+			throw new TypeError(`${this.serializeToken.name} could not serialize a token of kind ${SyntaxKind[<SyntaxKind>token]}`);
 	}
 }
-
-function isQuote (content: string): boolean {
-	return /["'`]/.test(content);
-}
-
-export function stripQuotesIfNecessary (content: ArbitraryValue): ArbitraryValue {
-	if (!(typeof content === "string")) return content;
-	const trimmed = content;
-	const firstChar = trimmed[0];
-	const lastChar = trimmed[trimmed.length - 1];
-	const startsWithQuote = isQuote(firstChar);
-	const endsWithQuote = isQuote(lastChar);
-	const startOffset = startsWithQuote ? 1 : 0;
-	const endOffset = endsWithQuote ? 1 : 0;
-	return trimmed.slice(startOffset, trimmed.length - endOffset);
-}
-
-export function quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
-	if (!(typeof content === "string")) return content;
-	const REPLACEMENT_CHAR = "`";
-	const trimmed = content;
-	const firstChar = trimmed[0];
-	const lastChar = trimmed[trimmed.length - 1];
-	let str = REPLACEMENT_CHAR;
-	const startsWithClashingQuote = firstChar === REPLACEMENT_CHAR;
-	const endsWithClashingQuote = lastChar === REPLACEMENT_CHAR;
-
-	if (startsWithClashingQuote && endsWithClashingQuote) {
-		const insideQuotes = trimmed.match(new RegExp(`^${REPLACEMENT_CHAR}([^${REPLACEMENT_CHAR}]*)${REPLACEMENT_CHAR}`));
-		// If there are nothing but whitespace inside the quotes, just return them.
-		if (insideQuotes != null && isWhitespace(insideQuotes[1])) return content;
-	}
-
-	const startOffset = startsWithClashingQuote ? 1 : 0;
-	const endOffset = endsWithClashingQuote ? 1 : 0;
-	if (startsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
-	str += trimmed.slice(startOffset, trimmed.length - endOffset);
-	if (endsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
-	str += REPLACEMENT_CHAR;
-	return str;
-}
-
-/**
- * Takes all ITypeBindings from a TypeExpression and returns an array of them.
- * @param {TypeExpression} expression
- * @param {boolean} [deep=false]
- * @returns {ITypeBinding[]}
- */
-export function takeTypeBindings (expression: TypeExpression, deep: boolean = false): ITypeBinding[] {
-	const bindings: ITypeBinding[] = [];
-
-	expression.forEach(token => {
-		if (isTypeBinding(token)) {
-			bindings.push(token);
-
-			if (token.typeArguments != null && deep) {
-				takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
-			}
-		}
-	});
-	return bindings;
 }

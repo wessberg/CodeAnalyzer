@@ -1,9 +1,11 @@
 import {dirname, join} from "path";
-import {IModuleDeclaration, NamespacedModuleMap} from "../interface/ISimpleLanguageService";
+import {IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
-import {stripQuotesIfNecessary} from "../Util";
+import {IStringUtil} from "../util/interface/IStringUtil";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
+
+	constructor (protected stringUtil: IStringUtil) {}
 
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
 		const indexer: NamespacedModuleMap = {};
@@ -19,7 +21,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 	}
 
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
-		const relativePathStripped = <string>stripQuotesIfNecessary(relativePath);
+		const relativePathStripped = <string>this.stringUtil.stripQuotesIfNecessary(relativePath);
 
 		// TODO: Check if the relativePath is in fact an absolute path.
 		// TODO: Add file-extension, otherwise Typescript won't add the file!

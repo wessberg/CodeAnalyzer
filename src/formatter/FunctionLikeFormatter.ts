@@ -1,8 +1,8 @@
 import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
-import {IFunctionLike, IMemberDeclaration, IParametersable} from "../interface/ISimpleLanguageService";
+import {IFunctionLike, IMemberDeclaration, IParametersable} from "../service/interface/ISimpleLanguageService";
 import {MethodDeclaration, FunctionDeclaration, ConstructorDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {isReturnStatement} from "../PredicateFunctions";
+import {isReturnStatement} from "../predicate/PredicateFunctions";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";

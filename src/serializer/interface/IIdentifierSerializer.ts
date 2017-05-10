@@ -1,4 +1,4 @@
-import {IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IParameter, IParametersBody, IVariableAssignment} from "../../interface/ISimpleLanguageService";
+import {IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IParameter, IParametersBody, IVariableAssignment} from "../../service/interface/ISimpleLanguageService";
 export interface IIdentifierSerializer {
 	serializeIParameter (parameter: IParameter): string;
 	serializeIVariableAssignment (variableAssignment: IVariableAssignment): string;

@@ -1,9 +1,9 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {DeclarationName, Expression, Node, Statement, SyntaxKind, TypeNode, TypeReferenceNode, Identifier} from "typescript";
 import {INameGetter} from "./interface/INameGetter";
-import {ArbitraryValue} from "../interface/ISimpleLanguageService";
-import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isThisKeyword, isTypeAssertionExpression, isTypeReference, isVariableDeclaration, isTemplateMiddle, isTemplateHead, isNumericLiteral, isTemplateExpression, isTemplateTail, isTypeReferenceNode} from "../PredicateFunctions";
-import {BindingIdentifier} from "../BindingIdentifier";
+import {ArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isThisKeyword, isTypeAssertionExpression, isTypeReference, isVariableDeclaration, isTemplateMiddle, isTemplateHead, isNumericLiteral, isTemplateExpression, isTemplateTail, isTypeReferenceNode} from "../predicate/PredicateFunctions";
+import {BindingIdentifier} from "../model/BindingIdentifier";
 
 export class NameGetter implements INameGetter {
 

@@ -1,6 +1,6 @@
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {CallExpression, NewExpression, Expression} from "typescript";
-import {IArgument, IdentifierMapKind, INonNullableValueable} from "../interface/ISimpleLanguageService";
+import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";

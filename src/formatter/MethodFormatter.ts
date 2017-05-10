@@ -1,14 +1,14 @@
 import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {MethodDeclaration} from "typescript";
-import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {isStaticKeyword} from "../PredicateFunctions";
+import {isStaticKeyword} from "../predicate/PredicateFunctions";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 

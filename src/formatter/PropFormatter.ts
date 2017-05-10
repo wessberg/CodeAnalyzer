@@ -1,8 +1,7 @@
 import {IPropFormatter} from "./interface/IPropFormatter";
-import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../service/interface/ISimpleLanguageService";
 import {PropertyDeclaration} from "typescript";
-import {isStaticKeyword} from "../PredicateFunctions";
-import {serializeTypeExpression, takeTypeBindings} from "../Util";
+import {isStaticKeyword} from "../predicate/PredicateFunctions";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {INameGetter} from "../getter/interface/INameGetter";
@@ -12,6 +11,8 @@ import {ITracer} from "../tracer/interface/ITracer";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class PropFormatter implements IPropFormatter {
 
@@ -23,7 +24,9 @@ export class PropFormatter implements IPropFormatter {
 							 private valueExpressionGetter: IValueExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
-							 private nameGetter: INameGetter) {}
+							 private nameGetter: INameGetter,
+							 private tokenSerializer: ITokenSerializer,
+							 private typeUtil: ITypeUtil) {}
 
 	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
@@ -37,8 +40,8 @@ export class PropFormatter implements IPropFormatter {
 		const endsAt = declaration.end;
 		const name = <string>this.nameGetter.getNameOfMember(declaration.name, false, true);
 		const typeExpression = declaration.type == null ? null : this.typeExpressionGetter.getTypeExpression(declaration.type);
-		const typeFlattened = typeExpression == null ? null : serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : takeTypeBindings(typeExpression);
+		const typeFlattened = typeExpression == null ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
 		const valueExpression = declaration.initializer == null ? null : this.valueExpressionGetter.getValueExpression(declaration.initializer);
 		const that = this;
 		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => isStaticKeyword(modifier)) != null;

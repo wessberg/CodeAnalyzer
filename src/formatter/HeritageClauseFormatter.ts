@@ -1,7 +1,7 @@
 import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
-import {IHeritage} from "../interface/ISimpleLanguageService";
+import {IHeritage} from "../service/interface/ISimpleLanguageService";
 import {HeritageClause, NodeArray} from "typescript";
-import {isExtendsClause, isImplementsClause, isTypeBinding} from "../PredicateFunctions";
+import {isExtendsClause, isImplementsClause, isTypeBinding} from "../predicate/PredicateFunctions";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 
 export class HeritageClauseFormatter implements IHeritageClauseFormatter {

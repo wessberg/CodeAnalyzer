@@ -1,4 +1,4 @@
-import {ISourceFileProperties} from "../../interface/ISimpleLanguageService";
+import {ISourceFileProperties} from "../../service/interface/ISimpleLanguageService";
 import {Statement, Node, Expression} from "typescript";
 
 export interface ISourceFilePropertiesGetter {

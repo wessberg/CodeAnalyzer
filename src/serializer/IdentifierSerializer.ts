@@ -1,12 +1,13 @@
 import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
-import {IFunctionDeclaration, IParametersBody, IEnumDeclaration, IClassDeclaration, IVariableAssignment, IParameter, ArbitraryValue} from "../interface/ISimpleLanguageService";
-import {quoteIfNecessary} from "../Util";
+import {IFunctionDeclaration, IParametersBody, IEnumDeclaration, IClassDeclaration, IVariableAssignment, IParameter, ArbitraryValue} from "../service/interface/ISimpleLanguageService";
 import {IMarshaller} from "@wessberg/marshaller";
+import {IStringUtil} from "../util/interface/IStringUtil";
 
 export class IdentifierSerializer implements IIdentifierSerializer {
 	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
 
-	constructor (private marshaller: IMarshaller) {}
+	constructor (private marshaller: IMarshaller,
+							 private stringUtil: IStringUtil) {}
 
 	public serializeIParameter (parameter: IParameter): string {
 		const flattened = parameter.value.expression == null ? "undefined" : parameter.value.hasDoneFirstResolve()
@@ -46,7 +47,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			// We have a self-reference here. Since 'this' refers to the mapped object, we just need to return "this".
 			if (identifier === "this" && scope === classDeclaration.name) return "this";
 
-			if (this.marshaller.getTypeOf(this.marshaller.marshal(resolvedValue)) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>quoteIfNecessary(resolvedValue);
+			if (this.marshaller.getTypeOf(this.marshaller.marshal(resolvedValue)) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>this.stringUtil.quoteIfNecessary(resolvedValue);
 
 			const startsWithReturn = hasReturnStatement && resolvedValue != null && resolvedValue.trim().startsWith("return");
 			const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${resolvedValue}}` : resolvedValue;
@@ -81,7 +82,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			? functionDeclaration.value.resolved
 			: functionDeclaration.value.resolve();
 
-		if (this.marshaller.getTypeOf(this.marshaller.marshal(flattened)) === "string" && flattened != null && !(flattened.trim().startsWith("return"))) flattened = <string>quoteIfNecessary(flattened);
+		if (this.marshaller.getTypeOf(this.marshaller.marshal(flattened)) === "string" && flattened != null && !(flattened.trim().startsWith("return"))) flattened = <string>this.stringUtil.quoteIfNecessary(flattened);
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
 	}
 }

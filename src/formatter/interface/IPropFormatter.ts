@@ -1,4 +1,4 @@
-import {IPropDeclaration} from "../../interface/ISimpleLanguageService";
+import {IPropDeclaration} from "../../service/interface/ISimpleLanguageService";
 import {PropertyDeclaration} from "typescript";
 
 export interface IPropFormatter {

@@ -1,6 +1,6 @@
 import {test} from "ava";
 import {fileName, parse, service, setupMany} from "./util/Setup";
-import {ImportExportKind} from "../src/interface/ISimpleLanguageService";
+import {ImportExportKind} from "../src/service/interface/ISimpleLanguageService";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
 	setupMany([

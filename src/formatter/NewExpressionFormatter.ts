@@ -4,12 +4,14 @@ import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFileProper
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {IdentifierMapKind, INewExpression} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, INewExpression} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITracer} from "../tracer/interface/ITracer";
 import {CallableFormatter} from "./CallableFormatter";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {INewExpressionFormatter} from "./interface/INewExpressionFormatter";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class NewExpressionFormatter extends CallableFormatter implements INewExpressionFormatter {
 
@@ -20,8 +22,10 @@ export class NewExpressionFormatter extends CallableFormatter implements INewExp
 							 valueExpressionGetter: IValueExpressionGetter,
 							 valueResolvedGetter: IValueResolvedGetter,
 							 nameGetter: INameGetter,
-							 typeExpressionGetter: ITypeExpressionGetter) {
-		super(tracer, valueExpressionGetter, valueResolvedGetter, nameGetter, typeExpressionGetter);
+							 typeExpressionGetter: ITypeExpressionGetter,
+							 tokenSerializer: ITokenSerializer,
+							 typeUtil: ITypeUtil) {
+		super(tracer, valueExpressionGetter, valueResolvedGetter, nameGetter, typeExpressionGetter, tokenSerializer, typeUtil);
 	}
 
 	/**

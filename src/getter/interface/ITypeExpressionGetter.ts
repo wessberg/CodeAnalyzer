@@ -1,4 +1,4 @@
-import {TypeExpression} from "../../interface/ISimpleLanguageService";
+import {TypeExpression} from "../../service/interface/ISimpleLanguageService";
 import {ParameterDeclaration, TypeAliasDeclaration, TypeNode} from "typescript";
 
 export interface ITypeExpressionGetter {

@@ -1,5 +1,5 @@
 import {Expression, Node, Statement} from "typescript";
-import {IIdentifier} from "../../interface/ISimpleLanguageService";
+import {IIdentifier} from "../../service/interface/ISimpleLanguageService";
 
 export interface IMapper {
 	set (identifier: IIdentifier, statement: Statement | Expression | Node): void;

@@ -1,5 +1,5 @@
 import {test} from "ava";
-import {BindingIdentifier} from "../src/BindingIdentifier";
+import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3, FULL_CODE_EXAMPLE_4, FULL_CODE_EXAMPLE_6} from "./static/FullCodeExamples";
 import {parse, service, setup, setupMany} from "./util/Setup";
 

@@ -1,7 +1,7 @@
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";
 import {ConstructorDeclaration} from "typescript";
-import {IConstructorDeclaration, IdentifierMapKind} from "../interface/ISimpleLanguageService";
+import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IModifiersFormatter} from "src/formatter/interface/IModifiersFormatter";

@@ -1,5 +1,5 @@
 import {test} from "ava";
-import {BindingIdentifier} from "../src/BindingIdentifier";
+import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {parse, service, setup, setupMany} from "./util/Setup";
 import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 test(`ValueExpressions -> Detects all valueExpressions correctly. #1`, t => {

@@ -1,5 +1,5 @@
-export {BindingIdentifier} from "./BindingIdentifier";
-export {SimpleLanguageService} from "./SimpleLanguageService";
+export {BindingIdentifier} from "./model/BindingIdentifier";
+export {SimpleLanguageService} from "./service/SimpleLanguageService";
 export {
 	ISimpleLanguageService,
 	IClassDeclaration,
@@ -35,5 +35,5 @@ export {
 	DecoratorIndexer,
 	ResolvedMethodMap,
 	INewExpression
-} from "./interface/ISimpleLanguageService";
-export {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
+} from "./service/interface/ISimpleLanguageService";
+export {ISimpleLanguageServiceConfig} from "./service/interface/ISimpleLanguageServiceConfig";

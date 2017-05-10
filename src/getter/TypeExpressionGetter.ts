@@ -1,13 +1,13 @@
-import {TypeExpression} from "src/interface/ISimpleLanguageService";
+import {TypeExpression} from "src/service/interface/ISimpleLanguageService";
 import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
-import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../PredicateFunctions";
-import {serializeToken} from "../Util";
+import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 
-	constructor (private nameGetter: INameGetter) {}
+	constructor (private nameGetter: INameGetter, private tokenSerializer: ITokenSerializer) {}
 
 	/**
 	 * Tokenizes the type information from the given statement and returns a TypeExpression.
@@ -76,7 +76,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 				return exp;
 			}
 
-			return [serializeToken(statement.kind)];
+			return [this.tokenSerializer.serializeToken(statement.kind)];
 		}
 
 		if (isTypeLiteralNode(statement)) {
@@ -110,7 +110,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 					exp.push(name);
 
 					if (member.questionToken != null) {
-						exp.push(serializeToken(member.questionToken.kind));
+						exp.push(this.tokenSerializer.serializeToken(member.questionToken.kind));
 					}
 					if (type != null) {
 						exp.push(": ");

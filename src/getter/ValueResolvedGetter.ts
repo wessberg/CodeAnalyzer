@@ -1,13 +1,14 @@
 import {IValueResolvedGetter} from "./interface/IValueResolvedGetter";
-import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../interface/ISimpleLanguageService";
+import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ISimpleLanguageService";
 import {Statement, Expression, Node} from "typescript";
 import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {IMarshaller} from "@wessberg/marshaller";
-import {isTokenLike, quoteIfNecessary, throwsIfPrimitive} from "../Util";
-import {isIEnumDeclaration, isIFunctionDeclaration, isIClassDeclaration, isIVariableAssignment, isIParameter} from "../PredicateFunctions";
-import {BindingIdentifier} from "../BindingIdentifier";
+import {isIEnumDeclaration, isIFunctionDeclaration, isIClassDeclaration, isIVariableAssignment, isIParameter} from "../predicate/PredicateFunctions";
+import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
+import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
+import {IStringUtil} from "../util/interface/IStringUtil";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
@@ -15,7 +16,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 	constructor (private marshaller: IMarshaller,
 							 private tracer: ITracer,
-							 private identifierSerializer: IIdentifierSerializer) {}
+							 private identifierSerializer: IIdentifierSerializer,
+							 private tokenPredicator: ITokenPredicator,
+							 private stringUtil: IStringUtil) {}
 
 	/**
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
@@ -92,8 +95,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 					else {
 						const previousPart = index === 0 ? "" : expression[index - 1];
 						const nextPart = index === expression.length - 1 ? "" : expression[index + 1];
-						const requiresIdentifier = throwsIfPrimitive(previousPart) || throwsIfPrimitive(nextPart);
-						const stringifiedNormalized = this.marshaller.getTypeOf(this.marshaller.marshal(stringified)) === "string" ? <string>quoteIfNecessary(stringified) : stringified;
+						const requiresIdentifier = this.tokenPredicator.throwsIfPrimitive(previousPart) || this.tokenPredicator.throwsIfPrimitive(nextPart);
+						const stringifiedNormalized = this.marshaller.getTypeOf(this.marshaller.marshal(stringified)) === "string" ? <string>this.stringUtil.quoteIfNecessary(stringified) : stringified;
 						if (requiresIdentifier) sub = `${GlobalObjectIdentifier}.${part.name}`;
 						else sub = `(${GlobalObjectIdentifier}.${part.name} = ${GlobalObjectIdentifier}.${part.name} === undefined ? ${stringifiedNormalized} : ${GlobalObjectIdentifier}.${part.name})`;
 						forceNoQuoting = true;
@@ -133,10 +136,10 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 					// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 				}
 
-				if (!forceNoQuoting && this.marshaller.getTypeOf(this.marshaller.marshal(sub)) === "string") sub = <string>quoteIfNecessary(sub);
+				if (!forceNoQuoting && this.marshaller.getTypeOf(this.marshaller.marshal(sub)) === "string") sub = <string>this.stringUtil.quoteIfNecessary(sub);
 				val += sub;
 			} else {
-				if (isTokenLike(part)) val += <string>part;
+				if (this.tokenPredicator.isTokenLike(part)) val += <string>part;
 				else val += this.marshaller.marshal<ArbitraryValue, string>(part, "");
 			}
 		});

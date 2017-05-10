@@ -1,13 +1,12 @@
 import {ITracer} from "./interface/ITracer";
 import {Statement, Expression, Node, SyntaxKind} from "typescript";
-import {IIdentifier, IIdentifierMap, IParameter, ISimpleLanguageService} from "../interface/ISimpleLanguageService";
-import {isFunctionDeclaration, isFunctionExpression, isSourceFile, isClassDeclaration, isClassExpression, isMethodDeclaration, isPropertyDeclaration, isArrowFunction} from "../PredicateFunctions";
+import {IIdentifier, IIdentifierMap, IParameter, ISimpleLanguageService} from "../service/interface/ISimpleLanguageService";
+import {isFunctionDeclaration, isFunctionExpression, isSourceFile, isClassDeclaration, isClassExpression, isMethodDeclaration, isPropertyDeclaration, isArrowFunction} from "../predicate/PredicateFunctions";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {Config} from "../static/Config";
 
 export class Tracer implements ITracer {
-	private static readonly GLOBAL: string = "global";
-	private static readonly ANONYMOUS: string = "__anonymous__";
 
 	constructor (private languageService: ISimpleLanguageService,
 							 private nameGetter: INameGetter,
@@ -72,7 +71,7 @@ export class Tracer implements ITracer {
 	 */
 	public traceIdentifier (identifier: string, from: Statement | Expression | Node, scope: string | null): IIdentifier | null {
 		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
-		const lookupIdentifier = identifier === "this" && scope != null && scope !== Tracer.GLOBAL ? scope : identifier;
+		const lookupIdentifier = identifier === "this" && scope != null && scope !== Config.name.global ? scope : identifier;
 
 		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
@@ -83,15 +82,15 @@ export class Tracer implements ITracer {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
-				return Tracer.GLOBAL;
+				return Config.name.global;
 			}
 
 			if (
 				isFunctionExpression(block) ||
 				isFunctionDeclaration(block)
 			) {
-				const name = block.name == null ? block.parent == null ? Tracer.GLOBAL : this.traceThis(block.parent) : this.nameGetter.getName(block);
-				return name == null ? Tracer.GLOBAL : name;
+				const name = block.name == null ? block.parent == null ? Config.name.global : this.traceThis(block.parent) : this.nameGetter.getName(block);
+				return name == null ? Config.name.global : name;
 			}
 
 			if (
@@ -99,7 +98,7 @@ export class Tracer implements ITracer {
 				isClassExpression(block)
 			) {
 				const name = this.nameGetter.getName(block);
-				return name == null ? Tracer.GLOBAL : name;
+				return name == null ? Config.name.global : name;
 			}
 
 			if (
@@ -108,16 +107,16 @@ export class Tracer implements ITracer {
 			) {
 				if (block.parent == null) {
 					const name = this.nameGetter.getName(block);
-					return name == null ? Tracer.GLOBAL : name;
+					return name == null ? Config.name.global : name;
 				}
 				return this.traceThis(block.parent);
 			}
 
 			if (isArrowFunction(block)) {
-				return block.parent == null ? Tracer.GLOBAL : this.traceThis(block.parent);
+				return block.parent == null ? Config.name.global : this.traceThis(block.parent);
 			}
 
-			throw new TypeError(`${this.traceThis.name} could not trace a 'this' value for a statement of knd ${SyntaxKind[statement.kind]}`);
+			throw new TypeError(`${this.traceThis.name} could not trace a 'this' value for a statement of kind ${SyntaxKind[statement.kind]}`);
 		});
 	}
 
@@ -132,7 +131,7 @@ export class Tracer implements ITracer {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
-				return Tracer.GLOBAL;
+				return Config.name.global;
 			}
 
 			if (
@@ -143,7 +142,7 @@ export class Tracer implements ITracer {
 				isClassExpression(block)
 			) {
 				const name = this.nameGetter.getName(block);
-				return name == null ? Tracer.GLOBAL : name;
+				return name == null ? Config.name.global : name;
 			}
 
 			if (
@@ -151,13 +150,13 @@ export class Tracer implements ITracer {
 			) {
 				if (block.parent == null) {
 					const name = this.nameGetter.getName(block);
-					return name == null ? Tracer.GLOBAL : name;
+					return name == null ? Config.name.global : name;
 				}
 				return this.traceBlockScopeName(block.parent);
 			}
 
 			if (isArrowFunction(block)) {
-				return Tracer.ANONYMOUS;
+				return Config.name.anonymous;
 			}
 
 			throw new TypeError(`${this.traceBlockScopeName.name} could not trace a block scope of a statement of knd ${SyntaxKind[statement.kind]}`);

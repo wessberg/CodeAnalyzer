@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../interface/ISimpleLanguageService";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../service/interface/ISimpleLanguageService";
 
 export interface ICache {
 	getCachedPropName (fileName: string, className: string, propName: string): string;

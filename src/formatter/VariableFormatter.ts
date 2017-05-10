@@ -3,15 +3,16 @@ import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../interface/ISimpleLanguageService";
-import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../PredicateFunctions";
+import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ISimpleLanguageService";
+import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
-import {serializeTypeExpression, takeTypeBindings} from "../Util";
 import {IMapper} from "../mapper/interface/IMapper";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {ICache} from "../cache/interface/ICache";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class VariableFormatter implements IVariableFormatter {
 
@@ -23,7 +24,9 @@ export class VariableFormatter implements IVariableFormatter {
 							 private tracer: ITracer,
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private modifiersFormatter: IModifiersFormatter,
-							 private typeExpressionGetter: ITypeExpressionGetter) {}
+							 private typeExpressionGetter: ITypeExpressionGetter,
+							 private tokenSerializer: ITokenSerializer,
+							 private typeUtil: ITypeUtil) {}
 
 	/**
 	 * Formats the given VariableStatement and returns a VariableIndexer.
@@ -51,8 +54,8 @@ export class VariableFormatter implements IVariableFormatter {
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
 		const typeExpression = declaration.type == null ? null : this.typeExpressionGetter.getTypeExpression(declaration.type);
-		const typeFlattened = typeExpression == null ? null : serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : takeTypeBindings(typeExpression);
+		const typeFlattened = typeExpression == null ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 
 		const map: IBaseVariableAssignment = {

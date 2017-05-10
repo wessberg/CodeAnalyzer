@@ -1,5 +1,5 @@
 import {IEnumFormatter} from "./interface/IEnumFormatter";
-import {IdentifierMapKind, IEnumDeclaration} from "../interface/ISimpleLanguageService";
+import {IdentifierMapKind, IEnumDeclaration} from "../service/interface/ISimpleLanguageService";
 import {EnumDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";

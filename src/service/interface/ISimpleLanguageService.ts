@@ -1,6 +1,6 @@
 import {Expression, LanguageServiceHost, Node, NodeArray, Statement, ArrayLiteralExpression, StringLiteral, NumericLiteral, RegularExpressionLiteral, BooleanLiteral, NoSubstitutionTemplateLiteral, ObjectLiteralExpression} from "typescript";
 
-import {IBindingIdentifier} from "./IBindingIdentifier";
+import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
 
 export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED

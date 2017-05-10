@@ -1,19 +1,19 @@
 import {IClassFormatter} from "./interface/IClassFormatter";
-import {IClassDeclaration, IdentifierMapKind} from "../interface/ISimpleLanguageService";
+import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {ClassDeclaration, SyntaxKind} from "typescript";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ICache} from "../cache/interface/ICache";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
-import {isConstructorDeclaration, isMethodDeclaration, isPropertyDeclaration} from "../PredicateFunctions";
+import {isConstructorDeclaration, isMethodDeclaration, isPropertyDeclaration} from "../predicate/PredicateFunctions";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IPropFormatter} from "./interface/IPropFormatter";
 import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";
+import {Config} from "../static/Config";
 
 export class ClassFormatter implements IClassFormatter {
-	private static readonly ANONYMOUS: string = "__anonymous__";
 
 	constructor (private mapper: IMapper,
 							 private cache: ICache,
@@ -29,7 +29,7 @@ export class ClassFormatter implements IClassFormatter {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const fileContents = sourceFileProperties.fileContents;
-		const className = statement.name == null ? ClassFormatter.ANONYMOUS : statement.name.text;
+		const className = statement.name == null ? Config.name.anonymous : statement.name.text;
 
 		const cached = this.cache.getCachedClass(filePath, className);
 		if (cached != null && !this.cache.cachedClassNeedsUpdate(cached.content)) return cached.content;

@@ -1,4 +1,4 @@
-import {INonNullableValueable} from "../../interface/ISimpleLanguageService";
+import {INonNullableValueable} from "../../service/interface/ISimpleLanguageService";
 import {Statement, Expression, Node} from "typescript";
 
 export interface IValueResolvedGetter {

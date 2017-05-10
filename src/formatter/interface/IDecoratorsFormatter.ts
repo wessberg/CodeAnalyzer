@@ -1,4 +1,4 @@
-import {DecoratorIndexer} from "../../interface/ISimpleLanguageService";
+import {DecoratorIndexer} from "../../service/interface/ISimpleLanguageService";
 import {PropertyDeclaration, ClassDeclaration, MethodDeclaration, ConstructorDeclaration, FunctionDeclaration, EnumDeclaration} from "typescript";
 
 export interface IDecoratorsFormatter {

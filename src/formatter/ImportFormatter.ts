@@ -1,17 +1,17 @@
 import {CallExpression, Identifier, ImportDeclaration, ImportEqualsDeclaration, SyntaxKind, VariableStatement, ImportClause} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IBindingIdentifier} from "../interface/IBindingIdentifier";
-import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ISimpleLanguageService, ModuleDependencyKind} from "../interface/ISimpleLanguageService";
+import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
+import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ISimpleLanguageService, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
-import {isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isVariableStatement} from "../PredicateFunctions";
+import {isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IImportFormatter} from "./interface/IImportFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {BindingIdentifier} from "../BindingIdentifier";
-import {stripQuotesIfNecessary} from "../Util";
+import {BindingIdentifier} from "../model/BindingIdentifier";
+import {IStringUtil} from "../util/interface/IStringUtil";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
 	constructor (private languageService: ISimpleLanguageService,
@@ -20,8 +20,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 							 private callExpressionFormatter: ICallExpressionFormatter,
 							 private variableFormatter: IVariableFormatter,
 							 private mapper: IMapper,
-							 private tracer: ITracer) {
-		super();
+							 private tracer: ITracer,
+							 stringUtil: IStringUtil) {
+		super(stringUtil);
 	}
 
 	public format (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IImportDeclaration | null {
@@ -193,7 +194,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 
 		if (callExpression.identifier === "require" && callExpression.property == null) {
 			const firstArgumentValue = callExpression.arguments.argumentsList[0].value;
-			const relative = stripQuotesIfNecessary(firstArgumentValue == null ? "" : firstArgumentValue.hasDoneFirstResolve()
+			const relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null ? "" : firstArgumentValue.hasDoneFirstResolve()
 				? firstArgumentValue.resolved
 				: firstArgumentValue.resolve());
 			const relativePath = relative == null ? filePath : relative.toString();
