@@ -1,7 +1,6 @@
 import {test} from "ava";
-import {parse, service, setupMany} from "./util/Setup";
+import {parse, service} from "./util/Setup";
 test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
-	setupMany([["0", 0], ["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["service", "service"], ["registerTransient", "registerTransient"], ["helloWorld", "helloWorld"]]);
 	const code = `
 		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -13,7 +12,6 @@ test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
 });
 
 test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"]]);
 	const code = `
 		helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -25,7 +23,7 @@ test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
 });
 
 test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"]]);
+	
 	const code = `
 		helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -37,7 +35,7 @@ test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
 });
 
 test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -49,7 +47,7 @@ test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -62,7 +60,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #2`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -77,7 +75,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #2`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #3`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -90,7 +88,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #3`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #4`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -104,7 +102,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #4`, t => {
 });
 
 test(`getCallExpressions() -> Detects arguments correctly. #1`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -117,7 +115,7 @@ test(`getCallExpressions() -> Detects arguments correctly. #1`, t => {
 });
 
 test(`getCallExpressions() -> Detects arguments correctly. #2`, t => {
-	setupMany([["Foo", "Foo"], ["Bar", "Bar"], ["Hello world!", "Hello world!"], ["helloWorld", "helloWorld"], ["service", "service"]]);
+	
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;

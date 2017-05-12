@@ -1,10 +1,9 @@
 import {test} from "ava";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3, FULL_CODE_EXAMPLE_4, FULL_CODE_EXAMPLE_6} from "./static/FullCodeExamples";
-import {parse, service, setup, setupMany} from "./util/Setup";
+import {parse, service} from "./util/Setup";
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #1`, t => {
-	setup<number>("0", 0);
 	const statements = parse(`
 		const foo: number = 0;
 	`);
@@ -13,7 +12,6 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #1`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #2`, t => {
-	setup<boolean>("true", true);
 	const statements = parse(`
 		let bar = true;
 	`);
@@ -23,7 +21,6 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #2`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #3`, t => {
-	setup<number[]>("[1, 2, 3]", [1, 2, 3]);
 	const statements = parse(`
 		var baz = [1, 2, 3];
 	`);
@@ -33,7 +30,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #3`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #4`, t => {
-	setupMany([["true", true], ["false", false], ["Infinity", Infinity]]);
+	
 	const statements = parse(`
 		const a = true, b = false, c = Infinity;
 	`);
@@ -45,15 +42,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #4`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #5`, t => {
-	setupMany([
-		["tween", "tween"],
-		["collection", "collection"],
-		["Animation", "Animation"],
-		["tweeners", "tweeners"],
-		["prop", "prop"],
-		["concat", "concat"],
-		["*", "*"]
-	]);
+	
 	const statements = parse(`
 		var tween,
 			collection = (Animation.tweeners[prop] || []).concat(Animation.tweeners["*"]),
@@ -66,7 +55,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #5`
 
 // Tests
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #1`, t => {
-	setupMany([["0", 0], ["1", 1]]);
+	
 
 	const statements = parse(`
 		if (true) {
@@ -78,7 +67,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #2`, t => {
-	setupMany([["baz", "baz"], ["hehe", "hehe"]]);
+	
 
 	const statements = parse(`
 
@@ -92,7 +81,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #3`, t => {
-	setupMany([["foo", "foo"], ["hehe", "hehe"]]);
+	
 
 	const statements = parse(`
 
@@ -106,7 +95,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #4`, t => {
-	setupMany([["foo", "foo"], ["hehe", "hehe"], ["a", "a"]]);
+	
 
 	const statements = parse(`
 
@@ -122,7 +111,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #5`, t => {
-	setupMany([["foo", "foo"], ["hehe", "hehe"], ["a", "a"]]);
+	
 
 	const statements = parse(`
 
@@ -138,7 +127,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #6`, t => {
-	setupMany([["foo", "foo"], ["bar", "bar"], ["b", "b"]]);
+	
 
 	const statements = parse(`
 
@@ -154,7 +143,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #7`, t => {
-	setupMany([["foo", "foo"], ["bar", "bar"], ["omg", "omg"], ["baz", "baz"], ["wow", "wow"], ["localVar", "localVar"], ["MyClass", "MyClass"], ["1", 1]]);
+	
 
 	const statements = parse(`
 
@@ -176,7 +165,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #8`, t => {
-	setupMany([["foo", "foo"], ["bar", "bar"], ["baz", "baz"], ["Symbol", "Symbol"], ["hello", "hello"]]);
+	
 
 	const statements = parse(`
 
@@ -188,27 +177,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #9`, t => {
-	setupMany([
-		["documentElement", "documentElement"],
-		["getElementsByTagName", "getElementsByTagName"],
-		["length", "length"],
-		["parseXML", "parseXML"],
-		["e", "e"],
-		["xml", "xml"],
-		["ActiveXObject", "ActiveXObject"],
-		["Microsoft.XMLDOM", "Microsoft.XMLDOM"],
-		["parsererror", "parsererror"],
-		["loadXML", "loadXML"],
-		["tmp", "tmp"],
-		["args", "args"],
-		["proxy", "proxy"],
-		["parseFromString", "parseFromString"],
-		["data", "data"],
-		["text/xml", "text/xml"],
-		["parser", "parser"],
-		["window", "window"],
-		["DOMParser", "DOMParser"]
-	]);
+	
 
 	const statements = parse(FULL_CODE_EXAMPLE_1);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -221,37 +190,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #10`, t => {
-	setupMany([
-		["assert", "assert"],
-		["types", "types"],
-		["forVar", "forVar"],
-		["util", "util"],
-		["n", "n"],
-		["isArray", "isArray"],
-		["isNumber", "isNumber"],
-		["copy", "copy"],
-		["stack", "stack"],
-		["s", "s"],
-		["len", "len"],
-		["value", "value"],
-		["idx", "idx"],
-		["isTsNode", "isTsNode"],
-		["origLen", "origLen"],
-		["argc", "argc"],
-		["name", "name"],
-		["result", "result"],
-		["node", "node"],
-		["length", "length"],
-		["2", 2],
-		["i", "i"],
-		["0", 0],
-		["10", 10],
-		["doStuff", "doStuff"],
-		["switchVar", "switchVar"],
-		["true", true],
-		["false", false],
-		["lol", "lol"]
-	]);
+	
 
 	const statements = parse(FULL_CODE_EXAMPLE_2);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -278,18 +217,6 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #11`, t => {
-	setupMany([
-		["rawContent", "rawContent"],
-		["match", "match"],
-		["preferred", "preferred"],
-		["regex", "regex"],
-		["length", "length"],
-		["node", "node"],
-		["extra", "extra"],
-		["alternate", "alternate"],
-		["raw", "raw"],
-		["/(^[A-Z])|^[_$]+$/", /(^[A-Z])|^[_$]+$/]
-	]);
 
 	const statements = parse(FULL_CODE_EXAMPLE_3);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -350,7 +277,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #12`, t => {
-	setupMany([]);
+	
 
 	const statements = parse(FULL_CODE_EXAMPLE_4);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -372,7 +299,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #13`, t => {
-	setupMany([]);
+	
 
 	const statements = parse(FULL_CODE_EXAMPLE_6);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -387,12 +314,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #14`, t => {
-	setupMany([
-		["matches", "matches"],
-		["foo", "foo"],
-		["length", "length"],
-		["1", 1]
-	]);
+	
 
 	const code = `
 
@@ -405,7 +327,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
-	setupMany([["hello", "hello"]]);
+	
 
 	const statements = parse(`
 		const a = "hello";
@@ -416,7 +338,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
-	setupMany([["hello", "hello"]]);
+	
 
 	const statements = parse(`
 		const a: string = "hello";
@@ -427,7 +349,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
-	setupMany([["hello", "hello"]]);
+	
 
 	const statements = parse(`
 		const a: string|symbol = "hello";
@@ -438,7 +360,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
-	setupMany([["hello", "hello"]]);
+	
 
 	const statements = parse(`
 		const a: Foo[] = "hello";
@@ -449,7 +371,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
-	setupMany([["key", "key"]]);
+	
 
 	const statements = parse(`
 		const a: {[key: string]: any} = "hello";
@@ -460,7 +382,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
-	setupMany([["key", "key"], ["foo", "foo"]]);
+	
 
 	const statements = parse(`
 		const a: {[key: string]: any, foo: number} = "hello";
@@ -471,7 +393,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
-	setupMany([["foo", "foo"]]);
+	
 
 	const statements = parse(`
 		const a: {foo?: number} = "hello";
@@ -482,7 +404,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
-	setupMany([["foo", "foo"], ["bar", "bar"]]);
+	
 
 	const statements = parse(`
 		const a: {foo?: number} & {bar: boolean} = "hello";
@@ -493,7 +415,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
-	setupMany([["Foobar", "Foobar"]]);
+	
 
 	const statements = parse(`
 		const a: Foobar = Foobar.HELLO;

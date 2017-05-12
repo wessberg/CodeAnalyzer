@@ -1,10 +1,7 @@
 import {test} from "ava";
-import {parse, service, setupMany} from "./util/Setup";
+import {parse, service} from "./util/Setup";
 test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3]
-	]);
+	
 	const statements = parse(`
 		const val = 2 + 3;
 	`);
@@ -14,12 +11,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["5", 5],
-		["10", 10]
-	]);
+	
 	const statements = parse(`
 		const val = 2 + 3 * (5 / 10);
 	`);
@@ -29,12 +21,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["5", 5],
-		["10", 10]
-	]);
+	
 	const statements = parse(`
 		const sub = 10;
 		const val = 2 + 3 * (5 / sub);
@@ -45,14 +32,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["5", 5],
-		["10", 10],
-		["MyClass", "MyClass"],
-		["foo", "foo"]
-	]);
+	
 	const statements = parse(`
 		class MyClass {
 			static foo: number = 10;
@@ -65,16 +45,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["5", 5],
-		["10", 10],
-		["50", 50],
-		["MyClass", "MyClass"],
-		["foo", "foo"],
-		["bar", "bar"]
-	]);
+	
 	const statements = parse(`
 		class MyClass {
 			static bar: number = 50;
@@ -88,17 +59,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["25", 25],
-		["20", 20],
-		["a", "a"],
-		["obj", "obj"],
-		["obj2", "obj2"],
-		["b", "b"],
-		["c", "c"]
-	]);
+	
 	const statements = parse(`
 		const obj = {
 			a: 25
@@ -117,16 +78,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["5", 5],
-		["10", 10],
-		["50", 50],
-		["MyClass", "MyClass"],
-		["foo", "foo"],
-		["bar", "bar"]
-	]);
+	
 	const statements = parse(`
 		class MyClass {
 			foo: number = 50;
@@ -139,12 +91,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
-	setupMany([
-		["MyEnum", "MyEnum"],
-		["FOO", "FOO"],
-		["BAR", "BAR"],
-		["10", 10]
-	]);
+	
 	const statements = parse(`
 		enum MyEnum {
 			FOO, BAR = 10
@@ -157,15 +104,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
-	setupMany([
-		["age", "age"],
-		["99", 99],
-		["I am 99 years old", "I am 99 years old"],
-		["I am ", "I am "],
-		[" years old", " years old"],
-		["sub", "sub"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		let age = 99;
 		
@@ -181,16 +120,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
-	setupMany([
-		["age", "age"],
-		["99", 99],
-		["Hi, I'm Kate, and ", "Hi, I'm Kate, and "],
-		["I am 99 years old", "I am 99 years old"],
-		["I am ", "I am "],
-		[" years old", " years old"],
-		["sub", "sub"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		let age = 99;
 		
@@ -204,16 +134,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
-	setupMany([
-		["age", "age"],
-		["99", 99],
-		["Hi, I'm Kate, and ", "Hi, I'm Kate, and "],
-		["I am 99 years old", "I am 99 years old"],
-		["I am ", "I am "],
-		[" years old", " years old"],
-		["sub", "sub"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		let age = 99;
 		
@@ -227,16 +148,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
-	setupMany([
-		["age", "age"],
-		["99", 99],
-		["Hi, I'm Kate, and ", "Hi, I'm Kate, and "],
-		["I am 99 years old", "I am 99 years old"],
-		["I am ", "I am "],
-		[" years old", " years old"],
-		["sub", "sub"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		const val = [1, 2, "foo"];
 	`);
@@ -247,12 +159,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
-	setupMany([
-		["foo", "foo"],
-		["1", 1],
-		["2", 2],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		function foo () {
 			return 1;
@@ -266,14 +173,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
-	setupMany([
-		["foo", "foo"],
-		["1", 1],
-		["2", 2],
-		["3", 3],
-		["bar", "bar"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 	const bar = 3;
 		function foo () {
@@ -288,12 +188,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
-	setupMany([
-		["2", 2],
-		["3", 3],
-		["bar", "bar"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		const bar = 3;
 		const val = 2 + (() => bar)();
@@ -305,16 +200,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
-	setupMany([
-		["doOtherStuff", "doOtherStuff"],
-		["3", 3],
-		["val", "val"],
-		["val1", "val1"],
-		["val2", "val2"],
-		["2", 2],
-		["1", 1],
-		["doStuff", "doStuff"]
-	]);
+	
 	const statements = parse(`
 		function doOtherStuff () {
 			return 3;
@@ -333,13 +219,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #16`, t => {
-	setupMany([
-		["A", "A"],
-		["foo", "foo"],
-		["bar", "bar"],
-		["a", "a"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		class A {
 			foo: string = "bar";
@@ -355,15 +235,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #16`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #17`, t => {
-	setupMany([
-		["A", "A"],
-		["foo", "foo"],
-		["bar", "bar"],
-		["a", "a"],
-		["val", "val"],
-		["foobar", "foobar"],
-		["baz", "baz"]
-	]);
+	
 	const statements = parse(`
 		class A {
 			foo: string = "bar";
@@ -380,12 +252,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #17`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #18`, t => {
-	setupMany([
-		["bool", "bool"],
-		["2", 2],
-		["3", 3],
-		["5", 5]
-	]);
+	
 	const statements = parse(`
 		const bool = false;
 		const val = (bool ? 2 : 3) + 5;
@@ -397,15 +264,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #18`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["add", "add"],
-		["2", 2],
-		["3", 3],
-		["10", 10],
-		["val", "val"],
-		["hmm", "hmm"]
-	]);
+	
 	const statements = parse(`
 		class Foo {
 			static hmm (arg: number) {
@@ -425,13 +284,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
-	setupMany([
-		["a", "a"],
-		["b", "b"],
-		["1", 1],
-		["2", 2],
-		["something", "something"]
-	]);
+	
 
 	const code = `
 	const something = [1, 2];
@@ -445,13 +298,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
-	setupMany([
-		["a", "a"],
-		["b", "b"],
-		["1", 1],
-		["2", 2],
-		["something", "something"]
-	]);
+	
 
 	const code = `
 	const something = {a: 1, b: 2};
@@ -465,13 +312,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["add", "add"],
-		["2", 2],
-		["3", 3],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		class Foo {
 			
@@ -488,14 +329,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
-	setupMany([
-		["foo", "foo"],
-		["arg1", "arg1"],
-		["arg2", "arg2"],
-		["1", 1],
-		["2", 2],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		function foo (arg1, arg2) {
 			return arg1 + arg2;
@@ -509,11 +343,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
-	setupMany([
-		["hello", "hello"],
-		["world", "world"],
-		["val", "val"]
-	]);
+	
 	const statements = parse(`
 		function hello() { return 'hello' + ','; }
   	function world() { return 'world'; }
@@ -526,12 +356,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
-	setupMany([
-		["fibonacci", "fibonacci"],
-		["x", "x"],
-		["1", 1],
-		["2", 2]
-	]);
+	
 
 	const statements = parse(`
 		function fibonacci(x) {
@@ -546,12 +371,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
-	setupMany([
-		["fibonacci", "fibonacci"],
-		["x", "x"],
-		["1", 1],
-		["2", 2]
-	]);
+	
 
 	const statements = parse(`
 	class Foo {
@@ -569,17 +389,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
-	setupMany([
-		["val", "val"],
-		["arr", "arr"],
-		["i", "i"],
-		["1", 1],
-		["2", 2],
-		["3", 3],
-		["4", 4],
-		["5", 5],
-		["5", 5]
-	]);
+	
 
 	const statements = parse(`
 	function foo () {
@@ -598,19 +408,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
-	setupMany([
-		["self", "self"],
-		["this", "this"],
-		["A", "A"],
-		["B", "B"],
-		["42", 42],
-		["name", "name"],
-		["x", "x"],
-		["toString", "toString"],
-		["toLowerCase", "toLowerCase"],
-		["y", "y"],
-		["parseInt", "parseInt"]
-	]);
+	
 
 	const statements = parse(`
 	function fib(x) { return x <= 1 ? x : fib(x - 1) + fib(x - 2); }

@@ -12,6 +12,7 @@ import {ModuleFormatter} from "./ModuleFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {IFileLoader} from "@wessberg/fileloader";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
 	constructor (private languageService: ISimpleLanguageService,
@@ -21,8 +22,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 							 private variableFormatter: IVariableFormatter,
 							 private mapper: IMapper,
 							 private tracer: ITracer,
-							 stringUtil: IStringUtil) {
-		super(stringUtil);
+							 stringUtil: IStringUtil,
+							 fileLoader: IFileLoader) {
+		super(stringUtil, fileLoader);
 	}
 
 	public format (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IImportDeclaration | null {

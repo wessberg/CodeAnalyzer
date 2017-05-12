@@ -32,13 +32,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (valueable.resolving) return null;
 
 		valueable.resolving = true;
-		console.log("valueExpression:", valueable.expression);
+		// console.log("valueExpression:", valueable.expression);
 		const [flattened, shouldCompute] = this.flattenValueExpression(valueable.expression, from, scope);
 
-		console.log("flattened:", flattened);
+		// console.log("flattened:", flattened);
 		let result = shouldCompute ? this.computeValueResolved(flattened) : flattened;
 		valueable.resolving = false;
-		console.log("computed:", result);
+		// console.log("computed:", result);
 		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
 		this.clearGlobalMutations();
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");

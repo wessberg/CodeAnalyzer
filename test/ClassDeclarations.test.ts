@@ -1,7 +1,7 @@
 import {test} from "ava";
-import {parse, service, setup, setupMany} from "./util/Setup";
+import {parse, service} from "./util/Setup";
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
-	setup();
+
 	const code = `
 		class MyClass {}
 	`;
@@ -12,7 +12,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t 
 });
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #2`, t => {
-	setup();
+
 	const code = `
 		class MyClass {}
 		class MyOtherClass {}
@@ -24,7 +24,7 @@ test(`getClassDeclarations() -> Detects all class declarations properly. #2`, t 
 });
 
 test(`getClassDeclarations() -> Detects all class decorators properly. #1`, t => {
-	setupMany([["MyDecorator", "MyDecorator"]]);
+	
 	const code = `
 		@MyDecorator
 		class MyClass {}
@@ -36,7 +36,7 @@ test(`getClassDeclarations() -> Detects all class decorators properly. #1`, t =>
 });
 
 test(`getClassDeclarations() -> Constructor -> Detects types of constructor arguments correctly. #1`, t => {
-	setupMany([["arg1", "arg1"], ["arg2", "arg2"], ["arg3", "arg3"]]);
+	
 	const code = `
 		class MyClass {
 			constructor (arg1: string, arg2: number, arg3: Foo) {}
@@ -52,7 +52,7 @@ test(`getClassDeclarations() -> Constructor -> Detects types of constructor argu
 });
 
 test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
-	setupMany([["field1", "field1"], ["field2", "field2"], ["field3", "field3"]]);
+	
 	const code = `
 		class MyClass {
 			field1;
@@ -70,7 +70,7 @@ test(`getClassDeclarations() -> Fields -> Detects all class fields. #1`, t => {
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the valueExpressions of class fields. #1`, t => {
-	setupMany([["field1", "field1"], ["true", true]]);
+	
 	const code = `
 		class MyClass {
 			field1 = () => true;
@@ -84,7 +84,7 @@ test(`getClassDeclarations() -> Fields -> Detects the valueExpressions of class 
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #1`, t => {
-	setupMany([["field1", "field1"], ["field2", "field2"], ["field3", "field3"]]);
+	
 	const code = `
 		class MyClass {
 			field1: string;
@@ -102,7 +102,7 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #2`, t => {
-	setupMany([["field1", "field1"], ["Foo", "Foo"]]);
+	
 	const code = `
 		class MyClass {
 			field1: Foo<Foo>;
@@ -116,7 +116,7 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #3`, t => {
-	setupMany([["field1", "field1"], ["Foo", "Foo"], ["Bar", "Bar"], ["Baz", "Baz"]]);
+	
 	const code = `
 		class MyClass {
 			field1: Foo<Bar, Baz>;
@@ -130,7 +130,7 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #1`, t => {
-	setupMany([["prop", "prop"], ["field1", "field1"], ["field2", "field2"], ["field3", "field3"]]);
+	
 	const code = `
 		class MyClass {
 			@prop field1: string;
@@ -148,7 +148,7 @@ test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #2`, t => {
-	setupMany([["field1", "field1"], ["field2", "field2"], ["setOnHost", "setOnHost"], ["prop", "prop"], ["blabla", "blabla"]]);
+	
 	const code = `
 		class MyClass {
 			@prop field1: string;
@@ -165,7 +165,7 @@ test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields
 });
 
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #3`, t => {
-	setupMany([["field1", "field1"], ["prop", "prop"]]);
+	
 	const code = `
 		class MyClass {
 			@prop() field1: string;
@@ -179,7 +179,7 @@ test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields
 });
 
 test(`getClassDeclarations() -> Methods -> Detects method declarations correctly. #1`, t => {
-	setupMany([["myMethod", "myMethod"], ["true", true]]);
+	
 	const code = `
 		class MyClass {
 			public myMethod () {
@@ -195,7 +195,7 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 });
 
 test(`getClassDeclarations() -> Methods -> Detects method declarations correctly. #2`, t => {
-	setupMany([["myMethod", "myMethod"], ["Hello", "Hello"], ["<hello></hello><goodbye><", "<hello></hello><goodbye><"], ["></for-now></goodbye>", "></for-now></goodbye>"]]);
+	
 	const code = `
 		class MyClass {
 			public myMethod () {

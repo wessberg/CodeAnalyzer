@@ -1,15 +1,7 @@
 import {test} from "ava";
-import {parse, service, setupMany} from "./util/Setup";
+import {parse, service} from "./util/Setup";
 
 test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["A", "A"],
-		["Baz", "Baz"],
-		["bar", "bar"],
-		["MyClass", "MyClass"],
-		["doStuff", "doStuff"]
-	]);
 
 	const statements = parse(`
 		import {Baz} from "./bumbum";

@@ -2,10 +2,19 @@ import {dirname, join} from "path";
 import {IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {Config} from "../static/Config";
+import {IFileLoader} from "@wessberg/fileloader";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 
-	constructor (protected stringUtil: IStringUtil) {}
+	constructor (protected stringUtil: IStringUtil, private fileLoader: IFileLoader) {}
+
+	public addExtensionToPath (filePath: string): string {
+		// If the path already ends with an extension, do nothing.
+		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext))) return filePath;
+		const [, path] = this.fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
+		return path == null ? filePath : path;
+	}
 
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
 		const indexer: NamespacedModuleMap = {};
@@ -22,11 +31,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
 		const relativePathStripped = <string>this.stringUtil.stripQuotesIfNecessary(relativePath);
-
-		// TODO: Check if the relativePath is in fact an absolute path.
-		// TODO: Add file-extension, otherwise Typescript won't add the file!
-		return this.stripStartDotFromPath(
-			join(dirname(filePath), relativePathStripped.toString()));
+		return this.addExtensionToPath(this.stripStartDotFromPath(
+			join(dirname(filePath), relativePathStripped.toString())));
 	}
 
 	private stripStartDotFromPath (filePath: string): string {

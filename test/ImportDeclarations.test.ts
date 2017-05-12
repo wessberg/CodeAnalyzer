@@ -1,8 +1,9 @@
 import {test} from "ava";
-import {fileName, parse, service, setupMany} from "./util/Setup";
+import {fileName, parse, service} from "./util/Setup";
+import {join} from "path";
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
-	setupMany([]);
+	
 	const code = `
 		import "./test";
 	`;
@@ -13,7 +14,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t => {
-	setupMany([]);
+	
 	const code = `
 		import {Foo} from "./test/hello";
 	`;
@@ -24,12 +25,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["hello", "hello"],
-		["Bar", "Bar"],
-		["2", 2]
-	]);
+	
 	const code = `
 		export const Foo = "hello";
 		export const Bar = 2;
@@ -42,10 +38,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t => {
-	setupMany([
-		["Bar", "Bar"],
-		["hello", "hello"]
-	]);
+	
 	const code = `
 		const Bar = "hello";
 		export default Bar;
@@ -58,10 +51,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["foo", "foo"]
-	]);
+	
 	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
 		import Foo = require("./bar.ts");
@@ -73,10 +63,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
-	setupMany([
-		["Foo", "Foo"],
-		["foo", "foo"]
-	]);
+	
 	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
 		import Foo = require("./bar.ts");
@@ -88,9 +75,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t => {
-	setupMany([
-		["Bar", "Bar"]
-	]);
+	
 	const code = `
 		import Foo = Bar;
 	`;
@@ -101,11 +86,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
-	setupMany([
-		["foo", "foo"],
-		["bar", "bar"],
-		["require", "require"]
-	]);
+	
 	parse(`
 		export default function bar () {}
 	`, "bar.ts");
@@ -119,9 +100,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t => {
-	setupMany([
-		["require", "require"]
-	]);
+	
 	parse(``, "bar.ts");
 	const code = `
 		require("./bar.ts");
@@ -133,12 +112,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t => {
-	setupMany([
-		["require", "require"],
-		["foo", "foo"],
-		["./bar", "./bar"],
-		["/baz", "/baz"]
-	]);
+	
 
 	parse(``, "bar/baz.ts");
 
@@ -152,10 +126,22 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t 
 	t.true(importDeclarations.length === 1);
 });
 
+test(`getImportDeclarations() -> Detects import declarations correctly. #11`, t => {
+	
+
+	const path = join(__dirname, "../../", "test/ImportDeclarations.test.ts");
+
+	const code = `
+		import * from "./ImportDeclarations.test"
+	`;
+
+	const statements = parse(code, path);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #1`, t => {
-	setupMany([
-		["require", "require"]
-	]);
+	
 	const code = `
 		require("");
 	`;
@@ -165,9 +151,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #1`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #2`, t => {
-	setupMany([
-		["require", "require"]
-	]);
+	
 	const code = `
 		import "";
 	`;
@@ -177,9 +161,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #2`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #3`, t => {
-	setupMany([
-		["require", "require"]
-	]);
+	
 	const code = `
 		import Foo from "";
 	`;
@@ -189,9 +171,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #3`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #4`, t => {
-	setupMany([
-		["require", "require"]
-	]);
+	
 	const code = `
 		import * as Lol from "";
 	`;

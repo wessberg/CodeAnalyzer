@@ -13,6 +13,7 @@ import {ModuleFormatter} from "./ModuleFormatter";
 import {IClassFormatter} from "./interface/IClassFormatter";
 import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {IFileLoader} from "@wessberg/fileloader";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
@@ -26,8 +27,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 							 private functionFormatter: IFunctionFormatter,
 							 private nameGetter: INameGetter,
 							 private tracer: ITracer,
-							 stringUtil: IStringUtil) {
-		super(stringUtil);
+							 stringUtil: IStringUtil,
+							 fileLoader: IFileLoader) {
+		super(stringUtil, fileLoader);
 	}
 
 	public format (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null {
