@@ -1,9 +1,9 @@
 import {test} from "ava";
-import {fileName, parse, service} from "./util/Setup";
 import {join} from "path";
+import {fileName, parse, service} from "./util/Setup";
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
-	
+
 	const code = `
 		import "./test";
 	`;
@@ -14,7 +14,9 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t => {
-	
+
+	parse("", "test/hello.ts");
+
 	const code = `
 		import {Foo} from "./test/hello";
 	`;
@@ -25,7 +27,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t => {
-	
+
 	const code = `
 		export const Foo = "hello";
 		export const Bar = 2;
@@ -38,7 +40,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #3`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t => {
-	
+
 	const code = `
 		const Bar = "hello";
 		export default Bar;
@@ -51,7 +53,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t => {
-	
+
 	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
 		import Foo = require("./bar.ts");
@@ -63,7 +65,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
-	
+
 	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
 		import Foo = require("./bar.ts");
@@ -75,7 +77,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t => {
-	
+
 	const code = `
 		import Foo = Bar;
 	`;
@@ -86,7 +88,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
-	
+
 	parse(`
 		export default function bar () {}
 	`, "bar.ts");
@@ -100,7 +102,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t => {
-	
+
 	parse(``, "bar.ts");
 	const code = `
 		require("./bar.ts");
@@ -112,7 +114,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t =
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t => {
-	
+
 
 	parse(``, "bar/baz.ts");
 
@@ -127,7 +129,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t 
 });
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #11`, t => {
-	
+
 
 	const path = join(__dirname, "../../", "test/ImportDeclarations.test.ts");
 
@@ -141,7 +143,7 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #11`, t 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #1`, t => {
-	
+
 	const code = `
 		require("");
 	`;
@@ -151,7 +153,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #1`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #2`, t => {
-	
+
 	const code = `
 		import "";
 	`;
@@ -161,7 +163,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #2`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #3`, t => {
-	
+
 	const code = `
 		import Foo from "";
 	`;
@@ -171,7 +173,7 @@ test(`getImportDeclarations() -> Throws exceptions for empty import paths. #3`, 
 });
 
 test(`getImportDeclarations() -> Throws exceptions for empty import paths. #4`, t => {
-	
+
 	const code = `
 		import * as Lol from "";
 	`;

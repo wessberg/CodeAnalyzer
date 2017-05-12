@@ -1,8 +1,8 @@
-import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
-import {PropertyDeclaration, ClassDeclaration, MethodDeclaration, ConstructorDeclaration, FunctionDeclaration, EnumDeclaration} from "typescript";
-import {DecoratorIndexer, IdentifierMapKind, IDecorator} from "../service/interface/ISimpleLanguageService";
-import {IMapper} from "../mapper/interface/IMapper";
+import {ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDeclaration, MethodDeclaration, PropertyDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {DecoratorIndexer, IDecorator, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
+import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 
 export class DecoratorsFormatter implements IDecoratorsFormatter {
 

@@ -1,14 +1,14 @@
-import {IParametersFormatter} from "./interface/IParametersFormatter";
-import {ConstructorDeclaration, MethodDeclaration, FunctionDeclaration, ParameterDeclaration} from "typescript";
-import {IdentifierMapKind, INonNullableValueable, IParameter} from "../service/interface/ISimpleLanguageService";
+import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration, ParameterDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {IdentifierMapKind, INonNullableValueable, IParameter} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
+import {IParametersFormatter} from "./interface/IParametersFormatter";
 
 export class ParametersFormatter implements IParametersFormatter {
 

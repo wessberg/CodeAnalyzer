@@ -1,6 +1,6 @@
-import {ITokenPredicator} from "./interface/ITokenPredicator";
 import {ArbitraryValue} from "../service/interface/ISimpleLanguageService";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {ITokenPredicator} from "./interface/ITokenPredicator";
 
 export class TokenPredicator implements ITokenPredicator {
 

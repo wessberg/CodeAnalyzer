@@ -1,6 +1,5 @@
+import {IFileLoader} from "@wessberg/fileloader";
 import {IMarshaller} from "@wessberg/marshaller";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {TypeExpressionGetter} from "../getter/TypeExpressionGetter";
 import * as ts from "typescript";
 import {CallExpression, ClassDeclaration, CompilerOptions, Declaration, ExportAssignment, ExportDeclaration, Expression, FunctionDeclaration, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, ModuleKind, Node, NodeArray, ScriptTarget, Statement, SyntaxKind, VariableStatement} from "typescript";
 import {Cache} from "../cache/Cache";
@@ -38,31 +37,32 @@ import {ParametersFormatter} from "../formatter/ParametersFormatter";
 import {PropFormatter} from "../formatter/PropFormatter";
 import {VariableFormatter} from "../formatter/VariableFormatter";
 import {INameGetter} from "../getter/interface/INameGetter";
+import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {NameGetter} from "../getter/NameGetter";
 import {SourceFilePropertiesGetter} from "../getter/SourceFilePropertiesGetter";
+import {TypeExpressionGetter} from "../getter/TypeExpressionGetter";
 import {ValueExpressionGetter} from "../getter/ValueExpressionGetter";
 import {ValueResolvedGetter} from "../getter/ValueResolvedGetter";
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICallExpression, IClassDeclaration, IdentifierMapKind, IExportDeclaration, IIdentifierMap, IImportDeclaration, INewExpression, ISimpleLanguageService, VariableIndexer} from "./interface/ISimpleLanguageService";
-import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 import {IMapper} from "../mapper/interface/IMapper";
 import {Mapper} from "../mapper/Mapper";
+import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {TokenPredicator} from "../predicate/TokenPredicator";
 import {IdentifierSerializer} from "../serializer/IdentifierSerializer";
 import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
-import {ITracer} from "../tracer/interface/ITracer";
-import {Tracer} from "../tracer/Tracer";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {TokenSerializer} from "../serializer/TokenSerializer";
+import {ITracer} from "../tracer/interface/ITracer";
+import {Tracer} from "../tracer/Tracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
-import {StringUtil} from "../util/StringUtil";
-import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {TokenPredicator} from "../predicate/TokenPredicator";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
+import {StringUtil} from "../util/StringUtil";
 import {TypeUtil} from "../util/TypeUtil";
-import {IFileLoader} from "@wessberg/fileloader";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICallExpression, IClassDeclaration, IdentifierMapKind, IExportDeclaration, IIdentifierMap, IImportDeclaration, INewExpression, ISimpleLanguageService, VariableIndexer} from "./interface/ISimpleLanguageService";
+import {ISimpleLanguageServiceConfig} from "./interface/ISimpleLanguageServiceConfig";
 
 /**
  * A service that parses and reflects on the AST generated by Typescript's language service.

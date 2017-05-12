@@ -1,16 +1,16 @@
-import {IMethodFormatter} from "./interface/IMethodFormatter";
-import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {MethodDeclaration} from "typescript";
-import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
+import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {isStaticKeyword} from "../predicate/PredicateFunctions";
+import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
+import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {isStaticKeyword} from "../predicate/PredicateFunctions";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 
 export class MethodFormatter extends FunctionLikeFormatter implements IMethodFormatter {
 

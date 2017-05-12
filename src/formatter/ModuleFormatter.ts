@@ -1,9 +1,9 @@
+import {IFileLoader} from "@wessberg/fileloader";
 import {dirname, join} from "path";
 import {IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
-import {IModuleFormatter} from "./interface/IModuleFormatter";
-import {IStringUtil} from "../util/interface/IStringUtil";
 import {Config} from "../static/Config";
-import {IFileLoader} from "@wessberg/fileloader";
+import {IStringUtil} from "../util/interface/IStringUtil";
+import {IModuleFormatter} from "./interface/IModuleFormatter";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 
@@ -13,7 +13,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		// If the path already ends with an extension, do nothing.
 		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext))) return filePath;
 		const [, path] = this.fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
-		return path == null ? filePath : path;
+		return path == null ? `${filePath}${Config.defaultExtension}` : path;
 	}
 
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {

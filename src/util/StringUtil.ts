@@ -1,5 +1,5 @@
-import {IStringUtil} from "./interface/IStringUtil";
 import {ArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {IStringUtil} from "./interface/IStringUtil";
 
 export class StringUtil implements IStringUtil {
 	/**

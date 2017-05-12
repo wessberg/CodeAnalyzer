@@ -1,17 +1,17 @@
-import {IClassFormatter} from "./interface/IClassFormatter";
-import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {ClassDeclaration, SyntaxKind} from "typescript";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ICache} from "../cache/interface/ICache";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
-import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
+import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {IMapper} from "../mapper/interface/IMapper";
 import {isConstructorDeclaration, isMethodDeclaration, isPropertyDeclaration} from "../predicate/PredicateFunctions";
-import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
-import {IPropFormatter} from "./interface/IPropFormatter";
-import {IMethodFormatter} from "./interface/IMethodFormatter";
-import {IConstructorFormatter} from "./interface/IConstructorFormatter";
+import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {Config} from "../static/Config";
+import {IClassFormatter} from "./interface/IClassFormatter";
+import {IConstructorFormatter} from "./interface/IConstructorFormatter";
+import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
+import {IMethodFormatter} from "./interface/IMethodFormatter";
+import {IModifiersFormatter} from "./interface/IModifiersFormatter";
+import {IPropFormatter} from "./interface/IPropFormatter";
 
 export class ClassFormatter implements IClassFormatter {
 

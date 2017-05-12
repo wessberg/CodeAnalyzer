@@ -1,9 +1,9 @@
-import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
-import {IFunctionLike, IMemberDeclaration, IParametersable} from "../service/interface/ISimpleLanguageService";
-import {MethodDeclaration, FunctionDeclaration, ConstructorDeclaration} from "typescript";
+import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isReturnStatement} from "../predicate/PredicateFunctions";
+import {IFunctionLike, IMemberDeclaration, IParametersable} from "../service/interface/ISimpleLanguageService";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 

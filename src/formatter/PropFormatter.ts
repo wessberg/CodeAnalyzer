@@ -1,18 +1,18 @@
-import {IPropFormatter} from "./interface/IPropFormatter";
-import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../service/interface/ISimpleLanguageService";
 import {PropertyDeclaration} from "typescript";
-import {isStaticKeyword} from "../predicate/PredicateFunctions";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {INameGetter} from "../getter/interface/INameGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
+import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
-import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {isStaticKeyword} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
+import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IModifiersFormatter} from "./interface/IModifiersFormatter";
+import {IPropFormatter} from "./interface/IPropFormatter";
 
 export class PropFormatter implements IPropFormatter {
 

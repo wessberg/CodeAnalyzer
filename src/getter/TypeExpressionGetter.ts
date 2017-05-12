@@ -1,9 +1,9 @@
 import {TypeExpression} from "src/service/interface/ISimpleLanguageService";
 import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
 import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 

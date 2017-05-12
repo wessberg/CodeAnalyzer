@@ -3,15 +3,15 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {ISourceFilePropertiesGetter} from "src/getter/interface/ISourceFilePropertiesGetter";
 import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseFormatter} from "../formatter/interface/IHeritageClauseFormatter";
-import {ArbitraryValue, InitializationValue} from "../service/interface/ISimpleLanguageService";
+import {BindingIdentifier} from "../model/BindingIdentifier";
+import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isRegularExpressionLiteral, isReturnStatement, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ArbitraryValue, InitializationValue} from "../service/interface/ISimpleLanguageService";
+import {IStringUtil} from "../util/interface/IStringUtil";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "./interface/IValueExpressionGetter";
-import {BindingIdentifier} from "../model/BindingIdentifier";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {IStringUtil} from "../util/interface/IStringUtil";
 
 export class ValueExpressionGetter implements IValueExpressionGetter {
 	constructor (private marshaller: IMarshaller,

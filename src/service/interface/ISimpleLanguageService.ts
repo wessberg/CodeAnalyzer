@@ -1,4 +1,4 @@
-import {Expression, LanguageServiceHost, Node, NodeArray, Statement, ArrayLiteralExpression, StringLiteral, NumericLiteral, RegularExpressionLiteral, BooleanLiteral, NoSubstitutionTemplateLiteral, ObjectLiteralExpression} from "typescript";
+import {ArrayLiteralExpression, BooleanLiteral, Expression, LanguageServiceHost, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, Statement, StringLiteral} from "typescript";
 
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
 
@@ -11,12 +11,12 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE, IMPORT, EXPORT, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
+	VARIABLE, IMPORT, EXPORT, IMPORT_EXPORT_BINDING, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
 }
 
-export interface IImportExportBinding {
+export interface IImportExportBinding extends IKindable, IPositionable {
 	name: string;
-	payload?: ImportExportBindingPayload;
+	payload: ImportExportBindingPayload;
 	kind: ImportExportKind;
 }
 
@@ -237,9 +237,22 @@ export declare interface IIdentifierMap extends IKindable {
 	exports: IExportDeclaration[];
 }
 
-export declare type ImportExportBindingPayload = ArbitraryValue|IIdentifier;
-export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter | IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
+export declare type ImportExportBindingPayload = ArbitraryValue | IExportableIIdentifier;
+export declare type LiteralExpression = ArrayLiteralExpression | StringLiteral | NumericLiteral | BooleanLiteral | ObjectLiteralExpression | NoSubstitutionTemplateLiteral | RegularExpressionLiteral;
+export declare type IIdentifier =
+	IImportExportBinding
+	| IConstructorDeclaration
+	| IArgument
+	| IDecorator
+	| IImportDeclaration
+	| ICallExpression
+	| INewExpression
+	| IParameter
+	| IVariableAssignment
+	| IClassDeclaration
+	| IEnumDeclaration
+	| IFunctionDeclaration;
+export declare type IExportableIIdentifier = IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type NamespacedModuleMap = { [key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };

@@ -1,10 +1,10 @@
-import {ITracer} from "./interface/ITracer";
-import {Statement, Expression, Node, SyntaxKind} from "typescript";
-import {IIdentifier, IIdentifierMap, IParameter, ISimpleLanguageService} from "../service/interface/ISimpleLanguageService";
-import {isFunctionDeclaration, isFunctionExpression, isSourceFile, isClassDeclaration, isClassExpression, isMethodDeclaration, isPropertyDeclaration, isArrowFunction} from "../predicate/PredicateFunctions";
+import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {isArrowFunction, isClassDeclaration, isClassExpression, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile} from "../predicate/PredicateFunctions";
+import {IIdentifier, IIdentifierMap, IImportExportBinding, IParameter, ISimpleLanguageService} from "../service/interface/ISimpleLanguageService";
 import {Config} from "../static/Config";
+import {ITracer} from "./interface/ITracer";
 
 export class Tracer implements ITracer {
 
@@ -45,10 +45,18 @@ export class Tracer implements ITracer {
 			// TODO: Add this functionality.
 		}
 
+		const importBindingMatches: IImportExportBinding[] = [];
+		clojure.imports.forEach(importDeclaration => {
+			const match = importDeclaration.bindings[identifier];
+			if (match != null) importBindingMatches.push(match);
+		});
+
 		if (functionMatch != null) allMatches.push(functionMatch);
 		if (enumMatch != null) allMatches.push(enumMatch);
 		if (variableMatch != null) allMatches.push(variableMatch);
 		if (classMatch != null) allMatches.push(classMatch);
+
+		importBindingMatches.forEach(match => allMatches.push(match));
 		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
 
 		const closest = allMatches.sort((a, b) => {
@@ -120,8 +128,8 @@ export class Tracer implements ITracer {
 		});
 	}
 
-	public traceClojure (from: Statement | Expression | Node): IIdentifierMap {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
+	public traceClojure (from: Statement | Expression | Node | string): IIdentifierMap {
+		const filePath = typeof from === "string" ? from : this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
 
 		// TODO: We shouldn't go deep and get ALL identifiers (which will ignore concepts such as conditional branches or even if the statement has access to the statement).
 		return this.languageService.getAllIdentifiersForFile(filePath, true);

@@ -1,10 +1,10 @@
+import {IModifiersFormatter} from "src/formatter/interface/IModifiersFormatter";
+import {ConstructorDeclaration} from "typescript";
+import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";
-import {ConstructorDeclaration} from "typescript";
-import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IModifiersFormatter} from "src/formatter/interface/IModifiersFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 

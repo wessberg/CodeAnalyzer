@@ -1,18 +1,18 @@
-import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
-import {IFunctionFormatter} from "./interface/IFunctionFormatter";
-import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
-import {FunctionDeclaration} from "typescript";
-import {ICache} from "../cache/interface/ICache";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITracer} from "../tracer/interface/ITracer";
+import {IDecoratorsFormatter} from "src/formatter/interface/IDecoratorsFormatter";
+import {ISourceFilePropertiesGetter} from "src/getter/interface/ISourceFilePropertiesGetter";
 import {IValueExpressionGetter} from "src/getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "src/getter/interface/IValueResolvedGetter";
-import {ISourceFilePropertiesGetter} from "src/getter/interface/ISourceFilePropertiesGetter";
-import {IDecoratorsFormatter} from "src/formatter/interface/IDecoratorsFormatter";
+import {FunctionDeclaration} from "typescript";
+import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {Config} from "../static/Config";
+import {ITracer} from "../tracer/interface/ITracer";
+import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
+import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
-import {Config} from "../static/Config";
 
 export class FunctionFormatter extends FunctionLikeFormatter implements IFunctionFormatter {
 

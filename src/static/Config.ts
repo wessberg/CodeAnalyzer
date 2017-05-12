@@ -5,5 +5,6 @@ export const Config: IConfig = {
 		global: "global",
 		anonymous: "__anonymous__"
 	},
-	supportedFileExtensions: [".ts", ".js"]
+	supportedFileExtensions: [".ts", ".js"],
+	defaultExtension: ".ts"
 };

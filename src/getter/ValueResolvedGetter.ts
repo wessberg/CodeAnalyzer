@@ -1,14 +1,14 @@
-import {IValueResolvedGetter} from "./interface/IValueResolvedGetter";
-import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ISimpleLanguageService";
-import {Statement, Expression, Node} from "typescript";
 import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {IMarshaller} from "@wessberg/marshaller";
-import {isIEnumDeclaration, isIFunctionDeclaration, isIClassDeclaration, isIVariableAssignment, isIParameter} from "../predicate/PredicateFunctions";
+import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
+import {isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIImportExportBinding, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
+import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
+import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {IValueResolvedGetter} from "./interface/IValueResolvedGetter";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
@@ -85,8 +85,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 					forceNoQuoting = true;
 				}
 
-				else if (isIVariableAssignment(substitution)) {
-					const stringified = this.identifierSerializer.serializeIVariableAssignment(substitution);
+				else if (isIVariableAssignment(substitution) || isIImportExportBinding(substitution)) {
+					const stringified = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution);
 					const probableType = this.marshaller.getTypeOf(this.marshaller.marshal(stringified));
 					if (
 						probableType === "object" ||

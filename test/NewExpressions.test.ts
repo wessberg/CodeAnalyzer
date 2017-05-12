@@ -2,7 +2,7 @@ import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
 test(`getNewExpressions() -> Detects new-statements correctly. #1`, t => {
-	
+
 	const code = `
 		new HelloWorld();
 	`;
@@ -13,7 +13,7 @@ test(`getNewExpressions() -> Detects new-statements correctly. #1`, t => {
 });
 
 test(`getNewExpressions() -> Detects new-statements correctly. #2`, t => {
-	
+
 	const code = `
 		new hmm.HelloWorld();
 	`;

@@ -1,19 +1,19 @@
+import {IFileLoader} from "@wessberg/fileloader";
 import {ClassDeclaration, ExportAssignment, ExportDeclaration, FunctionDeclaration, NamedExports, SyntaxKind, VariableStatement} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ISimpleLanguageService, IValueable, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isClassDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ISimpleLanguageService, IValueable, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {ITracer} from "../tracer/interface/ITracer";
+import {IStringUtil} from "../util/interface/IStringUtil";
+import {IClassFormatter} from "./interface/IClassFormatter";
 import {IExportFormatter} from "./interface/IExportFormatter";
+import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
-import {IClassFormatter} from "./interface/IClassFormatter";
-import {IFunctionFormatter} from "./interface/IFunctionFormatter";
-import {IStringUtil} from "../util/interface/IStringUtil";
-import {IFileLoader} from "@wessberg/fileloader";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
@@ -33,6 +33,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 	}
 
 	public format (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null {
+
 		if (isExportAssignment(statement)) return this.formatExportAssignment(statement);
 		if (isClassDeclaration(statement)) return this.formatClassDeclaration(statement);
 		if (isFunctionDeclaration(statement)) return this.formatFunctionDeclaration(statement);
@@ -82,7 +83,16 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				fullPath
 			},
 			filePath,
-			bindings: {"default": {name: "default", payload, kind: ImportExportKind.DEFAULT}}
+			bindings: {
+				"default": {
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					name: "default",
+					payload,
+					kind: ImportExportKind.DEFAULT,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING
+				}
+			}
 		};
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
@@ -118,6 +128,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				filePath,
 				bindings: {
 					[isDefault ? "default" : name]: {
+						startsAt: statement.pos,
+						endsAt: statement.end,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: isDefault ? "default" : name,
 						payload: classDeclaration,
 						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
@@ -160,6 +173,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				filePath,
 				bindings: {
 					[isDefault ? "default" : name]: {
+						startsAt: statement.pos,
+						endsAt: statement.end,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: isDefault ? "default" : name,
 						payload: functionDeclaration,
 						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
@@ -182,6 +198,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const variableIndexer = this.variableFormatter.format(statement);
+
 		for (const key of Object.keys(variableIndexer)) {
 			const match = variableIndexer[key];
 			const isCandidate = match.modifiers.has("export");
@@ -204,6 +221,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					filePath,
 					bindings: {
 						[isDefault ? "default" : name]: {
+							startsAt: statement.pos,
+							endsAt: statement.end,
+							___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 							name: isDefault ? "default" : name,
 							payload: match,
 							kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
@@ -242,7 +262,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				fullPath
 			},
 			filePath,
-			bindings: this.formatExportClause(statement.exportClause, fullPath)
+			bindings: this.formatExportClause(statement.exportClause, fullPath, statement)
 		};
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
@@ -253,12 +273,15 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatExportClause (clause: NamedExports | undefined, modulePath: string): ImportExportIndexer {
+	private formatExportClause (clause: NamedExports | undefined, modulePath: string, statement: ExportDeclaration): ImportExportIndexer {
 		const indexer: ImportExportIndexer = {};
 
 		if (clause == null) {
 			const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath, true));
 			indexer["*"] = {
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 				name: "*",
 				payload,
 				kind: ImportExportKind.NAMESPACE
@@ -268,6 +291,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				const block = this.tracer.traceBlockScopeName(clause);
 				const payload = this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text);
 				indexer[element.name.text] = {
+					startsAt: element.name.pos,
+					endsAt: element.name.end,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 					name: element.name.text,
 					payload,
 					kind: ImportExportKind.NAMED

@@ -1,9 +1,9 @@
 import {test} from "ava";
-import {fileName, parse, service} from "./util/Setup";
 import {ImportExportKind} from "../src/service/interface/ISimpleLanguageService";
+import {fileName, parse, service} from "./util/Setup";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
-	
+
 	const code = `
 		export {Foo} from "${fileName}";
 	`;
@@ -14,7 +14,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #2`, t => {
-	
+
 	const code = `
 		const Foo = "hello";
 		const Bar = 2;
@@ -27,7 +27,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #2`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #3`, t => {
-	
+
 	const code = `
 		export const Foo = "hello";
 	`;
@@ -38,7 +38,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #3`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #4`, t => {
-	
+
 	const code = `
 		const Foo = "hello";
 		export default Foo;
@@ -50,7 +50,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #4`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t => {
-	
+
 	const code = `
 		export const foo = "hello";
 		export const bar = 2;
@@ -63,7 +63,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t => {
-	
+
 	const code = `
 		export default function foo () {};
 	`;
@@ -74,7 +74,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #7`, t => {
-	
+
 	const code = `
 		export default class Foo () {};
 	`;
@@ -85,7 +85,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #7`, t =
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #8`, t => {
-	
+
 	const code = `
 		export default 2;
 	`;

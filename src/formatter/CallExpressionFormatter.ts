@@ -1,17 +1,17 @@
-import {CallableFormatter} from "./CallableFormatter";
-import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {ICallExpression, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
 import {CallExpression} from "typescript";
-import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
+import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITracer} from "../tracer/interface/ITracer";
+import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
+import {IMapper} from "../mapper/interface/IMapper";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {ICallExpression, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
+import {CallableFormatter} from "./CallableFormatter";
+import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
+import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 
 export class CallExpressionFormatter extends CallableFormatter implements ICallExpressionFormatter {
 

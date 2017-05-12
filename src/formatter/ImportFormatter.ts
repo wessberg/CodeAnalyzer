@@ -1,18 +1,18 @@
-import {CallExpression, Identifier, ImportDeclaration, ImportEqualsDeclaration, SyntaxKind, VariableStatement, ImportClause} from "typescript";
+import {IFileLoader} from "@wessberg/fileloader";
+import {CallExpression, Identifier, ImportClause, ImportDeclaration, ImportEqualsDeclaration, SyntaxKind, VariableStatement} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
-import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ISimpleLanguageService, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
+import {BindingIdentifier} from "../model/BindingIdentifier";
+import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isVariableStatement} from "../predicate/PredicateFunctions";
+import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ISimpleLanguageService, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
 import {ITracer} from "../tracer/interface/ITracer";
+import {IStringUtil} from "../util/interface/IStringUtil";
+import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 import {IImportFormatter} from "./interface/IImportFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
-import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {BindingIdentifier} from "../model/BindingIdentifier";
-import {IStringUtil} from "../util/interface/IStringUtil";
-import {IFileLoader} from "@wessberg/fileloader";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
 	constructor (private languageService: ISimpleLanguageService,
@@ -92,7 +92,16 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					fullPath
 				},
 				filePath,
-				bindings: {[statement.name.text]: {name: statement.name.text, payload, kind: ImportExportKind.DEFAULT}}
+				bindings: {
+					[statement.name.text]: {
+						startsAt: statement.name.pos,
+						endsAt: statement.name.end,
+						name: statement.name.text,
+						payload,
+						kind: ImportExportKind.DEFAULT,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING
+					}
+				}
 			};
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
@@ -121,6 +130,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				filePath,
 				bindings: {
 					[statement.name.text]: {
+						startsAt: statement.name.pos,
+						endsAt: statement.name.end,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: statement.name.text,
 						payload,
 						kind: ImportExportKind.DEFAULT
@@ -138,7 +150,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		}
 	}
 
-	private formatVariableStatement (statement: VariableStatement): IImportDeclaration|null {
+	private formatVariableStatement (statement: VariableStatement): IImportDeclaration | null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const variableIndexer = this.variableFormatter.format(statement);
@@ -170,6 +182,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					filePath,
 					bindings: {
 						[name]: {
+							startsAt: match.startsAt,
+							endsAt: match.endsAt,
+							___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 							name,
 							payload,
 							kind: ImportExportKind.DEFAULT
@@ -189,7 +204,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		return null;
 	}
 
-	private formatCallExpression (statement: CallExpression): IImportDeclaration|null {
+	private formatCallExpression (statement: CallExpression): IImportDeclaration | null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const callExpression = this.callExpressionFormatter.format(statement);
@@ -219,6 +234,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				filePath,
 				bindings: {
 					"default": {
+						startsAt: callExpression.arguments.startsAt,
+						endsAt: callExpression.arguments.endsAt,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: "default",
 						payload,
 						kind: ImportExportKind.DEFAULT
@@ -249,6 +267,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		if (clause.namedBindings != null && isNamespaceImport(clause.namedBindings)) {
 			const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath, true));
 			indexer[clause.namedBindings.name.text] = {
+				startsAt: clause.namedBindings.name.pos,
+				endsAt: clause.namedBindings.name.end,
+				___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 				name: clause.namedBindings.name.text,
 				payload,
 				kind: ImportExportKind.NAMESPACE
@@ -258,8 +279,12 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		else if (clause.namedBindings != null && isNamedImports(clause.namedBindings)) {
 			clause.namedBindings.elements.forEach(element => {
 				const block = this.tracer.traceBlockScopeName(clause);
-				const payload = this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text);
+				const clojure = this.tracer.traceClojure(modulePath);
+				const payload = this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
 				indexer[element.name.text] = {
+					startsAt: element.name.pos,
+					endsAt: element.name.end,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 					name: element.name.text,
 					payload,
 					kind: ImportExportKind.NAMED
@@ -273,6 +298,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
 			const payload = match.bindings["default"].payload;
 			indexer[clause.name.text] = {
+				startsAt: clause.name.pos,
+				endsAt: clause.name.end,
+				___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 				name: clause.name.text,
 				payload,
 				kind: ImportExportKind.DEFAULT

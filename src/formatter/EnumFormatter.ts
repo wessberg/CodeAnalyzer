@@ -1,11 +1,11 @@
-import {IEnumFormatter} from "./interface/IEnumFormatter";
-import {IdentifierMapKind, IEnumDeclaration} from "../service/interface/ISimpleLanguageService";
 import {EnumDeclaration} from "typescript";
+import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {ICache} from "../cache/interface/ICache";
 import {IMapper} from "../mapper/interface/IMapper";
+import {IdentifierMapKind, IEnumDeclaration} from "../service/interface/ISimpleLanguageService";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {IEnumFormatter} from "./interface/IEnumFormatter";
 
 export class EnumFormatter implements IEnumFormatter {
 
@@ -14,6 +14,7 @@ export class EnumFormatter implements IEnumFormatter {
 							 private nameGetter: INameGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private decoratorsFormatter: IDecoratorsFormatter) {}
+
 	/**
 	 * Formats the given EnumDeclaration and returns an IEnumDeclaration.
 	 * @param {EnumDeclaration} statement

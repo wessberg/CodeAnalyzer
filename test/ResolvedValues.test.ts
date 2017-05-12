@@ -1,7 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
-	
+
 	const statements = parse(`
 		const val = 2 + 3;
 	`);
@@ -11,7 +11,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
-	
+
 	const statements = parse(`
 		const val = 2 + 3 * (5 / 10);
 	`);
@@ -21,7 +21,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
-	
+
 	const statements = parse(`
 		const sub = 10;
 		const val = 2 + 3 * (5 / sub);
@@ -32,7 +32,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
-	
+
 	const statements = parse(`
 		class MyClass {
 			static foo: number = 10;
@@ -45,7 +45,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
-	
+
 	const statements = parse(`
 		class MyClass {
 			static bar: number = 50;
@@ -59,7 +59,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
-	
+
 	const statements = parse(`
 		const obj = {
 			a: 25
@@ -78,7 +78,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
-	
+
 	const statements = parse(`
 		class MyClass {
 			foo: number = 50;
@@ -91,7 +91,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
-	
+
 	const statements = parse(`
 		enum MyEnum {
 			FOO, BAR = 10
@@ -104,7 +104,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
-	
+
 	const statements = parse(`
 		let age = 99;
 		
@@ -120,7 +120,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
-	
+
 	const statements = parse(`
 		let age = 99;
 		
@@ -134,7 +134,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
-	
+
 	const statements = parse(`
 		let age = 99;
 		
@@ -148,7 +148,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
-	
+
 	const statements = parse(`
 		const val = [1, 2, "foo"];
 	`);
@@ -159,7 +159,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
-	
+
 	const statements = parse(`
 		function foo () {
 			return 1;
@@ -173,7 +173,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
-	
+
 	const statements = parse(`
 	const bar = 3;
 		function foo () {
@@ -188,7 +188,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
-	
+
 	const statements = parse(`
 		const bar = 3;
 		const val = 2 + (() => bar)();
@@ -200,7 +200,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
-	
+
 	const statements = parse(`
 		function doOtherStuff () {
 			return 3;
@@ -219,7 +219,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #16`, t => {
-	
+
 	const statements = parse(`
 		class A {
 			foo: string = "bar";
@@ -235,7 +235,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #16`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #17`, t => {
-	
+
 	const statements = parse(`
 		class A {
 			foo: string = "bar";
@@ -252,7 +252,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #17`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #18`, t => {
-	
+
 	const statements = parse(`
 		const bool = false;
 		const val = (bool ? 2 : 3) + 5;
@@ -264,7 +264,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #18`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
-	
+
 	const statements = parse(`
 		class Foo {
 			static hmm (arg: number) {
@@ -284,7 +284,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
-	
+
 
 	const code = `
 	const something = [1, 2];
@@ -298,7 +298,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
-	
+
 
 	const code = `
 	const something = {a: 1, b: 2};
@@ -312,7 +312,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
-	
+
 	const statements = parse(`
 		class Foo {
 			
@@ -329,7 +329,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
-	
+
 	const statements = parse(`
 		function foo (arg1, arg2) {
 			return arg1 + arg2;
@@ -343,7 +343,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
-	
+
 	const statements = parse(`
 		function hello() { return 'hello' + ','; }
   	function world() { return 'world'; }
@@ -356,7 +356,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
-	
+
 
 	const statements = parse(`
 		function fibonacci(x) {
@@ -371,7 +371,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
-	
+
 
 	const statements = parse(`
 	class Foo {
@@ -389,7 +389,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
-	
+
 
 	const statements = parse(`
 	function foo () {
@@ -408,7 +408,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
-	
+
 
 	const statements = parse(`
 	function fib(x) { return x <= 1 ? x : fib(x - 1) + fib(x - 2); }
@@ -420,4 +420,54 @@ test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
 	t.true(value != null && !isNaN(parseInt(value)));
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #29`, t => {
+
+	parse(`export const foo = "hello";`, "another_file.ts");
+
+	const code = `
+	import {foo} from "another_file.ts";
+	const something = foo;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["something"].value.resolve();
+	t.true(resolved === "hello");
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #30`, t => {
+
+	parse(`
+	const foo = "hello";
+	export default foo;
+	`, "another_file.ts");
+
+	const code = `
+	import foo from "another_file.ts";
+	const something = foo;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["something"].value.resolve();
+	t.true(resolved === "hello");
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
+
+	parse(`
+	export default 2;
+	`, "another_file.ts");
+
+	const code = `
+	import foo from "another_file.ts";
+	const something = foo;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["something"].value.resolve();
+	t.true(resolved === "2");
 });

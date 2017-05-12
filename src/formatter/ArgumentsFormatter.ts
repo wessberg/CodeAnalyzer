@@ -1,10 +1,10 @@
-import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
-import {CallExpression, NewExpression, Expression} from "typescript";
-import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {CallExpression, Expression, NewExpression} from "typescript";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
+import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
+import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 
 export class ArgumentsFormatter implements IArgumentsFormatter {
 

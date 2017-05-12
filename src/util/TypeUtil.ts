@@ -1,6 +1,6 @@
-import {ITypeUtil} from "./interface/ITypeUtil";
 import {isTypeBinding} from "../predicate/PredicateFunctions";
 import {ITypeBinding, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {ITypeUtil} from "./interface/ITypeUtil";
 
 export class TypeUtil implements ITypeUtil {
 	/**
@@ -10,17 +10,17 @@ export class TypeUtil implements ITypeUtil {
 	 * @returns {ITypeBinding[]}
 	 */
 	public takeTypeBindings (expression: TypeExpression, deep: boolean = false): ITypeBinding[] {
-	const bindings: ITypeBinding[] = [];
+		const bindings: ITypeBinding[] = [];
 
-	expression.forEach(token => {
-		if (isTypeBinding(token)) {
-			bindings.push(token);
+		expression.forEach(token => {
+			if (isTypeBinding(token)) {
+				bindings.push(token);
 
-			if (token.typeArguments != null && deep) {
-				this.takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
+				if (token.typeArguments != null && deep) {
+					this.takeTypeBindings(token.typeArguments, deep).forEach(typeBinding => bindings.push(typeBinding));
+				}
 			}
-		}
-	});
-	return bindings;
-}
+		});
+		return bindings;
+	}
 }

@@ -4,14 +4,14 @@ import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFileProper
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {IdentifierMapKind, INewExpression} from "../service/interface/ISimpleLanguageService";
 import {IMapper} from "../mapper/interface/IMapper";
+import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {IdentifierMapKind, INewExpression} from "../service/interface/ISimpleLanguageService";
 import {ITracer} from "../tracer/interface/ITracer";
+import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {CallableFormatter} from "./CallableFormatter";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {INewExpressionFormatter} from "./interface/INewExpressionFormatter";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ITypeUtil} from "../util/interface/ITypeUtil";
 
 export class NewExpressionFormatter extends CallableFormatter implements INewExpressionFormatter {
 

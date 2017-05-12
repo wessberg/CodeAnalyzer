@@ -23,7 +23,7 @@ test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
 });
 
 test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
-	
+
 	const code = `
 		helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -35,7 +35,7 @@ test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
 });
 
 test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -47,7 +47,7 @@ test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -60,7 +60,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #2`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -75,7 +75,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #2`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #3`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -88,7 +88,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #3`, t => {
 });
 
 test(`getCallExpressions() -> Detects typeArguments correctly. #4`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -102,7 +102,7 @@ test(`getCallExpressions() -> Detects typeArguments correctly. #4`, t => {
 });
 
 test(`getCallExpressions() -> Detects arguments correctly. #1`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;
@@ -115,7 +115,7 @@ test(`getCallExpressions() -> Detects arguments correctly. #1`, t => {
 });
 
 test(`getCallExpressions() -> Detects arguments correctly. #2`, t => {
-	
+
 	const code = `
 		service.helloWorld<Foo>("Hello world!");
 	`;

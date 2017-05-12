@@ -2,7 +2,7 @@ import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
 test(`getFunctionDeclarations() -> Detects all function declarations properly. #1`, t => {
-	
+
 	const statements = parse(`
 		function foo () {}
 	`);
@@ -11,7 +11,7 @@ test(`getFunctionDeclarations() -> Detects all function declarations properly. #
 });
 
 test(`getFunctionDeclarations() -> Detects all function declarations properly. #2`, t => {
-	
+
 	const statements = parse(`
 		function foo () {
 			function bar () {
@@ -24,7 +24,7 @@ test(`getFunctionDeclarations() -> Detects all function declarations properly. #
 });
 
 test(`getFunctionDeclarations() -> Detects all function decorators properly. #1`, t => {
-	
+
 	const statements = parse(`
 		@MyDecorator
 		function foo () {
@@ -35,7 +35,7 @@ test(`getFunctionDeclarations() -> Detects all function decorators properly. #1`
 });
 
 test(`getFunctionDeclarations() -> Detects all function decorators properly. #2`, t => {
-	
+
 	const statements = parse(`
 		@MyDecorator
 		function foo () {
@@ -50,7 +50,7 @@ test(`getFunctionDeclarations() -> Detects all function decorators properly. #2`
 });
 
 test(`getFunctionDeclarations() -> Detects all function arguments properly #1`, t => {
-	
+
 	const statements = parse(`
 
 		function foo (arg1, arg2, arg3) {
@@ -63,7 +63,7 @@ test(`getFunctionDeclarations() -> Detects all function arguments properly #1`, 
 });
 
 test(`getFunctionDeclarations() -> Detects all function arguments properly #2`, t => {
-	
+
 	const statements = parse(`
 
 		function foo (arg1: string, arg2: number, arg3: boolean[]) {
@@ -76,7 +76,7 @@ test(`getFunctionDeclarations() -> Detects all function arguments properly #2`, 
 });
 
 test(`getFunctionDeclarations() -> Detects all function arguments initialization values properly #1`, t => {
-	
+
 	const statements = parse(`
 
 		function foo (arg1: string = ("hello" + "goodbye")) {
@@ -87,7 +87,7 @@ test(`getFunctionDeclarations() -> Detects all function arguments initialization
 });
 
 test(`getFunctionDeclarations() -> Detects all enum declarations properly. #1`, t => {
-	
+
 	const statements = parse(`
 		enum Foo {
 			A, B, C
@@ -98,7 +98,7 @@ test(`getFunctionDeclarations() -> Detects all enum declarations properly. #1`, 
 });
 
 test(`getFunctionDeclarations() -> Detects all enum declarations properly. #2`, t => {
-	
+
 	const statements = parse(`
 		enum Foo {
 			A = <any>"hello"
@@ -109,7 +109,7 @@ test(`getFunctionDeclarations() -> Detects all enum declarations properly. #2`, 
 });
 
 test(`getFunctionDeclarations() -> Detects all enum ordinal values correctly. #1`, t => {
-	
+
 	const statements = parse(`
 		enum Foo {
 			A = 2, B = 1, C = 10
@@ -123,7 +123,7 @@ test(`getFunctionDeclarations() -> Detects all enum ordinal values correctly. #1
 });
 
 test(`getFunctionDeclarations() -> Detects all enum ordinal values correctly. #2`, t => {
-	
+
 	const statements = parse(`
 		enum Foo {
 			A = 2, B = 1, C

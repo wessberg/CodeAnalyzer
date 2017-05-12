@@ -1,6 +1,6 @@
-import {IModuleFormatter} from "./IModuleFormatter";
+import {ClassDeclaration, ExportAssignment, ExportDeclaration, FunctionDeclaration, VariableStatement} from "typescript";
 import {IExportDeclaration} from "../../service/interface/ISimpleLanguageService";
-import {ExportDeclaration, VariableStatement, ExportAssignment, FunctionDeclaration, ClassDeclaration} from "typescript";
+import {IModuleFormatter} from "./IModuleFormatter";
 
 export interface IExportFormatter extends IModuleFormatter {
 	format (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null;

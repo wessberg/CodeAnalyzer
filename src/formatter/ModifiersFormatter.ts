@@ -1,7 +1,7 @@
 import {ClassDeclaration, FunctionDeclaration, MethodDeclaration, PropertyDeclaration, VariableDeclaration, VariableStatement} from "typescript";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 
 export class ModifiersFormatter implements IModifiersFormatter {
 

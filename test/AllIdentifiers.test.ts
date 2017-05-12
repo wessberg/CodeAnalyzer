@@ -2,10 +2,10 @@ import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
 test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
+	parse("", "bumbum.ts");
 
 	const statements = parse(`
 		import {Baz} from "./bumbum";
-
 		enum Foo {
 		}
 

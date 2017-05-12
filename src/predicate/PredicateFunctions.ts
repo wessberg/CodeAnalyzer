@@ -1,5 +1,5 @@
-import {ArrayBindingPattern, ArrayLiteralExpression, ExportAssignment, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
-import {ArbitraryValue, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IIdentifier, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression} from "../service/interface/ISimpleLanguageService";
+import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
+import {ArbitraryValue, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IFunctionDeclaration, IIdentifier, IImportExportBinding, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression} from "../service/interface/ISimpleLanguageService";
 
 /**
  * A predicate function that returns true if the given Statement is an ObjectLiteralExpression.
@@ -995,48 +995,80 @@ export function isRegularExpressionLiteral (statement: BindingName | EntityName 
 }
 
 /**
- * A predicate function that returns true if the given Statement is an IVariableAssignment.
- * @param {IIdentifier | null} statement
+ * A predicate function that returns true if the given Statement is an IIdentifier.
+ * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIVariableAssignment (statement: IIdentifier | null): statement is IVariableAssignment {
-	return statement != null && statement.___kind === IdentifierMapKind.VARIABLE;
+export function isIIdentifier (statement: IIdentifier | ArbitraryValue): statement is IIdentifier {
+	return isIVariableAssignment(statement) ||
+		isIParameter(statement) ||
+		isIImportExportBinding(statement) ||
+		isIClassDeclaration(statement) ||
+		isIEnumDeclaration(statement) ||
+		isIFunctionDeclaration(statement);
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IExportableIIdentifier.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIExportableIIdentifier (statement: IIdentifier | ArbitraryValue): statement is IExportableIIdentifier {
+	return isIVariableAssignment(statement) || isIClassDeclaration(statement) || isIEnumDeclaration(statement) || isIFunctionDeclaration(statement);
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IVariableAssignment.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIVariableAssignment (statement: IIdentifier | ArbitraryValue): statement is IVariableAssignment {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.VARIABLE;
 }
 
 /**
  * A predicate function that returns true if the given Statement is an IParameter.
- * @param {IIdentifier | null} statement
+ * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIParameter (statement: IIdentifier | null): statement is IParameter {
-	return statement != null && statement.___kind === IdentifierMapKind.PARAMETER;
+export function isIParameter (statement: IIdentifier | ArbitraryValue): statement is IParameter {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.PARAMETER;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IImportExportBinding.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIImportExportBinding (statement: IIdentifier | ArbitraryValue): statement is IImportExportBinding {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.IMPORT_EXPORT_BINDING;
 }
 
 /**
  * A predicate function that returns true if the given Statement is an IClassDeclaration.
- * @param {IIdentifier | null} statement
+ * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIClassDeclaration (statement: IIdentifier | null): statement is IClassDeclaration {
-	return statement != null && statement.___kind === IdentifierMapKind.CLASS;
+export function isIClassDeclaration (statement: IIdentifier | ArbitraryValue): statement is IClassDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.CLASS;
 }
 
 /**
  * A predicate function that returns true if the given Statement is an IEnumDeclaration.
- * @param {IIdentifier | null} statement
+ * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIEnumDeclaration (statement: IIdentifier | null): statement is IEnumDeclaration {
-	return statement != null && statement.___kind === IdentifierMapKind.ENUM;
+export function isIEnumDeclaration (statement: IIdentifier | ArbitraryValue): statement is IEnumDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.ENUM;
 }
 
 /**
  * A predicate function that returns true if the given Statement is an IFunctionDeclaration.
- * @param {IIdentifier | null} statement
+ * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIFunctionDeclaration (statement: IIdentifier | null): statement is IFunctionDeclaration {
-	return statement != null && statement.___kind === IdentifierMapKind.FUNCTION;
+export function isIFunctionDeclaration (statement: IIdentifier | ArbitraryValue): statement is IFunctionDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.FUNCTION;
 }
 
 /**

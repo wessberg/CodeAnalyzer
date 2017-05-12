@@ -6,4 +6,5 @@ export interface INameConfig {
 export interface IConfig {
 	name: INameConfig;
 	supportedFileExtensions: string[];
+	defaultExtension: string;
 }

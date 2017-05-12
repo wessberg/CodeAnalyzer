@@ -30,7 +30,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #3`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #4`, t => {
-	
+
 	const statements = parse(`
 		const a = true, b = false, c = Infinity;
 	`);
@@ -42,7 +42,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #4`
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments properly. #5`, t => {
-	
+
 	const statements = parse(`
 		var tween,
 			collection = (Animation.tweeners[prop] || []).concat(Animation.tweeners["*"]),
@@ -55,7 +55,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #5`
 
 // Tests
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #1`, t => {
-	
+
 
 	const statements = parse(`
 		if (true) {
@@ -67,7 +67,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #2`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -81,7 +81,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #3`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -95,7 +95,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #4`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -111,7 +111,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #5`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -127,7 +127,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #6`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -143,7 +143,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #7`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -165,7 +165,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #8`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -177,7 +177,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #9`, t => {
-	
+
 
 	const statements = parse(FULL_CODE_EXAMPLE_1);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -190,7 +190,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #10`, t => {
-	
+
 
 	const statements = parse(FULL_CODE_EXAMPLE_2);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -277,7 +277,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #12`, t => {
-	
+
 
 	const statements = parse(FULL_CODE_EXAMPLE_4);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -299,7 +299,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #13`, t => {
-	
+
 
 	const statements = parse(FULL_CODE_EXAMPLE_6);
 	const assignments = service.getVariableAssignments(statements, true);
@@ -314,7 +314,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #14`, t => {
-	
+
 
 	const code = `
 
@@ -327,7 +327,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
-	
+
 
 	const statements = parse(`
 		const a = "hello";
@@ -338,7 +338,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
-	
+
 
 	const statements = parse(`
 		const a: string = "hello";
@@ -349,7 +349,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
-	
+
 
 	const statements = parse(`
 		const a: string|symbol = "hello";
@@ -360,7 +360,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
-	
+
 
 	const statements = parse(`
 		const a: Foo[] = "hello";
@@ -371,7 +371,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
-	
+
 
 	const statements = parse(`
 		const a: {[key: string]: any} = "hello";
@@ -382,7 +382,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
-	
+
 
 	const statements = parse(`
 		const a: {[key: string]: any, foo: number} = "hello";
@@ -393,7 +393,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
-	
+
 
 	const statements = parse(`
 		const a: {foo?: number} = "hello";
@@ -404,7 +404,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
-	
+
 
 	const statements = parse(`
 		const a: {foo?: number} & {bar: boolean} = "hello";
@@ -415,7 +415,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
-	
+
 
 	const statements = parse(`
 		const a: Foobar = Foobar.HELLO;

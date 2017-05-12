@@ -1,12 +1,13 @@
-import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
-import {IHeritage} from "../service/interface/ISimpleLanguageService";
 import {HeritageClause, NodeArray} from "typescript";
-import {isExtendsClause, isImplementsClause, isTypeBinding} from "../predicate/PredicateFunctions";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
+import {isExtendsClause, isImplementsClause, isTypeBinding} from "../predicate/PredicateFunctions";
+import {IHeritage} from "../service/interface/ISimpleLanguageService";
+import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
 
 export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 
 	constructor (private typeExpressionGetter: ITypeExpressionGetter) {}
+
 	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
 	 * @param {NodeArray<HeritageClause>} clauses

@@ -1,6 +1,6 @@
-import {NodeFlags, SyntaxKind, BinaryOperator, TypeNode} from "typescript";
-import {ArbitraryValue, TypeExpression} from "../../service/interface/ISimpleLanguageService";
+import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode} from "typescript";
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
+import {ArbitraryValue, TypeExpression} from "../../service/interface/ISimpleLanguageService";
 
 
 export interface ITokenSerializer {

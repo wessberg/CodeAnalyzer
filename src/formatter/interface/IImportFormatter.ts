@@ -1,4 +1,4 @@
-import {ImportDeclaration, ImportEqualsDeclaration, VariableStatement, CallExpression} from "typescript";
+import {CallExpression, ImportDeclaration, ImportEqualsDeclaration, VariableStatement} from "typescript";
 import {IImportDeclaration} from "../../service/interface/ISimpleLanguageService";
 import {IModuleFormatter} from "./IModuleFormatter";
 

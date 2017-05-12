@@ -1,7 +1,7 @@
+import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {test} from "ava";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {parse, service} from "./util/Setup";
-import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 test(`ValueExpressions -> Detects all valueExpressions correctly. #1`, t => {
 
 	const statements = parse(`
@@ -40,7 +40,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #4`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #5`, t => {
-	
+
 
 	const statements = parse(`
 		const substitution = 2;
@@ -61,7 +61,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #6`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #7`, t => {
-	
+
 
 	const statements = parse(`
 		var baz = [1, 2, 3];
@@ -72,7 +72,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #7`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #8`, t => {
-	
+
 	const statements = parse(`
 		const a = true, b = false, c = Infinity;
 	`);
@@ -94,7 +94,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #9`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #10`, t => {
-	
+
 
 	const statements = parse(`
 		const a = [1, "foo", false, [1, 2, 3]]
@@ -105,7 +105,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #10`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #11`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {a: 1};
@@ -116,7 +116,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #11`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #12`, t => {
-	
+
 
 	const statements = parse(`
 		const key = "foo";
@@ -128,7 +128,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #12`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #13`, t => {
-	
+
 
 	const statements = parse(`
 		const key = 0;
@@ -140,7 +140,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #13`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #14`, t => {
-	
+
 
 	const statements = parse(`
 		const key = 0;
@@ -152,7 +152,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #14`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #15`, t => {
-	
+
 
 	const statements = parse(`
 		const key = 0;
@@ -164,7 +164,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #15`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #16`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {"a": 1};
@@ -175,7 +175,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #16`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #17`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {"0": 1};
@@ -186,7 +186,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #17`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #18`, t => {
-	
+
 
 	const statements = parse(`
 		function getKey () {return "test";}
@@ -198,7 +198,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #18`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #19`, t => {
-	
+
 
 	const statements = parse(`
 		function getKey (num: number, bool: boolean, arr: number[]) {return "test";}
@@ -210,7 +210,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #19`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #20`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {foo: {bar: {baz: new Foo(true, false)}}};
@@ -221,7 +221,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #20`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #21`, t => {
-	
+
 
 	const statements = parse(`
 		const a = true ? 1 : 0;
@@ -232,7 +232,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #21`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #22`, t => {
-	
+
 
 	const statements = parse(`
 		const sub = true;
@@ -244,7 +244,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #22`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #23`, t => {
-	
+
 
 	const statements = parse(`
 		const sub = true;
@@ -256,7 +256,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #23`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #24`, t => {
-	
+
 
 	const statements = parse(`
 		const a = new Foo(true)
@@ -267,7 +267,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #24`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #25`, t => {
-	
+
 
 	const statements = parse(`
 		const a = Foo.A;
@@ -278,7 +278,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #25`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #26`, t => {
-	
+
 
 	const statements = parse(`
 		const a = Foo.A.B.C.D;
@@ -289,7 +289,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #26`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #27`, t => {
-	
+
 
 	const statements = parse(`
 		const a = () => true;
@@ -300,7 +300,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #27`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #28`, t => {
-	
+
 
 	const statements = parse(`
 		const a = (foo: string) => true;
@@ -311,7 +311,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #28`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #29`, t => {
-	
+
 
 	const statements = parse(`
 		const a = (foo: string) => function () {return true;};
@@ -322,7 +322,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #29`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #30`, t => {
-	
+
 
 	const statements = parse(`
 		const a = Something.Other.Than<OtherThing>("baz");
@@ -333,7 +333,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #30`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
-	
+
 
 	const statements = parse(`
 		const a = Something[2].Other.Than<OtherThing>("baz");
@@ -344,7 +344,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
-	
+
 
 	const statements = parse(`
 		const a = test((foobar: number) => false);
@@ -355,7 +355,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
-	
+
 
 	const statements = parse(`
 		const a = 2 + 3;
@@ -366,7 +366,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #34`, t => {
-	
+
 
 	const statements = parse(`
 		const a = 2 + 3 * (10 * 5);
@@ -377,7 +377,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #34`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #35`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {...foo, ...bar};
@@ -388,7 +388,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #35`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #36`, t => {
-	
+
 
 	const statements = parse(`
 		const a = {...{foo: 1}, ...bar};
@@ -399,7 +399,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #36`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #37`, t => {
-	
+
 
 	const statements = parse(`
 		const a = [...foo, ...bar];
@@ -410,7 +410,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #37`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #38`, t => {
-	
+
 
 	const statements = parse(`
 		const assignmentMap: AssignmentMap = {};
@@ -428,7 +428,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #38`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #39`, t => {
-	
+
 
 	const statements = parse(`
 		const a;
@@ -439,7 +439,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #39`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #40`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -455,7 +455,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #40`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -471,7 +471,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -487,7 +487,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {
-	
+
 
 	const statements = parse(`
 
@@ -499,7 +499,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #44`, t => {
-	
+
 
 	const code = `
 	
@@ -512,7 +512,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #44`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #45`, t => {
-	
+
 
 	const code = `
 	
@@ -525,7 +525,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #45`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #46`, t => {
-	
+
 
 	const code = `
 	
@@ -538,7 +538,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #46`, t => {
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #47`, t => {
-	
+
 
 	const code = `
 	const something = [1, 2];
@@ -549,4 +549,18 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #47`, t => {
 	const assignments = service.getVariableAssignments(statements, true);
 	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("something")]);
 	t.deepEqual(assignments["b"].value.expression, [new BindingIdentifier("something")]);
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #48`, t => {
+
+	parse(`export const foo = "hello";`, "another_file.ts");
+
+	const code = `
+	import {foo} from "another_file.ts";
+	const something = foo;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	t.deepEqual(assignments["something"].value.expression, [new BindingIdentifier("foo")]);
 });

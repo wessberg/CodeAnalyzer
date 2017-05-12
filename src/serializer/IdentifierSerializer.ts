@@ -1,7 +1,8 @@
-import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
-import {IFunctionDeclaration, IParametersBody, IEnumDeclaration, IClassDeclaration, IVariableAssignment, IParameter, ArbitraryValue} from "../service/interface/ISimpleLanguageService";
 import {IMarshaller} from "@wessberg/marshaller";
+import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIVariableAssignment} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportExportBinding, IParameter, IParametersBody, IVariableAssignment} from "../service/interface/ISimpleLanguageService";
 import {IStringUtil} from "../util/interface/IStringUtil";
+import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
 
 export class IdentifierSerializer implements IIdentifierSerializer {
 	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
@@ -21,6 +22,15 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			? variableAssignment.value.resolved
 			: variableAssignment.value.resolve();
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
+	}
+
+	public serializeIImportExportBinding (binding: IImportExportBinding): string {
+		if (!isIExportableIIdentifier(binding.payload)) return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
+		if (isIClassDeclaration(binding.payload)) return this.serializeIClassDeclaration(binding.payload, false, "", "");
+		if (isIVariableAssignment(binding.payload)) return this.serializeIVariableAssignment(binding.payload);
+		if (isIEnumDeclaration(binding.payload)) return this.serializeIEnumDeclaration(binding.payload);
+		if (isIFunctionDeclaration(binding.payload)) return this.serializeIFunctionDeclaration(binding.payload);
+		return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
 	}
 
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean, identifier: string, scope: string | null): string {

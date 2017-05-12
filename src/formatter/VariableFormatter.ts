@@ -1,18 +1,18 @@
 import {ArrayBindingPattern, Identifier, ObjectBindingPattern, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
+import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ISimpleLanguageService";
-import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
-import {IVariableFormatter} from "./interface/IVariableFormatter";
-import {IMapper} from "../mapper/interface/IMapper";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
-import {ICache} from "../cache/interface/ICache";
-import {ITracer} from "../tracer/interface/ITracer";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {IMapper} from "../mapper/interface/IMapper";
+import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
+import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ISimpleLanguageService";
+import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
+import {IModifiersFormatter} from "./interface/IModifiersFormatter";
+import {IVariableFormatter} from "./interface/IVariableFormatter";
 
 export class VariableFormatter implements IVariableFormatter {
 
