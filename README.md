@@ -9,7 +9,7 @@ The service is a very flexible and powerful tool for extracting metadata and sta
 
 It builds upon the Typescript AST and understands the entirety of the Typescript syntax.
 
-Here's *some* of what SimpleLanguageService does:
+Here's *some* of what CodeAnalyzer does:
 
 - It computes the initialization values of variables and return values of function calls - ahead of time.
 - It tracks the types of class fields, function/method/constructor parameters, generic call- or new expression arguments and similar.
@@ -39,38 +39,34 @@ console.log(variable.type.flattened); // number[]
 console.log(variable.value.expression); // [ Identifier {name: "foo"}, "(", ")"]
 ```
 
+If you want to reduce the runtime cost of your code, you can replace function calls and variable initialization statements
+with the result of computing them ahead of time using the CodeAnalyzer.
 
+But more than that, it can also help you with doing a lot of the work that is usually performed at runtime (or requires some kind of runtime backing).
+For example, by extracting metadata such as type information ahead of time, there is no need for runtime reflection for many use cases (like dependency injection).
 
-This is useful if you want to reduce complexity by replacing heavy function calls with values.
-
-But more than that, it can
-
-## Usage
+The CodeAnalyzer can extract information from your code through a simple, but robust API.
+Here is the base interface, though more methods exists in the actual interface:
 ```typescript
-// A path to a file.
-const filePath = "my_file.ts";
-
-// The code contents of a file.
-const fileContents = "const foo = 'bar'";
-
-// Add a file to the LanguageService so it can construct an AST from the contents of it.
-const statements = simpleLanguageService.addFile(filePath, fileContents);
-
-// Now we can play around with it:
-simpleLanguageService.getClassDeclarations(statements, filePath, fileContents);
-simpleLanguageService.getImportDeclarations(statements, filePath);
-simpleLanguageService.getVariableAssignments(statements);
-// And so on...
+interface CodeAnalyzer {
+	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
+	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
+	getAllIdentifiersForFile(fileName: string, deep?: boolean): IIdentifierMap;
+	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
+	getEnumDeclarationsForFile(fileName: string, deep?: boolean): EnumIndexer;
+	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
+	getImportDeclarationsForFile (fileName: string, deep?: boolean): IImportDeclaration[];
+	getExportDeclarationsForFile (fileName: string, deep?: boolean): IExportDeclaration[];
+	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
+	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
+}
 ```
 
-The Typescript LanguageService is an extremely flexible and powerful tool for static code analysis.
-This is a simple LanguageService provider that boils the complex information down to
-more easily digestible metadata such as class props, methods, constructor arguments, imports
-and exports and other stuff.
+For full documentation, consult [the full interface](src/service/interface/ICodeAnalyzer.ts) or [the implementation](src/service/CodeAnalyzer.ts)
 
 ## Differences from [Prepack](https://prepack.io/)
 
-The `SimpleLanguageService` can resolve identifiers **to the value they are initialized to**, but it
+The `CodeAnalyzer` can resolve identifiers **to the value they are initialized to**, but it
 **doesn't track mutations**.
 
 This means that if your code gradually builds up a variable, say, an ObjectLiteral, the resolved value
