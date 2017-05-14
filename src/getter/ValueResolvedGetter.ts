@@ -5,7 +5,7 @@ import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIImportExportBinding, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
 import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
-import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, InitializationValue, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IValueResolvedGetter} from "./interface/IValueResolvedGetter";

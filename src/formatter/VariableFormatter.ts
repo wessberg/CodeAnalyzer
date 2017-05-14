@@ -8,7 +8,7 @@ import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ISimpleLanguageService";
+import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";

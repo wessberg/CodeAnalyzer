@@ -1,4 +1,4 @@
-import {ArbitraryValue} from "../../service/interface/ISimpleLanguageService";
+import {ArbitraryValue} from "../../service/interface/ICodeAnalyzer";
 export interface IStringUtil {
 	stripQuotesIfNecessary (content: ArbitraryValue): ArbitraryValue;
 	isQuote (content: string): boolean;

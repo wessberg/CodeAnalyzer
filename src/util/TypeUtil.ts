@@ -1,5 +1,5 @@
 import {isTypeBinding} from "../predicate/PredicateFunctions";
-import {ITypeBinding, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {ITypeBinding, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITypeUtil} from "./interface/ITypeUtil";
 
 export class TypeUtil implements ITypeUtil {

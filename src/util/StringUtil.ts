@@ -1,4 +1,4 @@
-import {ArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "./interface/IStringUtil";
 
 export class StringUtil implements IStringUtil {

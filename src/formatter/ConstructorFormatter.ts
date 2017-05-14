@@ -2,7 +2,7 @@ import {IModifiersFormatter} from "src/formatter/interface/IModifiersFormatter";
 import {ConstructorDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
+import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";

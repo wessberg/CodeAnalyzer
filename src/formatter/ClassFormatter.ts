@@ -3,7 +3,7 @@ import {ICache} from "../cache/interface/ICache";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isConstructorDeclaration, isMethodDeclaration, isPropertyDeclaration} from "../predicate/PredicateFunctions";
-import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
+import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {IClassFormatter} from "./interface/IClassFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";

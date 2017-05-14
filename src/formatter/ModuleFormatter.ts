@@ -1,6 +1,6 @@
 import {IFileLoader} from "@wessberg/fileloader";
 import {dirname, join} from "path";
-import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";

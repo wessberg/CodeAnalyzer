@@ -1,5 +1,5 @@
 import {DeclarationName, Expression, Node, Statement, TypeNode, TypeReferenceNode} from "typescript";
-import {ArbitraryValue} from "../../service/interface/ISimpleLanguageService";
+import {ArbitraryValue} from "../../service/interface/ICodeAnalyzer";
 
 export interface INameGetter {
 	getName (statement: Statement | Expression | Node | TypeNode | TypeReferenceNode): string | null;

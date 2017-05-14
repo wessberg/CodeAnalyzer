@@ -2,13 +2,13 @@ import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isArrowFunction, isClassDeclaration, isClassExpression, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile} from "../predicate/PredicateFunctions";
-import {IIdentifier, IIdentifierMap, IImportExportBinding, IParameter, ISimpleLanguageService} from "../service/interface/ISimpleLanguageService";
+import {ICodeAnalyzer, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
 
 export class Tracer implements ITracer {
 
-	constructor (private languageService: ISimpleLanguageService,
+	constructor (private languageService: ICodeAnalyzer,
 							 private nameGetter: INameGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {}
 

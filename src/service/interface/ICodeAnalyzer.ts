@@ -270,7 +270,7 @@ export declare type ArbitraryValueIndexable = ArbitraryValue | IArbitraryObject<
 export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
 
-export interface ISimpleLanguageService extends LanguageServiceHost {
+export interface ICodeAnalyzer extends LanguageServiceHost {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	getFile(fileName: string): NodeArray<Statement>;
 	getFileVersion (filePath: string): number;

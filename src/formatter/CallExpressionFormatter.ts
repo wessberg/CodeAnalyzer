@@ -6,7 +6,7 @@ import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ICallExpression, IdentifierMapKind} from "../service/interface/ISimpleLanguageService";
+import {ICallExpression, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {CallableFormatter} from "./CallableFormatter";

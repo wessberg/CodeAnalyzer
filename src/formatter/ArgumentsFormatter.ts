@@ -2,7 +2,7 @@ import {CallExpression, Expression, NewExpression} from "typescript";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 

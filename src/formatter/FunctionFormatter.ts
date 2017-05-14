@@ -6,7 +6,7 @@ import {FunctionDeclaration} from "typescript";
 import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, IFunctionDeclaration, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "../tracer/interface/ITracer";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";

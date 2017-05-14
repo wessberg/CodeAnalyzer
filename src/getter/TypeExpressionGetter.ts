@@ -1,4 +1,4 @@
-import {TypeExpression} from "src/service/interface/ISimpleLanguageService";
+import {TypeExpression} from "src/service/interface/ICodeAnalyzer";
 import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
 import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";

@@ -5,7 +5,7 @@ import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {isIdentifierObject, isLiteralExpression, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {ICallableFormatter} from "./interface/ICallableFormatter";

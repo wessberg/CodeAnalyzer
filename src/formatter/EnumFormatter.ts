@@ -3,7 +3,7 @@ import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IdentifierMapKind, IEnumDeclaration} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, IEnumDeclaration} from "../service/interface/ICodeAnalyzer";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IEnumFormatter} from "./interface/IEnumFormatter";
 

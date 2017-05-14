@@ -7,7 +7,7 @@ import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isStaticKeyword} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";

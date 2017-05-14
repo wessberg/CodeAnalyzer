@@ -1,5 +1,5 @@
 import {CallExpression, ImportDeclaration, ImportEqualsDeclaration, VariableStatement} from "typescript";
-import {IImportDeclaration} from "../../service/interface/ISimpleLanguageService";
+import {IImportDeclaration} from "../../service/interface/ICodeAnalyzer";
 import {IModuleFormatter} from "./IModuleFormatter";
 
 export interface IImportFormatter extends IModuleFormatter {

@@ -2,7 +2,7 @@ import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isTypeBinding} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, TypeExpression} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITokenSerializer} from "./interface/ITokenSerializer";
 
 export class TokenSerializer implements ITokenSerializer {

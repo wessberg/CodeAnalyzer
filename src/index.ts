@@ -1,7 +1,7 @@
 export {BindingIdentifier} from "./model/BindingIdentifier";
-export {SimpleLanguageService} from "./service/SimpleLanguageService";
+export {CodeAnalyzer} from "./service/CodeAnalyzer";
 export {
-	ISimpleLanguageService,
+	ICodeAnalyzer,
 	IClassDeclaration,
 	IImportDeclaration,
 	InitializationValue,
@@ -35,5 +35,5 @@ export {
 	DecoratorIndexer,
 	ResolvedMethodMap,
 	INewExpression
-} from "./service/interface/ISimpleLanguageService";
-export {ISimpleLanguageServiceConfig} from "./service/interface/ISimpleLanguageServiceConfig";
+} from "./service/interface/ICodeAnalyzer";
+export {ICodeAnalyzerConfig} from "./service/interface/ICodeAnalyzerConfig";

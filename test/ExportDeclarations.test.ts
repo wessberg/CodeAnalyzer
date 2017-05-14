@@ -1,5 +1,5 @@
 import {test} from "ava";
-import {ImportExportKind} from "../src/service/interface/ISimpleLanguageService";
+import {ImportExportKind} from "../src/service/interface/ICodeAnalyzer";
 import {fileName, parse, service} from "./util/Setup";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {

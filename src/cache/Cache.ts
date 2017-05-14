@@ -1,10 +1,10 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, ISimpleLanguageService, IVariableAssignment, VariableIndexer} from "../service/interface/ISimpleLanguageService";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, ICodeAnalyzer, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
 
 export class Cache implements ICache {
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 
-	constructor (private languageService: ISimpleLanguageService) {}
+	constructor (private languageService: ICodeAnalyzer) {}
 
 	public getCachedPropName (fileName: string, className: string, propName: string): string {
 		return `prop.${fileName}.${className}.${propName}`;

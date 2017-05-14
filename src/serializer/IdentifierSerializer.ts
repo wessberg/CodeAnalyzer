@@ -1,6 +1,6 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ResolvedNamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
 

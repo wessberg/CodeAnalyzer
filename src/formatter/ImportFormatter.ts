@@ -6,7 +6,7 @@ import {IMapper} from "../mapper/interface/IMapper";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isVariableStatement} from "../predicate/PredicateFunctions";
-import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ISimpleLanguageService, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
+import {ICodeAnalyzer, IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
@@ -15,7 +15,7 @@ import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
-	constructor (private languageService: ISimpleLanguageService,
+	constructor (private languageService: ICodeAnalyzer,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private nameGetter: INameGetter,
 							 private callExpressionFormatter: ICallExpressionFormatter,

@@ -6,7 +6,7 @@ import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isClassDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ISimpleLanguageService, IValueable, ModuleDependencyKind} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ICodeAnalyzer, IValueable, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -17,7 +17,7 @@ import {ModuleFormatter} from "./ModuleFormatter";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
-	constructor (private languageService: ISimpleLanguageService,
+	constructor (private languageService: ICodeAnalyzer,
 							 private mapper: IMapper,
 							 private valueExpressionGetter: IValueExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter,

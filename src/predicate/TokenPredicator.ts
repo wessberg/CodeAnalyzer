@@ -1,4 +1,4 @@
-import {ArbitraryValue} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {ITokenPredicator} from "./interface/ITokenPredicator";
 

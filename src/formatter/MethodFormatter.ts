@@ -4,7 +4,7 @@ import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFileProper
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {isStaticKeyword} from "../predicate/PredicateFunctions";
-import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, IMethodDeclaration, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
