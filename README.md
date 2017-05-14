@@ -18,9 +18,9 @@ Here's *some* of what SimpleLanguageService does:
 For example,
 consider the following code:
 ```typescript
-const service = new CodeAnalyzer();
+const analyzer = new CodeAnalyzer();
 const fileName = "a_file.ts";
-service.addFile(fileName, `
+analyzer.addFile(fileName, `
   function foo () {
   		let arr = [];
   		for (let i = 1; i <= 5; i++) {
@@ -31,12 +31,15 @@ service.addFile(fileName, `
   	const aVariable: number[] = foo();
 `);
 
-const variables = service.getVariableAssignmentsForFile(fileName);
+const variables = analyzer.getVariableAssignmentsForFile(fileName);
 const variable = variables["aVariable"];
 console.log(variable.value.resolve()); // [1,2,3,4,5]
 console.log(variable.name); // aVariable
 console.log(variable.type.flattened); // number[]
+console.log(variable.value.expression); // [ Identifier {name: "foo"}, "(", ")"]
 ```
+
+
 
 This is useful if you want to reduce complexity by replacing heavy function calls with values.
 
