@@ -26,14 +26,14 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 	public serializeIImportExportBinding (binding: IImportExportBinding): string {
 		if (!isIExportableIIdentifier(binding.payload)) return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
-		if (isIClassDeclaration(binding.payload)) return this.serializeIClassDeclaration(binding.payload, false, "", "");
+		if (isIClassDeclaration(binding.payload)) return this.serializeIClassDeclaration(binding.payload, false);
 		if (isIVariableAssignment(binding.payload)) return this.serializeIVariableAssignment(binding.payload);
 		if (isIEnumDeclaration(binding.payload)) return this.serializeIEnumDeclaration(binding.payload);
 		if (isIFunctionDeclaration(binding.payload)) return this.serializeIFunctionDeclaration(binding.payload);
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
 	}
 
-	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean, identifier: string, scope: string | null): string {
+	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
 		const map: { [key: string]: string | null | undefined } = {};
 
 		for (const propKey of Object.keys(classDeclaration.props)) {
@@ -52,10 +52,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			const value = method.value;
 
 			const hasReturnStatement = method.returnStatement.startsAt >= 0;
-			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
-
-			// We have a self-reference here. Since 'this' refers to the mapped object, we just need to return "this".
-			if (identifier === "this" && scope === classDeclaration.name) return "this";
+			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve(true);
 
 			if (this.marshaller.getTypeOf(this.marshaller.marshal(resolvedValue)) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>this.stringUtil.quoteIfNecessary(resolvedValue);
 

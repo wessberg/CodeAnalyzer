@@ -471,3 +471,56 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
 	const resolved = assignments["something"].value.resolve();
 	t.true(resolved === "2");
 });
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
+
+	parse(`
+	export default 2;
+	`, "another_file.ts");
+
+	const code = `
+
+	import foo from "./another_file.ts";
+
+	class Foo {
+		public styles () {
+			return \`:host {font-size: \${foo}px;}\`;
+		}
+	}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, true);
+	const method = assignments["Foo"].methods["styles"];
+	const resolved = method.value.resolve();
+
+	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
+
+	parse(`
+	export default 2;
+	`, "another_file.ts");
+
+	const code = `
+
+	import foo from "./another_file.ts";
+
+	class Foo {
+		public foo () {
+			return \`:host {font-size: \${foo}px;}\`;
+		}
+		public styles () {
+			return this.foo();
+		}
+	}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements, true);
+	const method = assignments["Foo"].methods["styles"];
+	const resolved = method.value.resolve();
+
+	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
+});

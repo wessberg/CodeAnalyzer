@@ -182,7 +182,7 @@ export interface IUnresolvableValueable {
 
 export interface IValueable extends IUnresolvableValueable {
 	resolving: boolean;
-	resolve: () => string | null;
+	resolve: (insideThisScope?: boolean) => string | null;
 	resolved: string | null | undefined;
 	hasDoneFirstResolve: () => boolean;
 }

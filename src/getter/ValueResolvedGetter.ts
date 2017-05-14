@@ -26,19 +26,20 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 	 * @param {Statement|Expression|Node} from
 	 * @param {string|null} scope
 	 * @param {string|number} [takeKey]
+	 * @param {boolean} [insideThisScope=false]
 	 * @returns {ArbitraryValue}
 	 */
-	public getValueResolved (valueable: INonNullableValueable, from: Statement | Expression | Node, scope: string | null, takeKey?: string | number): string | null {
+	public getValueResolved (valueable: INonNullableValueable, from: Statement | Expression | Node, scope: string | null, takeKey?: string | number, insideThisScope: boolean = false): string | null {
 		if (valueable.resolving) return null;
 
 		valueable.resolving = true;
-		// console.log("valueExpression:", valueable.expression);
-		const [flattened, shouldCompute] = this.flattenValueExpression(valueable.expression, from, scope);
+		console.log("valueExpression:", valueable.expression);
+		const [flattened, shouldCompute] = this.flattenValueExpression(valueable.expression, from, scope, insideThisScope);
 
-		// console.log("flattened:", flattened);
+		console.log("flattened:", flattened);
 		let result = shouldCompute ? this.computeValueResolved(flattened) : flattened;
 		valueable.resolving = false;
-		// console.log("computed:", result);
+		console.log("computed:", result);
 		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
 		this.clearGlobalMutations();
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");
@@ -64,7 +65,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null): [string, boolean] {
+	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null, insideComputedThisScope: boolean = false): [string, boolean] {
 		let val: string = "";
 
 		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);
@@ -73,6 +74,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		expression.forEach((part, index) => {
 			if (part instanceof BindingIdentifier) {
+
 				const isRecursive = part.name === scope;
 
 				const substitution = this.tracer.traceIdentifier(part.name, from, scope);
@@ -105,8 +107,11 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				}
 
 				else if (isIClassDeclaration(substitution)) {
-					const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
-					sub = this.identifierSerializer.serializeIClassDeclaration(substitution, statics, part.name, scope);
+					if (insideComputedThisScope) sub = "this";
+					else {
+						const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
+						sub = this.identifierSerializer.serializeIClassDeclaration(substitution, statics);
+					}
 				}
 
 				else if (isIEnumDeclaration(substitution)) {

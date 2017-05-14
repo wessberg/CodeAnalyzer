@@ -120,8 +120,8 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 		this.valueExpressionGetter = new ValueExpressionGetter(marshaller, this.heritageClauseFormatter, this.sourceFilePropertiesGetter, this.typeExpressionGetter, this.nameGetter, this.tokenSerializer, this.tokenPredicator, this.stringUtil);
 		this.mapper = new Mapper();
 		this.cache = new Cache(this);
-		this.identifierSerializer = new IdentifierSerializer(marshaller, this.stringUtil);
 		this.tracer = new Tracer(this, this.nameGetter, this.sourceFilePropertiesGetter);
+		this.identifierSerializer = new IdentifierSerializer(marshaller, this.stringUtil);
 		this.valueResolvedGetter = new ValueResolvedGetter(marshaller, this.tracer, this.identifierSerializer, this.tokenPredicator, this.stringUtil);
 		this.modifiersFormatter = new ModifiersFormatter(this.tokenSerializer);
 		this.variableFormatter = new VariableFormatter(this.valueExpressionGetter, this.sourceFilePropertiesGetter, this.nameGetter, this.mapper, this.cache, this.tracer, this.valueResolvedGetter, this.modifiersFormatter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);

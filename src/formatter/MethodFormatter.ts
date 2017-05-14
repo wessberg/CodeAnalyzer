@@ -53,8 +53,8 @@ export class MethodFormatter extends FunctionLikeFormatter implements IMethodFor
 					resolving: false,
 					resolved: undefined,
 					hasDoneFirstResolve () {return map.value.resolved !== undefined;},
-					resolve () {
-						map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
+					resolve (insideThisScope: boolean = false) {
+						map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, undefined, insideThisScope);
 						return map.value.resolved;
 					}
 				}
