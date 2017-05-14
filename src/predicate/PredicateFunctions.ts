@@ -1,5 +1,5 @@
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
-import {ArbitraryValue, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IFunctionDeclaration, IIdentifier, IImportExportBinding, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression} from "../service/interface/ISimpleLanguageService";
+import {ArbitraryValue, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IFunctionDeclaration, IIdentifier, IImportExportBinding, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
 
 /**
  * A predicate function that returns true if the given Statement is an ObjectLiteralExpression.
@@ -1015,6 +1015,15 @@ export function isIIdentifier (statement: IIdentifier | ArbitraryValue): stateme
  */
 export function isIExportableIIdentifier (statement: IIdentifier | ArbitraryValue): statement is IExportableIIdentifier {
 	return isIVariableAssignment(statement) || isIClassDeclaration(statement) || isIEnumDeclaration(statement) || isIFunctionDeclaration(statement);
+}
+
+/**
+ * A predicate function that returns true if the given Statement is a NamespacedModuleMap.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isNamespacedModuleMap (statement: IIdentifier | ArbitraryValue): statement is NamespacedModuleMap {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
 }
 
 /**

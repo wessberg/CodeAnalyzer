@@ -604,6 +604,10 @@ export class SimpleLanguageService implements ISimpleLanguageService {
 			return this.findChildStatements(statement.expression);
 		}
 
+		if (isExportDeclaration(statement)) {
+			return statement.moduleSpecifier == null ? [] : this.findChildStatements(statement.moduleSpecifier);
+		}
+
 		if (isParenthesizedExpression(statement)) {
 			return this.findChildStatements(statement.expression);
 		}

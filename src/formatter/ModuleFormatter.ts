@@ -1,6 +1,6 @@
 import {IFileLoader} from "@wessberg/fileloader";
 import {dirname, join} from "path";
-import {IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
+import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
 import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
@@ -22,10 +22,21 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		modules.forEach(moduleDeclaration => {
 			Object.keys(moduleDeclaration.bindings).forEach(key => {
 				const binding = moduleDeclaration.bindings[key];
-				indexer[key] = binding.payload;
+				const isNamespace = binding.name === "*";
+				// If it isn't a namespace, just add the key to the object.
+				if (!isNamespace) indexer[key] = binding.payload;
+				else {
+					// Merge the two.
+					const payload = <NamespacedModuleMap>binding.payload;
+					Object.keys(payload).forEach(key => indexer[key] = payload[key]);
+				}
 			});
 		});
 
+		Object.defineProperty(indexer, "___kind", {
+			value: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
+			enumerable: false
+		});
 		return indexer;
 	}
 

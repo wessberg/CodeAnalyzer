@@ -277,7 +277,9 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 					obj.push("...");
 					const exp = this.getValueExpression(property.expression);
 					exp.forEach(item => obj.push(item));
-				} else {
+				}
+
+				else {
 
 					if (isPropertyAssignment(property)) {
 						if (property.name == null) return;

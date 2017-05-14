@@ -524,3 +524,24 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
 
 	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
 });
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #34`, t => {
+
+	parse(`
+	export const a = "hello";
+	`, "a.ts");
+
+	parse(`
+	export * from "./a.ts";
+	`, "b.ts");
+
+	const statements = parse(`
+		import * as Foo from "./b.ts";
+		const val = Foo.a;
+	`);
+
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["val"].value.resolve();
+
+	t.true(resolved === "hello");
+});

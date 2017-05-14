@@ -11,7 +11,7 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE, IMPORT, EXPORT, IMPORT_EXPORT_BINDING, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
+	VARIABLE, IMPORT, EXPORT, IMPORT_EXPORT_BINDING, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, NAMESPACED_MODULE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
 }
 
 export interface IImportExportBinding extends IKindable, IPositionable {
@@ -254,6 +254,7 @@ export declare type IIdentifier =
 	| IFunctionDeclaration;
 export declare type IExportableIIdentifier = IVariableAssignment | IClassDeclaration | IEnumDeclaration | IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
+export declare type ResolvedNamespacedModuleMap = { [key: string]: ArbitraryValue };
 export declare type NamespacedModuleMap = { [key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };

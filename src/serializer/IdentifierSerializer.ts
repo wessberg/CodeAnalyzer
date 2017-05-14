@@ -1,6 +1,6 @@
 import {IMarshaller} from "@wessberg/marshaller";
-import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIVariableAssignment} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportExportBinding, IParameter, IParametersBody, IVariableAssignment} from "../service/interface/ISimpleLanguageService";
+import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ResolvedNamespacedModuleMap} from "../service/interface/ISimpleLanguageService";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
 
@@ -24,13 +24,23 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
 	}
 
-	public serializeIImportExportBinding (binding: IImportExportBinding): string {
-		if (!isIExportableIIdentifier(binding.payload)) return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
-		if (isIClassDeclaration(binding.payload)) return this.serializeIClassDeclaration(binding.payload, false);
-		if (isIVariableAssignment(binding.payload)) return this.serializeIVariableAssignment(binding.payload);
-		if (isIEnumDeclaration(binding.payload)) return this.serializeIEnumDeclaration(binding.payload);
-		if (isIFunctionDeclaration(binding.payload)) return this.serializeIFunctionDeclaration(binding.payload);
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(binding.payload, "");
+	public serializeIImportExportBinding (payload: ImportExportBindingPayload): string {
+		if (isNamespacedModuleMap(payload)) return this.serializeNamespacedModuleMap(payload);
+		if (!isIExportableIIdentifier(payload)) return <string>this.marshaller.marshal<ArbitraryValue, string>(payload, "");
+		if (isIClassDeclaration(payload)) return this.serializeIClassDeclaration(payload, false);
+		if (isIVariableAssignment(payload)) return this.serializeIVariableAssignment(payload);
+		if (isIEnumDeclaration(payload)) return this.serializeIEnumDeclaration(payload);
+		if (isIFunctionDeclaration(payload)) return this.serializeIFunctionDeclaration(payload);
+		return <string>this.marshaller.marshal<ArbitraryValue, string>(payload, "");
+	}
+
+	public serializeNamespacedModuleMap (map: NamespacedModuleMap): string {
+		const newMap: ResolvedNamespacedModuleMap = {};
+		Object.keys(map).forEach(key => {
+			const value = map[key];
+			newMap[key] = this.serializeIImportExportBinding(value);
+		});
+		return <string>this.marshaller.marshal<ArbitraryValue, string>(newMap, "");
 	}
 
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
