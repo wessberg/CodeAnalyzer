@@ -13,7 +13,8 @@ export class EnumFormatter implements IEnumFormatter {
 							 private cache: ICache,
 							 private nameGetter: INameGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private decoratorsFormatter: IDecoratorsFormatter) {}
+							 private decoratorsFormatter: IDecoratorsFormatter) {
+	}
 
 	/**
 	 * Formats the given EnumDeclaration and returns an IEnumDeclaration.
@@ -30,7 +31,7 @@ export class EnumFormatter implements IEnumFormatter {
 		if (cached != null && !this.cache.cachedEnumNeedsUpdate(cached.content)) return cached.content;
 
 		const taken: Set<number> = new Set();
-		const members: { [key: string]: number | string } = {};
+		const members: { [key: string]: number|string } = {};
 		statement.members.forEach(member => {
 			const memberName = <string>this.nameGetter.getNameOfMember(member.name, false, true);
 			const initializer = member.initializer;

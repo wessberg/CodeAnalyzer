@@ -2,5 +2,5 @@ import {ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDecla
 import {DecoratorIndexer} from "../../service/interface/ICodeAnalyzer";
 
 export interface IDecoratorsFormatter {
-	format (declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration | EnumDeclaration): DecoratorIndexer;
+	format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration): DecoratorIndexer;
 }

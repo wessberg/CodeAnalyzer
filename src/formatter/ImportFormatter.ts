@@ -27,7 +27,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		super(stringUtil, fileLoader);
 	}
 
-	public format (statement: ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression): IImportDeclaration | null {
+	public format (statement: ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression): IImportDeclaration|null {
 		if (isImportDeclaration(statement)) return this.formatImportDeclaration(statement);
 		if (isImportEqualsDeclaration(statement)) return this.formatImportEqualsDeclaration(statement);
 		if (isVariableStatement(statement)) return this.formatVariableStatement(statement);
@@ -150,7 +150,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		}
 	}
 
-	private formatVariableStatement (statement: VariableStatement): IImportDeclaration | null {
+	private formatVariableStatement (statement: VariableStatement): IImportDeclaration|null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const variableIndexer = this.variableFormatter.format(statement);
@@ -204,7 +204,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		return null;
 	}
 
-	private formatCallExpression (statement: CallExpression): IImportDeclaration | null {
+	private formatCallExpression (statement: CallExpression): IImportDeclaration|null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const callExpression = this.callExpressionFormatter.format(statement);

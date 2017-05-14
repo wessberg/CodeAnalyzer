@@ -5,9 +5,10 @@ import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 
 export class ModifiersFormatter implements IModifiersFormatter {
 
-	constructor (private tokenSerializer: ITokenSerializer) {}
+	constructor (private tokenSerializer: ITokenSerializer) {
+	}
 
-	public format (statement: VariableDeclaration | VariableStatement | PropertyDeclaration | MethodDeclaration | FunctionDeclaration | ClassDeclaration): Set<string> {
+	public format (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration): Set<string> {
 		if (isVariableDeclaration(statement) && statement.modifiers == null) {
 			const parent = statement.parent;
 			if (parent != null && isVariableDeclarationList(parent)) {

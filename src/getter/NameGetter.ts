@@ -7,9 +7,10 @@ import {INameGetter} from "./interface/INameGetter";
 
 export class NameGetter implements INameGetter {
 
-	constructor (private marshaller: IMarshaller) {}
+	constructor (private marshaller: IMarshaller) {
+	}
 
-	public getName (statement: Statement | Expression | Node | TypeNode | TypeReferenceNode): string | null {
+	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string|null {
 		if (
 			isBindingElement(statement) ||
 			isParameterDeclaration(statement) ||
@@ -62,7 +63,7 @@ export class NameGetter implements INameGetter {
 	 * @param {boolean} [forceNoBindingIdentifier=false]
 	 * @returns {ArbitraryValue}
 	 */
-	public getNameOfMember (name: DeclarationName | Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
+	public getNameOfMember (name: DeclarationName|Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
 
 		if (isTypeAssertionExpression(name)) {
 			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
@@ -144,10 +145,9 @@ export class NameGetter implements INameGetter {
 	 * @param {Statement} statement
 	 * @returns {boolean}
 	 */
-	private memberHasNoBindingIdentifier (statement: Statement | Identifier): boolean {
+	private memberHasNoBindingIdentifier (statement: Statement|Identifier): boolean {
 		const parent = statement.parent;
 		if (parent == null) return false;
-
 
 		// If this is an identifier and the parent is a property access expression on a
 		// parenthesized, array or object literal expression (e.g. (something || []).concat(otherThing)),

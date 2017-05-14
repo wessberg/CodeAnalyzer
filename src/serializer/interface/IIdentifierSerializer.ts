@@ -1,4 +1,5 @@
 import {IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment} from "../../service/interface/ICodeAnalyzer";
+
 export interface IIdentifierSerializer {
 	serializeIParameter (parameter: IParameter): string;
 	serializeIVariableAssignment (variableAssignment: IVariableAssignment): string;

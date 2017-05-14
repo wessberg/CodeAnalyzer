@@ -4,7 +4,8 @@ import {ITokenPredicator} from "./interface/ITokenPredicator";
 
 export class TokenPredicator implements ITokenPredicator {
 
-	constructor (private stringUtil: IStringUtil) {}
+	constructor (private stringUtil: IStringUtil) {
+	}
 
 	/**
 	 * Returns true if the given item is a stringified keyword or a stringified operator.

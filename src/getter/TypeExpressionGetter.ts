@@ -7,19 +7,20 @@ import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 
-	constructor (private nameGetter: INameGetter, private tokenSerializer: ITokenSerializer) {}
+	constructor (private nameGetter: INameGetter, private tokenSerializer: ITokenSerializer) {
+	}
 
 	/**
 	 * Tokenizes the type information from the given statement and returns a TypeExpression.
 	 * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
 	 * @returns {TypeExpression}
 	 */
-	public getTypeExpression (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): TypeExpression {
+	public getTypeExpression (statement: ParameterDeclaration|TypeAliasDeclaration|TypeNode): TypeExpression {
 
 		if (isTypeNode(statement)) {
 			if ((isTypeReferenceNode(statement) || isTypeReference(statement)) && isIdentifierObject(statement.typeName)) {
 				const name = statement.typeName.text;
-				let typeArguments: TypeExpression | null = null;
+				let typeArguments: TypeExpression|null = null;
 				const typeArgs = statement.typeArguments;
 
 				if (typeArgs != null) {
@@ -127,7 +128,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 
 		if (isTypeReference(statement) && isIdentifierObject(statement.typeName)) {
 			const name = statement.typeName.text;
-			let typeArguments: TypeExpression | null = null;
+			let typeArguments: TypeExpression|null = null;
 			const typeArgs = statement.typeArguments;
 			if (typeArgs != null) {
 				typeArgs.forEach((typeArgument, index) => {
@@ -144,7 +145,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 
 		if (isExpressionWithTypeArguments(statement)) {
 			const name = this.nameGetter.getNameOfMember(statement.expression, false, true);
-			let typeArguments: TypeExpression | null = null;
+			let typeArguments: TypeExpression|null = null;
 			const typeArgs = statement.typeArguments;
 			if (typeArgs != null) {
 				typeArgs.forEach((typeArgument, index) => {

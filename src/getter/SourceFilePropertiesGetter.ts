@@ -9,8 +9,8 @@ export class SourceFilePropertiesGetter implements ISourceFilePropertiesGetter {
 	 * @param {Statement} statement
 	 * @returns {ISourceFileProperties}
 	 */
-	public getSourceFileProperties (statement: Statement | Node | Expression): ISourceFileProperties {
-		let current: Statement | Node = statement;
+	public getSourceFileProperties (statement: Statement|Node|Expression): ISourceFileProperties {
+		let current: Statement|Node = statement;
 
 		while (!isSourceFile(current)) {
 			if (current.parent == null) break;

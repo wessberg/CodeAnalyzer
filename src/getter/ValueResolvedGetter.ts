@@ -18,7 +18,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 							 private tracer: ITracer,
 							 private identifierSerializer: IIdentifierSerializer,
 							 private tokenPredicator: ITokenPredicator,
-							 private stringUtil: IStringUtil) {}
+							 private stringUtil: IStringUtil) {
+	}
 
 	/**
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
@@ -29,7 +30,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 	 * @param {boolean} [insideThisScope=false]
 	 * @returns {ArbitraryValue}
 	 */
-	public getValueResolved (valueable: INonNullableValueable, from: Statement | Expression | Node, scope: string | null, takeKey?: string | number, insideThisScope: boolean = false): string | null {
+	public getValueResolved (valueable: INonNullableValueable, from: Statement|Expression|Node, scope: string|null, takeKey?: string|number, insideThisScope: boolean = false): string|null {
 		if (valueable.resolving) return null;
 
 		valueable.resolving = true;
@@ -65,7 +66,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement | Expression | Node, scope: string | null, insideComputedThisScope: boolean = false): [string, boolean] {
+	private flattenValueExpression (valueExpression: InitializationValue, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false): [string, boolean] {
 		let val: string = "";
 
 		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);

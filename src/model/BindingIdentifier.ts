@@ -6,7 +6,8 @@ import {IBindingIdentifier} from "./interface/IBindingIdentifier";
  */
 export class BindingIdentifier implements IBindingIdentifier {
 
-	constructor (public name: string) { }
+	constructor (public name: string) {
+	}
 
 	/**
 	 * The string representation of an identifier

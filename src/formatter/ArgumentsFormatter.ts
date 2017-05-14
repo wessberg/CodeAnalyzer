@@ -11,14 +11,15 @@ export class ArgumentsFormatter implements IArgumentsFormatter {
 	constructor (private mapper: IMapper,
 							 private tracer: ITracer,
 							 private valueResolvedGetter: IValueResolvedGetter,
-							 private valueExpressionGetter: IValueExpressionGetter) {}
+							 private valueExpressionGetter: IValueExpressionGetter) {
+	}
 
 	/**
 	 * Takes the arguments from a CallExpression and returns an array of IArguments.
 	 * @param {CallExpression} declaration
 	 * @returns {IArgument[]}
 	 */
-	public format (declaration: CallExpression | NewExpression): IArgument[] {
+	public format (declaration: CallExpression|NewExpression): IArgument[] {
 		return declaration.arguments == null ? [] : declaration.arguments.map(arg => this.formatArgument(arg));
 	}
 
@@ -42,7 +43,9 @@ export class ArgumentsFormatter implements IArgumentsFormatter {
 				expression: valueExpression,
 				resolving: false,
 				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+				hasDoneFirstResolve () {
+					return map.value.resolved !== undefined;
+				},
 				resolve () {
 					map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, argument, scope);
 					return map.value.resolved;

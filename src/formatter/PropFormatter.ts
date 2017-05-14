@@ -26,7 +26,8 @@ export class PropFormatter implements IPropFormatter {
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private nameGetter: INameGetter,
 							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {}
+							 private typeUtil: ITypeUtil) {
+	}
 
 	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.
@@ -66,7 +67,9 @@ export class PropFormatter implements IPropFormatter {
 				expression: valueExpression,
 				resolving: false,
 				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+				hasDoneFirstResolve () {
+					return map.value.resolved !== undefined;
+				},
 				resolve () {
 					map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
 					return map.value.resolved;

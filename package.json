@@ -9,11 +9,14 @@
   "types": "./dist/es2015/index.d.ts",
   "typings": "./dist/es2015/index.d.ts",
   "scripts": {
-    "build:pre": "mkdir -p dist/cjs/interface && mkdir -p dist/es2015/interface",
+    "clean:dist": "rm -r -f dist",
+    "clean:compiled": "rm -r -f compiled",
+    "clean": "npm run clean:dist & npm run clean:compiled",
+    "build:pre": "npm run clean && mkdir -p dist/cjs/interface && mkdir -p dist/es2015/interface",
     "build:cjs": "tsc --module commonjs --outDir dist/cjs -p tsconfig.dist.json",
     "build:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
     "build": "npm run build:pre && npm run build:cjs && npm run build:es2015",
-    "test:pre": "tsc --module commonjs --target es2017 --sourceMap",
+    "test:pre": "npm run clean:compiled && tsc --module commonjs --target es2017 --sourceMap",
     "test": "NODE_ENV=TEST npm run test:pre && ava"
   },
   "keywords": [

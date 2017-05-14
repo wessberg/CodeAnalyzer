@@ -10,9 +10,18 @@ export class Tracer implements ITracer {
 
 	constructor (private languageService: ICodeAnalyzer,
 							 private nameGetter: INameGetter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {}
+							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
+	}
 
-	public findNearestMatchingIdentifier (from: Statement | Expression | Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)): IIdentifier | null {
+	/**
+	 * Finds matching declarations for the given identifier and returns the one that is nearest to the given statement.
+	 * @param {Statement|Expression|Node} from
+	 * @param {string} block
+	 * @param {string} identifier
+	 * @param {IIdentifierMap} clojure
+	 * @returns {IIdentifier|null}
+	 */
+	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)): IIdentifier|null {
 
 		const allMatches: IIdentifier[] = [];
 		const functionMatch = clojure.functions[identifier];
@@ -77,7 +86,7 @@ export class Tracer implements ITracer {
 	 * @param {string|null} scope
 	 * @returns {IIdentifier|null}
 	 */
-	public traceIdentifier (identifier: string, from: Statement | Expression | Node, scope: string | null): IIdentifier | null {
+	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope: string|null): IIdentifier|null {
 		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
 		const lookupIdentifier = identifier === "this" && scope != null && scope !== Config.name.global ? scope : identifier;
 
@@ -86,7 +95,12 @@ export class Tracer implements ITracer {
 		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
 	}
 
-	public traceThis (statement: Statement | Expression | Node): string {
+	/**
+	 * Attempts to find the identifying name for 'this' in the given context from the given statement.
+	 * @param {Statement|Expression|Node} statement
+	 * @returns {string}
+	 */
+	public traceThis (statement: Statement|Expression|Node): string {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
@@ -128,14 +142,25 @@ export class Tracer implements ITracer {
 		});
 	}
 
-	public traceClojure (from: Statement | Expression | Node | string): IIdentifierMap {
+	/**
+	 * Traces the clojure (snapshots the available state) from the given statement (e.g. which identifiers it has access to)
+	 * and returns an IIdentifierMap.
+	 * @param {Statement|Expression|Node|string} from
+	 * @returns {IIdentifierMap}
+	 */
+	public traceClojure (from: Statement|Expression|Node|string): IIdentifierMap {
 		const filePath = typeof from === "string" ? from : this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
 
 		// TODO: We shouldn't go deep and get ALL identifiers (which will ignore concepts such as conditional branches or even if the statement has access to the statement).
 		return this.languageService.getAllIdentifiersForFile(filePath, true);
 	}
 
-	public traceBlockScopeName (statement: Statement | Expression | Node): string {
+	/**
+	 * Attempts to find the proper name for the block scope that the current statement lives within.
+	 * @param {Statement|Expression|Node} statement
+	 * @returns {string}
+	 */
+	public traceBlockScopeName (statement: Statement|Expression|Node): string {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
@@ -171,18 +196,24 @@ export class Tracer implements ITracer {
 		});
 	}
 
-	private traceBlock (statement: Statement | Expression | Node, extractor: (statement: Statement | Expression | Node) => string): string {
-		let current: Statement | Expression | Node = statement;
+	/**
+	 * Finds the nearest relevant block and calls the given extractor function with it.
+	 * @param {Statement|Expression|Node} statement
+	 * @param {(statement: Statement|Expression|Node) => string} extractor
+	 * @returns {string}
+	 */
+	private traceBlock (statement: Statement|Expression|Node, extractor: (statement: Statement|Expression|Node) => string): string {
+		let current: Statement|Expression|Node = statement;
 
 		while (
-		!isClassDeclaration(current) &&
-		!isClassExpression(current) &&
-		!isFunctionExpression(current) &&
-		!isFunctionDeclaration(current) &&
-		!isMethodDeclaration(current) &&
-		!isArrowFunction(current) &&
-		!isPropertyDeclaration(current) &&
-		!isSourceFile(current)) {
+			!isClassDeclaration(current) &&
+			!isClassExpression(current) &&
+			!isFunctionExpression(current) &&
+			!isFunctionDeclaration(current) &&
+			!isMethodDeclaration(current) &&
+			!isArrowFunction(current) &&
+			!isPropertyDeclaration(current) &&
+			!isSourceFile(current)) {
 			if (current.parent == null) break;
 			current = current.parent;
 		}
@@ -190,12 +221,26 @@ export class Tracer implements ITracer {
 		return extractor(current);
 	}
 
-	private isChildOfAnyOfKinds (kinds: SyntaxKind[], identifier: string, from: Statement | Expression | Node): boolean {
+	/**
+	 * Returns true if the given statement is child of a statement of any of the provided kinds.
+	 * @param {SyntaxKind[]} kinds
+	 * @param {string} identifier
+	 * @param {Statement|Expression|Node} from
+	 * @returns {boolean}
+	 */
+	private isChildOfAnyOfKinds (kinds: SyntaxKind[], identifier: string, from: Statement|Expression|Node): boolean {
 		return kinds.some(kind => this.isChildOfKind(kind, identifier, from));
 	}
 
-	private isChildOfKind (kind: SyntaxKind, identifier: string, from: Statement | Expression | Node): boolean {
-		let current: Statement | Expression | Node | undefined = from;
+	/**
+	 * Returns true if the given statement is child of a statement of the provided kind.
+	 * @param {SyntaxKind} kind
+	 * @param {string} identifier
+	 * @param {Statement|Expression|Node} from
+	 * @returns {boolean}
+	 */
+	private isChildOfKind (kind: SyntaxKind, identifier: string, from: Statement|Expression|Node): boolean {
+		let current: Statement|Expression|Node|undefined = from;
 		while (current != null) {
 			if (current.kind === kind && this.nameGetter.getName(current) === identifier) return true;
 			current = current.parent;

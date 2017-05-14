@@ -26,14 +26,15 @@ export class VariableFormatter implements IVariableFormatter {
 							 private modifiersFormatter: IModifiersFormatter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {}
+							 private typeUtil: ITypeUtil) {
+	}
 
 	/**
 	 * Formats the given VariableStatement and returns a VariableIndexer.
 	 * @param {VariableStatement|VariableDeclarationList|VariableDeclaration} statement
 	 * @returns {VariableIndexer}
 	 */
-	public format (statement: VariableStatement | VariableDeclarationList | VariableDeclaration): VariableIndexer {
+	public format (statement: VariableStatement|VariableDeclarationList|VariableDeclaration): VariableIndexer {
 		const assignmentMap: VariableIndexer = {};
 
 		if (isVariableDeclaration(statement)) {
@@ -77,7 +78,7 @@ export class VariableFormatter implements IVariableFormatter {
 		return map;
 	}
 
-	private formatStandardVariableDeclaration (declaration: VariableDeclaration & { name: Identifier }): IVariableAssignment {
+	private formatStandardVariableDeclaration (declaration: VariableDeclaration&{ name: Identifier }): IVariableAssignment {
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const name = declaration.name.text;
 
@@ -93,7 +94,9 @@ export class VariableFormatter implements IVariableFormatter {
 			value: {
 				expression: base.value.expression,
 				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+				hasDoneFirstResolve () {
+					return map.value.resolved !== undefined;
+				},
 				resolving: false,
 				resolve () {
 					map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
@@ -115,22 +118,23 @@ export class VariableFormatter implements IVariableFormatter {
 
 	private formatVariableDeclaration (declaration: VariableDeclaration): IVariableAssignment[] {
 
-		if (!isIdentifierObject(declaration.name)) {} else {
-			return [this.formatStandardVariableDeclaration(<VariableDeclaration & { name: Identifier }>declaration)];
+		if (!isIdentifierObject(declaration.name)) {
+		} else {
+			return [this.formatStandardVariableDeclaration(<VariableDeclaration&{ name: Identifier }>declaration)];
 		}
 
 		if (isArrayBindingPattern(declaration.name)) {
-			return this.formatArrayBindingPatternVariableDeclaration(<VariableDeclaration & { name: ArrayBindingPattern }>declaration);
+			return this.formatArrayBindingPatternVariableDeclaration(<VariableDeclaration&{ name: ArrayBindingPattern }>declaration);
 		}
 
 		if (isObjectBindingPattern(declaration.name)) {
-			return this.formatObjectBindingPatternVariableDeclaration(<VariableDeclaration & { name: ObjectBindingPattern }>declaration);
+			return this.formatObjectBindingPatternVariableDeclaration(<VariableDeclaration&{ name: ObjectBindingPattern }>declaration);
 		}
 
 		throw new TypeError(`${this.formatVariableDeclaration.name} could not format variable declaration because a name couldn't be determined!`);
 	}
 
-	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration & { name: ArrayBindingPattern }): IVariableAssignment[] {
+	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ArrayBindingPattern }): IVariableAssignment[] {
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const assignments: IVariableAssignment[] = [];
 
@@ -151,7 +155,9 @@ export class VariableFormatter implements IVariableFormatter {
 					value: {
 						expression: base.value.expression,
 						resolved: undefined,
-						hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+						hasDoneFirstResolve () {
+							return map.value.resolved !== undefined;
+						},
 						resolving: false,
 						resolve () {
 							map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, index);
@@ -173,7 +179,7 @@ export class VariableFormatter implements IVariableFormatter {
 		return assignments;
 	}
 
-	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration & { name: ObjectBindingPattern }): IVariableAssignment[] {
+	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ObjectBindingPattern }): IVariableAssignment[] {
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const assignments: IVariableAssignment[] = [];
 
@@ -192,7 +198,9 @@ export class VariableFormatter implements IVariableFormatter {
 					value: {
 						expression: base.value.expression,
 						resolved: undefined,
-						hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+						hasDoneFirstResolve () {
+							return map.value.resolved !== undefined;
+						},
 						resolving: false,
 						resolve () {
 							map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, name);

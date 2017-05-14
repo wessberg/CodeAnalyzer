@@ -23,7 +23,8 @@ export class ClassFormatter implements IClassFormatter {
 							 private constructorFormatter: IConstructorFormatter,
 							 private modifiersFormatter: IModifiersFormatter,
 							 private heritageClauseFormatter: IHeritageClauseFormatter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {}
+							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
+	}
 
 	format (statement: ClassDeclaration): IClassDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);

@@ -2,5 +2,5 @@ import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "ty
 import {IParameter} from "../../service/interface/ICodeAnalyzer";
 
 export interface IParametersFormatter {
-	format (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IParameter[];
+	format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration): IParameter[];
 }

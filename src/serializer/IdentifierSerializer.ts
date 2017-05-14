@@ -8,7 +8,8 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
 
 	constructor (private marshaller: IMarshaller,
-							 private stringUtil: IStringUtil) {}
+							 private stringUtil: IStringUtil) {
+	}
 
 	public serializeIParameter (parameter: IParameter): string {
 		const flattened = parameter.value.expression == null ? "undefined" : parameter.value.hasDoneFirstResolve()
@@ -44,7 +45,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	}
 
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
-		const map: { [key: string]: string | null | undefined } = {};
+		const map: { [key: string]: string|null|undefined } = {};
 
 		for (const propKey of Object.keys(classDeclaration.props)) {
 			if (statics && !classDeclaration.props[propKey].isStatic) continue;

@@ -19,14 +19,15 @@ export class ParametersFormatter implements IParametersFormatter {
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private valueExpressionGetter: IValueExpressionGetter,
 							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {}
+							 private typeUtil: ITypeUtil) {
+	}
 
 	/**
 	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
 	 * @param {ConstructorDeclaration | MethodDeclaration | FunctionDeclaration} declaration
 	 * @returns {IParameter[]}
 	 */
-	public format (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IParameter[] {
+	public format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration): IParameter[] {
 		return declaration.parameters.map(param => this.formatParameter(param));
 	}
 
@@ -60,7 +61,9 @@ export class ParametersFormatter implements IParametersFormatter {
 				expression: valueExpression,
 				resolving: false,
 				resolved: undefined,
-				hasDoneFirstResolve () {return map.value.resolved !== undefined;},
+				hasDoneFirstResolve () {
+					return map.value.resolved !== undefined;
+				},
 				resolve () {
 					map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, parameter, scope);
 					return map.value.resolved;

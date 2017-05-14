@@ -21,7 +21,8 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 							 private nameGetter: INameGetter,
 							 private tokenSerializer: ITokenSerializer,
 							 private tokenPredicator: ITokenPredicator,
-							 private stringUtil: IStringUtil) {}
+							 private stringUtil: IStringUtil) {
+	}
 
 	/**
 	 * Checks and formats the initialization value of the given statement (if any) and returns it.
@@ -30,7 +31,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 	 * @param {Statement|Expression|Node} rawStatement
 	 * @returns {InitializationValue}
 	 */
-	public getValueExpression (rawStatement: Statement | Expression | Node): InitializationValue {
+	public getValueExpression (rawStatement: Statement|Expression|Node): InitializationValue {
 
 		if (isNumericLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, number>(rawStatement.text);
@@ -337,7 +338,6 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				// Remove empty strings from the contents and add everything else to the value array.
 				content.filter(item => !(typeof item === "string" && item.length < 1)).forEach(checkedItem => values.push(checkedItem));
 			});
-
 
 			return ["\`", ...values, "\`"];
 		}

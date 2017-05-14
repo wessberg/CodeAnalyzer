@@ -6,14 +6,15 @@ import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 
 export class DecoratorsFormatter implements IDecoratorsFormatter {
 
-	constructor (private mapper: IMapper, private nameGetter: INameGetter) {}
+	constructor (private mapper: IMapper, private nameGetter: INameGetter) {
+	}
 
 	/**
 	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
 	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration} declaration
 	 * @returns {DecoratorIndexer}
 	 */
-	public format (declaration: PropertyDeclaration | ClassDeclaration | MethodDeclaration | ConstructorDeclaration | FunctionDeclaration | EnumDeclaration): DecoratorIndexer {
+	public format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration): DecoratorIndexer {
 		const obj: DecoratorIndexer = {};
 		if (declaration.decorators == null) return obj;
 

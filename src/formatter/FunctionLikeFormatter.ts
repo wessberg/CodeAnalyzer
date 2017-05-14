@@ -11,14 +11,15 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 
 	constructor (protected sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private decoratorsFormatter: IDecoratorsFormatter, private modifiersFormatter: IModifiersFormatter,
-							 private parametersFormatter: IParametersFormatter) {}
+							 private parametersFormatter: IParametersFormatter) {
+	}
 
 	/**
 	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
 	 * @param {ConstructorDeclaration|MethodDeclaration | FunctionDeclaration} declaration
 	 * @returns {IMemberDeclaration}
 	 */
-	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration | MethodDeclaration | FunctionDeclaration): IMemberDeclaration & IParametersable {
+	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration): IMemberDeclaration&IParametersable {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
@@ -54,11 +55,11 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @param {MethodDeclaration|FunctionDeclaration} declaration
 	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
 	 */
-	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration | FunctionDeclaration): IFunctionLike {
+	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration): IFunctionLike {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;
-		let returnStatementContents: string | null = null;
+		let returnStatementContents: string|null = null;
 
 		if (declaration.body != null && declaration.body.statements != null) {
 			declaration.body.statements.forEach(bodyStatement => {

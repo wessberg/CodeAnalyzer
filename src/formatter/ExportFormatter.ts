@@ -6,7 +6,7 @@ import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isClassDeclaration, isExportAssignment, isExportDeclaration, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, ICodeAnalyzer, IValueable, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
+import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, IValueable, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -32,7 +32,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		super(stringUtil, fileLoader);
 	}
 
-	public format (statement: ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration): IExportDeclaration | null {
+	public format (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration): IExportDeclaration|null {
 
 		if (isExportAssignment(statement)) return this.formatExportAssignment(statement);
 		if (isClassDeclaration(statement)) return this.formatClassDeclaration(statement);
@@ -48,7 +48,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 	private formatExportAssignment (statement: ExportAssignment): IExportDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
-		let payload: ArbitraryValue | IIdentifier;
+		let payload: ArbitraryValue|IIdentifier;
 
 		if (isLiteralExpression(statement.expression)) {
 			const that = this;
@@ -56,7 +56,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			const value: IValueable = {
 				expression: this.valueExpressionGetter.getValueExpression(statement.expression),
 				resolved: undefined,
-				hasDoneFirstResolve () {return value.resolved !== undefined;},
+				hasDoneFirstResolve () {
+					return value.resolved !== undefined;
+				},
 				resolving: false,
 				resolve () {
 					value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement.expression, scope);
@@ -104,7 +106,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatClassDeclaration (statement: ClassDeclaration): IExportDeclaration | null {
+	private formatClassDeclaration (statement: ClassDeclaration): IExportDeclaration|null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const classDeclaration = this.classFormatter.format(statement);
@@ -149,7 +151,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return null;
 	}
 
-	private formatFunctionDeclaration (statement: FunctionDeclaration): IExportDeclaration | null {
+	private formatFunctionDeclaration (statement: FunctionDeclaration): IExportDeclaration|null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const functionDeclaration = this.functionFormatter.format(statement);
@@ -194,7 +196,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return null;
 	}
 
-	private formatVariableStatement (statement: VariableStatement): IExportDeclaration | null {
+	private formatVariableStatement (statement: VariableStatement): IExportDeclaration|null {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const variableIndexer = this.variableFormatter.format(statement);
@@ -273,7 +275,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatExportClause (clause: NamedExports | undefined, modulePath: string, statement: ExportDeclaration): ImportExportIndexer {
+	private formatExportClause (clause: NamedExports|undefined, modulePath: string, statement: ExportDeclaration): ImportExportIndexer {
 		const indexer: ImportExportIndexer = {};
 
 		if (clause == null) {

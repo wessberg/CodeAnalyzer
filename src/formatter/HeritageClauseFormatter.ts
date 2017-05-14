@@ -6,7 +6,8 @@ import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
 
 export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 
-	constructor (private typeExpressionGetter: ITypeExpressionGetter) {}
+	constructor (private typeExpressionGetter: ITypeExpressionGetter) {
+	}
 
 	/**
 	 * Takes a PropertyDeclaration and returns an IPropDeclaration.

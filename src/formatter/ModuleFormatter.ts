@@ -7,7 +7,8 @@ import {IModuleFormatter} from "./interface/IModuleFormatter";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 
-	constructor (protected stringUtil: IStringUtil, private fileLoader: IFileLoader) {}
+	constructor (protected stringUtil: IStringUtil, private fileLoader: IFileLoader) {
+	}
 
 	public addExtensionToPath (filePath: string): string {
 		// If the path already ends with an extension, do nothing.

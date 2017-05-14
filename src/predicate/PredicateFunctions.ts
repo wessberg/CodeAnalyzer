@@ -6,7 +6,7 @@ import {ArbitraryValue, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isObjectLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ObjectLiteralExpression {
+export function isObjectLiteralExpression (statement: Statement|Declaration|Expression|Node): statement is ObjectLiteralExpression {
 	return statement.kind === SyntaxKind.ObjectLiteralExpression;
 }
 
@@ -15,7 +15,7 @@ export function isObjectLiteralExpression (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isVariableStatement (statement: Statement | Declaration | Expression | Node): statement is VariableStatement {
+export function isVariableStatement (statement: Statement|Declaration|Expression|Node): statement is VariableStatement {
 	return statement.kind === SyntaxKind.VariableStatement;
 }
 
@@ -24,7 +24,7 @@ export function isVariableStatement (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isVariableDeclaration (statement: Statement | Declaration | Expression | Node): statement is VariableDeclaration {
+export function isVariableDeclaration (statement: Statement|Declaration|Expression|Node): statement is VariableDeclaration {
 	return statement.kind === SyntaxKind.VariableDeclaration;
 }
 
@@ -33,7 +33,7 @@ export function isVariableDeclaration (statement: Statement | Declaration | Expr
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPropertyAccessExpression (statement: Statement | Declaration | Expression | Node): statement is PropertyAccessExpression {
+export function isPropertyAccessExpression (statement: Statement|Declaration|Expression|Node): statement is PropertyAccessExpression {
 	return statement.kind === SyntaxKind.PropertyAccessExpression;
 }
 
@@ -42,7 +42,7 @@ export function isPropertyAccessExpression (statement: Statement | Declaration |
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPropertyDeclaration (statement: Statement | Declaration | Expression | Node): statement is PropertyDeclaration {
+export function isPropertyDeclaration (statement: Statement|Declaration|Expression|Node): statement is PropertyDeclaration {
 	return statement.kind === SyntaxKind.PropertyDeclaration;
 }
 
@@ -51,7 +51,7 @@ export function isPropertyDeclaration (statement: Statement | Declaration | Expr
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPropertySignature (statement: Statement | Declaration | Expression | Node): statement is PropertySignature {
+export function isPropertySignature (statement: Statement|Declaration|Expression|Node): statement is PropertySignature {
 	return statement.kind === SyntaxKind.PropertySignature;
 }
 
@@ -60,7 +60,7 @@ export function isPropertySignature (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isElementAccessExpression (statement: Statement | Declaration | Expression | Node): statement is ElementAccessExpression {
+export function isElementAccessExpression (statement: Statement|Declaration|Expression|Node): statement is ElementAccessExpression {
 	return statement.kind === SyntaxKind.ElementAccessExpression;
 }
 
@@ -69,7 +69,7 @@ export function isElementAccessExpression (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is LiteralExpression {
+export function isLiteralExpression (statement: Statement|Declaration|Expression|Node): statement is LiteralExpression {
 	switch (statement.kind) {
 		case SyntaxKind.ArrayLiteralExpression:
 		case SyntaxKind.StringLiteral:
@@ -90,7 +90,7 @@ export function isLiteralExpression (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isArrayLiteralExpression (statement: Statement | Declaration | Expression | Node): statement is ArrayLiteralExpression {
+export function isArrayLiteralExpression (statement: Statement|Declaration|Expression|Node): statement is ArrayLiteralExpression {
 	return statement.kind === SyntaxKind.ArrayLiteralExpression;
 }
 
@@ -99,7 +99,7 @@ export function isArrayLiteralExpression (statement: Statement | Declaration | E
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTypeAssertionExpression (statement: Statement | Declaration | Expression | Node): statement is TypeAssertion {
+export function isTypeAssertionExpression (statement: Statement|Declaration|Expression|Node): statement is TypeAssertion {
 	return statement.kind === SyntaxKind.TypeAssertionExpression;
 }
 
@@ -108,7 +108,7 @@ export function isTypeAssertionExpression (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExternalModuleReference (statement: Statement | Declaration | Expression | Node): statement is ExternalModuleReference {
+export function isExternalModuleReference (statement: Statement|Declaration|Expression|Node): statement is ExternalModuleReference {
 	return statement.kind === SyntaxKind.ExternalModuleReference;
 }
 
@@ -117,7 +117,7 @@ export function isExternalModuleReference (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNoSubstitutionTemplateLiteral (statement: Statement | Declaration | Expression | Node): statement is NoSubstitutionTemplateLiteral {
+export function isNoSubstitutionTemplateLiteral (statement: Statement|Declaration|Expression|Node): statement is NoSubstitutionTemplateLiteral {
 	return statement.kind === SyntaxKind.NoSubstitutionTemplateLiteral;
 }
 
@@ -126,7 +126,7 @@ export function isNoSubstitutionTemplateLiteral (statement: Statement | Declarat
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateExpression (statement: Statement | Declaration | Expression | Node): statement is TemplateExpression {
+export function isTemplateExpression (statement: Statement|Declaration|Expression|Node): statement is TemplateExpression {
 	return statement.kind === SyntaxKind.TemplateExpression || statement.kind === SyntaxKind.TaggedTemplateExpression;
 }
 
@@ -135,7 +135,7 @@ export function isTemplateExpression (statement: Statement | Declaration | Expre
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isArrowFunction (statement: Statement | Declaration | Expression | Node): statement is ArrowFunction {
+export function isArrowFunction (statement: Statement|Declaration|Expression|Node): statement is ArrowFunction {
 	return statement.kind === SyntaxKind.ArrowFunction;
 }
 
@@ -144,7 +144,7 @@ export function isArrowFunction (statement: Statement | Declaration | Expression
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isLabeledStatement (statement: Statement | Declaration | Expression | Node): statement is LabeledStatement {
+export function isLabeledStatement (statement: Statement|Declaration|Expression|Node): statement is LabeledStatement {
 	return statement.kind === SyntaxKind.LabeledStatement;
 }
 
@@ -153,7 +153,7 @@ export function isLabeledStatement (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isFunctionExpression (statement: Statement | Declaration | Expression | Node): statement is FunctionExpression {
+export function isFunctionExpression (statement: Statement|Declaration|Expression|Node): statement is FunctionExpression {
 	return statement.kind === SyntaxKind.FunctionExpression;
 }
 
@@ -162,7 +162,7 @@ export function isFunctionExpression (statement: Statement | Declaration | Expre
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isFunctionDeclaration (statement: Statement | Declaration | Expression | Node): statement is FunctionDeclaration {
+export function isFunctionDeclaration (statement: Statement|Declaration|Expression|Node): statement is FunctionDeclaration {
 	return statement.kind === SyntaxKind.FunctionDeclaration;
 }
 
@@ -171,7 +171,7 @@ export function isFunctionDeclaration (statement: Statement | Declaration | Expr
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isAwaitExpression (statement: Statement | Declaration | Expression | Node): statement is AwaitExpression {
+export function isAwaitExpression (statement: Statement|Declaration|Expression|Node): statement is AwaitExpression {
 	return statement.kind === SyntaxKind.AwaitExpression;
 }
 
@@ -180,7 +180,7 @@ export function isAwaitExpression (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateSpan (statement: Statement | Declaration | Expression | Node): statement is TemplateSpan {
+export function isTemplateSpan (statement: Statement|Declaration|Expression|Node): statement is TemplateSpan {
 	return statement.kind === SyntaxKind.TemplateSpan;
 }
 
@@ -189,7 +189,7 @@ export function isTemplateSpan (statement: Statement | Declaration | Expression 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isConditionalExpression (statement: Statement | Declaration | Expression | Node): statement is ConditionalExpression {
+export function isConditionalExpression (statement: Statement|Declaration|Expression|Node): statement is ConditionalExpression {
 	return statement.kind === SyntaxKind.ConditionalExpression;
 }
 
@@ -198,7 +198,7 @@ export function isConditionalExpression (statement: Statement | Declaration | Ex
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isCallExpression (statement: Statement | Declaration | Expression | Node): statement is CallExpression {
+export function isCallExpression (statement: Statement|Declaration|Expression|Node): statement is CallExpression {
 	return statement.kind === SyntaxKind.CallExpression;
 }
 
@@ -207,7 +207,7 @@ export function isCallExpression (statement: Statement | Declaration | Expressio
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPrefixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PrefixUnaryExpression {
+export function isPrefixUnaryExpression (statement: Statement|Declaration|Expression|Node): statement is PrefixUnaryExpression {
 	return statement.kind === SyntaxKind.PrefixUnaryExpression;
 }
 
@@ -216,7 +216,7 @@ export function isPrefixUnaryExpression (statement: Statement | Declaration | Ex
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPostfixUnaryExpression (statement: Statement | Declaration | Expression | Node): statement is PostfixUnaryExpression {
+export function isPostfixUnaryExpression (statement: Statement|Declaration|Expression|Node): statement is PostfixUnaryExpression {
 	return statement.kind === SyntaxKind.PostfixUnaryExpression;
 }
 
@@ -225,7 +225,7 @@ export function isPostfixUnaryExpression (statement: Statement | Declaration | E
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTypeOfExpression (statement: Statement | Declaration | Expression | Node): statement is TypeOfExpression {
+export function isTypeOfExpression (statement: Statement|Declaration|Expression|Node): statement is TypeOfExpression {
 	return statement.kind === SyntaxKind.TypeOfExpression;
 }
 
@@ -234,7 +234,7 @@ export function isTypeOfExpression (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTryStatement (statement: Statement | Declaration | Expression | Node): statement is TryStatement {
+export function isTryStatement (statement: Statement|Declaration|Expression|Node): statement is TryStatement {
 	return statement.kind === SyntaxKind.TryStatement;
 }
 
@@ -243,7 +243,7 @@ export function isTryStatement (statement: Statement | Declaration | Expression 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isCatchClause (statement: Statement | Declaration | Expression | Node): statement is CatchClause {
+export function isCatchClause (statement: Statement|Declaration|Expression|Node): statement is CatchClause {
 	return statement.kind === SyntaxKind.CatchClause;
 }
 
@@ -251,7 +251,7 @@ export function isCatchClause (statement: Statement | Declaration | Expression |
  * A predicate function that returns true if the given Statement is a ParenthesizedExpression.
  * @param {Statement|Declaration|Expression|Node} statement
  */
-export function isParenthesizedExpression (statement: Statement | Declaration | Expression | Node): statement is ParenthesizedExpression {
+export function isParenthesizedExpression (statement: Statement|Declaration|Expression|Node): statement is ParenthesizedExpression {
 	return statement.kind === SyntaxKind.ParenthesizedExpression;
 }
 
@@ -260,7 +260,7 @@ export function isParenthesizedExpression (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isParameterDeclaration (statement: Statement | Declaration | Expression | Node): statement is ParameterDeclaration {
+export function isParameterDeclaration (statement: Statement|Declaration|Expression|Node): statement is ParameterDeclaration {
 	return statement.kind === SyntaxKind.Parameter;
 }
 
@@ -269,7 +269,7 @@ export function isParameterDeclaration (statement: Statement | Declaration | Exp
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBinaryExpression (statement: Statement | Declaration | Expression | Node): statement is BinaryExpression {
+export function isBinaryExpression (statement: Statement|Declaration|Expression|Node): statement is BinaryExpression {
 	return statement.kind === SyntaxKind.BinaryExpression;
 }
 
@@ -278,7 +278,7 @@ export function isBinaryExpression (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isImportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportDeclaration {
+export function isImportDeclaration (statement: Statement|Declaration|Expression|Node): statement is ImportDeclaration {
 	return statement.kind === SyntaxKind.ImportDeclaration;
 }
 
@@ -287,7 +287,7 @@ export function isImportDeclaration (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNamespaceImport (statement: Statement | Declaration | Expression | Node): statement is NamespaceImport {
+export function isNamespaceImport (statement: Statement|Declaration|Expression|Node): statement is NamespaceImport {
 	return statement.kind === SyntaxKind.NamespaceImport;
 }
 
@@ -296,7 +296,7 @@ export function isNamespaceImport (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isImportClause (statement: Statement | Declaration | Expression | Node): statement is ImportClause {
+export function isImportClause (statement: Statement|Declaration|Expression|Node): statement is ImportClause {
 	return statement.kind === SyntaxKind.ImportClause;
 }
 
@@ -305,7 +305,7 @@ export function isImportClause (statement: Statement | Declaration | Expression 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isImportEqualsDeclaration (statement: Statement | Declaration | Expression | Node): statement is ImportEqualsDeclaration {
+export function isImportEqualsDeclaration (statement: Statement|Declaration|Expression|Node): statement is ImportEqualsDeclaration {
 	return statement.kind === SyntaxKind.ImportEqualsDeclaration;
 }
 
@@ -314,7 +314,7 @@ export function isImportEqualsDeclaration (statement: Statement | Declaration | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isIfStatement (statement: Statement | Declaration | Expression | Node): statement is IfStatement {
+export function isIfStatement (statement: Statement|Declaration|Expression|Node): statement is IfStatement {
 	return statement.kind === SyntaxKind.IfStatement;
 }
 
@@ -323,7 +323,7 @@ export function isIfStatement (statement: Statement | Declaration | Expression |
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isEnumDeclaration (statement: Statement | Declaration | Expression | Node): statement is EnumDeclaration {
+export function isEnumDeclaration (statement: Statement|Declaration|Expression|Node): statement is EnumDeclaration {
 	return statement.kind === SyntaxKind.EnumDeclaration;
 }
 
@@ -332,7 +332,7 @@ export function isEnumDeclaration (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isEnumMember (statement: Statement | Declaration | Expression | Node): statement is EnumMember {
+export function isEnumMember (statement: Statement|Declaration|Expression|Node): statement is EnumMember {
 	return statement.kind === SyntaxKind.EnumMember;
 }
 
@@ -341,7 +341,7 @@ export function isEnumMember (statement: Statement | Declaration | Expression | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isImportSpecifier (statement: Statement | Declaration | Expression | Node): statement is ImportSpecifier {
+export function isImportSpecifier (statement: Statement|Declaration|Expression|Node): statement is ImportSpecifier {
 	return statement.kind === SyntaxKind.ImportSpecifier;
 }
 
@@ -350,7 +350,7 @@ export function isImportSpecifier (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExportSpecifier (statement: Statement | Declaration | Expression | Node): statement is ExportSpecifier {
+export function isExportSpecifier (statement: Statement|Declaration|Expression|Node): statement is ExportSpecifier {
 	return statement.kind === SyntaxKind.ExportSpecifier;
 }
 
@@ -359,7 +359,7 @@ export function isExportSpecifier (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExportAssignment (statement: Statement | Declaration | Expression | Node): statement is ExportAssignment {
+export function isExportAssignment (statement: Statement|Declaration|Expression|Node): statement is ExportAssignment {
 	return statement.kind === SyntaxKind.ExportAssignment;
 }
 
@@ -368,7 +368,7 @@ export function isExportAssignment (statement: Statement | Declaration | Express
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTrueKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BooleanLiteral {
+export function isTrueKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is BooleanLiteral {
 	return statement.kind === SyntaxKind.TrueKeyword;
 }
 
@@ -377,7 +377,7 @@ export function isTrueKeyword (statement: TypeNode | Statement | Declaration | E
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isStaticKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is Modifier {
+export function isStaticKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is Modifier {
 	return statement.kind === SyntaxKind.StaticKeyword;
 }
 
@@ -386,7 +386,7 @@ export function isStaticKeyword (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isFalseKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BooleanLiteral {
+export function isFalseKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is BooleanLiteral {
 	return statement.kind === SyntaxKind.FalseKeyword;
 }
 
@@ -395,7 +395,7 @@ export function isFalseKeyword (statement: TypeNode | Statement | Declaration | 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isUndefinedKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isUndefinedKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.UndefinedKeyword;
 }
 
@@ -404,7 +404,7 @@ export function isUndefinedKeyword (statement: TypeNode | Statement | Declaratio
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNullKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isNullKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.NullKeyword;
 }
 
@@ -413,7 +413,7 @@ export function isNullKeyword (statement: TypeNode | Statement | Declaration | E
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isStringKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isStringKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.StringKeyword;
 }
 
@@ -422,7 +422,7 @@ export function isStringKeyword (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isSymbolKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isSymbolKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.SymbolKeyword;
 }
 
@@ -431,7 +431,7 @@ export function isSymbolKeyword (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isVoidKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isVoidKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.VoidKeyword;
 }
 
@@ -440,7 +440,7 @@ export function isVoidKeyword (statement: TypeNode | Statement | Declaration | E
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isAnyKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isAnyKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.AnyKeyword;
 }
 
@@ -449,7 +449,7 @@ export function isAnyKeyword (statement: TypeNode | Statement | Declaration | Ex
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBooleanKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isBooleanKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.BooleanKeyword;
 }
 
@@ -458,7 +458,7 @@ export function isBooleanKeyword (statement: TypeNode | Statement | Declaration 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNeverKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isNeverKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.NeverKeyword;
 }
 
@@ -467,7 +467,7 @@ export function isNeverKeyword (statement: TypeNode | Statement | Declaration | 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNumberKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isNumberKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.NumberKeyword;
 }
 
@@ -476,7 +476,7 @@ export function isNumberKeyword (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNumericLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is NumericLiteral {
+export function isNumericLiteral (statement: TypeNode|Statement|Declaration|Expression|Node): statement is NumericLiteral {
 	return statement.kind === SyntaxKind.NumericLiteral;
 }
 
@@ -485,7 +485,7 @@ export function isNumericLiteral (statement: TypeNode | Statement | Declaration 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isObjectBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ObjectBindingPattern {
+export function isObjectBindingPattern (statement: TypeNode|Statement|Declaration|Expression|Node): statement is ObjectBindingPattern {
 	return statement.kind === SyntaxKind.ObjectBindingPattern;
 }
 
@@ -494,7 +494,7 @@ export function isObjectBindingPattern (statement: TypeNode | Statement | Declar
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isArrayBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is ArrayBindingPattern {
+export function isArrayBindingPattern (statement: TypeNode|Statement|Declaration|Expression|Node): statement is ArrayBindingPattern {
 	return statement.kind === SyntaxKind.ArrayBindingPattern;
 }
 
@@ -503,7 +503,7 @@ export function isArrayBindingPattern (statement: TypeNode | Statement | Declara
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isOmittedExpression (statement: TypeNode | Statement | Declaration | Expression | Node): statement is OmittedExpression {
+export function isOmittedExpression (statement: TypeNode|Statement|Declaration|Expression|Node): statement is OmittedExpression {
 	return statement.kind === SyntaxKind.OmittedExpression;
 }
 
@@ -512,7 +512,7 @@ export function isOmittedExpression (statement: TypeNode | Statement | Declarati
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBindingElement (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingElement {
+export function isBindingElement (statement: TypeNode|Statement|Declaration|Expression|Node): statement is BindingElement {
 	return statement.kind === SyntaxKind.BindingElement;
 }
 
@@ -521,7 +521,7 @@ export function isBindingElement (statement: TypeNode | Statement | Declaration 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBindingPattern (statement: TypeNode | Statement | Declaration | Expression | Node): statement is BindingPattern {
+export function isBindingPattern (statement: TypeNode|Statement|Declaration|Expression|Node): statement is BindingPattern {
 	return isObjectBindingPattern(statement) || isArrayBindingPattern(statement);
 }
 
@@ -530,7 +530,7 @@ export function isBindingPattern (statement: TypeNode | Statement | Declaration 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPropertyName (statement: Expression | Node): statement is PropertyName {
+export function isPropertyName (statement: Expression|Node): statement is PropertyName {
 	return isIdentifierObject(statement) ||
 		isStringLiteral(statement) ||
 		isNumericLiteral(statement) ||
@@ -542,7 +542,7 @@ export function isPropertyName (statement: Expression | Node): statement is Prop
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isDeclarationName (statement: Expression | Node): statement is DeclarationName {
+export function isDeclarationName (statement: Expression|Node): statement is DeclarationName {
 	return isPropertyName(statement) || isBindingPattern(statement);
 }
 
@@ -551,7 +551,7 @@ export function isDeclarationName (statement: Expression | Node): statement is D
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateHead (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateHead {
+export function isTemplateHead (statement: TypeNode|Statement|Declaration|Expression|Node): statement is TemplateHead {
 	return statement.kind === SyntaxKind.TemplateHead;
 }
 
@@ -560,7 +560,7 @@ export function isTemplateHead (statement: TypeNode | Statement | Declaration | 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateMiddle (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateMiddle {
+export function isTemplateMiddle (statement: TypeNode|Statement|Declaration|Expression|Node): statement is TemplateMiddle {
 	return statement.kind === SyntaxKind.TemplateMiddle;
 }
 
@@ -569,7 +569,7 @@ export function isTemplateMiddle (statement: TypeNode | Statement | Declaration 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateTail (statement: TypeNode | Statement | Declaration | Expression | Node): statement is TemplateTail {
+export function isTemplateTail (statement: TypeNode|Statement|Declaration|Expression|Node): statement is TemplateTail {
 	return statement.kind === SyntaxKind.TemplateTail;
 }
 
@@ -578,7 +578,7 @@ export function isTemplateTail (statement: TypeNode | Statement | Declaration | 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isStringLiteral (statement: TypeNode | Statement | Declaration | Expression | Node): statement is StringLiteral {
+export function isStringLiteral (statement: TypeNode|Statement|Declaration|Expression|Node): statement is StringLiteral {
 	return statement.kind === SyntaxKind.StringLiteral;
 }
 
@@ -587,7 +587,7 @@ export function isStringLiteral (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isObjectKeyword (statement: TypeNode | Statement | Declaration | Expression | Node): statement is KeywordTypeNode {
+export function isObjectKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is KeywordTypeNode {
 	return statement.kind === SyntaxKind.ObjectKeyword;
 }
 
@@ -596,7 +596,7 @@ export function isObjectKeyword (statement: TypeNode | Statement | Declaration |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isThisKeyword (statement: Statement | Declaration | Expression | Node): statement is ThisExpression {
+export function isThisKeyword (statement: Statement|Declaration|Expression|Node): statement is ThisExpression {
 	return statement.kind === SyntaxKind.ThisKeyword;
 }
 
@@ -605,7 +605,7 @@ export function isThisKeyword (statement: Statement | Declaration | Expression |
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isForStatement (statement: Statement | Declaration | Expression | Node): statement is ForStatement {
+export function isForStatement (statement: Statement|Declaration|Expression|Node): statement is ForStatement {
 	return statement.kind === SyntaxKind.ForStatement;
 }
 
@@ -614,7 +614,7 @@ export function isForStatement (statement: Statement | Declaration | Expression 
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isForOfStatement (statement: Statement | Declaration | Expression | Node): statement is ForOfStatement {
+export function isForOfStatement (statement: Statement|Declaration|Expression|Node): statement is ForOfStatement {
 	return statement.kind === SyntaxKind.ForOfStatement;
 }
 
@@ -623,7 +623,7 @@ export function isForOfStatement (statement: Statement | Declaration | Expressio
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isForInStatement (statement: Statement | Declaration | Expression | Node): statement is ForInStatement {
+export function isForInStatement (statement: Statement|Declaration|Expression|Node): statement is ForInStatement {
 	return statement.kind === SyntaxKind.ForInStatement;
 }
 
@@ -632,7 +632,7 @@ export function isForInStatement (statement: Statement | Declaration | Expressio
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isSwitchStatement (statement: Statement | Declaration | Expression | Node): statement is SwitchStatement {
+export function isSwitchStatement (statement: Statement|Declaration|Expression|Node): statement is SwitchStatement {
 	return statement.kind === SyntaxKind.SwitchStatement;
 }
 
@@ -641,7 +641,7 @@ export function isSwitchStatement (statement: Statement | Declaration | Expressi
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isCaseBlock (statement: Statement | Declaration | Expression | Node): statement is CaseBlock {
+export function isCaseBlock (statement: Statement|Declaration|Expression|Node): statement is CaseBlock {
 	return statement.kind === SyntaxKind.CaseBlock;
 }
 
@@ -650,7 +650,7 @@ export function isCaseBlock (statement: Statement | Declaration | Expression | N
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isWhileStatement (statement: Statement | Declaration | Expression | Node): statement is WhileStatement {
+export function isWhileStatement (statement: Statement|Declaration|Expression|Node): statement is WhileStatement {
 	return statement.kind === SyntaxKind.WhileStatement;
 }
 
@@ -659,7 +659,7 @@ export function isWhileStatement (statement: Statement | Declaration | Expressio
  * @param {TypeNode|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isVariableDeclarationList (statement: Statement | Declaration | Expression | Node): statement is VariableDeclarationList {
+export function isVariableDeclarationList (statement: Statement|Declaration|Expression|Node): statement is VariableDeclarationList {
 	return statement.kind === SyntaxKind.VariableDeclarationList;
 }
 
@@ -668,7 +668,7 @@ export function isVariableDeclarationList (statement: Statement | Declaration | 
  * @param {ParameterDeclaration|TypeAliasDeclaration|TypeNode} statement
  * @returns {boolean}
  */
-export function isTypeNode (statement: ParameterDeclaration | TypeAliasDeclaration | TypeNode): statement is TypeNode {
+export function isTypeNode (statement: ParameterDeclaration|TypeAliasDeclaration|TypeNode): statement is TypeNode {
 	return isThisKeyword(statement) ||
 		isArrayTypeNode(statement) ||
 		isTupleTypeNode(statement) ||
@@ -693,7 +693,7 @@ export function isTypeNode (statement: ParameterDeclaration | TypeAliasDeclarati
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isPropertyAssignment (statement: Statement | Declaration | Expression | Node): statement is PropertyAssignment {
+export function isPropertyAssignment (statement: Statement|Declaration|Expression|Node): statement is PropertyAssignment {
 	return statement.kind === SyntaxKind.PropertyAssignment;
 }
 
@@ -702,7 +702,7 @@ export function isPropertyAssignment (statement: Statement | Declaration | Expre
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExpressionStatement (statement: Statement | Declaration | Expression | Node): statement is ExpressionStatement {
+export function isExpressionStatement (statement: Statement|Declaration|Expression|Node): statement is ExpressionStatement {
 	return statement.kind === SyntaxKind.ExpressionStatement;
 }
 
@@ -711,7 +711,7 @@ export function isExpressionStatement (statement: Statement | Declaration | Expr
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isSpreadAssignment (statement: Statement | Declaration | Expression | Node): statement is SpreadAssignment {
+export function isSpreadAssignment (statement: Statement|Declaration|Expression|Node): statement is SpreadAssignment {
 	return statement.kind === SyntaxKind.SpreadAssignment;
 }
 
@@ -720,7 +720,7 @@ export function isSpreadAssignment (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isSpreadElement (statement: Statement | Declaration | Expression | Node): statement is SpreadElement {
+export function isSpreadElement (statement: Statement|Declaration|Expression|Node): statement is SpreadElement {
 	return statement.kind === SyntaxKind.SpreadElement;
 }
 
@@ -729,7 +729,7 @@ export function isSpreadElement (statement: Statement | Declaration | Expression
  * @param {Statement|Expression|Node|ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isTypeReference (statement: Statement | Expression | Node | ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeReferenceNode {
+export function isTypeReference (statement: Statement|Expression|Node|ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration): statement is TypeReferenceNode {
 	return statement.kind === SyntaxKind.TypeReference;
 }
 
@@ -738,7 +738,7 @@ export function isTypeReference (statement: Statement | Expression | Node | Para
  * @param {Statement|Expression|Node|ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isExpressionWithTypeArguments (statement: Statement | Expression | Node | ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is ExpressionWithTypeArguments {
+export function isExpressionWithTypeArguments (statement: Statement|Expression|Node|ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration): statement is ExpressionWithTypeArguments {
 	return statement.kind === SyntaxKind.ExpressionWithTypeArguments;
 }
 
@@ -747,7 +747,7 @@ export function isExpressionWithTypeArguments (statement: Statement | Expression
  * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isDecorator (statement: Statement | Declaration | Expression | Node): statement is Decorator {
+export function isDecorator (statement: Statement|Declaration|Expression|Node): statement is Decorator {
 	return statement.kind === SyntaxKind.Decorator;
 }
 
@@ -756,7 +756,7 @@ export function isDecorator (statement: Statement | Declaration | Expression | N
  * @param {ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isTypeLiteralNode (statement: ParameterDeclaration | TypeReferenceNode | TypeNode | TypeAliasDeclaration): statement is TypeLiteralNode {
+export function isTypeLiteralNode (statement: ParameterDeclaration|TypeReferenceNode|TypeNode|TypeAliasDeclaration): statement is TypeLiteralNode {
 	return statement.kind === SyntaxKind.TypeLiteral;
 }
 
@@ -774,7 +774,7 @@ export function isIndexSignatureDeclaration (statement: Declaration): statement 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isClassDeclaration (statement: Statement | Declaration | Expression | Node): statement is ClassDeclaration {
+export function isClassDeclaration (statement: Statement|Declaration|Expression|Node): statement is ClassDeclaration {
 	return statement.kind === SyntaxKind.ClassDeclaration;
 }
 
@@ -783,7 +783,7 @@ export function isClassDeclaration (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isClassExpression (statement: Statement | Declaration | Expression | Node): statement is ClassExpression {
+export function isClassExpression (statement: Statement|Declaration|Expression|Node): statement is ClassExpression {
 	return statement.kind === SyntaxKind.ClassExpression;
 }
 
@@ -792,7 +792,7 @@ export function isClassExpression (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isConstructorDeclaration (statement: Statement | Declaration | Expression | Node): statement is ConstructorDeclaration {
+export function isConstructorDeclaration (statement: Statement|Declaration|Expression|Node): statement is ConstructorDeclaration {
 	return statement.kind === SyntaxKind.Constructor;
 }
 
@@ -801,7 +801,7 @@ export function isConstructorDeclaration (statement: Statement | Declaration | E
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isEmptyStatement (statement: Statement | Declaration | Expression | Node): statement is EmptyStatement {
+export function isEmptyStatement (statement: Statement|Declaration|Expression|Node): statement is EmptyStatement {
 	return statement.kind === SyntaxKind.EmptyStatement;
 }
 
@@ -810,7 +810,7 @@ export function isEmptyStatement (statement: Statement | Declaration | Expressio
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isDeleteExpression (statement: Statement | Declaration | Expression | Node): statement is DeleteExpression {
+export function isDeleteExpression (statement: Statement|Declaration|Expression|Node): statement is DeleteExpression {
 	return statement.kind === SyntaxKind.DeleteExpression;
 }
 
@@ -819,7 +819,7 @@ export function isDeleteExpression (statement: Statement | Declaration | Express
  * @param {Statement|Expression|Node|Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTypeReferenceNode (statement: Statement | Expression | Node | Statement | Declaration | Expression | Node): statement is TypeReferenceNode {
+export function isTypeReferenceNode (statement: Statement|Expression|Node|Statement|Declaration|Expression|Node): statement is TypeReferenceNode {
 	return statement.kind === SyntaxKind.TypeReference;
 }
 
@@ -828,7 +828,7 @@ export function isTypeReferenceNode (statement: Statement | Expression | Node | 
  * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isArrayTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is ArrayTypeNode {
+export function isArrayTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is ArrayTypeNode {
 	return statement.kind === SyntaxKind.ArrayType;
 }
 
@@ -837,7 +837,7 @@ export function isArrayTypeNode (statement: ParameterDeclaration | TypeNode | Ty
  * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isTupleTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is TupleTypeNode {
+export function isTupleTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is TupleTypeNode {
 	return statement.kind === SyntaxKind.TupleType;
 }
 
@@ -846,7 +846,7 @@ export function isTupleTypeNode (statement: ParameterDeclaration | TypeNode | Ty
  * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isUnionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is UnionTypeNode {
+export function isUnionTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is UnionTypeNode {
 	return statement.kind === SyntaxKind.UnionType;
 }
 
@@ -855,7 +855,7 @@ export function isUnionTypeNode (statement: ParameterDeclaration | TypeNode | Ty
  * @param {ParameterDeclaration|TypeNode|TypeAliasDeclaration} statement
  * @returns {boolean}
  */
-export function isIntersectionTypeNode (statement: ParameterDeclaration | TypeNode | TypeAliasDeclaration): statement is IntersectionTypeNode {
+export function isIntersectionTypeNode (statement: ParameterDeclaration|TypeNode|TypeAliasDeclaration): statement is IntersectionTypeNode {
 	return statement.kind === SyntaxKind.IntersectionType;
 }
 
@@ -864,7 +864,7 @@ export function isIntersectionTypeNode (statement: ParameterDeclaration | TypeNo
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isMethodDeclaration (statement: Statement | Declaration | Expression | Node): statement is MethodDeclaration {
+export function isMethodDeclaration (statement: Statement|Declaration|Expression|Node): statement is MethodDeclaration {
 	return statement.kind === SyntaxKind.MethodDeclaration;
 }
 
@@ -873,7 +873,7 @@ export function isMethodDeclaration (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNewExpression (statement: Statement | Declaration | Expression | Node): statement is NewExpression {
+export function isNewExpression (statement: Statement|Declaration|Expression|Node): statement is NewExpression {
 	return statement.kind === SyntaxKind.NewExpression;
 }
 
@@ -882,7 +882,7 @@ export function isNewExpression (statement: Statement | Declaration | Expression
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBlockDeclaration (statement: Statement | Declaration | Expression | Node): statement is Block {
+export function isBlockDeclaration (statement: Statement|Declaration|Expression|Node): statement is Block {
 	return statement.kind === SyntaxKind.Block;
 }
 
@@ -891,7 +891,7 @@ export function isBlockDeclaration (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isBreakStatement (statement: Statement | Declaration | Expression | Node): statement is BreakStatement {
+export function isBreakStatement (statement: Statement|Declaration|Expression|Node): statement is BreakStatement {
 	return statement.kind === SyntaxKind.BreakStatement;
 }
 
@@ -900,7 +900,7 @@ export function isBreakStatement (statement: Statement | Declaration | Expressio
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isThrowStatement (statement: Statement | Declaration | Expression | Node): statement is ThrowStatement {
+export function isThrowStatement (statement: Statement|Declaration|Expression|Node): statement is ThrowStatement {
 	return statement.kind === SyntaxKind.ThrowStatement;
 }
 
@@ -909,7 +909,7 @@ export function isThrowStatement (statement: Statement | Declaration | Expressio
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isDoStatement (statement: Statement | Declaration | Expression | Node): statement is DoStatement {
+export function isDoStatement (statement: Statement|Declaration|Expression|Node): statement is DoStatement {
 	return statement.kind === SyntaxKind.DoStatement;
 }
 
@@ -918,7 +918,7 @@ export function isDoStatement (statement: Statement | Declaration | Expression |
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isContinueStatement (statement: Statement | Declaration | Expression | Node): statement is ContinueStatement {
+export function isContinueStatement (statement: Statement|Declaration|Expression|Node): statement is ContinueStatement {
 	return statement.kind === SyntaxKind.ContinueStatement;
 }
 
@@ -927,7 +927,7 @@ export function isContinueStatement (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isReturnStatement (statement: Statement | Declaration | Expression | Node): statement is ReturnStatement {
+export function isReturnStatement (statement: Statement|Declaration|Expression|Node): statement is ReturnStatement {
 	return statement.kind === SyntaxKind.ReturnStatement;
 }
 
@@ -936,7 +936,7 @@ export function isReturnStatement (statement: Statement | Declaration | Expressi
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExportDeclaration (statement: Statement | Declaration | Expression | Node): statement is ExportDeclaration {
+export function isExportDeclaration (statement: Statement|Declaration|Expression|Node): statement is ExportDeclaration {
 	return statement.kind === SyntaxKind.ExportDeclaration;
 }
 
@@ -945,7 +945,7 @@ export function isExportDeclaration (statement: Statement | Declaration | Expres
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isSourceFile (statement: Statement | Declaration | Expression | Node): statement is SourceFile {
+export function isSourceFile (statement: Statement|Declaration|Expression|Node): statement is SourceFile {
 	return statement.kind === SyntaxKind.SourceFile;
 }
 
@@ -954,7 +954,7 @@ export function isSourceFile (statement: Statement | Declaration | Expression | 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isLiteralToken (statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken | SyntaxKind.LastLiteralToken> {
+export function isLiteralToken (statement: Statement|Declaration|Expression|Node): statement is Token<SyntaxKind.FirstLiteralToken|SyntaxKind.LastLiteralToken> {
 	return statement.kind === SyntaxKind.FirstLiteralToken || statement.kind === SyntaxKind.LastLiteralToken;
 }
 
@@ -963,7 +963,7 @@ export function isLiteralToken (statement: Statement | Declaration | Expression 
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isTemplateToken (statement: Statement | Declaration | Expression | Node): statement is Token<SyntaxKind.FirstTemplateToken | SyntaxKind.LastTemplateToken> {
+export function isTemplateToken (statement: Statement|Declaration|Expression|Node): statement is Token<SyntaxKind.FirstTemplateToken|SyntaxKind.LastTemplateToken> {
 	return statement.kind === SyntaxKind.FirstTemplateToken || statement.kind === SyntaxKind.LastTemplateToken;
 }
 
@@ -972,7 +972,7 @@ export function isTemplateToken (statement: Statement | Declaration | Expression
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isIdentifierObject (statement: BindingName | EntityName | Expression | Node): statement is Identifier {
+export function isIdentifierObject (statement: BindingName|EntityName|Expression|Node): statement is Identifier {
 	return statement != null && statement.constructor.name === "IdentifierObject";
 }
 
@@ -981,7 +981,7 @@ export function isIdentifierObject (statement: BindingName | EntityName | Expres
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isTokenObject (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind> {
+export function isTokenObject (statement: BindingName|EntityName|Expression|Node): statement is Token<SyntaxKind> {
 	return statement != null && statement.constructor.name === "TokenObject";
 }
 
@@ -990,7 +990,7 @@ export function isTokenObject (statement: BindingName | EntityName | Expression 
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isRegularExpressionLiteral (statement: BindingName | EntityName | Expression | Node): statement is RegularExpressionLiteral {
+export function isRegularExpressionLiteral (statement: BindingName|EntityName|Expression|Node): statement is RegularExpressionLiteral {
 	return statement.kind === SyntaxKind.RegularExpressionLiteral;
 }
 
@@ -999,7 +999,7 @@ export function isRegularExpressionLiteral (statement: BindingName | EntityName 
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIIdentifier (statement: IIdentifier | ArbitraryValue): statement is IIdentifier {
+export function isIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IIdentifier {
 	return isIVariableAssignment(statement) ||
 		isIParameter(statement) ||
 		isIImportExportBinding(statement) ||
@@ -1013,7 +1013,7 @@ export function isIIdentifier (statement: IIdentifier | ArbitraryValue): stateme
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIExportableIIdentifier (statement: IIdentifier | ArbitraryValue): statement is IExportableIIdentifier {
+export function isIExportableIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IExportableIIdentifier {
 	return isIVariableAssignment(statement) || isIClassDeclaration(statement) || isIEnumDeclaration(statement) || isIFunctionDeclaration(statement);
 }
 
@@ -1022,7 +1022,7 @@ export function isIExportableIIdentifier (statement: IIdentifier | ArbitraryValu
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isNamespacedModuleMap (statement: IIdentifier | ArbitraryValue): statement is NamespacedModuleMap {
+export function isNamespacedModuleMap (statement: IIdentifier|ArbitraryValue): statement is NamespacedModuleMap {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
 }
 
@@ -1031,7 +1031,7 @@ export function isNamespacedModuleMap (statement: IIdentifier | ArbitraryValue):
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIVariableAssignment (statement: IIdentifier | ArbitraryValue): statement is IVariableAssignment {
+export function isIVariableAssignment (statement: IIdentifier|ArbitraryValue): statement is IVariableAssignment {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.VARIABLE;
 }
 
@@ -1040,7 +1040,7 @@ export function isIVariableAssignment (statement: IIdentifier | ArbitraryValue):
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIParameter (statement: IIdentifier | ArbitraryValue): statement is IParameter {
+export function isIParameter (statement: IIdentifier|ArbitraryValue): statement is IParameter {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.PARAMETER;
 }
 
@@ -1049,7 +1049,7 @@ export function isIParameter (statement: IIdentifier | ArbitraryValue): statemen
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIImportExportBinding (statement: IIdentifier | ArbitraryValue): statement is IImportExportBinding {
+export function isIImportExportBinding (statement: IIdentifier|ArbitraryValue): statement is IImportExportBinding {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.IMPORT_EXPORT_BINDING;
 }
 
@@ -1058,7 +1058,7 @@ export function isIImportExportBinding (statement: IIdentifier | ArbitraryValue)
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIClassDeclaration (statement: IIdentifier | ArbitraryValue): statement is IClassDeclaration {
+export function isIClassDeclaration (statement: IIdentifier|ArbitraryValue): statement is IClassDeclaration {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.CLASS;
 }
 
@@ -1067,7 +1067,7 @@ export function isIClassDeclaration (statement: IIdentifier | ArbitraryValue): s
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIEnumDeclaration (statement: IIdentifier | ArbitraryValue): statement is IEnumDeclaration {
+export function isIEnumDeclaration (statement: IIdentifier|ArbitraryValue): statement is IEnumDeclaration {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.ENUM;
 }
 
@@ -1076,7 +1076,7 @@ export function isIEnumDeclaration (statement: IIdentifier | ArbitraryValue): st
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isIFunctionDeclaration (statement: IIdentifier | ArbitraryValue): statement is IFunctionDeclaration {
+export function isIFunctionDeclaration (statement: IIdentifier|ArbitraryValue): statement is IFunctionDeclaration {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.FUNCTION;
 }
 
@@ -1085,7 +1085,7 @@ export function isIFunctionDeclaration (statement: IIdentifier | ArbitraryValue)
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isFirstLiteralToken (statement: BindingName | EntityName | Expression | Node): statement is Token<SyntaxKind.FirstLiteralToken> & { text: string } {
+export function isFirstLiteralToken (statement: BindingName|EntityName|Expression|Node): statement is Token<SyntaxKind.FirstLiteralToken>&{ text: string } {
 	return statement.kind === SyntaxKind.FirstLiteralToken;
 }
 
@@ -1094,7 +1094,7 @@ export function isFirstLiteralToken (statement: BindingName | EntityName | Expre
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isShorthandPropertyAssignment (statement: BindingName | EntityName | Expression | Node): statement is ShorthandPropertyAssignment {
+export function isShorthandPropertyAssignment (statement: BindingName|EntityName|Expression|Node): statement is ShorthandPropertyAssignment {
 	return statement.kind === SyntaxKind.ShorthandPropertyAssignment;
 }
 
@@ -1103,7 +1103,7 @@ export function isShorthandPropertyAssignment (statement: BindingName | EntityNa
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isCaseClause (statement: BindingName | EntityName | Expression | Node): statement is CaseClause {
+export function isCaseClause (statement: BindingName|EntityName|Expression|Node): statement is CaseClause {
 	return statement.kind === SyntaxKind.CaseClause;
 }
 
@@ -1112,7 +1112,7 @@ export function isCaseClause (statement: BindingName | EntityName | Expression |
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isDefaultClause (statement: BindingName | EntityName | Expression | Node): statement is DefaultClause {
+export function isDefaultClause (statement: BindingName|EntityName|Expression|Node): statement is DefaultClause {
 	return statement.kind === SyntaxKind.DefaultClause;
 }
 
@@ -1121,7 +1121,7 @@ export function isDefaultClause (statement: BindingName | EntityName | Expressio
  * @param {BindingName|EntityName|Expression} statement
  * @returns {boolean}
  */
-export function isComputedPropertyName (statement: BindingName | EntityName | Expression | Node): statement is ComputedPropertyName {
+export function isComputedPropertyName (statement: BindingName|EntityName|Expression|Node): statement is ComputedPropertyName {
 	return statement.kind === SyntaxKind.ComputedPropertyName;
 }
 
@@ -1130,7 +1130,7 @@ export function isComputedPropertyName (statement: BindingName | EntityName | Ex
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isExtendsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
+export function isExtendsClause (statement: Statement|Declaration|Expression|Node): statement is HeritageClause {
 	// Extends will always be a 'token', not a 'kind'.
 	return (<HeritageClause>statement).token === SyntaxKind.ExtendsKeyword;
 }
@@ -1140,7 +1140,7 @@ export function isExtendsClause (statement: Statement | Declaration | Expression
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isImplementsClause (statement: Statement | Declaration | Expression | Node): statement is HeritageClause {
+export function isImplementsClause (statement: Statement|Declaration|Expression|Node): statement is HeritageClause {
 	// Extends will always be a 'token', not a 'kind'.
 	return (<HeritageClause>statement).token === SyntaxKind.ImplementsKeyword;
 }
@@ -1150,7 +1150,7 @@ export function isImplementsClause (statement: Statement | Declaration | Express
  * @param {Statement|Declaration|Expression|Node} statement
  * @returns {boolean}
  */
-export function isNamedImports (statement: Statement | Declaration | Expression | Node): statement is NamedImports {
+export function isNamedImports (statement: Statement|Declaration|Expression|Node): statement is NamedImports {
 	// Extends will always be a 'token', not a 'kind'.
 	return statement.kind === SyntaxKind.NamedImports;
 }

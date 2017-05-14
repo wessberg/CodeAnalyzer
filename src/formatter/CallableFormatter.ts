@@ -18,14 +18,15 @@ export abstract class CallableFormatter implements ICallableFormatter {
 							 private nameGetter: INameGetter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {}
+							 private typeUtil: ITypeUtil) {
+	}
 
 	/**
 	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
 	 * @param {CallExpression|NewExpression} statement
 	 * @returns {ICallable}
 	 */
-	protected formatCallable (statement: CallExpression | NewExpression): ICallable {
+	protected formatCallable (statement: CallExpression|NewExpression): ICallable {
 		const exp = statement.expression;
 		let property: ArbitraryValue = null;
 		let identifier: ArbitraryValue = null;
@@ -43,7 +44,9 @@ export abstract class CallableFormatter implements ICallableFormatter {
 				const value: IValueable = {
 					expression: this.valueExpressionGetter.getValueExpression(exp.expression),
 					resolved: undefined,
-					hasDoneFirstResolve () {return value.resolved !== undefined;},
+					hasDoneFirstResolve () {
+						return value.resolved !== undefined;
+					},
 					resolving: false,
 					resolve () {
 						value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, exp.expression, scope);
@@ -72,7 +75,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 	 * @param {CallExpression|NewExpression} statement
 	 * @returns {ITypeable}
 	 */
-	protected formatTypeArguments (statement: CallExpression | NewExpression): ITypeable {
+	protected formatTypeArguments (statement: CallExpression|NewExpression): ITypeable {
 		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
 		let typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {

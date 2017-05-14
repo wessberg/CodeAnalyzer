@@ -1,10 +1,11 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, ICodeAnalyzer, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
 
 export class Cache implements ICache {
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 
-	constructor (private languageService: ICodeAnalyzer) {}
+	constructor (private languageService: ICodeAnalyzer) {
+	}
 
 	public getCachedPropName (fileName: string, className: string, propName: string): string {
 		return `prop.${fileName}.${className}.${propName}`;
@@ -46,48 +47,48 @@ export class Cache implements ICache {
 		return `enumIndexer.${fileName}`;
 	}
 
-	public getFromCache<T> (key: string): ICachedContent<T> | null {
+	public getFromCache<T> (key: string): ICachedContent<T>|null {
 		const record = this.cache.get(key);
 		return record == null ? null : <ICachedContent<T>>record;
 	}
 
-	public getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment> | null {
+	public getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment>|null {
 		return this.getFromCache<IVariableAssignment>(this.getCachedVariableName(fileName, variableName));
 	}
 
-	public getCachedFunction (fileName: string, functionName: string): ICachedContent<IFunctionDeclaration> | null {
+	public getCachedFunction (fileName: string, functionName: string): ICachedContent<IFunctionDeclaration>|null {
 		return this.getFromCache<IFunctionDeclaration>(this.getCachedFunctionName(fileName, functionName));
 	}
 
-	public getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration> | null {
+	public getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration>|null {
 		return this.getFromCache<IEnumDeclaration>(this.getCachedEnumName(fileName, enumName));
 	}
 
-	public getCachedProp (fileName: string, className: string, propName: string): ICachedContent<IPropDeclaration> | null {
+	public getCachedProp (fileName: string, className: string, propName: string): ICachedContent<IPropDeclaration>|null {
 		return this.getFromCache<IPropDeclaration>(this.getCachedPropName(fileName, className, propName));
 	}
 
-	public getCachedClass (fileName: string, className: string): ICachedContent<IClassDeclaration> | null {
+	public getCachedClass (fileName: string, className: string): ICachedContent<IClassDeclaration>|null {
 		return this.getFromCache<IClassDeclaration>(this.getCachedClassName(fileName, className));
 	}
 
-	public getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer> | null {
+	public getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer>|null {
 		return this.getFromCache<FunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
 	}
 
-	public getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]> | null {
+	public getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]>|null {
 		return this.getFromCache<IImportDeclaration[]>(this.getCachedModuleDependenciesName(fileName));
 	}
 
-	public getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer> | null {
+	public getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null {
 		return this.getFromCache<ClassIndexer>(this.getCachedClassIndexerName(fileName));
 	}
 
-	public getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer> | null {
+	public getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer>|null {
 		return this.getFromCache<EnumIndexer>(this.getCachedEnumIndexerName(fileName));
 	}
 
-	public getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer> | null {
+	public getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer>|null {
 		return this.getFromCache<VariableIndexer>(this.getCachedVariableIndexerName(fileName));
 	}
 

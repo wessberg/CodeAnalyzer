@@ -12,10 +12,20 @@ export class StringUtil implements IStringUtil {
 		return /^[\t\n\r\s]+$/.test(item);
 	}
 
+	/**
+	 * Returns true if the given content is a quote character (", ' or `).
+	 * @param {string} content
+	 * @returns {boolean}
+	 */
 	public isQuote (content: string): boolean {
 		return /["'`]/.test(content);
 	}
 
+	/**
+	 * Strips the quotes from the given content if it is wrapped in quotes already.
+	 * @param {ArbitraryValue} content
+	 * @returns {ArbitraryValue}
+	 */
 	public stripQuotesIfNecessary (content: ArbitraryValue): ArbitraryValue {
 		if (!(typeof content === "string")) return content;
 		const trimmed = content;
@@ -28,6 +38,11 @@ export class StringUtil implements IStringUtil {
 		return trimmed.slice(startOffset, trimmed.length - endOffset);
 	}
 
+	/**
+	 * Quotes the given content if it is a string and doesn't start and end with a clashing quote.
+	 * @param {ArbitraryValue} content
+	 * @returns {ArbitraryValue}
+	 */
 	public quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
 		if (!(typeof content === "string")) return content;
 		const REPLACEMENT_CHAR = "`";

@@ -32,7 +32,7 @@ export class TokenSerializer implements ITokenSerializer {
 	 * @param {SyntaxKind} token
 	 * @returns {ArbitraryValue}
 	 */
-	public marshalToken (token: SyntaxKind | BinaryOperator | TypeNode): ArbitraryValue {
+	public marshalToken (token: SyntaxKind|BinaryOperator|TypeNode): ArbitraryValue {
 		switch (token) {
 			case SyntaxKind.NullKeyword:
 				return null;
@@ -52,7 +52,7 @@ export class TokenSerializer implements ITokenSerializer {
 	 * @param {NodeFlags} flag
 	 * @returns {string|null}
 	 */
-	public serializeFlag (flag: NodeFlags): string | null {
+	public serializeFlag (flag: NodeFlags): string|null {
 		switch (flag) {
 			case NodeFlags.Const:
 				return "const";
@@ -68,7 +68,7 @@ export class TokenSerializer implements ITokenSerializer {
 	 * @param {SyntaxKind} token
 	 * @returns {string|BindingIdentifier}
 	 */
-	public serializeToken (token: SyntaxKind | TypeNode): string | IBindingIdentifier {
+	public serializeToken (token: SyntaxKind|TypeNode): string|IBindingIdentifier {
 		switch (token) {
 			case SyntaxKind.BreakStatement:
 				return "break";
