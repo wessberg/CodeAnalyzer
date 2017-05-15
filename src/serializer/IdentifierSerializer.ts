@@ -1,5 +1,5 @@
 import {IMarshaller} from "@wessberg/marshaller";
-import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIImportExportBinding, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {ArbitraryValue, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IIdentifierSerializer} from "./interface/IIdentifierSerializer";
@@ -26,6 +26,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	}
 
 	public serializeIImportExportBinding (payload: ImportExportBindingPayload): string {
+		if (isIImportExportBinding(payload)) return this.serializeIImportExportBinding(payload.payload);
 		if (isNamespacedModuleMap(payload)) return this.serializeNamespacedModuleMap(payload);
 		if (!isIExportableIIdentifier(payload)) return <string>this.marshaller.marshal<ArbitraryValue, string>(payload, "");
 		if (isIClassDeclaration(payload)) return this.serializeIClassDeclaration(payload, false);

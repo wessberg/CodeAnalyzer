@@ -1,3 +1,4 @@
 export interface IModuleFormatter {
-	addExtensionToPath (filePath: string): string;
+	resolvePath (filePath: string): string;
+	normalizeExtension (filePath: string): string;
 }

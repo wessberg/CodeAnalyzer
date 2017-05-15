@@ -280,7 +280,8 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			clause.namedBindings.elements.forEach(element => {
 				const block = this.tracer.traceBlockScopeName(clause);
 				const clojure = this.tracer.traceClojure(modulePath);
-				const payload = this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+				const payload = typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+
 				indexer[element.name.text] = {
 					startsAt: element.name.pos,
 					endsAt: element.name.end,
@@ -292,7 +293,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			});
 		}
 
-		else if (clause.name != null) {
+		if (clause.name != null) {
 			const fileExports = this.languageService.getExportDeclarationsForFile(modulePath, true);
 			const match = fileExports.find(exportDeclaration => exportDeclaration.bindings["default"] != null);
 			if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);

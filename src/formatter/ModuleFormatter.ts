@@ -1,22 +1,28 @@
 import {IFileLoader} from "@wessberg/fileloader";
-import {dirname, join} from "path";
+import {dirname, extname, join} from "path";
 import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
+import "querystring"
 
 export abstract class ModuleFormatter implements IModuleFormatter {
+	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 
 	constructor (protected stringUtil: IStringUtil, private fileLoader: IFileLoader) {
 	}
 
-	public addExtensionToPath (filePath: string): string {
+	public resolvePath (filePath: string): string {
+		const cached = ModuleFormatter.RESOLVED_PATHS.get(filePath);
+		if (cached != null) return cached;
+
 		// If the path already ends with an extension, do nothing.
 		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext))) return filePath;
 		const [, path] = this.fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
-		return path == null ? `${filePath}${Config.defaultExtension}` : path;
+		const traced = this.traceFullPath(path == null ? `${filePath}${Config.defaultExtension}` : path);
+		ModuleFormatter.RESOLVED_PATHS.set(filePath, traced);
+		return traced;
 	}
-
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
 		const indexer: NamespacedModuleMap = {};
 
@@ -40,11 +46,74 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		});
 		return indexer;
 	}
-
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
 		const relativePathStripped = <string>this.stringUtil.stripQuotesIfNecessary(relativePath);
-		return this.addExtensionToPath(this.stripStartDotFromPath(
+		if (Config.builtIns.has(relativePathStripped)) {
+			return relativePathStripped;
+		}
+
+		return this.resolvePath(this.stripStartDotFromPath(
 			join(dirname(filePath), relativePathStripped.toString())));
+	}
+	private traceFullPath (filePath: string): string {
+		if (this.fileLoader.existsSync(filePath)) return filePath;
+		if (this.fileLoader.existsSync(join(__dirname, filePath))) return filePath;
+
+		const nodeModules = this.traceDown("node_modules", filePath);
+		if (nodeModules == null) throw new ReferenceError(`${this.constructor.name} could not trace a module with path: ${filePath}: No 'node_modules' folder were found!`);
+		const moduleDirectory = this.traceUp(filePath, nodeModules);
+		if (moduleDirectory == null) throw new ReferenceError(`${this.constructor.name} could not trace a module with path: ${filePath}: The module could not be found inside 'node_modules' and it wasn't a relative path!`);
+		const packageJSON = this.traceUp("package.json", moduleDirectory);
+		if (packageJSON == null) throw new ReferenceError(`${this.constructor.name} could not trace a package.json file inside package: ${moduleDirectory}!`);
+		const libPath = this.takeLibPathFromPackageJSON(packageJSON);
+		if (libPath == null) throw new ReferenceError(`${this.constructor.name} could not find a "main", "module" or "browser" field inside package.json at path: ${packageJSON}!`);
+		return libPath;
+	}
+
+	private traceUp (target: string, from: string): string|null {
+		let splitted = target.split("/").filter(part => part.length > 0);
+		while (true) {
+			if (splitted.length === 0) return null;
+			const reconstructed = splitted.join("/");
+			const joined = join(from, reconstructed);
+			const extension = extname(joined);
+			const joinedWithoutExtension = extension === "" ? joined : joined.slice(0, joined.lastIndexOf(extension));
+			const matchWithExt = this.fileLoader.existsSync(joined);
+			if (matchWithExt) return joined;
+			const matchWithoutExt = this.fileLoader.existsSync(joinedWithoutExtension);
+			if (matchWithoutExt) return joinedWithoutExtension;
+			splitted.splice(0, 1);
+		}
+	}
+
+	private traceDown (target: string, current: string = __dirname): string|null {
+		let _current = current;
+		let targetPath: string|null = null;
+		while (_current !== "/") {
+			targetPath = join(_current, target);
+			const hasTarget = this.fileLoader.existsSync(targetPath);
+			if (hasTarget) break;
+			_current = join(_current, "../");
+			if (_current.includes(("../"))) return null;
+		}
+		return targetPath;
+	}
+
+	private takeLibPathFromPackageJSON (packageJSONPath: string): string|null {
+		const json = JSON.parse(this.fileLoader.loadSync(packageJSONPath).toString());
+		const fields: string[] = ["browser", "module", "main"];
+
+		for (const field of fields) {
+			const value = json[field];
+			if (value != null) return join(packageJSONPath, "../", value);
+		}
+
+		return null;
+	}
+
+	public normalizeExtension (filePath: string): string {
+		const extension = extname(filePath);
+		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
 	}
 
 	private stripStartDotFromPath (filePath: string): string {

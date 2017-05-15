@@ -5,7 +5,7 @@ import {fileName, parse, service} from "./util/Setup";
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
 
 	const code = `
-		import "./test";
+		import "./ImportDeclarations.test";
 	`;
 
 	const statements = parse(code);
@@ -15,10 +15,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #2`, t => {
 
-	parse("", "test/hello.ts");
-
 	const code = `
-		import {Foo} from "./test/hello";
+		import {FileLoader} from "@wessberg/fileloader";
 	`;
 
 	const statements = parse(code);
@@ -54,9 +52,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #4`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t => {
 
-	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
-		import Foo = require("./bar.ts");
+		import Foo = require("static/ImportExamples");
 	`;
 
 	const statements = parse(code);
@@ -66,9 +63,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
 
-	parse(`export default function foo () {}`, "bar.ts");
 	const code = `
-		import Foo = require("./bar.ts");
+		import Foo = require("static/ImportExamples");
 	`;
 
 	const statements = parse(code);
@@ -89,11 +85,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #7`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t => {
 
-	parse(`
-		export default function bar () {}
-	`, "bar.ts");
 	const code = `
-		const foo = require("./bar.ts");
+		const foo = require("static/ImportExamples");
 	`;
 
 	const statements = parse(code);
@@ -103,9 +96,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #8`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t => {
 
-	parse(``, "bar.ts");
 	const code = `
-		require("./bar.ts");
+		require("static/ImportExamples");
 	`;
 
 	const statements = parse(code);
@@ -115,12 +107,9 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #9`, t =
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t => {
 
-
-	parse(``, "bar/baz.ts");
-
 	const code = `
-		const foo = "./bar";
-		require(foo + "/baz.ts");
+		const foo = "./static";
+		require(foo + "/ImportExamples");
 	`;
 
 	const statements = parse(code);

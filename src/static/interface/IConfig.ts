@@ -7,4 +7,5 @@ export interface IConfig {
 	name: INameConfig;
 	supportedFileExtensions: string[];
 	defaultExtension: string;
+	builtIns: Set<string>;
 }

@@ -1,7 +1,7 @@
 import {IFileLoader} from "@wessberg/fileloader";
 import {IMarshaller} from "@wessberg/marshaller";
 import * as ts from "typescript";
-import {CallExpression, ClassDeclaration, CompilerOptions, Declaration, ExportAssignment, ExportDeclaration, Expression, FunctionDeclaration, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, ModuleKind, Node, NodeArray, ScriptTarget, Statement, SyntaxKind, VariableStatement} from "typescript";
+import {CallExpression, ClassDeclaration, CompilerOptions, Declaration, ExportAssignment, ExportDeclaration, Expression, FunctionDeclaration, ImportDeclaration, ExpressionStatement, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, ModuleKind, Node, NodeArray, ScriptTarget, Statement, SyntaxKind, VariableStatement} from "typescript";
 import {Cache} from "../cache/Cache";
 import {ICache} from "../cache/interface/ICache";
 import {ArgumentsFormatter} from "../formatter/ArgumentsFormatter";
@@ -104,7 +104,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	private files: Map<string, { version: number, content: string }> = new Map();
 
 	constructor (marshaller: IMarshaller,
-							 fileLoader: IFileLoader,
+							 private fileLoader: IFileLoader,
 							 private typescript: typeof ts = ts) {
 		this.languageService = this.typescript.createLanguageService(this, typescript.createDocumentRegistry());
 		this.stringUtil = new StringUtil();
@@ -142,13 +142,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * Adds a new file to the LanguageService.
 	 * @param {string} fileName
 	 * @param {string} content
-	 * @param {number} [version=0]
 	 * @returns {NodeArray<Statement>}
 	 */
-	public addFile (fileName: string, content: string, version: number = 0): NodeArray<Statement> {
-
-		const filePath = this.importFormatter.addExtensionToPath(fileName);
-		this.files.set(filePath, {version, content});
+	public addFile (fileName: string, content: string): NodeArray<Statement> {
+		const filePath = this.importFormatter.resolvePath(fileName);
+		const normalizedPath = this.importFormatter.normalizeExtension(filePath);
+		const version = this.getFileVersion(normalizedPath) + 1;
+		this.files.set(normalizedPath, {version, content});
 		return this.getFile(fileName);
 	}
 
@@ -158,9 +158,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {NodeArray<Statement>}
 	 */
 	public getFile (fileName: string): NodeArray<Statement> {
-		const filePath = this.importFormatter.addExtensionToPath(fileName);
-		let file = this.languageService.getProgram().getSourceFile(filePath);
-		if (file == null) throw new ReferenceError(`${this.getFile.name} could not find file: '${filePath}' through the service. Have you added it to the service?`);
+		const filePath = this.importFormatter.resolvePath(fileName);
+		const normalizedPath = this.importFormatter.normalizeExtension(filePath);
+		let file = this.languageService.getProgram().getSourceFile(normalizedPath);
+		if (file == null) {
+			if (this.fileLoader.existsSync(filePath)) return this.addFile(normalizedPath, this.fileLoader.loadSync(filePath).toString());
+			throw new ReferenceError(`${this.getFile.name} could not find file: '${filePath}' through the service. Have you added it to the service?`);
+		}
 		return file.statements;
 	}
 
@@ -257,10 +261,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		statements.forEach(statement => {
 			if (this.isResolvingStatement(statement)) return;
+			const actualStatement = isCallExpression(statement) ? statement : isExpressionStatement(statement) && isCallExpression(statement.expression) ? statement.expression : null;
 
-			if (isCallExpression(statement) || isExpressionStatement(statement)) {
+			if (actualStatement != null && isCallExpression(actualStatement)) {
 				this.setResolvingStatement(statement);
-				expressions.push(this.getCallExpression(statement));
+				expressions.push(this.getCallExpression(actualStatement));
 				this.removeResolvingStatement(statement);
 			}
 
@@ -659,7 +664,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 				isExportAssignment(statement) ||
 				isVariableStatement(statement) ||
 				isFunctionDeclaration(statement) ||
-				isClassDeclaration(statement)
+				isClassDeclaration(statement) ||
+				isExpressionStatement(statement)
 			) {
 				this.setResolvingStatement(statement);
 				const declaration = this.getExportDeclaration(statement);
@@ -676,18 +682,29 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	}
 
 	/**
-	 *Formats the given Statement into an ICallExpression.
+	 * Formats the given Statement into an ICallExpression.
 	 * @param {Statement|Expression} statement
 	 * @returns {ICallExpression}
 	 */
 	private getCallExpression (statement: Statement|Expression): ICallExpression {
-		if (isCallExpression(statement)) {
+		if (isCallExpression(statement) || isStringLiteral(statement)) {
 			return this.callExpressionFormatter.format(statement);
 		}
 
+		/*
 		if (isExpressionStatement(statement)) {
 			return this.getCallExpression(statement.expression);
 		}
+
+		if (isParenthesizedExpression(statement)) {
+			return this.getCallExpression(statement.expression);
+		}
+
+		if (isBinaryExpression(statement)) {
+
+		}
+		*/
+
 		throw new TypeError(`${this.getCallExpression.name} could not format a CallExpression of kind ${SyntaxKind[statement.kind]}`);
 	}
 
@@ -1065,7 +1082,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @param {ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration} statement
 	 * @returns {IExportDeclaration}
 	 */
-	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration): IExportDeclaration|null {
+	private getExportDeclaration (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration|ExpressionStatement): IExportDeclaration|null {
 		return this.exportFormatter.format(statement);
 	}
 

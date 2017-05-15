@@ -422,12 +422,24 @@ test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
 	t.true(value != null && !isNaN(parseInt(value)));
 });
 
-test(`ValueExpressions -> Detects all valueExpressions correctly. #29`, t => {
-
-	parse(`export const foo = "hello";`, "another_file.ts");
+test(`ValueResolver -> Computes all resolved values correctly. #29`, t => {
 
 	const code = `
-	import {foo} from "another_file.ts";
+	import {foo} from "static/ImportExamples";
+	const something = foo;
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getVariableAssignments(statements, true);
+	console.log(assignments["something"].value.resolve());
+	const resolved = assignments["something"].value.resolve();
+	t.true(resolved === "hello");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #30`, t => {
+
+	const code = `
+	import {foo} from "static/ImportExamples";
 	const something = foo;
 	`;
 
@@ -437,33 +449,11 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #29`, t => {
 	t.true(resolved === "hello");
 });
 
-test(`ValueExpressions -> Detects all valueExpressions correctly. #30`, t => {
-
-	parse(`
-	const foo = "hello";
-	export default foo;
-	`, "another_file.ts");
+test(`ValueResolver -> Computes all resolved values correctly. #31`, t => {
 
 	const code = `
-	import foo from "another_file.ts";
-	const something = foo;
-	`;
-
-	const statements = parse(code);
-	const assignments = service.getVariableAssignments(statements, true);
-	const resolved = assignments["something"].value.resolve();
-	t.true(resolved === "hello");
-});
-
-test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
-
-	parse(`
-	export default 2;
-	`, "another_file.ts");
-
-	const code = `
-	import foo from "another_file.ts";
-	const something = foo;
+	import {bar} from "static/ImportExamples";
+	const something = bar;
 	`;
 
 	const statements = parse(code);
@@ -472,19 +462,15 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
 	t.true(resolved === "2");
 });
 
-test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
-
-	parse(`
-	export default 2;
-	`, "another_file.ts");
+test(`ValueResolver -> Computes all resolved values correctly. #32`, t => {
 
 	const code = `
 
-	import foo from "./another_file.ts";
+	import {bar} from "static/ImportExamples";
 
 	class Foo {
 		public styles () {
-			return \`:host {font-size: \${foo}px;}\`;
+			return \`:host {font-size: \${bar}px;}\`;
 		}
 	}
 	`;
@@ -497,19 +483,15 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
 	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
 });
 
-test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
-
-	parse(`
-	export default 2;
-	`, "another_file.ts");
+test(`ValueResolver -> Computes all resolved values correctly. #33`, t => {
 
 	const code = `
 
-	import foo from "./another_file.ts";
+	import {bar} from "static/ImportExamples";
 
 	class Foo {
 		public foo () {
-			return \`:host {font-size: \${foo}px;}\`;
+			return \`:host {font-size: \${bar}px;}\`;
 		}
 		public styles () {
 			return this.foo();
@@ -525,19 +507,11 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
 	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
 });
 
-test(`ValueExpressions -> Detects all valueExpressions correctly. #34`, t => {
-
-	parse(`
-	export const a = "hello";
-	`, "a.ts");
-
-	parse(`
-	export * from "./a.ts";
-	`, "b.ts");
+test.skip(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
 
 	const statements = parse(`
-		import * as Foo from "./b.ts";
-		const val = Foo.a;
+		import * as Foo from "static/ReExportExamples";
+		const val = Foo.foo;
 	`);
 
 	const assignments = service.getVariableAssignments(statements, true);

@@ -1,9 +1,9 @@
-import {CallExpression, NewExpression, SyntaxKind} from "typescript";
+import {CallExpression, NewExpression, SyntaxKind, StringLiteral} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {isIdentifierObject, isLiteralExpression, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
+import {isFunctionExpression, isIdentifierObject, isLiteralExpression, isPropertyAccessExpression, isStringLiteral} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
@@ -23,15 +23,25 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 	/**
 	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
-	 * @param {CallExpression|NewExpression} statement
+	 * @param {CallExpression|NewExpression|StringLiteral} statement
 	 * @returns {ICallable}
 	 */
-	protected formatCallable (statement: CallExpression|NewExpression): ICallable {
-		const exp = statement.expression;
+	protected formatCallable (statement: CallExpression|NewExpression|StringLiteral): ICallable {
 		let property: ArbitraryValue = null;
 		let identifier: ArbitraryValue = null;
 
+		if (isStringLiteral(statement)) return {
+			identifier: statement.text,
+			property
+		};
+
+		const exp = statement.expression;
+
 		if (isIdentifierObject(exp)) {
+			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+		}
+
+		if (isFunctionExpression(exp)) {
 			identifier = this.nameGetter.getNameOfMember(exp, false, true);
 		}
 
@@ -72,11 +82,11 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 	/**
 	 * Formats the typeArguments given to a CallExpression or a NewExpression and returns an ITypeable.
-	 * @param {CallExpression|NewExpression} statement
+	 * @param {CallExpression|NewExpression|StringLiteral} statement
 	 * @returns {ITypeable}
 	 */
-	protected formatTypeArguments (statement: CallExpression|NewExpression): ITypeable {
-		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
+	protected formatTypeArguments (statement: CallExpression|NewExpression|StringLiteral): ITypeable {
+		const typeExpressions = isStringLiteral(statement) || statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
 		let typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {
 			typeExpressions.forEach((typeExp, index) => {

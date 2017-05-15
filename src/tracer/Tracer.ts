@@ -21,7 +21,7 @@ export class Tracer implements ITracer {
 	 * @param {IIdentifierMap} clojure
 	 * @returns {IIdentifier|null}
 	 */
-	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap = this.traceClojure(from)): IIdentifier|null {
+	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap): IIdentifier|null {
 
 		const allMatches: IIdentifier[] = [];
 		const functionMatch = clojure.functions[identifier];
@@ -60,12 +60,19 @@ export class Tracer implements ITracer {
 			if (match != null) importBindingMatches.push(match);
 		});
 
+		const exportBindingMatches: IImportExportBinding[] = [];
+		clojure.exports.forEach(exportDeclaration => {
+			const match = exportDeclaration.bindings[identifier];
+			if (match != null) exportBindingMatches.push(match);
+		});
+
 		if (functionMatch != null) allMatches.push(functionMatch);
 		if (enumMatch != null) allMatches.push(enumMatch);
 		if (variableMatch != null) allMatches.push(variableMatch);
 		if (classMatch != null) allMatches.push(classMatch);
 
 		importBindingMatches.forEach(match => allMatches.push(match));
+		exportBindingMatches.forEach(match => allMatches.push(match));
 		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
 
 		const closest = allMatches.sort((a, b) => {
@@ -75,6 +82,7 @@ export class Tracer implements ITracer {
 			if (aDistanceFromStart > bDistanceFromStart) return 1;
 			return 0;
 		})[0];
+
 		return closest == null ? null : closest;
 	}
 
@@ -86,13 +94,13 @@ export class Tracer implements ITracer {
 	 * @param {string|null} scope
 	 * @returns {IIdentifier|null}
 	 */
-	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope: string|null): IIdentifier|null {
+	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope: string|null): IIdentifier|null|string {
 		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
 		const lookupIdentifier = identifier === "this" && scope != null && scope !== Config.name.global ? scope : identifier;
 
 		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
-		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
+		return typeof clojure === "string" ? clojure : this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
 	}
 
 	/**
@@ -148,8 +156,11 @@ export class Tracer implements ITracer {
 	 * @param {Statement|Expression|Node|string} from
 	 * @returns {IIdentifierMap}
 	 */
-	public traceClojure (from: Statement|Expression|Node|string): IIdentifierMap {
+	public traceClojure (from: Statement|Expression|Node|string): IIdentifierMap|string {
 		const filePath = typeof from === "string" ? from : this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
+		if (Config.builtIns.has(filePath)) {
+			return filePath;
+		}
 
 		// TODO: We shouldn't go deep and get ALL identifiers (which will ignore concepts such as conditional branches or even if the statement has access to the statement).
 		return this.languageService.getAllIdentifiersForFile(filePath, true);
