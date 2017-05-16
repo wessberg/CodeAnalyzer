@@ -100,9 +100,9 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
-**v1.0.8**:
+**v1.0.1**:
 
-- Bug fixes, more tests.
+- Support for commonjs and stability improvements.
 
 **v1.0.0**:
 
