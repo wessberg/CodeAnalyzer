@@ -1,12 +1,10 @@
 import {IFileLoader} from "@wessberg/fileloader";
-import {ClassDeclaration, ExportAssignment, ExportDeclaration, ExpressionStatement, FunctionDeclaration, NamedExports, SyntaxKind, VariableStatement} from "typescript";
+import {BinaryExpression, CallExpression, ClassDeclaration, ExportAssignment, ExportDeclaration, ExpressionStatement, FunctionDeclaration, NamedExports, SyntaxKind, VariableStatement} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {isBinaryExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isLiteralExpression, isPropertyAccessExpression, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, INonNullableValueable, IValueable, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
+import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -14,27 +12,46 @@ import {IExportFormatter} from "./interface/IExportFormatter";
 import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
+import {IMutationFormatter} from "./interface/IMutationFormatter";
+import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {IMarshaller} from "@wessberg/marshaller";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
 	constructor (private languageService: ICodeAnalyzer,
 							 private mapper: IMapper,
-							 private valueExpressionGetter: IValueExpressionGetter,
-							 private valueResolvedGetter: IValueResolvedGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
+							 private valueableFormatter: IValueableFormatter,
+							 private callExpressionFormatter: ICallExpressionFormatter,
 							 private variableFormatter: IVariableFormatter,
 							 private classFormatter: IClassFormatter,
+							 private mutationFormatter: IMutationFormatter,
 							 private functionFormatter: IFunctionFormatter,
 							 private nameGetter: INameGetter,
 							 private tracer: ITracer,
+							 marshaller: IMarshaller,
 							 stringUtil: IStringUtil,
 							 fileLoader: IFileLoader) {
-		super(stringUtil, fileLoader);
+		super(stringUtil, marshaller, fileLoader);
 	}
 
-	public format (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration|ExpressionStatement): IExportDeclaration|null {
+	public format (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration|ExpressionStatement|BinaryExpression|CallExpression): IExportDeclaration|null {
 
-		if (isExpressionStatement(statement)) return this.formatExpressionStatement(statement);
+		if (isExpressionStatement(statement)) {
+			if (
+				isCallExpression(statement.expression) ||
+				isBinaryExpression(statement.expression) ||
+				isExportAssignment(statement.expression) ||
+				isClassDeclaration(statement.expression) ||
+				isFunctionDeclaration(statement.expression) ||
+				isVariableStatement(statement.expression) ||
+				isExportDeclaration(statement.expression)
+			) return this.format(statement.expression);
+			else return this.formatBinaryExpression(statement);
+		}
+		if (isCallExpression(statement)) return this.formatCallExpression(statement);
+		if (isBinaryExpression(statement)) return this.formatBinaryExpression(statement);
 		if (isExportAssignment(statement)) return this.formatExportAssignment(statement);
 		if (isClassDeclaration(statement)) return this.formatClassDeclaration(statement);
 		if (isFunctionDeclaration(statement)) return this.formatFunctionDeclaration(statement);
@@ -45,6 +62,48 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		throw new TypeError(`${ExportFormatter.constructor.name} could not get an IExportDeclaration for a statement of kind ${SyntaxKind[kind]}!`);
 	}
 
+	private formatCallExpression (statement: CallExpression): IExportDeclaration|null {
+		const formatted = this.callExpressionFormatter.format(statement);
+		if (formatted.identifier !== "___export") return null;
+
+		// This is a namespace export in commonjs format.
+		const value = formatted.arguments.argumentsList[0].value;
+		const payload = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+
+		const relativePath = formatted.filePath;
+		const fullPath = this.formatFullPathFromRelative(formatted.filePath, relativePath);
+
+		const map: IExportDeclaration = {
+			___kind: IdentifierMapKind.EXPORT,
+			startsAt: statement.pos,
+			endsAt: statement.end,
+			moduleKind: ModuleDependencyKind.REQUIRE,
+			source: {
+				relativePath,
+				fullPath
+			},
+			filePath: formatted.filePath,
+			bindings: {
+				"*": {
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
+					name: "*",
+					payload,
+					kind: ImportExportKind.NAMESPACE
+				}
+			}
+		};
+		// Make the kind non-enumerable.
+		Object.defineProperty(map, "___kind", {
+			value: IdentifierMapKind.EXPORT,
+			enumerable: false
+		});
+
+		this.mapper.set(map, statement);
+		return map;
+	}
+
 
 	private formatExportAssignment (statement: ExportAssignment): IExportDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
@@ -52,20 +111,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		let payload: ArbitraryValue|IIdentifier;
 
 		if (isLiteralExpression(statement.expression)) {
-			const that = this;
-			const scope = this.tracer.traceThis(statement.expression);
-			const value: IValueable = {
-				expression: this.valueExpressionGetter.getValueExpression(statement.expression),
-				resolved: undefined,
-				hasDoneFirstResolve () {
-					return value.resolved !== undefined;
-				},
-				resolving: false,
-				resolve () {
-					value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement.expression, scope);
-					return value.resolved;
-				}
-			};
+			const value = this.valueableFormatter.format(statement.expression);
 			payload = value.resolve();
 		} else {
 			const identifier = this.nameGetter.getName(statement.expression);
@@ -107,81 +153,50 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatExpressionStatement (statement: ExpressionStatement): IExportDeclaration|null {
+	private formatBinaryExpression (statement: ExpressionStatement|BinaryExpression): IExportDeclaration|null {
+		const formatted = this.mutationFormatter.format(statement);
+
+		if (formatted == null) return null;
+		const isCandidate = formatted.property === "exports" && formatted.identifier !== "undefined" && formatted.identifier !== undefined;
+		if (!isCandidate) return null;
+
+		const payload = formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve();
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
-		const exp = statement.expression;
-		let isCandidate: boolean = false;
-		let prop: string|null = null;
-		let payload: ArbitraryValue|IIdentifier = null;
+		const relativePath = filePath;
+		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+		const identifier = formatted.identifier == null || formatted.identifier === "default" ? "default" : formatted.identifier.toString();
 
-		if (isBinaryExpression(exp)) {
-
-			if (isPropertyAccessExpression(exp.left)) {
-				const name = this.nameGetter.getName(exp.left.expression);
-				prop = this.nameGetter.getName(exp.left.name);
-				isCandidate = name === "exports";
-			}
-
-			if (isCandidate && isLiteralExpression(exp.right)) {
-				const that = this;
-				const scope = this.tracer.traceThis(statement.expression);
-				const value: IValueable = {
-					expression: this.valueExpressionGetter.getValueExpression(exp.right),
-					resolved: undefined,
-					hasDoneFirstResolve () {
-						return value.resolved !== undefined;
-					},
-					resolving: false,
-					resolve () {
-						value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement.expression, scope);
-						return value.resolved;
-					}
-				};
-				payload = value.resolve();
-			} else {
-				const identifier = this.nameGetter.getName(exp.right);
-				const scope = this.tracer.traceThis(exp);
-				payload = identifier == null ? null : this.tracer.traceIdentifier(identifier, statement, scope);
-			}
-		}
-
-		if (isCandidate) {
-			const relativePath = filePath;
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-
-			const map: IExportDeclaration = {
-				___kind: IdentifierMapKind.EXPORT,
-				startsAt: statement.pos,
-				endsAt: statement.end,
-				moduleKind: ModuleDependencyKind.REQUIRE,
-				source: {
-					relativePath,
-					fullPath
-				},
-				filePath,
-				bindings: {
-					[prop == null || prop === "default" ? "default" : prop]: {
-						startsAt: statement.pos,
-						endsAt: statement.end,
-						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
-						name: prop == null || prop === "default" ? "default" : prop,
-						payload,
-						kind: prop == null || prop === "default" ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
-					}
+		const map: IExportDeclaration = {
+			___kind: IdentifierMapKind.EXPORT,
+			startsAt: statement.pos,
+			endsAt: statement.end,
+			moduleKind: ModuleDependencyKind.REQUIRE,
+			source: {
+				relativePath,
+				fullPath
+			},
+			filePath,
+			bindings: {
+				[identifier]: {
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
+					name: identifier,
+					payload,
+					kind: identifier ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
 				}
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.EXPORT,
-				enumerable: false
-			});
+			}
+		};
+		// Make the kind non-enumerable.
+		Object.defineProperty(map, "___kind", {
+			value: IdentifierMapKind.EXPORT,
+			enumerable: false
+		});
 
-			this.mapper.set(map, statement);
-			return map;
-		}
-		return null;
+		this.mapper.set(map, statement);
+		return map;
 	}
 
 	private formatClassDeclaration (statement: ClassDeclaration): IExportDeclaration|null {

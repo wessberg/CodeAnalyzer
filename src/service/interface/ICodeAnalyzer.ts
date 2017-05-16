@@ -11,12 +11,15 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE, IMPORT, EXPORT, IMPORT_EXPORT_BINDING, PROP, PARAMETER, ARGUMENT, METHOD, CONSTRUCTOR, FUNCTION, DECORATOR, CLASS, ENUM, CALL_EXPRESSION, NEW_EXPRESSION, CLASS_INDEXER, VARIABLE_INDEXER, NAMESPACED_MODULE_INDEXER, ENUM_INDEXER, MODULE_DEPENDENCIES, FUNCTION_INDEXER, IDENTIFIER_MAP
+	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, MODULE_DEPENDENCIES = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023
 }
 
-export interface IImportExportBinding extends IKindable, IPositionable {
-	name: string;
+export interface IPayloadable {
 	payload: ImportExportBindingPayload;
+}
+
+export interface IImportExportBinding extends IKindable, IPositionable, IPayloadable {
+	name: string;
 	kind: ImportExportKind;
 }
 
@@ -48,9 +51,15 @@ export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsa
 	members: { [key: string]: number|string };
 }
 
-export interface ICallable {
+export interface IIdentifierable {
+	identifier: ArbitraryValue;
+}
+
+export interface IPropertyable {
 	property: ArbitraryValue;
-	identifier: NonNullableArbitraryValue;
+}
+
+export interface ICallable extends IIdentifierable, IPropertyable {
 }
 
 export interface INewExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
@@ -134,6 +143,9 @@ export declare interface IParameter extends IPositionable, INameable, IKindable 
 	value: IValueable;
 }
 
+export interface IRequire extends IPositionable, IKindable, IModulePath, IFilePathable, IPayloadable, IArgumentsable {
+}
+
 export declare interface IArgument extends IPositionable, IKindable {
 	value: IValueable;
 }
@@ -204,12 +216,15 @@ export interface ICachedContent<T> extends IVersionable {
 }
 
 export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable, IModifiersable {
-	value: IUnresolvableValueable;
 	type: ITypeable;
 }
 
 export interface IModifiersable {
 	modifiers: Set<string>;
+}
+
+export interface IMutationDeclaration extends IPositionable, IFilePathable, IKindable, IIdentifierable, IPropertyable {
+	value: IValueable;
 }
 
 export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable, IModifiersable {
@@ -236,11 +251,12 @@ export declare interface IIdentifierMap extends IKindable {
 	callExpressions: ICallExpression[];
 	imports: IImportDeclaration[];
 	exports: IExportDeclaration[];
+	mutations: IMutationDeclaration[];
 }
 
 export declare type ImportExportBindingPayload = ArbitraryValue|IExportableIIdentifier;
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IIdentifier = IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type ResolvedNamespacedModuleMap = { [key: string]: ArbitraryValue };
@@ -251,7 +267,6 @@ export declare type ImportExportIndexer = { [key: string]: IImportExportBinding 
 export declare type ClassIndexer = { [key: string]: IClassDeclaration };
 export declare type VariableIndexer = { [key: string]: IVariableAssignment };
 export declare type DecoratorIndexer = { [key: string]: IDecorator };
-export declare type TypeArgument = string|boolean|symbol|number|null|undefined;
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
 export declare type NonNullableArbitraryValue = string|boolean|symbol|number|Function|object|IBindingIdentifier|ITypeBinding|{};
 export declare type ArbitraryValue = NonNullableArbitraryValue|null|undefined;
@@ -281,4 +296,6 @@ export interface ICodeAnalyzer extends LanguageServiceHost {
 	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
 	getNewExpressions(statements: (Statement|Expression|Node)[], deep?: boolean): INewExpression[];
 	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
+	getMutationsForFile (fileName: string, deep?: boolean): IMutationDeclaration[];
+	getMutations (statements: (Statement|Expression|Node)[], deep?: boolean): IMutationDeclaration[];
 }

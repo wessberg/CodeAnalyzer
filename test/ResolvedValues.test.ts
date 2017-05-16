@@ -431,7 +431,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #29`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	console.log(assignments["something"].value.resolve());
 	const resolved = assignments["something"].value.resolve();
 	t.true(resolved === "hello");
 });
@@ -507,7 +506,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #33`, t => {
 	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
 });
 
-test.skip(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
+test(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
 
 	const statements = parse(`
 		import * as Foo from "static/ReExportExamples";

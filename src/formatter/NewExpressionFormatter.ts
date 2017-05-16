@@ -2,30 +2,26 @@ import {NewExpression} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {IdentifierMapKind, INewExpression} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {CallableFormatter} from "./CallableFormatter";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {INewExpressionFormatter} from "./interface/INewExpressionFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export class NewExpressionFormatter extends CallableFormatter implements INewExpressionFormatter {
 
 	constructor (private mapper: IMapper,
 							 private argumentsFormatter: IArgumentsFormatter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 tracer: ITracer,
-							 valueExpressionGetter: IValueExpressionGetter,
-							 valueResolvedGetter: IValueResolvedGetter,
+							 valueableFormatter: IValueableFormatter,
 							 nameGetter: INameGetter,
 							 typeExpressionGetter: ITypeExpressionGetter,
 							 tokenSerializer: ITokenSerializer,
 							 typeUtil: ITypeUtil) {
-		super(tracer, valueExpressionGetter, valueResolvedGetter, nameGetter, typeExpressionGetter, tokenSerializer, typeUtil);
+		super(valueableFormatter, nameGetter, typeExpressionGetter, tokenSerializer, typeUtil);
 	}
 
 	/**

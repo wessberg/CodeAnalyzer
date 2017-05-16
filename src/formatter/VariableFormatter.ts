@@ -3,26 +3,22 @@ import {ICache} from "../cache/interface/ICache";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {IBaseVariableAssignment, IdentifierMapKind, INonNullableValueable, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
+import {IBaseVariableAssignment, IdentifierMapKind, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export class VariableFormatter implements IVariableFormatter {
 
-	constructor (private valueExpressionGetter: IValueExpressionGetter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
+	constructor (private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private nameGetter: INameGetter,
 							 private mapper: IMapper,
 							 private cache: ICache,
-							 private tracer: ITracer,
-							 private valueResolvedGetter: IValueResolvedGetter,
+							 private valueableFormatter: IValueableFormatter,
 							 private modifiersFormatter: IModifiersFormatter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private tokenSerializer: ITokenSerializer,
@@ -51,7 +47,6 @@ export class VariableFormatter implements IVariableFormatter {
 	}
 
 	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableAssignment {
-		const valueExpression = declaration.initializer == null ? null : this.valueExpressionGetter.getValueExpression(declaration.initializer);
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
 		const typeExpression = declaration.type == null ? null : this.typeExpressionGetter.getTypeExpression(declaration.type);
@@ -59,12 +54,9 @@ export class VariableFormatter implements IVariableFormatter {
 		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 
-		const map: IBaseVariableAssignment = {
+		return {
 			___kind: IdentifierMapKind.VARIABLE,
 			filePath,
-			value: {
-				expression: valueExpression
-			},
 			modifiers: this.modifiersFormatter.format(declaration),
 			startsAt,
 			endsAt,
@@ -74,8 +66,6 @@ export class VariableFormatter implements IVariableFormatter {
 				bindings: typeBindings
 			}
 		};
-
-		return map;
 	}
 
 	private formatStandardVariableDeclaration (declaration: VariableDeclaration&{ name: Identifier }): IVariableAssignment {
@@ -85,24 +75,12 @@ export class VariableFormatter implements IVariableFormatter {
 		const cached = this.cache.getCachedVariable(filePath, name);
 		if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) return cached.content;
 		const base = this.formatBaseVariableAssignment(declaration);
-		const that = this;
-		const scope = this.tracer.traceThis(declaration);
+		const value = this.valueableFormatter.format(declaration.initializer);
 
 		const map: IVariableAssignment = {
 			...base,
 			name,
-			value: {
-				expression: base.value.expression,
-				resolved: undefined,
-				hasDoneFirstResolve () {
-					return map.value.resolved !== undefined;
-				},
-				resolving: false,
-				resolve () {
-					map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-					return map.value.resolved;
-				}
-			}
+			value
 		};
 
 		// Make the ___kind non-enumerable.
@@ -146,24 +124,12 @@ export class VariableFormatter implements IVariableFormatter {
 			if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {
 				const base = this.formatBaseVariableAssignment(declaration);
-				const that = this;
-				const scope = this.tracer.traceThis(declaration);
+				const value = this.valueableFormatter.format(declaration.initializer, index);
 
 				const map: IVariableAssignment = {
 					...base,
 					name,
-					value: {
-						expression: base.value.expression,
-						resolved: undefined,
-						hasDoneFirstResolve () {
-							return map.value.resolved !== undefined;
-						},
-						resolving: false,
-						resolve () {
-							map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, index);
-							return map.value.resolved;
-						}
-					}
+					value
 				};
 
 				// Make the ___kind non-enumerable.
@@ -189,24 +155,12 @@ export class VariableFormatter implements IVariableFormatter {
 			if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {
 				const base = this.formatBaseVariableAssignment(declaration);
-				const that = this;
-				const scope = this.tracer.traceThis(declaration);
+				const value = this.valueableFormatter.format(declaration.initializer, name);
 
 				const map: IVariableAssignment = {
 					...base,
 					name,
-					value: {
-						expression: base.value.expression,
-						resolved: undefined,
-						hasDoneFirstResolve () {
-							return map.value.resolved !== undefined;
-						},
-						resolving: false,
-						resolve () {
-							map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, name);
-							return map.value.resolved;
-						}
-					}
+					value
 				};
 
 				// Make the ___kind non-enumerable.

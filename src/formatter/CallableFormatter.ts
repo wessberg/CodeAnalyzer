@@ -1,20 +1,17 @@
-import {CallExpression, NewExpression, SyntaxKind, StringLiteral} from "typescript";
+import {CallExpression, NewExpression, ParenthesizedExpression, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {isFunctionExpression, isIdentifierObject, isLiteralExpression, isPropertyAccessExpression, isStringLiteral} from "../predicate/PredicateFunctions";
+import {isArrowFunction, isFunctionExpression, isIdentifierObject, isLiteralExpression, isParenthesizedExpression, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ArbitraryValue, ICallable, INonNullableValueable, ITypeable, IValueable, TypeExpression} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
+import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {ICallableFormatter} from "./interface/ICallableFormatter";
+import {Config} from "../static/Config";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export abstract class CallableFormatter implements ICallableFormatter {
 
-	constructor (private tracer: ITracer,
-							 private valueExpressionGetter: IValueExpressionGetter,
-							 private valueResolvedGetter: IValueResolvedGetter,
+	constructor (private valueableFormatter: IValueableFormatter,
 							 private nameGetter: INameGetter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private tokenSerializer: ITokenSerializer,
@@ -23,17 +20,12 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 	/**
 	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
-	 * @param {CallExpression|NewExpression|StringLiteral} statement
+	 * @param {CallExpression|NewExpression|ParenthesizedExpression} statement
 	 * @returns {ICallable}
 	 */
-	protected formatCallable (statement: CallExpression|NewExpression|StringLiteral): ICallable {
+	protected formatCallable (statement: CallExpression|NewExpression|ParenthesizedExpression): ICallable {
 		let property: ArbitraryValue = null;
 		let identifier: ArbitraryValue = null;
-
-		if (isStringLiteral(statement)) return {
-			identifier: statement.text,
-			property
-		};
 
 		const exp = statement.expression;
 
@@ -45,24 +37,21 @@ export abstract class CallableFormatter implements ICallableFormatter {
 			identifier = this.nameGetter.getNameOfMember(exp, false, true);
 		}
 
-		if (isPropertyAccessExpression(exp)) {
+		if (isParenthesizedExpression(exp)) {
+			return this.formatCallable(exp);
+		}
+
+		if (isArrowFunction(exp)) {
+			identifier = Config.name.anonymous;
+			const value = this.valueableFormatter.format(exp);
+			property = value.resolve();
+		}
+
+		else if (isPropertyAccessExpression(exp)) {
 
 			// The left-hand side of the expression might be a literal (for example, "hello".toString()).
 			if (isLiteralExpression(exp.expression)) {
-				const that = this;
-				const scope = this.tracer.traceThis(exp.expression);
-				const value: IValueable = {
-					expression: this.valueExpressionGetter.getValueExpression(exp.expression),
-					resolved: undefined,
-					hasDoneFirstResolve () {
-						return value.resolved !== undefined;
-					},
-					resolving: false,
-					resolve () {
-						value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, exp.expression, scope);
-						return value.resolved;
-					}
-				};
+				const value = this.valueableFormatter.format(exp.expression);
 				property = value.resolve();
 			} else {
 				// The left-hand side is simply an identifier.
@@ -82,11 +71,11 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 	/**
 	 * Formats the typeArguments given to a CallExpression or a NewExpression and returns an ITypeable.
-	 * @param {CallExpression|NewExpression|StringLiteral} statement
+	 * @param {CallExpression|NewExpression} statement
 	 * @returns {ITypeable}
 	 */
-	protected formatTypeArguments (statement: CallExpression|NewExpression|StringLiteral): ITypeable {
-		const typeExpressions = isStringLiteral(statement) || statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
+	protected formatTypeArguments (statement: CallExpression|NewExpression): ITypeable {
+		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
 		let typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {
 			typeExpressions.forEach((typeExp, index) => {

@@ -4,12 +4,15 @@ import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../ser
 import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
-import "querystring"
+import "querystring";
+import {IMarshaller} from "@wessberg/marshaller";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 
-	constructor (protected stringUtil: IStringUtil, private fileLoader: IFileLoader) {
+	constructor (protected stringUtil: IStringUtil,
+							 private marshaller: IMarshaller,
+							 private fileLoader: IFileLoader) {
 	}
 
 	public resolvePath (filePath: string): string {
@@ -23,6 +26,10 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		ModuleFormatter.RESOLVED_PATHS.set(filePath, traced);
 		return traced;
 	}
+	public normalizeExtension (filePath: string): string {
+		const extension = extname(filePath);
+		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
+	}
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
 		const indexer: NamespacedModuleMap = {};
 
@@ -34,7 +41,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 				if (!isNamespace) indexer[key] = binding.payload;
 				else {
 					// Merge the two.
-					const payload = <NamespacedModuleMap>binding.payload;
+					let payload = <NamespacedModuleMap>binding.payload;
+					if (typeof payload === "string") payload = <NamespacedModuleMap>this.marshaller.marshal(payload, {});
 					Object.keys(payload).forEach(key => indexer[key] = payload[key]);
 				}
 			});
@@ -69,7 +77,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		if (libPath == null) throw new ReferenceError(`${this.constructor.name} could not find a "main", "module" or "browser" field inside package.json at path: ${packageJSON}!`);
 		return libPath;
 	}
-
 	private traceUp (target: string, from: string): string|null {
 		let splitted = target.split("/").filter(part => part.length > 0);
 		while (true) {
@@ -85,7 +92,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 			splitted.splice(0, 1);
 		}
 	}
-
 	private traceDown (target: string, current: string = __dirname): string|null {
 		let _current = current;
 		let targetPath: string|null = null;
@@ -98,7 +104,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		}
 		return targetPath;
 	}
-
 	private takeLibPathFromPackageJSON (packageJSONPath: string): string|null {
 		const json = JSON.parse(this.fileLoader.loadSync(packageJSONPath).toString());
 		const fields: string[] = ["browser", "module", "main"];
@@ -110,12 +115,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 		return null;
 	}
-
-	public normalizeExtension (filePath: string): string {
-		const extension = extname(filePath);
-		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
-	}
-
 	private stripStartDotFromPath (filePath: string): string {
 		return filePath.startsWith("./")
 			? filePath.slice("./".length)

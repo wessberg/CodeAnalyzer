@@ -64,7 +64,8 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #5`, t =
 test(`getImportDeclarations() -> Detects import declarations correctly. #6`, t => {
 
 	const code = `
-		import Foo = require("static/ImportExamples");
+		const lol = "static";
+		import Foo = require(lol + "/ImportExamples");
 	`;
 
 	const statements = parse(code);

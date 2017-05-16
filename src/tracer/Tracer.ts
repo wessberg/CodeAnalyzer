@@ -2,7 +2,7 @@ import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isArrowFunction, isClassDeclaration, isClassExpression, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile} from "../predicate/PredicateFunctions";
-import {ICodeAnalyzer, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
+import {ICallExpression, ICodeAnalyzer, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
 
@@ -54,6 +54,13 @@ export class Tracer implements ITracer {
 			// TODO: Add this functionality.
 		}
 
+		const requireMatches: ICallExpression[] = [];
+		if (identifier === "require") {
+			clojure.callExpressions.forEach(callExpression => {
+				if (callExpression.identifier === "require") requireMatches.push(callExpression);
+			});
+		}
+
 		const importBindingMatches: IImportExportBinding[] = [];
 		clojure.imports.forEach(importDeclaration => {
 			const match = importDeclaration.bindings[identifier];
@@ -73,6 +80,7 @@ export class Tracer implements ITracer {
 
 		importBindingMatches.forEach(match => allMatches.push(match));
 		exportBindingMatches.forEach(match => allMatches.push(match));
+		requireMatches.forEach(match => allMatches.push(match));
 		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
 
 		const closest = allMatches.sort((a, b) => {
