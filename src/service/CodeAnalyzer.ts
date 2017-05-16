@@ -273,13 +273,17 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		statements.forEach(statement => {
 
-			const actualStatement = isCallExpression(statement) ? statement : isExpressionStatement(statement) && isCallExpression(statement.expression) ? statement.expression : null;
-			if (actualStatement != null && this.isResolvingStatement(actualStatement)) return;
 
-			if (actualStatement != null && isCallExpression(actualStatement)) {
-				this.setResolvingStatement(actualStatement);
-				expressions.push(this.getCallExpression(actualStatement));
-				this.removeResolvingStatement(actualStatement);
+			// console.log(SyntaxKind[statement.kind], this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end));
+
+			const actualStatement = deep || isCallExpression(statement) ? statement : isExpressionStatement(statement) && isCallExpression(statement.expression) ? statement.expression : statement;
+
+			if (!this.isResolvingStatement(actualStatement)) {
+				if (isCallExpression(actualStatement)) {
+					this.setResolvingStatement(actualStatement);
+					expressions.push(this.getCallExpression(actualStatement));
+					this.removeResolvingStatement(actualStatement);
+				}
 			}
 
 			if (deep) {
@@ -317,12 +321,12 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const expressions: INewExpression[] = [];
 
 		statements.forEach(statement => {
-			if (this.isResolvingStatement(statement)) return;
-
-			if (isExpressionStatement(statement) && isNewExpression(statement.expression)) {
-				this.setResolvingStatement(statement);
-				expressions.push(this.getNewExpression(statement.expression));
-				this.removeResolvingStatement(statement);
+			if (!this.isResolvingStatement(statement)) {
+				if (isExpressionStatement(statement) && isNewExpression(statement.expression)) {
+					this.setResolvingStatement(statement);
+					expressions.push(this.getNewExpression(statement.expression));
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -364,13 +368,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const functionIndexer: FunctionIndexer = {};
 
 		for (const statement of statements) {
-			if (this.isResolvingStatement(statement)) continue;
-
-			if (isFunctionDeclaration(statement)) {
-				this.setResolvingStatement(statement);
-				const formatted = this.functionFormatter.format(statement);
-				Object.assign(functionIndexer, {[formatted.name]: formatted});
-				this.removeResolvingStatement(statement);
+			if (!this.isResolvingStatement(statement)) {
+				if (isFunctionDeclaration(statement)) {
+					this.setResolvingStatement(statement);
+					const formatted = this.functionFormatter.format(statement);
+					Object.assign(functionIndexer, {[formatted.name]: formatted});
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -419,12 +423,14 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const enumIndexer: EnumIndexer = {};
 
 		for (const statement of statements) {
-			if (this.isResolvingStatement(statement)) continue;
-			if (isEnumDeclaration(statement)) {
-				this.setResolvingStatement(statement);
-				const formatted = this.enumFormatter.format(statement);
-				Object.assign(enumIndexer, {[formatted.name]: formatted});
-				this.removeResolvingStatement(statement);
+
+			if (!this.isResolvingStatement(statement)) {
+				if (isEnumDeclaration(statement)) {
+					this.setResolvingStatement(statement);
+					const formatted = this.enumFormatter.format(statement);
+					Object.assign(enumIndexer, {[formatted.name]: formatted});
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -516,12 +522,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const assignmentMap: VariableIndexer = {};
 
 		for (const statement of statements) {
-			if (this.isResolvingStatement(statement)) continue;
-
-			if (isVariableStatement(statement) || isVariableDeclarationList(statement) || isVariableDeclaration(statement)) {
-				this.setResolvingStatement(statement);
-				Object.assign(assignmentMap, this.variableFormatter.format(statement));
-				this.removeResolvingStatement(statement);
+			// console.log(SyntaxKind[statement.kind], this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end));
+			if (!this.isResolvingStatement(statement)) {
+				if (isVariableStatement(statement) || isVariableDeclarationList(statement) || isVariableDeclaration(statement)) {
+					this.setResolvingStatement(statement);
+					Object.assign(assignmentMap, this.variableFormatter.format(statement));
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -571,13 +578,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getClassDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): ClassIndexer {
 		const declarations: ClassIndexer = {};
 		for (const statement of statements) {
-			if (this.isResolvingStatement(statement)) continue;
-
-			if (isClassDeclaration(statement)) {
-				this.setResolvingStatement(statement);
-				const declaration = this.getClassDeclaration(statement);
-				declarations[declaration.name] = declaration;
-				this.removeResolvingStatement(statement);
+			if (!this.isResolvingStatement(statement)) {
+				if (isClassDeclaration(statement)) {
+					this.setResolvingStatement(statement);
+					const declaration = this.getClassDeclaration(statement);
+					declarations[declaration.name] = declaration;
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -629,20 +636,21 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 				isVariableStatement(statement) ||
 				isCallExpression(statement)
 			) {
-				if (this.isResolvingStatement(statement)) continue;
-
-				this.setResolvingStatement(statement);
-				const declaration = this.getImportDeclaration(statement);
-				if (declaration != null) declarations.push(declaration);
-				this.removeResolvingStatement(statement);
+				if (!this.isResolvingStatement(statement)) {
+					this.setResolvingStatement(statement);
+					const declaration = this.getImportDeclaration(statement);
+					if (declaration != null) declarations.push(declaration);
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (isExpressionStatement(statement) && isCallExpression(statement.expression)) {
-				if (this.isResolvingStatement(statement.expression)) continue;
-				this.setResolvingStatement(statement.expression);
-				const declaration = this.getImportDeclaration(statement.expression);
-				if (declaration != null) declarations.push(declaration);
-				this.removeResolvingStatement(statement.expression);
+				if (!this.isResolvingStatement(statement.expression)) {
+					this.setResolvingStatement(statement.expression);
+					const declaration = this.getImportDeclaration(statement.expression);
+					if (declaration != null) declarations.push(declaration);
+					this.removeResolvingStatement(statement.expression);
+				}
 			}
 
 			if (deep) {
@@ -681,16 +689,16 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const mutations: IMutationDeclaration[] = [];
 		for (const statement of statements) {
 
-			if (this.isResolvingStatement(statement)) continue;
-
-			if (
-				isBinaryExpression(statement) ||
-				isExpressionStatement(statement)
-			) {
-				this.setResolvingStatement(statement);
-				const mutation = this.getMutation(statement);
-				if (mutation != null) mutations.push(mutation);
-				this.removeResolvingStatement(statement);
+			if (!this.isResolvingStatement(statement)) {
+				if (
+					isBinaryExpression(statement) ||
+					isExpressionStatement(statement)
+				) {
+					this.setResolvingStatement(statement);
+					const mutation = this.getMutation(statement);
+					if (mutation != null) mutations.push(mutation);
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -723,22 +731,22 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		for (const statement of statements) {
 
-			if (this.isResolvingStatement(statement)) continue;
-
-			if (
-				isExportDeclaration(statement) ||
-				isExportAssignment(statement) ||
-				isVariableStatement(statement) ||
-				isFunctionDeclaration(statement) ||
-				isClassDeclaration(statement) ||
-				isExpressionStatement(statement) ||
-				isBinaryExpression(statement) ||
-				isCallExpression(statement)
-			) {
-				this.setResolvingStatement(statement);
-				const declaration = this.getExportDeclaration(statement);
-				if (declaration != null) declarations.push(declaration);
-				this.removeResolvingStatement(statement);
+			if (!this.isResolvingStatement(statement)) {
+				if (
+					isExportDeclaration(statement) ||
+					isExportAssignment(statement) ||
+					isVariableStatement(statement) ||
+					isFunctionDeclaration(statement) ||
+					isClassDeclaration(statement) ||
+					isExpressionStatement(statement) ||
+					isBinaryExpression(statement) ||
+					isCallExpression(statement)
+				) {
+					this.setResolvingStatement(statement);
+					const declaration = this.getExportDeclaration(statement);
+					if (declaration != null) declarations.push(declaration);
+					this.removeResolvingStatement(statement);
+				}
 			}
 
 			if (deep) {
@@ -817,51 +825,45 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isShorthandPropertyAssignment(statement)) {
-			return statement.objectAssignmentInitializer == null ? [] : this.findChildStatements(statement.objectAssignmentInitializer);
+			return statement.objectAssignmentInitializer == null ? [] : [statement.objectAssignmentInitializer];
 		}
 
 		if (isDefaultClause(statement) || isCaseClause(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.statements.forEach(child => {
-				this.findChildStatements(child).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.statements.forEach(child => statements.push(child));
 
 			return statements;
 		}
 
 		if (isWhileStatement(statement)) {
-			return this.findChildStatements(statement.statement);
+			return [statement.statement];
 		}
 
 		if (isExportAssignment(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isExportDeclaration(statement)) {
-			return statement.moduleSpecifier == null ? [] : this.findChildStatements(statement.moduleSpecifier);
+			return statement.moduleSpecifier == null ? [] : [statement.moduleSpecifier];
 		}
 
 		if (isParenthesizedExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isCaseBlock(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.clauses.forEach(clause => {
-				this.findChildStatements(clause).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.clauses.forEach(clause => statements.push(clause));
 
 			return statements;
 		}
 
 		if (isAwaitExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isSwitchStatement(statement)) {
-			return this.findChildStatements(statement.caseBlock);
+			return [statement.caseBlock];
 		}
 
 		if (isBlockDeclaration(statement)) {
@@ -869,20 +871,20 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isReturnStatement(statement)) {
-			return statement.expression == null ? [] : this.findChildStatements(statement.expression);
+			return statement.expression == null ? [] : [statement.expression];
 		}
 
 		if (isArrowFunction(statement)) {
-			return this.findChildStatements(statement.body);
+			return [statement.body];
 		}
 
 		if (isLabeledStatement(statement)) {
-			return this.findChildStatements(statement.statement);
+			return [statement.statement];
 		}
 
 		if (isConditionalExpression(statement)) {
-			const whenTrue = this.findChildStatements(statement.whenTrue);
-			const whenFalse = this.findChildStatements(statement.whenFalse);
+			const whenTrue = statement.whenTrue == null ? [] : [statement.whenTrue];
+			const whenFalse = statement.whenFalse == null ? [] : [statement.whenFalse];
 			return [...whenTrue, ...whenFalse];
 		}
 
@@ -891,31 +893,29 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isFunctionDeclaration(statement)) {
-			return statement.body == null ? [] : this.findChildStatements(statement.body);
+			return statement.body == null ? [] : [statement.body];
 		}
 
 		if (isExpressionStatement(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isTryStatement(statement)) {
 			const tryBlock = this.findChildStatements(statement.tryBlock);
-			const catchClause = statement.catchClause == null ? [] : this.findChildStatements(statement.catchClause.block);
-			const finallyBlock = statement.finallyBlock == null ? [] : this.findChildStatements(statement.finallyBlock);
+			const catchClause = statement.catchClause == null ? [] : [statement.catchClause.block];
+			const finallyBlock = statement.finallyBlock == null ? [] : [statement.finallyBlock];
 
 			return [...tryBlock, ...catchClause, ...finallyBlock];
 		}
 
 		if (isSpreadAssignment(statement) || isSpreadElement(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isVariableStatement(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
 
-			statement.declarationList.declarations.forEach(declaration => {
-				this.findChildStatements(declaration).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.declarationList.declarations.forEach(declaration => statements.push(declaration));
 			return statements;
 		}
 
@@ -926,85 +926,73 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isVariableDeclaration(statement)) {
-			return statement.initializer == null ? [] : this.findChildStatements(statement.initializer);
+			return statement.initializer == null ? [] : [statement.initializer];
 		}
 
 		if (isElementAccessExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isPropertyAccessExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isPrefixUnaryExpression(statement)) {
-			return this.findChildStatements(statement.operand);
+			return [statement.operand];
 		}
 
 		if (isPostfixUnaryExpression(statement)) {
-			return this.findChildStatements(statement.operand);
+			return [statement.operand];
 		}
 
 		if (isFunctionExpression(statement)) {
-			return this.findChildStatements(statement.body);
+			return [statement.body];
 		}
 
 		if (isTypeOfExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isMethodDeclaration(statement)) {
-			return statement.body == null ? [] : this.findChildStatements(statement.body);
+			return statement.body == null ? [] : [statement.body];
 		}
 
 		if (isTemplateExpression(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.templateSpans.forEach(span => {
-				this.findChildStatements(span.expression).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.templateSpans.forEach(span => statements.push(span.expression));
 
 			return statements;
 		}
 
 		if (isObjectLiteralExpression(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.properties.forEach(property => {
-				this.findChildStatements(property).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.properties.forEach(property => statements.push(property));
 
 			return statements;
 		}
 
 		if (isPropertyAssignment(statement)) {
-			return this.findChildStatements(statement.initializer);
+			return [statement.initializer];
 		}
 
 		if (isConstructorDeclaration(statement)) {
-			return statement.body == null ? [] : this.findChildStatements(statement.body);
+			return statement.body == null ? [] : [statement.body];
 		}
 
 		if (isArrayLiteralExpression(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.elements.forEach(element => {
-				this.findChildStatements(element).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.elements.forEach(element => statements.push(element));
 
 			return statements;
 		}
 
 		if (isPropertyDeclaration(statement)) {
-			return statement.initializer == null ? [] : this.findChildStatements(statement.initializer);
+			return statement.initializer == null ? [] : [statement.initializer];
 		}
 
 		if (isClassExpression(statement) || isClassDeclaration(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
-
-			statement.members.forEach(member => {
-				this.findChildStatements(member).forEach(childStatement => statements.push(childStatement));
-			});
+			statement.members.forEach(member => statements.push(member));
 
 			return statements;
 		}
@@ -1028,11 +1016,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isTypeAssertionExpression(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isDoStatement(statement)) {
-			return this.findChildStatements(statement.expression);
+			return [statement.expression];
 		}
 
 		if (isCallExpression(statement)) {

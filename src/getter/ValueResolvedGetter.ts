@@ -44,11 +44,23 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		// console.log("computed:", result);
 		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
 		this.clearGlobalMutations();
-		return <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");
+
+		return this.isGlobal(takenResult) ? GlobalObjectIdentifier : <string>this.marshaller.marshal<ArbitraryValue, string>(takenResult, "");
+	}
+
+	private isGlobal (value: ArbitraryValue): boolean {
+		if (value === GlobalObject) return true;
+
+		if (this.marshaller.getTypeOf(value) === "object") {
+			const cast = <Window>value;
+			return cast.console != null && cast.clearInterval != null && cast.clearTimeout != null && cast.setInterval != null && cast.setTimeout != null;
+		}
+		return false;
 	}
 
 	private clearGlobalMutations (): void {
 		ValueResolvedGetter.GLOBAL_OBJECT_MUTATIONS.forEach(mutation => {
+
 			delete GlobalObject[<keyof Window>mutation];
 		});
 		ValueResolvedGetter.GLOBAL_OBJECT_MUTATIONS.clear();
@@ -118,6 +130,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			else {
 				const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
 				sub = this.identifierSerializer.serializeIClassDeclaration(substitution, statics);
+				console.log(sub);
 			}
 		}
 
@@ -166,7 +179,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			if (part instanceof BindingIdentifier) {
 				val += this.flattenBoundPart(part, from, scope, insideComputedThisScope, options, hadNewExpression, expression, index);
 			} else {
-				if (this.tokenPredicator.isTokenLike(part)) val += <string>part;
+				if (part === GlobalObject) val += GlobalObjectIdentifier;
+				else if (this.tokenPredicator.isTokenLike(part)) val += <string>part;
 				else val += this.marshaller.marshal<ArbitraryValue, string>(part, "");
 			}
 		});

@@ -54,15 +54,18 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		});
 		return indexer;
 	}
+
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
 		const relativePathStripped = <string>this.stringUtil.stripQuotesIfNecessary(relativePath);
 		if (Config.builtIns.has(relativePathStripped)) {
 			return relativePathStripped;
 		}
 
-		return this.resolvePath(this.stripStartDotFromPath(
-			join(dirname(filePath), relativePathStripped.toString())));
+		const joined = relativePathStripped.toString() === filePath ? filePath : join(dirname(filePath), relativePathStripped.toString());
+		return this.resolvePath(this.stripStartDotFromPath(joined));
 	}
+
+
 	private traceFullPath (filePath: string): string {
 		if (this.fileLoader.existsSync(filePath)) return filePath;
 		if (this.fileLoader.existsSync(join(__dirname, filePath))) return filePath;

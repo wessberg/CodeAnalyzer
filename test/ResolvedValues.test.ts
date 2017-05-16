@@ -556,3 +556,42 @@ test(`ValueResolver -> Computes all resolved values correctly. #37`, t => {
 	const resolved = assignments["val"].value.resolve();
 	t.true(resolved === "4");
 });
+
+test.skip(`ValueResolver -> Computes all resolved values correctly. #38`, t => {
+// import {DIContainer} from "static/DIContainerExample";
+	const statements = parse(`
+import {DIContainer} from "static/DIContainerExample";
+
+
+export interface IFoo \{
+	a: boolean;
+}
+export interface IBar \{
+	b: boolean;
+}
+
+export class Foo implements IFoo \{
+	a = true;
+}
+
+export class Bar implements IBar \{
+	b = true;
+	constructor (foo: IFoo) \{
+		console.log(foo.toString());
+	}
+}
+
+DIContainer.registerSingleton<IFoo, Foo>();
+DIContainer.registerSingleton<IBar, Bar>();
+DIContainer.get<IBar>();
+
+	`);
+
+	const assignments = service.getAllIdentifiers(statements, true);
+	console.log(assignments);
+	const getCalls = assignments.callExpressions.filter(exp => exp.identifier === "get");
+	const registerCalls = assignments.callExpressions.filter(exp => exp.identifier === "registerSingleton");
+	t.true(getCalls.length === 1);
+	t.true(registerCalls.length === 2);
+	t.true(Object.keys(assignments.classes).length === 2);
+});

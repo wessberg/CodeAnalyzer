@@ -515,7 +515,11 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isIdentifierObject(rawStatement)) {
-			return [this.nameGetter.getNameOfMember(rawStatement, true)];
+			const name = this.nameGetter.getName(rawStatement);
+			const value = this.nameGetter.getNameOfMember(rawStatement, true);
+
+			if (name === GlobalObjectIdentifier || name === "root" || name === "self" || name === "window") return [name];
+			return [value];
 		}
 
 		throw new TypeError(`${this.getValueExpression.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);

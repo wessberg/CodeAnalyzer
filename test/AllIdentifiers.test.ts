@@ -16,7 +16,7 @@ test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
 
 		doStuff();
 	`);
-	const assignments = service.getAllIdentifiers(statements);
+	const assignments = service.getAllIdentifiers(statements, true);
 	t.true(assignments.classes["MyClass"] != null);
 	t.true(assignments.functions["bar"] != null);
 	t.true(assignments.enums["Foo"] != null);

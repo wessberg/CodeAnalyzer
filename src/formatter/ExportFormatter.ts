@@ -112,7 +112,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 		if (isLiteralExpression(statement.expression)) {
 			const value = this.valueableFormatter.format(statement.expression);
-			payload = value.resolve();
+			payload = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		} else {
 			const identifier = this.nameGetter.getName(statement.expression);
 			const scope = this.tracer.traceThis(statement);

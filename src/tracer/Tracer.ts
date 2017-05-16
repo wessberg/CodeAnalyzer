@@ -91,6 +91,10 @@ export class Tracer implements ITracer {
 			return 0;
 		})[0];
 
+		if (identifier === "require") {
+
+		}
+
 		return closest == null ? null : closest;
 	}
 

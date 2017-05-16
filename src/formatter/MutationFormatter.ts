@@ -48,7 +48,7 @@ export class MutationFormatter implements IMutationFormatter {
 		if (isElementAccessExpression(statement.left)) {
 			property = this.nameGetter.getName(statement.left.expression);
 			const value = this.valueableFormatter.format(statement.left.argumentExpression);
-			identifier = value.resolve();
+			identifier = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}
 
 		if (property == null && identifier == null) throw new ReferenceError(`${MutationFormatter.constructor.name} could not format a statement of kind ${SyntaxKind[statement.kind]}: No identifier or property could be found!`);

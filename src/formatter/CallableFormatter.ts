@@ -44,7 +44,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 		if (isArrowFunction(exp)) {
 			identifier = Config.name.anonymous;
 			const value = this.valueableFormatter.format(exp);
-			property = value.resolve();
+			property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}
 
 		else if (isPropertyAccessExpression(exp)) {
@@ -52,7 +52,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 			// The left-hand side of the expression might be a literal (for example, "hello".toString()).
 			if (isLiteralExpression(exp.expression)) {
 				const value = this.valueableFormatter.format(exp.expression);
-				property = value.resolve();
+				property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 			} else {
 				// The left-hand side is simply an identifier.
 				property = this.nameGetter.getNameOfMember(exp.expression);

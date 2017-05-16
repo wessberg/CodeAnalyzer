@@ -31,15 +31,15 @@
   "author": "Frederik Wessberg",
   "license": "MIT",
   "devDependencies": {
-    "@types/node": "^7.0.13",
-    "@wessberg/typedetector": "^1.0.2",
+    "@types/node": "^7.0.18",
+    "@wessberg/typedetector": "^1.0.4",
     "ava": "^0.19.1",
     "typescript": "latest"
   },
   "dependencies": {
     "@wessberg/fileloader": "^1.0.2",
-    "@wessberg/globalobject": "^1.0.1",
-    "@wessberg/marshaller": "^1.0.7",
-    "tslib": "^1.7.0"
+    "@wessberg/globalobject": "^1.0.2",
+    "@wessberg/marshaller": "^1.0.19",
+    "tslib": "^1.7.1"
   }
 }
