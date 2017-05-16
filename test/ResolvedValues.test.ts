@@ -557,7 +557,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #37`, t => {
 	t.true(resolved === "4");
 });
 
-test.skip(`ValueResolver -> Computes all resolved values correctly. #38`, t => {
+test.only(`ValueResolver -> Computes all resolved values correctly. #38`, t => {
 // import {DIContainer} from "static/DIContainerExample";
 	const statements = parse(`
 import {DIContainer} from "static/DIContainerExample";

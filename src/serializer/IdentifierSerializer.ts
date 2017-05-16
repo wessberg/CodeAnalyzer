@@ -46,6 +46,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	}
 
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string {
+
 		const map: { [key: string]: string|null|undefined } = {};
 
 		for (const propKey of Object.keys(classDeclaration.props)) {
@@ -63,20 +64,26 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			const method = classDeclaration.methods[methodKey];
 			const value = method.value;
 
-			const hasReturnStatement = method.returnStatement.startsAt >= 0;
+			const returnsContent = method.returnStatement.startsAt >= 0;
 			let resolvedValue = value.hasDoneFirstResolve() ? value.resolved : value.resolve(true);
 
-			if (this.marshaller.getTypeOf(this.marshaller.marshal(resolvedValue)) === "string" && resolvedValue != null && !(resolvedValue.trim().startsWith("return"))) resolvedValue = <string>this.stringUtil.quoteIfNecessary(resolvedValue);
+			const type = this.marshaller.getTypeOf(this.marshaller.marshal(resolvedValue)) === "string";
+			const hasReturnKeyword = method.returnStatement != null && method.returnStatement.contents != null && resolvedValue != null && resolvedValue.includes("return");
 
-			const startsWithReturn = hasReturnStatement && resolvedValue != null && resolvedValue.trim().startsWith("return");
-			const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${resolvedValue}}` : resolvedValue;
+			if (type && resolvedValue != null && !hasReturnKeyword) {
+				resolvedValue = <string>this.stringUtil.quoteIfNecessary(resolvedValue);
+			}
+
+			const bracketed = hasReturnKeyword ? `{${resolvedValue}}` : returnsContent ? `{return ${resolvedValue}}` : `${resolvedValue}`;
 
 			const parameters = this.serializeIParameterBody(method.parameters);
 
 			map[methodKey] = `(function ${IdentifierSerializer.FUNCTION_OUTER_SCOPE_NAME}(${parameters}) ${bracketed})`;
+			console.log(bracketed);
 		}
 
 		return <string>this.marshaller.marshal<ArbitraryValue, string>(map, "");
+
 	}
 
 	public serializeIEnumDeclaration (enumDeclaration: IEnumDeclaration): string {

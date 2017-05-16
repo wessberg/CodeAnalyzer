@@ -9,6 +9,7 @@ import {ArbitraryValue, ICodeAnalyzer, InitializationValue, INonNullableValueabl
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IFlattenOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
+import {Config} from "../static/Config";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 	private static readonly GLOBAL_OBJECT_MUTATIONS: Set<string> = new Set();
@@ -41,6 +42,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		// console.log("flattened:", flattened);
 		let result = shouldCompute ? this.computeValueResolved(flattened) : flattened;
 		valueable.resolving = false;
+
+		// TODO: This: this["instances"]["set"]((identifier === undefined ? undefined : identifier),(instance === undefined ? undefined : instance));return (instance === undefined ? undefined : instance);
+		// TODO: is passed on to the marshaller and thus it wraps it in quotes. These will need to be escaped.
 		// console.log("computed:", result);
 		const takenResult = takeKey == null || result == null ? result : result[<keyof NonNullableArbitraryValue>takeKey];
 		this.clearGlobalMutations();
@@ -130,7 +134,6 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			else {
 				const statics = part.name !== "this" && part.name === substitution.name && !hadNewExpression;
 				sub = this.identifierSerializer.serializeIClassDeclaration(substitution, statics);
-				console.log(sub);
 			}
 		}
 
@@ -145,10 +148,12 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			}
 			else {
 				const stringified = this.identifierSerializer.serializeIFunctionDeclaration(substitution);
-				const hasReturnStatement = substitution.returnStatement.startsAt >= 0;
-				const startsWithReturn = hasReturnStatement && stringified.trim().startsWith("return");
-				const bracketed = hasReturnStatement ? `{${startsWithReturn ? "" : "return"} ${stringified}}` : stringified;
 				const parameters = this.identifierSerializer.serializeIParameterBody(substitution.parameters);
+
+				const returnsContent = substitution.returnStatement.startsAt >= 0;
+				const hasReturnKeyword = substitution.returnStatement != null && substitution.returnStatement.contents != null && stringified != null && stringified.includes("return");
+				const bracketed = hasReturnKeyword ? `{${stringified}}` : returnsContent ? `{return ${stringified}}` : `${stringified}`;
+
 				sub = `(function ${ValueResolvedGetter.FUNCTION_OUTER_SCOPE_NAME}(${parameters}) ${bracketed})`;
 			}
 		}
@@ -161,13 +166,16 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 		}
 
-		if (!flattenOptions.forceNoQuoting && this.marshaller.getTypeOf(this.marshaller.marshal(sub)) === "string") sub = <string>this.stringUtil.quoteIfNecessary(sub);
+		if (!flattenOptions.forceNoQuoting && this.marshaller.getTypeOf(this.marshaller.marshal(sub)) === "string") {
+			sub = <string>this.stringUtil.quoteIfNecessary(sub);
+		}
 		return sub;
 	}
 
 	private flattenValueExpression (valueExpression: InitializationValue, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false): [string, boolean] {
 		let val: string = "";
 
+		// TODO: If a class takes constructor arguments, this "solution" doesn't fly. We should probably stay with actual classes in some way.
 		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);
 
 		const options: IFlattenOptions = {
@@ -191,11 +199,18 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		const newExp: InitializationValue = [];
 		let newExpressionInProgress = false;
 		let hadNewExpression = false;
+		let hadUnReplaceableIdentifier = false;
+
 		valueExpression.forEach((part) => {
 			if (part === "new") {
 				newExpressionInProgress = true;
 				hadNewExpression = true;
 			}
+
+			if (newExpressionInProgress && (part instanceof BindingIdentifier && Config.builtInIdentifiers.has(part.name))) {
+				hadUnReplaceableIdentifier = true;
+			}
+
 			if (newExpressionInProgress && (part === ";")) {
 				newExpressionInProgress = false;
 			}
@@ -203,6 +218,6 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				newExp.push(part);
 			}
 		});
-		return [hadNewExpression, hadNewExpression ? newExp : valueExpression];
+		return [hadNewExpression, hadNewExpression && !hadUnReplaceableIdentifier ? newExp : valueExpression];
 	}
 }

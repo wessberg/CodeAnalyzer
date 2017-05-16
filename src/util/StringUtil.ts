@@ -54,6 +54,7 @@ export class StringUtil implements IStringUtil {
 		const endsWithClashingQuote = lastChar === REPLACEMENT_CHAR;
 
 		if (startsWithClashingQuote && endsWithClashingQuote) {
+			// TODO: Return the string instead of escaping and adding even more quotes?
 			const insideQuotes = trimmed.match(new RegExp(`^${REPLACEMENT_CHAR}([^${REPLACEMENT_CHAR}]*)${REPLACEMENT_CHAR}`));
 			// If there are nothing but whitespace inside the quotes, just return them.
 			if (insideQuotes != null && this.isWhitespace(insideQuotes[1])) return content;
@@ -65,6 +66,7 @@ export class StringUtil implements IStringUtil {
 		str += trimmed.slice(startOffset, trimmed.length - endOffset);
 		if (endsWithClashingQuote) str += `\\${REPLACEMENT_CHAR}`;
 		str += REPLACEMENT_CHAR;
+
 		return str;
 	}
 }

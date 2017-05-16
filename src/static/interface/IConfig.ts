@@ -8,4 +8,5 @@ export interface IConfig {
 	supportedFileExtensions: string[];
 	defaultExtension: string;
 	builtIns: Set<string>;
+	builtInIdentifiers: Set<string>;
 }

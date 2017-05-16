@@ -259,12 +259,13 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			left.forEach(part => arr.push(part));
 			arr.push("(");
 			const args = rawStatement.arguments;
+
 			if (args != null) args.forEach((arg, index) => {
 				const value = this.getValueExpression(arg);
 				value.forEach(item => {
 					arr.push(item);
-					if (index !== args.length - 1) arr.push(",");
 				});
+				if (index !== args.length - 1) arr.push(",");
 			});
 			arr.push(")");
 			return arr;
