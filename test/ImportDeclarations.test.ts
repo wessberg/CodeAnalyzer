@@ -120,7 +120,6 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #10`, t 
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #11`, t => {
 
-
 	const path = join(__dirname, "../../", "test/ImportDeclarations.test.ts");
 
 	const code = `

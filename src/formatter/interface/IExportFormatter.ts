@@ -1,4 +1,4 @@
-import {ClassDeclaration, ExportAssignment, ExportDeclaration, FunctionDeclaration, VariableStatement, ExpressionStatement, BinaryExpression, CallExpression} from "typescript";
+import {BinaryExpression, CallExpression, ClassDeclaration, ExportAssignment, ExportDeclaration, ExpressionStatement, FunctionDeclaration, VariableStatement} from "typescript";
 import {IExportDeclaration} from "../../service/interface/ICodeAnalyzer";
 import {IModuleFormatter} from "./IModuleFormatter";
 

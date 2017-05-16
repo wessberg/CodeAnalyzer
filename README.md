@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.2**:
+
+- Object-/Array destructuring now also works for function/method parameters and arguments.
+
 **v1.0.1**:
 
 - Support for commonjs and stability improvements.

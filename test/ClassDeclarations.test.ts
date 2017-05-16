@@ -1,5 +1,6 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
+
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 
 	const code = `

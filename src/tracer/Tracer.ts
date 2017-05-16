@@ -34,7 +34,7 @@ export class Tracer implements ITracer {
 		if (this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
 			Object.keys(clojure.functions).forEach(key => {
 				const parameters = clojure.functions[key].parameters.parametersList;
-				const parameter = parameters.find(parameter => parameter.name === identifier);
+				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
 				if (parameter != null) parameterMatches.push(parameter);
 			});
 		}
@@ -44,7 +44,7 @@ export class Tracer implements ITracer {
 				const methods = clojure.classes[key].methods;
 				Object.keys(methods).forEach(methodName => {
 					const parameters = methods[methodName].parameters.parametersList;
-					const parameter = parameters.find(parameter => parameter.name === identifier);
+					const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
 					if (parameter != null) parameterMatches.push(parameter);
 				});
 			});

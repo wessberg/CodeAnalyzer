@@ -273,11 +273,13 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		if (isObjectLiteralExpression(rawStatement)) {
 			const obj: InitializationValue = ["{"];
 			rawStatement.properties.forEach((property, index) => {
+				let didAddMembers: boolean = false;
 
 				if (isSpreadAssignment(property)) {
 					obj.push("...");
 					const exp = this.getValueExpression(property.expression);
 					exp.forEach(item => obj.push(item));
+					if (exp.length > 0) didAddMembers = true;
 				}
 
 				else {
@@ -286,18 +288,26 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 						if (property.name == null) return;
 
 						// Check if the property name is computed (.eg. [key]: "foo").
-						if (isComputedPropertyName(property.name)) obj.push("[");
+						if (isComputedPropertyName(property.name)) {
+							obj.push("[");
+							didAddMembers = true;
+						}
 
 						// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
 						if (isComputedPropertyName(property.name) && isCallExpression(property.name.expression)) {
 							const callExpression = this.getValueExpression(property.name.expression);
 							callExpression.forEach(item => obj.push(item));
+							if (callExpression.length > 0) didAddMembers = true;
 						} else {
 							// Otherwise, just push the name of it.
 							obj.push(this.nameGetter.getNameOfMember(property.name, true, true));
+							didAddMembers = true;
 						}
 
-						if (isComputedPropertyName(property.name)) obj.push("]");
+						if (isComputedPropertyName(property.name)) {
+							obj.push("]");
+							didAddMembers = true;
+						}
 
 						obj.push(":");
 						const value = this.getValueExpression(property.initializer);
@@ -307,10 +317,11 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 					else if (isMethodDeclaration(property)) {
 						const value = this.getValueExpression(property);
 						value.forEach(item => obj.push(item));
+						if (value.length > 0) didAddMembers = true;
 					}
 
 				}
-				if (index !== rawStatement.properties.length - 1) obj.push(",");
+				if (didAddMembers && index !== rawStatement.properties.length - 1) obj.push(",");
 			});
 			obj.push("}");
 			return obj;

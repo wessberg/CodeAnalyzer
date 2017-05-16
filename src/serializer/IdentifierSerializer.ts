@@ -87,6 +87,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		let str = "";
 		parameterBody.parametersList.forEach((parameter, index) => {
 			str += parameter.name;
+
 			if (parameter.value != null && parameter.value.expression != null) {
 				const resolvedValue = parameter.value.hasDoneFirstResolve() ? parameter.value.resolved : parameter.value.resolve();
 				str += `=${resolvedValue}`;

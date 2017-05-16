@@ -67,8 +67,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
-	private flattenBoundPart (part: BindingIdentifier,  from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, flattenOptions: IFlattenOptions, hadNewExpression: boolean, expression: ArbitraryValue[], index: number): string {
-
+	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, flattenOptions: IFlattenOptions, hadNewExpression: boolean, expression: ArbitraryValue[], index: number): string {
 
 		const isRecursive = part.name === scope;
 		const substitution = this.tracer.traceIdentifier(part.name, from, scope);
@@ -157,6 +156,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		let val: string = "";
 
 		const [hadNewExpression, expression] = this.convertNewExpressionToObjectLiteral(valueExpression);
+
 		const options: IFlattenOptions = {
 			shouldCompute: true,
 			forceNoQuoting: false

@@ -1,5 +1,6 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
+
 test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
 	const code = `
 		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");

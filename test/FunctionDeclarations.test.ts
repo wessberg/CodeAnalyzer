@@ -57,9 +57,9 @@ test(`getFunctionDeclarations() -> Detects all function arguments properly #1`, 
 		}
 	`);
 	const assignments = service.getFunctionDeclarations(statements, true);
-	t.true(assignments["foo"].parameters.parametersList[0].name === "arg1");
-	t.true(assignments["foo"].parameters.parametersList[1].name === "arg2");
-	t.true(assignments["foo"].parameters.parametersList[2].name === "arg3");
+	t.true(assignments["foo"].parameters.parametersList[0].name[0] === "arg1");
+	t.true(assignments["foo"].parameters.parametersList[1].name[0] === "arg2");
+	t.true(assignments["foo"].parameters.parametersList[2].name[0] === "arg3");
 });
 
 test(`getFunctionDeclarations() -> Detects all function arguments properly #2`, t => {

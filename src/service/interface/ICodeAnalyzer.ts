@@ -6,6 +6,10 @@ export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED
 }
 
+export enum ParameterKind {
+	OBJECT_BINDING, ARRAY_BINDING, STANDARD
+}
+
 export enum ModuleDependencyKind {
 	ES_MODULE, REQUIRE, IMPORT_REQUIRE
 }
@@ -138,7 +142,9 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IParameter extends IPositionable, INameable, IKindable {
+export declare interface IParameter extends IPositionable, IKindable {
+	name: (string|undefined)[];
+	parameterKind: ParameterKind;
 	type: ITypeable;
 	value: IValueable;
 }

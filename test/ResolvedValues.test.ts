@@ -1,5 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
+import {ParameterKind} from "../src/service/interface/ICodeAnalyzer";
+
 test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
 
 	const statements = parse(`
@@ -285,7 +287,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
 
 test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
 
-
 	const code = `
 	const something = [1, 2];
 	const [a, b] = something;
@@ -298,7 +299,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
-
 
 	const code = `
 	const something = {a: 1, b: 2};
@@ -357,7 +357,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
 
 test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 
-
 	const statements = parse(`
 		function fibonacci(x) {
     	return x <= 1 ? x : fibonacci(x - 1) + fibonacci(x - 2);
@@ -371,7 +370,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
-
 
 	const statements = parse(`
 	class Foo {
@@ -390,7 +388,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
 
 test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 
-
 	const statements = parse(`
 	function foo () {
 		let arr = [];
@@ -408,7 +405,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
-
 
 	const statements = parse(`
 	function fib(x) { return x <= 1 ? x : fib(x - 1) + fib(x - 2); }
@@ -517,4 +513,46 @@ test(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
 	const resolved = assignments["val"].value.resolve();
 
 	t.true(resolved === "hello");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #35`, t => {
+
+	const statements = parse(`
+	function foo ({test}) {
+		return test;
+	}
+
+	`);
+
+	const assignments = service.getFunctionDeclarations(statements, true);
+	t.true(assignments["foo"].parameters.parametersList[0].parameterKind === ParameterKind.OBJECT_BINDING);
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #36`, t => {
+
+	const statements = parse(`
+	function foo ([test]) {
+		return test;
+	}
+
+	`);
+
+	const assignments = service.getFunctionDeclarations(statements, true);
+	t.true(assignments["foo"].parameters.parametersList[0].parameterKind === ParameterKind.ARRAY_BINDING);
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #37`, t => {
+
+	const statements = parse(`
+	function foo ({a, b}) {
+		return a * b;
+	}
+	const a = 2;
+	const b = 2;
+	const val = foo({a, b});
+	`);
+
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["val"].value.resolve();
+	t.true(resolved === "4");
 });
