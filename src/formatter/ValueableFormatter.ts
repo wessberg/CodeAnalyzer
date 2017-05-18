@@ -28,13 +28,19 @@ export class ValueableFormatter implements IValueableFormatter {
 		const value: IValueable = {
 			expression: valueExpression,
 			resolved: undefined,
+			resolvedPrecompute: undefined,
 			hasDoneFirstResolve () {
 				return value.resolved !== undefined;
 			},
 			resolving: false,
 			resolve () {
-				if (statement == null) return null;
-				value.resolved = value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, scope, takeKey);
+				if (statement == null || value.expression == null) {
+					value.resolved = value.resolvedPrecompute = null;
+				} else {
+					const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, scope, takeKey);
+					value.resolved = computed;
+					value.resolvedPrecompute = flattened;
+				}
 				return value.resolved;
 			}
 		};

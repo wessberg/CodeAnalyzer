@@ -5,7 +5,7 @@ import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFileProper
 import {IMapper} from "../mapper/interface/IMapper";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ICodeAnalyzer, IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
+import {ICodeAnalyzer, IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IImportFormatter} from "./interface/IImportFormatter";
@@ -145,18 +145,23 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 	}
 
 	private formatVariableStatement (statement: VariableStatement): IImportDeclaration|null {
-		return this.formatCallExpression(statement);
-	}
-
-	private formatVariableDeclaration (statement: VariableDeclaration): IImportDeclaration|null {
-		return this.formatCallExpression(statement);
+		return this.formatVariableDeclarationList(statement.declarationList);
 	}
 
 	private formatVariableDeclarationList (statement: VariableDeclarationList): IImportDeclaration|null {
-		return this.formatCallExpression(statement);
+		for (const declaration of statement.declarations) {
+			const formatted = this.formatVariableDeclaration(declaration);
+			if (formatted != null) return formatted;
+		}
+		return null;
 	}
 
-	private formatCallExpression (statement: CallExpression|VariableStatement|VariableDeclaration|VariableDeclarationList): IImportDeclaration|null {
+	private formatVariableDeclaration (statement: VariableDeclaration): IImportDeclaration|null {
+		const name = this.nameGetter.getName(statement.name);
+		return this.formatCallExpression(statement, name == null ? undefined : name);
+	}
+
+	private formatCallExpression (statement: CallExpression|VariableStatement|VariableDeclaration|VariableDeclarationList, name: string = NAMESPACE_NAME): IImportDeclaration|null {
 		const requireCall = this.requireFormatter.format(statement);
 		if (requireCall == null) return null;
 		const {startsAt, endsAt, relativePath, fullPath, filePath, payload} = requireCall;
@@ -172,11 +177,11 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			},
 			filePath,
 			bindings: {
-				"*": {
+				[name]: {
 					startsAt: requireCall.arguments.startsAt,
 					endsAt: requireCall.arguments.endsAt,
 					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
-					name: "*",
+					name,
 					payload,
 					kind: ImportExportKind.NAMESPACE
 				}

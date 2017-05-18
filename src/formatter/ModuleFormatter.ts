@@ -1,6 +1,6 @@
 import {IFileLoader} from "@wessberg/fileloader";
 import {dirname, extname, join} from "path";
-import {IdentifierMapKind, IModuleDeclaration, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
+import {IdentifierMapKind, IModuleDeclaration, NAMESPACE_NAME, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
@@ -36,7 +36,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		modules.forEach(moduleDeclaration => {
 			Object.keys(moduleDeclaration.bindings).forEach(key => {
 				const binding = moduleDeclaration.bindings[key];
-				const isNamespace = binding.name === "*";
+				const isNamespace = binding.name === NAMESPACE_NAME;
 				// If it isn't a namespace, just add the key to the object.
 				if (!isNamespace) indexer[key] = binding.payload;
 				else {

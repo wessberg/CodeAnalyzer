@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {join} from "path";
 import {fileName, parse, service} from "./util/Setup";
+import {ImportExportKind} from "../src/service/interface/ICodeAnalyzer";
 
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
 
@@ -128,6 +129,20 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #11`, t 
 
 	const statements = parse(code, path);
 	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations.length === 1);
+});
+
+test(`getImportDeclarations() -> Detects import declarations correctly. #12`, t => {
+
+	const path = join(__dirname, "../../", "test/ImportDeclarations.test.ts");
+
+	const code = `
+		const Foo = require("./ImportDeclarations.test");
+	`;
+
+	const statements = parse(code, path);
+	const importDeclarations = service.getImportDeclarations(statements);
+	t.true(importDeclarations[0].bindings["Foo"] !== null && importDeclarations[0].bindings["Foo"].kind === ImportExportKind.NAMESPACE);
 	t.true(importDeclarations.length === 1);
 });
 

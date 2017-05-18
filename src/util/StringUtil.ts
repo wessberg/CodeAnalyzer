@@ -1,7 +1,11 @@
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "./interface/IStringUtil";
+import {IMarshaller} from "@wessberg/marshaller";
 
 export class StringUtil implements IStringUtil {
+	constructor (private marshaller: IMarshaller) {
+	}
+
 	/**
 	 * Returns true if the given item is a string of pure whitespace.
 	 * @param {ArbitraryValue} item
@@ -37,7 +41,6 @@ export class StringUtil implements IStringUtil {
 		const endOffset = endsWithQuote ? 1 : 0;
 		return trimmed.slice(startOffset, trimmed.length - endOffset);
 	}
-
 	/**
 	 * Quotes the given content if it is a string and doesn't start and end with a clashing quote.
 	 * @param {ArbitraryValue} content
@@ -45,16 +48,19 @@ export class StringUtil implements IStringUtil {
 	 */
 	public quoteIfNecessary (content: ArbitraryValue): ArbitraryValue {
 		if (!(typeof content === "string")) return content;
+		if (this.stringDoesNotRepresentStringLiteral(content)) return content;
+
 		const REPLACEMENT_CHAR = "`";
 		const trimmed = content;
 		const firstChar = trimmed[0];
 		const lastChar = trimmed[trimmed.length - 1];
+		if (this.isQuote(firstChar) && this.isQuote(lastChar)) return content;
+
 		let str = REPLACEMENT_CHAR;
 		const startsWithClashingQuote = firstChar === REPLACEMENT_CHAR;
 		const endsWithClashingQuote = lastChar === REPLACEMENT_CHAR;
 
 		if (startsWithClashingQuote && endsWithClashingQuote) {
-			// TODO: Return the string instead of escaping and adding even more quotes?
 			const insideQuotes = trimmed.match(new RegExp(`^${REPLACEMENT_CHAR}([^${REPLACEMENT_CHAR}]*)${REPLACEMENT_CHAR}`));
 			// If there are nothing but whitespace inside the quotes, just return them.
 			if (insideQuotes != null && this.isWhitespace(insideQuotes[1])) return content;
@@ -68,5 +74,23 @@ export class StringUtil implements IStringUtil {
 		str += REPLACEMENT_CHAR;
 
 		return str;
+	}
+
+	private isQuoted (content: ArbitraryValue): boolean {
+		if (!(typeof content === "string")) return false;
+		const trimmed = content;
+		const firstChar = trimmed[0];
+		const lastChar = trimmed[trimmed.length - 1];
+		return this.isQuote(firstChar) && this.isQuote(lastChar);
+	}
+
+	private stringDoesNotRepresentStringLiteral (content: ArbitraryValue): boolean {
+		if (typeof content !== "string") return true;
+		const trimmed = content.trim();
+		if (this.isQuoted(trimmed)) return false;
+
+		if (trimmed.startsWith("return")) return true;
+		if (trimmed.startsWith("new ")) return true;
+		return this.marshaller.getTypeOf(this.marshaller.marshal(trimmed)) !== "string";
 	}
 }

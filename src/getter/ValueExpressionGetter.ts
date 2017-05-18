@@ -117,7 +117,8 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isVariableDeclarationList(rawStatement)) {
-			const values: InitializationValue = [GlobalObjectIdentifier, "."];
+			const keyword = this.tokenSerializer.serializeFlag(rawStatement.flags) || "var";
+			const values: InitializationValue = [keyword, " "];
 
 			rawStatement.declarations.forEach((declaration, index) => {
 				const content = this.getValueExpression(declaration);
@@ -534,6 +535,12 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 	 */
 	private shouldBeIndexedLookup (previous: ArbitraryValue, current: ArbitraryValue): boolean {
 		if ((previous instanceof BindingIdentifier) && current instanceof BindingIdentifier) return true;
+		if (current instanceof BindingIdentifier && previous != null &&
+			(
+				previous === ")" || previous === "]"
+			)
+		) return true;
+
 		if (this.isIndexedLookup(previous)) return true;
 		return false;
 	}

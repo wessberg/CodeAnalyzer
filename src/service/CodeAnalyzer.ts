@@ -114,9 +114,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	constructor (marshaller: IMarshaller,
 							 private fileLoader: IFileLoader,
-							 private typescript: typeof ts = ts) {
+							 public typescript: typeof ts = ts) {
 		this.languageService = this.typescript.createLanguageService(this, typescript.createDocumentRegistry());
-		this.stringUtil = new StringUtil();
+		this.stringUtil = new StringUtil(marshaller);
 		this.typeUtil = new TypeUtil();
 		this.tokenSerializer = new TokenSerializer();
 		this.tokenPredicator = new TokenPredicator(this.stringUtil);
@@ -128,8 +128,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.mapper = new Mapper();
 		this.cache = new Cache(this);
 		this.tracer = new Tracer(this, this.nameGetter, this.sourceFilePropertiesGetter);
-		this.identifierSerializer = new IdentifierSerializer(marshaller, this.stringUtil);
-		this.valueResolvedGetter = new ValueResolvedGetter(this, marshaller, this.tracer, this.identifierSerializer, this.tokenPredicator, this.stringUtil);
+		this.identifierSerializer = new IdentifierSerializer(this, marshaller, this.stringUtil);
+		this.valueResolvedGetter = new ValueResolvedGetter(this, marshaller, this.tracer, this.identifierSerializer, this.tokenPredicator);
 		this.valueableFormatter = new ValueableFormatter(this.tracer, this.valueExpressionGetter, this.valueResolvedGetter);
 		this.modifiersFormatter = new ModifiersFormatter(this.tokenSerializer);
 		this.variableFormatter = new VariableFormatter(this.sourceFilePropertiesGetter, this.nameGetter, this.mapper, this.cache, this.valueableFormatter, this.modifiersFormatter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
@@ -139,7 +139,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.parametersFormatter = new ParametersFormatter(this.mapper, this.tracer, this.nameGetter, this.typeExpressionGetter, this.valueResolvedGetter, this.valueExpressionGetter, this.tokenSerializer, this.typeUtil);
 		this.argumentsFormatter = new ArgumentsFormatter(this.mapper, this.tracer, this.valueResolvedGetter, this.valueExpressionGetter);
 		this.methodFormatter = new MethodFormatter(this.tracer, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
-		this.constructorFormatter = new ConstructorFormatter(this.mapper, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
+		this.constructorFormatter = new ConstructorFormatter(this.mapper, this.tracer, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
 		this.functionFormatter = new FunctionFormatter(this.mapper, this.tracer, this.cache, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
 		this.classFormatter = new ClassFormatter(this.mapper, this.cache, this.decoratorsFormatter, this.propFormatter, this.methodFormatter, this.constructorFormatter, this.modifiersFormatter, this.heritageClauseFormatter, this.sourceFilePropertiesGetter);
 		this.callExpressionFormatter = new CallExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
@@ -162,6 +162,27 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const version = this.getFileVersion(normalizedPath) + 1;
 		this.files.set(normalizedPath, {version, content});
 		return this.getFile(fileName);
+	}
+
+	/**
+	 * Removes a file from the LanguageService.
+	 * @param {string} fileName
+	 * @returns {void}
+	 */
+	public removeFile (fileName: string): void {
+		this.files.delete(fileName);
+	}
+
+	/**
+	 * Parses the given code and returns an array of statements.
+	 * @param {string} code
+	 * @returns {NodeArray<Statement>}
+	 */
+	public toAST (code: string): NodeArray<Statement> {
+		const temporaryName = `${Math.random() * 100000}.ts`;
+		const statements = this.addFile(temporaryName, code);
+		this.removeFile(temporaryName);
+		return statements;
 	}
 
 	/**
@@ -258,6 +279,24 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getCallExpressionsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		return this.getCallExpressions(statements, deep);
+	}
+
+	/**
+	 * Returns true if the given array of statements contains at least statement of the given kind.
+	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {SyntaxKind} kind
+	 * @param {boolean} [deep=false]
+	 * @returns {boolean}
+	 */
+	public statementsIncludeKind (statements: (Statement|Expression|Node)[], kind: SyntaxKind, deep: boolean = false): boolean {
+		for (const statement of statements) {
+			if (statement.kind === kind) return true;
+			if (deep) {
+				const childMatch = this.statementsIncludeKind(this.findChildStatements(statement), kind, deep);
+				if (childMatch) return true;
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -959,6 +998,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		if (isTemplateExpression(statement)) {
 			const statements: (Statement|Declaration|Expression|Node)[] = [];
+			if (statement.templateSpans == null) return [];
 			statement.templateSpans.forEach(span => statements.push(span.expression));
 
 			return statements;

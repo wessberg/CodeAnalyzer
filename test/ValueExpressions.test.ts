@@ -1,4 +1,3 @@
-import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {test} from "ava";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {parse, service} from "./util/Setup";
@@ -195,7 +194,8 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #19`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", "`1`", ",", false, ",", "[", 123, "]", ")", "]", ":", Infinity, "}"]);
+
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", "1", ",", false, ",", "[", 123, "]", ")", "]", ":", Infinity, "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #20`, t => {
@@ -419,7 +419,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #40`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", GlobalObjectIdentifier, ".", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
@@ -434,7 +434,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", GlobalObjectIdentifier, ".", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
@@ -449,7 +449,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", "{", "constructor", "(", ")", "{", GlobalObjectIdentifier, ".", "localVar", "=", "[", 1, "]", ";", "}", "}"]);
+	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", "{", "constructor", "(", ")", "{", "const", " ", "localVar", "=", "[", 1, "]", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {

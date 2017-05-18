@@ -9,7 +9,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "5");
+	t.deepEqual(assignments["val"].value.resolve(), 5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
@@ -19,7 +19,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #2`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+	t.deepEqual(assignments["val"].value.resolve(), 3.5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
@@ -30,7 +30,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #3`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+	t.deepEqual(assignments["val"].value.resolve(), 3.5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
@@ -43,7 +43,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #4`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "3.5");
+	t.deepEqual(assignments["val"].value.resolve(), 3.5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
@@ -57,7 +57,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #5`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "2.3");
+	t.deepEqual(assignments["val"].value.resolve(), 2.3);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
@@ -76,7 +76,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #6`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "1502");
+	t.deepEqual(assignments["val"].value.resolve(), 1502);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
@@ -89,7 +89,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 	`);
 
 	const assignments = service.getClassDeclarations(statements);
-	t.deepEqual(assignments["MyClass"].props["bar"].value.resolve(), "50");
+	t.deepEqual(assignments["MyClass"].props["bar"].value.resolve(), 50);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
@@ -102,7 +102,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["val"].value.resolve(), "12");
+	t.deepEqual(assignments["val"].value.resolve(), 12);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
@@ -118,7 +118,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #8`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.true(value != null && value.trim() === "I am 99 years old");
+	t.true(value != null && typeof value === "string" && value.trim() === "I am 99 years old");
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
@@ -132,7 +132,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #9`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.true(value != null && value.trim() === "Hi, I'm Kate, and I am 99 years old");
+	t.true(value != null && typeof value === "string" && value.trim() === "Hi, I'm Kate, and I am 99 years old");
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
@@ -146,7 +146,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #10`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.true(value != null && value.trim() === "Hi, I'm Kate, and I am 99 years old");
+	t.true(value != null && typeof value === "string" && value.trim() === "Hi, I'm Kate, and I am 99 years old");
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
@@ -157,7 +157,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #11`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.true(value != null && value.trim() === "[1,2,\"foo\"]");
+	t.deepEqual(value, [1, 2, "foo"]);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
@@ -171,7 +171,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #12`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "3");
+	t.deepEqual(value, 3);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
@@ -186,7 +186,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #13`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "6");
+	t.deepEqual(value, 6);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
@@ -198,7 +198,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #14`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "5");
+	t.deepEqual(value, 5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
@@ -217,7 +217,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #15`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "5");
+	t.deepEqual(value, 5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #16`, t => {
@@ -262,7 +262,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #18`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "8");
+	t.deepEqual(value, 8);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
@@ -282,7 +282,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #19`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "5");
+	t.deepEqual(value, 5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
@@ -294,8 +294,8 @@ test(`ValueResolver -> Computes all resolved values correctly. #20`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["a"].value.resolve(), "1");
-	t.deepEqual(assignments["b"].value.resolve(), "2");
+	t.deepEqual(assignments["a"].value.resolve(), 1);
+	t.deepEqual(assignments["b"].value.resolve(), 2);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
@@ -307,8 +307,8 @@ test(`ValueResolver -> Computes all resolved values correctly. #21`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["a"].value.resolve(), "1");
-	t.deepEqual(assignments["b"].value.resolve(), "2");
+	t.deepEqual(assignments["a"].value.resolve(), 1);
+	t.deepEqual(assignments["b"].value.resolve(), 2);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
@@ -325,7 +325,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #22`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "5");
+	t.deepEqual(value, 5);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
@@ -339,7 +339,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #23`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "3");
+	t.deepEqual(value, 3);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #24`, t => {
@@ -366,7 +366,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #25`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "28657");
+	t.deepEqual(value, 28657);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
@@ -383,7 +383,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #26`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "28657");
+	t.deepEqual(value, 28657);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
@@ -401,7 +401,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #27`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.deepEqual(value, "[1,2,3,4,5]");
+	t.deepEqual(value, [1, 2, 3, 4, 5]);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
@@ -415,7 +415,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #28`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 	const value = assignments["val"].value.resolve();
-	t.true(value != null && !isNaN(parseInt(value)));
+	t.true(value != null && !isNaN(parseInt(`${value}`)));
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #29`, t => {
@@ -454,7 +454,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #31`, t => {
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
 	const resolved = assignments["something"].value.resolve();
-	t.true(resolved === "2");
+	t.true(resolved === 2);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #32`, t => {
@@ -475,7 +475,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #32`, t => {
 	const method = assignments["Foo"].methods["styles"];
 	const resolved = method.value.resolve();
 
-	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
+	t.true(resolved != null && typeof resolved === "string" && resolved.includes(`:host {font-size: 2px;}`));
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #33`, t => {
@@ -499,7 +499,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #33`, t => {
 	const method = assignments["Foo"].methods["styles"];
 	const resolved = method.value.resolve();
 
-	t.true(resolved != null && resolved.includes(`:host {font-size: 2px;}`));
+	t.true(resolved != null && typeof resolved === "string" && resolved.includes(`:host {font-size: 2px;}`));
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
@@ -554,11 +554,10 @@ test(`ValueResolver -> Computes all resolved values correctly. #37`, t => {
 
 	const assignments = service.getVariableAssignments(statements, true);
 	const resolved = assignments["val"].value.resolve();
-	t.true(resolved === "4");
+	t.true(resolved === 4);
 });
 
-test.only(`ValueResolver -> Computes all resolved values correctly. #38`, t => {
-// import {DIContainer} from "static/DIContainerExample";
+test(`ValueResolver -> Computes all resolved values correctly. #38`, t => {
 	const statements = parse(`
 import {DIContainer} from "static/DIContainerExample";
 
@@ -588,10 +587,26 @@ DIContainer.get<IBar>();
 	`);
 
 	const assignments = service.getAllIdentifiers(statements, true);
-	console.log(assignments);
 	const getCalls = assignments.callExpressions.filter(exp => exp.identifier === "get");
 	const registerCalls = assignments.callExpressions.filter(exp => exp.identifier === "registerSingleton");
 	t.true(getCalls.length === 1);
 	t.true(registerCalls.length === 2);
 	t.true(Object.keys(assignments.classes).length === 2);
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #39`, t => {
+
+	const statements = parse(`
+		class A {
+			foo: number = 0;
+			constructor (foo) {
+				this.foo = foo;
+			}
+		}
+		const val = new A(10).foo;
+	`);
+
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["val"].value.resolve();
+	t.true(resolved === 10);
 });

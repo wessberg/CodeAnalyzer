@@ -4,7 +4,7 @@ import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, ModuleDependencyKind} from "../service/interface/ICodeAnalyzer";
+import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, ModuleDependencyKind, NAMESPACE_NAME} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -84,11 +84,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			},
 			filePath: formatted.filePath,
 			bindings: {
-				"*": {
+				[NAMESPACE_NAME]: {
 					startsAt: statement.pos,
 					endsAt: statement.end,
 					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
-					name: "*",
+					name: NAMESPACE_NAME,
 					payload,
 					kind: ImportExportKind.NAMESPACE
 				}
@@ -373,11 +373,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 		if (clause == null) {
 			const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath, true));
-			indexer["*"] = {
+			indexer[NAMESPACE_NAME] = {
 				startsAt: statement.pos,
 				endsAt: statement.end,
 				___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
-				name: "*",
+				name: NAMESPACE_NAME,
 				payload,
 				kind: ImportExportKind.NAMESPACE
 			};

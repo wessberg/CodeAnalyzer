@@ -1,5 +1,5 @@
 import {test} from "ava";
-import {ImportExportKind} from "../src/service/interface/ICodeAnalyzer";
+import {ImportExportKind, NAMESPACE_NAME} from "../src/service/interface/ICodeAnalyzer";
 import {fileName, parse, service} from "./util/Setup";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
@@ -59,7 +59,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t =
 
 	const statements = parse(code);
 	const exportDeclarations = service.getExportDeclarations(statements);
-	t.true(exportDeclarations[2] != null && Object.keys(exportDeclarations[2].bindings["*"].payload).length === 2);
+	t.true(exportDeclarations[2] != null && Object.keys(exportDeclarations[2].bindings[NAMESPACE_NAME].payload).length === 2);
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t => {

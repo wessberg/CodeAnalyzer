@@ -1,11 +1,13 @@
 import {IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment} from "../../service/interface/ICodeAnalyzer";
 
+export declare type ReplacementPositions = { [key: string]: [number, number] };
+
 export interface IIdentifierSerializer {
-	serializeIParameter (parameter: IParameter): string;
-	serializeIVariableAssignment (variableAssignment: IVariableAssignment): string;
-	serializeIImportExportBinding (payload: ImportExportBindingPayload): string;
-	serializeIClassDeclaration (classDeclaration: IClassDeclaration, statics: boolean): string;
-	serializeIEnumDeclaration (enumDeclaration: IEnumDeclaration): string;
-	serializeIParameterBody (parameterBody: IParametersBody): string;
-	serializeIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): string;
+	serializeIParameter (parameter: IParameter): [string, ReplacementPositions];
+	serializeIVariableAssignment (variableAssignment: IVariableAssignment): [string, ReplacementPositions];
+	serializeIImportExportBinding (payload: ImportExportBindingPayload): [string, ReplacementPositions];
+	serializeIClassDeclaration (classDeclaration: IClassDeclaration): [string, ReplacementPositions];
+	serializeIEnumDeclaration (enumDeclaration: IEnumDeclaration): [string, ReplacementPositions];
+	serializeIParameterBody (parameterBody: IParametersBody): [string, ReplacementPositions];
+	serializeIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): [string, ReplacementPositions];
 }

@@ -1,10 +1,13 @@
-import {ArrayLiteralExpression, BooleanLiteral, Expression, LanguageServiceHost, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, Statement, StringLiteral} from "typescript";
+import * as ts from "typescript";
+import {ArrayLiteralExpression, BooleanLiteral, Expression, LanguageServiceHost, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, Statement, StringLiteral, SyntaxKind} from "typescript";
 
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
 
 export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED
 }
+
+export const NAMESPACE_NAME = "____NAMESPACE____";
 
 export enum ParameterKind {
 	OBJECT_BINDING, ARRAY_BINDING, STANDARD
@@ -121,8 +124,8 @@ export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePatha
 	value: IValueable;
 }
 
-export interface IConstructorDeclaration extends IMemberDeclaration, IParametersable, IFilePathable, IClassNameable, IKindable {
-
+export interface IConstructorDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable {
+	value: IValueable;
 }
 
 export interface IHeritage {
@@ -201,15 +204,17 @@ export interface IUnresolvableValueable {
 
 export interface IValueable extends IUnresolvableValueable {
 	resolving: boolean;
-	resolve: (insideThisScope?: boolean) => string|null;
-	resolved: string|null|undefined;
+	resolve: (insideThisScope?: boolean) => ArbitraryValue;
+	resolved: ArbitraryValue;
+	resolvedPrecompute: ArbitraryValue;
 	hasDoneFirstResolve: () => boolean;
 }
 
 export interface INonNullableValueable {
 	resolving: boolean;
-	resolve: () => string|null;
-	resolved: string|null;
+	resolve: () => ArbitraryValue;
+	resolved: ArbitraryValue;
+	resolvedPrecompute: ArbitraryValue;
 	expression: InitializationValue;
 }
 
@@ -265,7 +270,7 @@ export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|Num
 export declare type IIdentifier = IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
-export declare type ResolvedNamespacedModuleMap = { [key: string]: ArbitraryValue };
+export declare type ResolvedNamespacedModuleMap = { [key: string]: string };
 export declare type NamespacedModuleMap = { [key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
@@ -281,9 +286,13 @@ export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
 
 export interface ICodeAnalyzer extends LanguageServiceHost {
+	typescript: typeof ts;
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	getFile(fileName: string): NodeArray<Statement>;
+	removeFile (fileName: string): void;
+	toAST (code: string): NodeArray<Statement>;
 	getFileVersion (filePath: string): number;
+	statementsIncludeKind (statements: (Statement|Expression|Node)[], kind: SyntaxKind, deep?: boolean): boolean;
 	getClassDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): ClassIndexer;
 	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
 	getAllIdentifiers(statements: (Statement|Expression|Node)[], deep?: boolean): IIdentifierMap;

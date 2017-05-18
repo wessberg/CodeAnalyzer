@@ -55,7 +55,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @param {MethodDeclaration|FunctionDeclaration} declaration
 	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
 	 */
-	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration): IFunctionLike {
+	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration): IFunctionLike {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;

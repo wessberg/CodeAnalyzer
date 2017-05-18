@@ -55,11 +55,18 @@ export class FunctionFormatter extends FunctionLikeFormatter implements IFunctio
 					expression: valueExpression,
 					resolving: false,
 					resolved: undefined,
+					resolvedPrecompute: undefined,
 					hasDoneFirstResolve () {
 						return map.value.resolved !== undefined;
 					},
 					resolve () {
-						map.value.resolved = map.value.expression == null ? null : that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
+						if (map.value.expression == null) {
+							map.value.resolved = map.value.resolvedPrecompute = null;
+						} else {
+							const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
+							map.value.resolved = computed;
+							map.value.resolvedPrecompute = flattened;
+						}
 						return map.value.resolved;
 					}
 				}
