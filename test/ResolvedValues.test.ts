@@ -627,6 +627,22 @@ test(`ValueResolver -> Computes all resolved values correctly. #40`, t => {
 
 	const assignments = service.getVariableAssignments(statements, true);
 	const resolved = assignments["val"].value.resolve();
-	console.log(resolved);
 	t.true(resolved === "bar");
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #41`, t => {
+
+	const statements = parse(`
+		class A {
+			constructor (foo) {
+				console.log(foo.toString());		
+			}
+		}
+	`);
+
+	const declarations = service.getClassDeclarations(statements, true);
+	const ctor = declarations["A"].constructor;
+	const resolved = ctor == null ? null : ctor.value.resolve();
+	console.log(resolved);
+	t.true(true);
 });

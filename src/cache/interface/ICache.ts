@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../service/interface/ICodeAnalyzer";
 
 export interface ICache {
 	getCachedPropName (fileName: string, className: string, propName: string): string;
@@ -7,7 +7,8 @@ export interface ICache {
 	getCachedClassName (fileName: string, className: string): string;
 	getCachedFunctionName (fileName: string, className: string): string;
 	getCachedClassIndexerName (fileName: string): string;
-	getCachedModuleDependenciesName (fileName: string): string;
+	getCachedImportDeclarationsName (fileName: string): string;
+	getCachedExportDeclarationsName (fileName: string): string;
 	getCachedFunctionIndexerName (fileName: string): string;
 	getCachedVariableIndexerName (fileName: string): string;
 	getCachedEnumIndexerName (fileName: string): string;
@@ -18,7 +19,8 @@ export interface ICache {
 	getCachedProp (fileName: string, className: string, propName: string): ICachedContent<IPropDeclaration>|null;
 	getCachedClass (fileName: string, className: string): ICachedContent<IClassDeclaration>|null;
 	getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer>|null;
-	getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]>|null;
+	getCachedImportDeclarations (fileName: string): ICachedContent<IImportDeclaration[]>|null;
+	getCachedExportDeclarations (fileName: string): ICachedContent<IExportDeclaration[]>|null;
 	getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null;
 	getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer>|null;
 	getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer>|null;
@@ -29,7 +31,8 @@ export interface ICache {
 	setCachedFunction (fileName: string, content: IFunctionDeclaration): void;
 	setCachedClassIndexer (fileName: string, content: ClassIndexer): void;
 	setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void;
-	setCachedModuleDependencies (fileName: string, content: IImportDeclaration[]): void;
+	setCachedImportDeclarations (fileName: string, content: IImportDeclaration[]): void;
+	setCachedExportDeclarations (fileName: string, content: IExportDeclaration[]): void;
 	setCachedEnumIndexer (fileName: string, content: EnumIndexer): void;
 	setCachedVariableIndexer (fileName: string, content: VariableIndexer): void;
 	cachedVariableNeedsUpdate (variable: IVariableAssignment): boolean;
@@ -38,7 +41,8 @@ export interface ICache {
 	cachedPropNeedsUpdate (prop: IPropDeclaration): boolean;
 	cachedClassNeedsUpdate (classDeclaration: IClassDeclaration): boolean;
 	cachedFunctionIndexerNeedsUpdate (filePath: string): boolean;
-	cachedModuleDependenciesNeedsUpdate (filePath: string): boolean;
+	cachedImportDeclarationsNeedsUpdate (filePath: string): boolean;
+	cachedExportDeclarationsNeedsUpdate (filePath: string): boolean;
 	cachedClassIndexerNeedsUpdate (filePath: string): boolean;
 	cachedEnumIndexerNeedsUpdate (filePath: string): boolean;
 	cachedVariableIndexerNeedsUpdate (filePath: string): boolean;

@@ -4,6 +4,7 @@ import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {INameGetter} from "./interface/INameGetter";
+import {Config} from "../static/Config";
 
 export class NameGetter implements INameGetter {
 
@@ -133,7 +134,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isFunctionExpression(name)) {
-			return name.name == null ? null : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
+			return name.name == null ? Config.name.anonymous : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
 		}
 
 		if (isElementAccessExpression(name)) {

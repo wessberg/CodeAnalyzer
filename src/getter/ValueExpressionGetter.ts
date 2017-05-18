@@ -5,7 +5,7 @@ import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseFormatter} from "../formatter/interface/IHeritageClauseFormatter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isRegularExpressionLiteral, isReturnStatement, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isRegularExpressionLiteral, isReturnStatement, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, InitializationValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
@@ -293,21 +293,15 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 						if (isComputedPropertyName(property.name)) {
 							obj.push("[");
 							didAddMembers = true;
-						}
 
-						// Check if the property name is computed and a call expression (.eg. [getKey()]: "foo").
-						if (isComputedPropertyName(property.name) && isCallExpression(property.name.expression)) {
-							const callExpression = this.getValueExpression(property.name.expression);
-							callExpression.forEach(item => obj.push(item));
-							if (callExpression.length > 0) didAddMembers = true;
+							const exp = this.getValueExpression(property.name.expression);
+							exp.forEach(item => obj.push(item));
+							if (exp.length > 0) didAddMembers = true;
+							obj.push("]");
+
 						} else {
 							// Otherwise, just push the name of it.
 							obj.push(this.nameGetter.getNameOfMember(property.name, true, true));
-							didAddMembers = true;
-						}
-
-						if (isComputedPropertyName(property.name)) {
-							obj.push("]");
 							didAddMembers = true;
 						}
 
@@ -403,7 +397,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			return arr;
 		}
 
-		if (isClassExpression(rawStatement)) {
+		if (isClassExpression(rawStatement) || isClassDeclaration(rawStatement)) {
 			const name = rawStatement.name == null ? [] : [this.nameGetter.getNameOfMember(rawStatement.name, false, true)];
 			const heritage = rawStatement.heritageClauses == null ? null : this.heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
 			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage];
@@ -420,11 +414,35 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isVariableDeclaration(rawStatement)) {
+			const nameExpression: string[] = [];
+			if (isObjectBindingPattern(rawStatement.name)) {
+				nameExpression.push("{");
+				const elements = rawStatement.name.elements;
+				elements.forEach((binding, index) => {
+					nameExpression.push(<string>this.nameGetter.getName(binding));
+					if (index !== elements.length - 1) nameExpression.push(",");
+				});
+				nameExpression.push("}");
+			}
 
-			const name = this.nameGetter.getNameOfMember(rawStatement.name, false, true);
+			else if (isArrayBindingPattern(rawStatement.name)) {
+				nameExpression.push("[");
+				const elements = rawStatement.name.elements;
+				elements.forEach((binding, index) => {
+					if (isOmittedExpression(binding)) nameExpression.push(",");
+					else nameExpression.push(<string>this.nameGetter.getName(binding));
+					if (index !== elements.length - 1) nameExpression.push(",");
+				});
+				nameExpression.push("]");
+			}
+
+			else {
+				nameExpression.push(<string>this.nameGetter.getNameOfMember(rawStatement.name, false, true));
+			}
+
 			const type = rawStatement.type == null ? [] : [":", ...this.typeExpressionGetter.getTypeExpression(rawStatement.type)];
 			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getValueExpression(rawStatement.initializer)];
-			return [name, ...type, ...initializer];
+			return [...nameExpression, ...type, ...initializer];
 		}
 
 		if (isVariableStatement(rawStatement)) {

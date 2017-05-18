@@ -46,6 +46,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 					try {
 						const [replacementStart, replacementEnd] = setupAdditionPositions[key];
 						if (replacementStart === -1) break;
+						console.log("SETUP:", setup);
 
 						const setupBefore = setup.slice(0, replacementStart);
 						const setupMiddle = setup.slice(replacementStart, replacementEnd);
@@ -122,7 +123,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 
 		else if (isIVariableAssignment(substitution) || isIImportExportBinding(substitution)) {
-			const [stringified, replacementPositions] = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload);
+			const [stringified, replacementPositions] = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload());
 			sub += `var ${name} = (${part.name} === undefined ? ${stringified} : ${part.name})`;
 
 			let offset = sub.indexOf(stringified);
@@ -201,11 +202,21 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			forceNoQuoting: false
 		};
 
+		let totalOffset = 0;
+
 		valueExpression.forEach((part, index) => {
 			if (part instanceof BindingIdentifier) {
 				const [setupAddition, positions] = this.flattenBoundPart(part, from, scope, insideComputedThisScope, valueExpression, index, options);
 				setupAdditionPositions = positions;
-				setup += `${setupAddition}\n`;
+				const addition = `${setupAddition}\n`;
+				setup += addition;
+				Object.keys(setupAdditionPositions).forEach(key => {
+					const [start, end] = setupAdditionPositions[key];
+					if (start > -1) {
+						setupAdditionPositions[key] = [start + totalOffset, end + totalOffset];
+					}
+				});
+				totalOffset += addition.length;
 				val += part.name === "this" && !insideComputedThisScope ? "that" : part.name;
 			} else {
 				if (part === "const" || part === "var" || part === "let") return;

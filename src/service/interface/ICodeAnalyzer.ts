@@ -22,7 +22,7 @@ export enum IdentifierMapKind {
 }
 
 export interface IPayloadable {
-	payload: ImportExportBindingPayload;
+	payload: () => ImportExportBindingPayload;
 }
 
 export interface IImportExportBinding extends IKindable, IPositionable, IPayloadable {
@@ -31,8 +31,8 @@ export interface IImportExportBinding extends IKindable, IPositionable, IPayload
 }
 
 export interface IModulePath {
-	relativePath: string;
-	fullPath: string;
+	relativePath: () => string;
+	fullPath: () => string;
 }
 
 export declare type ModuleSource = IBindingIdentifier|IModulePath;
@@ -265,7 +265,7 @@ export declare interface IIdentifierMap extends IKindable {
 	mutations: IMutationDeclaration[];
 }
 
-export declare type ImportExportBindingPayload = ArbitraryValue|IExportableIIdentifier;
+export declare type ImportExportBindingPayload = IExportableIIdentifier|NamespacedModuleMap|ArbitraryValue;
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
 export declare type IIdentifier = IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;

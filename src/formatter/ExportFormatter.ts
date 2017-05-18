@@ -4,7 +4,7 @@ import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifier, ImportExportIndexer, ImportExportKind, ModuleDependencyKind, NAMESPACE_NAME} from "../service/interface/ICodeAnalyzer";
+import {ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -16,6 +16,7 @@ import {IMutationFormatter} from "./interface/IMutationFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
 import {IMarshaller} from "@wessberg/marshaller";
+import {IRequireFormatter} from "./interface/IRequireFormatter";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
@@ -23,6 +24,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 							 private mapper: IMapper,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private valueableFormatter: IValueableFormatter,
+							 private requireFormatter: IRequireFormatter,
 							 private callExpressionFormatter: ICallExpressionFormatter,
 							 private variableFormatter: IVariableFormatter,
 							 private classFormatter: IClassFormatter,
@@ -67,30 +69,29 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (formatted.identifier !== "___export") return null;
 
 		// This is a namespace export in commonjs format.
-		const value = formatted.arguments.argumentsList[0].value;
-		const payload = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+		const argument = statement.arguments.find(arg => isCallExpression(arg));
+		if (argument == null) return null;
 
-		const relativePath = formatted.filePath;
-		const fullPath = this.formatFullPathFromRelative(formatted.filePath, relativePath);
+		const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = <IRequire>this.requireFormatter.format(<CallExpression>argument);
 
 		const map: IExportDeclaration = {
 			___kind: IdentifierMapKind.EXPORT,
-			startsAt: statement.pos,
-			endsAt: statement.end,
+			startsAt,
+			endsAt,
 			moduleKind: ModuleDependencyKind.REQUIRE,
 			source: {
 				relativePath,
 				fullPath
 			},
-			filePath: formatted.filePath,
+			filePath,
 			bindings: {
 				[NAMESPACE_NAME]: {
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
+					startsAt,
+					endsAt,
 					name: NAMESPACE_NAME,
 					payload,
-					kind: ImportExportKind.NAMESPACE
+					kind: ImportExportKind.NAMESPACE,
+					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING
 				}
 			}
 		};
@@ -108,19 +109,21 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 	private formatExportAssignment (statement: ExportAssignment): IExportDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
-		let payload: ArbitraryValue|IIdentifier;
 
-		if (isLiteralExpression(statement.expression)) {
-			const value = this.valueableFormatter.format(statement.expression);
-			payload = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
-		} else {
-			const identifier = this.nameGetter.getName(statement.expression);
-			const scope = this.tracer.traceThis(statement);
-			payload = identifier == null ? null : this.tracer.traceIdentifier(identifier, statement, scope);
-		}
+		const payload = () => {
 
-		const relativePath = filePath;
-		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+			if (isLiteralExpression(statement.expression)) {
+				const value = this.valueableFormatter.format(statement.expression);
+				return value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+			} else {
+				const identifier = this.nameGetter.getName(statement.expression);
+				const scope = this.tracer.traceThis(statement);
+				return identifier == null ? null : this.tracer.traceIdentifier(identifier, statement, scope);
+			}
+		};
+
+		const relativePath = () => filePath;
+		const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 
 		const map: IExportDeclaration = {
 			___kind: IdentifierMapKind.EXPORT,
@@ -160,12 +163,12 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		const isCandidate = formatted.property === "exports" && formatted.identifier !== "undefined" && formatted.identifier !== undefined;
 		if (!isCandidate) return null;
 
-		const payload = formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve();
+		const payload = () => formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve();
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
-		const relativePath = filePath;
-		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+		const relativePath = () => filePath;
+		const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 		const identifier = formatted.identifier == null || formatted.identifier === "default" ? "default" : formatted.identifier.toString();
 
 		const map: IExportDeclaration = {
@@ -208,8 +211,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (isCandidate) {
 			const isDefault = classDeclaration.modifiers.has("default");
 			const name = classDeclaration.name;
-			const relativePath = filePath;
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+			const relativePath = () => filePath;
+			const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 
 			const map: IExportDeclaration = {
 				___kind: IdentifierMapKind.EXPORT,
@@ -227,7 +230,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 						endsAt: statement.end,
 						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: isDefault ? "default" : name,
-						payload: classDeclaration,
+						payload: () => classDeclaration,
 						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
 					}
 				}
@@ -253,8 +256,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (isCandidate) {
 			const isDefault = functionDeclaration.modifiers.has("default");
 			const name = functionDeclaration.name;
-			const relativePath = filePath;
-			const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+			const relativePath = () => filePath;
+			const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 
 			const map: IExportDeclaration = {
 				___kind: IdentifierMapKind.EXPORT,
@@ -272,7 +275,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 						endsAt: statement.end,
 						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 						name: isDefault ? "default" : name,
-						payload: functionDeclaration,
+						payload: () => functionDeclaration,
 						kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
 					}
 				}
@@ -301,8 +304,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			if (isCandidate) {
 				const isDefault = match.modifiers.has("default");
 				const name = match.name;
-				const relativePath = filePath;
-				const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+				const relativePath = () => filePath;
+				const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 
 				const map: IExportDeclaration = {
 					___kind: IdentifierMapKind.EXPORT,
@@ -320,7 +323,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 							endsAt: statement.end,
 							___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 							name: isDefault ? "default" : name,
-							payload: match,
+							payload: () => match,
 							kind: isDefault ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
 						}
 					}
@@ -341,11 +344,15 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 	private formatExportDeclaration (statement: ExportDeclaration): IExportDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
-		const relativePath = statement.moduleSpecifier == null ? filePath : <string>this.nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
-		if (relativePath.toString().length < 1) {
-			throw new TypeError(`${ExportFormatter.constructor.name} detected an export with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-		}
-		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+
+		const relativePath = () => {
+			const path = statement.moduleSpecifier == null ? filePath : <string>this.nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
+			if (path.toString().length < 1) {
+				throw new TypeError(`${ExportFormatter.constructor.name} detected an export with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+			}
+			return path;
+		};
+		const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
 
 		const map: IExportDeclaration = {
 			___kind: IdentifierMapKind.EXPORT,
@@ -368,11 +375,14 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatExportClause (clause: NamedExports|undefined, modulePath: string, statement: ExportDeclaration): ImportExportIndexer {
+	private formatExportClause (clause: NamedExports|undefined, modulePath: () => string, statement: ExportDeclaration): ImportExportIndexer {
 		const indexer: ImportExportIndexer = {};
 
 		if (clause == null) {
-			const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath, true));
+			const payload = () => {
+				return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath(), true));
+			};
+
 			indexer[NAMESPACE_NAME] = {
 				startsAt: statement.pos,
 				endsAt: statement.end,
@@ -383,9 +393,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			};
 		} else {
 			clause.elements.forEach(element => {
-				const block = this.tracer.traceBlockScopeName(clause);
-				const clojure = this.tracer.traceClojure(modulePath);
-				const payload = typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+				const payload = () => {
+					const block = this.tracer.traceBlockScopeName(clause);
+					const clojure = this.tracer.traceClojure(modulePath());
+					return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+				};
 
 				indexer[element.name.text] = {
 					startsAt: element.name.pos,

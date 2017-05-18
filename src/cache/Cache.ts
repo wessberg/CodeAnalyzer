@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
 
 export class Cache implements ICache {
@@ -31,8 +31,12 @@ export class Cache implements ICache {
 		return `classIndexer.${fileName}`;
 	}
 
-	public getCachedModuleDependenciesName (fileName: string): string {
-		return `moduleDependencies.${fileName}`;
+	public getCachedImportDeclarationsName (fileName: string): string {
+		return `importDeclarations.${fileName}`;
+	}
+
+	public getCachedExportDeclarationsName (fileName: string): string {
+		return `exportDeclarations.${fileName}`;
 	}
 
 	public getCachedFunctionIndexerName (fileName: string): string {
@@ -76,8 +80,12 @@ export class Cache implements ICache {
 		return this.getFromCache<FunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
 	}
 
-	public getCachedModuleDependencies (fileName: string): ICachedContent<IImportDeclaration[]>|null {
-		return this.getFromCache<IImportDeclaration[]>(this.getCachedModuleDependenciesName(fileName));
+	public getCachedImportDeclarations (fileName: string): ICachedContent<IImportDeclaration[]>|null {
+		return this.getFromCache<IImportDeclaration[]>(this.getCachedImportDeclarationsName(fileName));
+	}
+
+	public getCachedExportDeclarations (fileName: string): ICachedContent<IExportDeclaration[]>|null {
+		return this.getFromCache<IExportDeclaration[]>(this.getCachedExportDeclarationsName(fileName));
 	}
 
 	public getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null {
@@ -127,9 +135,14 @@ export class Cache implements ICache {
 		this.cache.set(this.getCachedFunctionIndexerName(fileName), {version, content});
 	}
 
-	public setCachedModuleDependencies (fileName: string, content: IImportDeclaration[]): void {
+	public setCachedImportDeclarations (fileName: string, content: IImportDeclaration[]): void {
 		const version = this.languageService.getFileVersion(fileName);
-		this.cache.set(this.getCachedModuleDependenciesName(fileName), {version, content});
+		this.cache.set(this.getCachedImportDeclarationsName(fileName), {version, content});
+	}
+
+	public setCachedExportDeclarations (fileName: string, content: IExportDeclaration[]): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedExportDeclarationsName(fileName), {version, content});
 	}
 
 	public setCachedEnumIndexer (fileName: string, content: EnumIndexer): void {
@@ -190,8 +203,16 @@ export class Cache implements ICache {
 		return version > cache.version;
 	}
 
-	public cachedModuleDependenciesNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedModuleDependencies(this.getCachedModuleDependenciesName(filePath));
+	public cachedImportDeclarationsNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedImportDeclarations(this.getCachedImportDeclarationsName(filePath));
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedExportDeclarationsNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedExportDeclarations(this.getCachedExportDeclarationsName(filePath));
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);

@@ -6,6 +6,7 @@ import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
 import "querystring";
 import {IMarshaller} from "@wessberg/marshaller";
+import {BindingIdentifier} from "../model/BindingIdentifier";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
@@ -36,12 +37,20 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		modules.forEach(moduleDeclaration => {
 			Object.keys(moduleDeclaration.bindings).forEach(key => {
 				const binding = moduleDeclaration.bindings[key];
+
 				const isNamespace = binding.name === NAMESPACE_NAME;
 				// If it isn't a namespace, just add the key to the object.
-				if (!isNamespace) indexer[key] = binding.payload;
+				if (!isNamespace) indexer[key] = binding.payload();
 				else {
+					if (!(moduleDeclaration.source instanceof BindingIdentifier)) {
+						const path = moduleDeclaration.source.fullPath();
+						// Don't proceed if the namespace refers to this module.
+						if (path === moduleDeclaration.filePath) {
+							return;
+						}
+					}
 					// Merge the two.
-					let payload = <NamespacedModuleMap>binding.payload;
+					let payload = <NamespacedModuleMap>binding.payload();
 					if (typeof payload === "string") payload = <NamespacedModuleMap>this.marshaller.marshal(payload, {});
 					Object.keys(payload).forEach(key => indexer[key] = payload[key]);
 				}

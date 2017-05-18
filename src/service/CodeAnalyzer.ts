@@ -147,7 +147,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.newExpressionFormatter = new NewExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
 		this.enumFormatter = new EnumFormatter(this.mapper, this.cache, this.nameGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter);
 		this.importFormatter = new ImportFormatter(this, this.sourceFilePropertiesGetter, this.nameGetter, this.requireFormatter, this.mapper, this.tracer, marshaller, this.stringUtil, fileLoader);
-		this.exportFormatter = new ExportFormatter(this, this.mapper, this.sourceFilePropertiesGetter, this.valueableFormatter, this.callExpressionFormatter, this.variableFormatter, this.classFormatter, this.mutationFormatter, this.functionFormatter, this.nameGetter, this.tracer, marshaller, this.stringUtil, fileLoader);
+		this.exportFormatter = new ExportFormatter(this, this.mapper, this.sourceFilePropertiesGetter, this.valueableFormatter, this.requireFormatter, this.callExpressionFormatter, this.variableFormatter, this.classFormatter, this.mutationFormatter, this.functionFormatter, this.nameGetter, this.tracer, marshaller, this.stringUtil, fileLoader);
 	}
 
 	/**
@@ -648,14 +648,14 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IImportDeclaration[]}
 	 */
 	public getImportDeclarationsForFile (fileName: string, deep: boolean = false): IImportDeclaration[] {
-		const cached = this.cache.getCachedModuleDependencies(fileName);
-		if (cached != null && !this.cache.cachedModuleDependenciesNeedsUpdate(fileName)) return cached.content;
+		const cached = this.cache.getCachedImportDeclarations(fileName);
+		if (cached != null && !this.cache.cachedImportDeclarationsNeedsUpdate(fileName)) return cached.content;
 
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getImportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		const declarations = this.getImportDeclarations(statements, deep);
 
-		this.cache.setCachedModuleDependencies(fileName, declarations);
+		this.cache.setCachedImportDeclarations(fileName, declarations);
 		return declarations;
 	}
 
@@ -754,9 +754,14 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IExportDeclaration[]}
 	 */
 	public getExportDeclarationsForFile (fileName: string, deep: boolean = false): IExportDeclaration[] {
+		const cached = this.cache.getCachedExportDeclarations(fileName);
+		if (cached != null && !this.cache.cachedExportDeclarationsNeedsUpdate(fileName)) return cached.content;
+
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getExportDeclarationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
-		return this.getExportDeclarations(statements, deep);
+		const declarations = this.getExportDeclarations(statements, deep);
+		this.cache.setCachedExportDeclarations(fileName, declarations);
+		return declarations;
 	}
 	/**
 	 * Gets all ExportDeclarations (if any) that occur in the given array of statements and returns an array

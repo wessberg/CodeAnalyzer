@@ -525,3 +525,14 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #48`, t => {
 	const assignments = service.getVariableAssignments(statements, true);
 	t.deepEqual(assignments["something"].value.expression, [new BindingIdentifier("foo")]);
 });
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #49`, t => {
+
+	const code = `
+	import {Marshaller} from "static/MarshallerExample";
+	`;
+
+	const statements = parse(code);
+	const imports = service.getImportDeclarations(statements, true);
+	t.true(imports.length === 1);
+});

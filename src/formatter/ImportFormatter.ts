@@ -41,11 +41,18 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
-		const relativePath = <string>this.nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
-		if (relativePath.toString().length < 1) {
-			throw new TypeError(`${ImportFormatter.constructor.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
-		}
-		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
+		const relativePath = () => {
+			const path = <string>this.nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
+			if (path.toString().length < 1) {
+				throw new TypeError(`${ImportFormatter.constructor.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
+			}
+			return path;
+		};
+
+		const fullPath = () => {
+			const relative = relativePath();
+			return this.formatFullPathFromRelative(filePath, relative);
+		};
 
 		const map: IImportDeclaration = {
 			___kind: IdentifierMapKind.IMPORT,
@@ -113,7 +120,10 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			const source = <IBindingIdentifier>this.nameGetter.getNameOfMember(statement.moduleReference, false, false);
 			const block = this.tracer.traceBlockScopeName(statement);
 			const clojure = this.tracer.traceClojure(statement);
-			const payload = typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(statement, block, source.toString(), clojure);
+
+			const payload = () => {
+				return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(statement, block, source.toString(), clojure);
+			};
 
 			const map: IImportDeclaration = {
 				___kind: IdentifierMapKind.IMPORT,
@@ -203,11 +213,15 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 	 * @param {string} modulePath
 	 * @returns {ImportExportIndexer}
 	 */
-	private formatImportClause (clause: ImportClause, modulePath: string): ImportExportIndexer {
+	private formatImportClause (clause: ImportClause, modulePath: () => string): ImportExportIndexer {
 		const indexer: ImportExportIndexer = {};
 
 		if (clause.namedBindings != null && isNamespaceImport(clause.namedBindings)) {
-			const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath, true));
+			const payload = () => {
+				const path = modulePath();
+				return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+			};
+
 			indexer[clause.namedBindings.name.text] = {
 				startsAt: clause.namedBindings.name.pos,
 				endsAt: clause.namedBindings.name.end,
@@ -221,8 +235,11 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		else if (clause.namedBindings != null && isNamedImports(clause.namedBindings)) {
 			clause.namedBindings.elements.forEach(element => {
 				const block = this.tracer.traceBlockScopeName(clause);
-				const clojure = this.tracer.traceClojure(modulePath);
-				const payload = typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+				const payload = () => {
+					const path = modulePath();
+					const clojure = this.tracer.traceClojure(path);
+					return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+				};
 
 				indexer[element.name.text] = {
 					startsAt: element.name.pos,
@@ -236,10 +253,14 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		}
 
 		if (clause.name != null) {
-			const fileExports = this.languageService.getExportDeclarationsForFile(modulePath, true);
-			const match = fileExports.find(exportDeclaration => exportDeclaration.bindings["default"] != null);
-			if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
-			const payload = match.bindings["default"].payload;
+			const payload = () => {
+				const path = modulePath();
+				const fileExports = this.languageService.getExportDeclarationsForFile(path, true);
+				const match = fileExports.find(exportDeclaration => exportDeclaration.bindings["default"] != null);
+				if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
+				return match.bindings["default"].payload;
+			};
+
 			indexer[clause.name.text] = {
 				startsAt: clause.name.pos,
 				endsAt: clause.name.end,

@@ -42,16 +42,26 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		if (expression == null) throw new ReferenceError(`${this.constructor.name} could not extract a require path for an ImportEquals expression!`);
 		const value = this.valueableFormatter.format(expression);
 
-		const relative = this.stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
-			? value.resolved
-			: value.resolve());
-		const relativePath = relative == null ? filePath : relative.toString();
+		const relativePath = () => {
+			const relative = this.stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
+				? value.resolved
+				: value.resolve());
 
-		if (relativePath == null || relativePath.toString().length < 1) {
-			throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${filePath} on index ${statement.pos}`);
-		}
-		const fullPath = this.formatFullPathFromRelative(filePath, relativePath);
-		const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(fullPath, true));
+			if (relative == null || relative.toString().length < 1) {
+				throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${filePath} on index ${statement.pos}`);
+			}
+			return relative.toString();
+		};
+
+		const fullPath = () => {
+			const relative = relativePath();
+			return this.formatFullPathFromRelative(filePath, relative);
+		};
+
+		const payload = () => {
+			const path = fullPath();
+			return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+		};
 
 		const map: IRequire = {
 			___kind: IdentifierMapKind.REQUIRE_CALL,
@@ -103,18 +113,28 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		if (formatted.identifier !== "require") return null;
 
 		const firstArgumentValue = formatted.arguments.argumentsList[0].value;
-		const relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
-			? ""
-			: firstArgumentValue.hasDoneFirstResolve()
-				? firstArgumentValue.resolved
-				: firstArgumentValue.resolve());
-		const relativePath = relative == null ? formatted.filePath : relative.toString();
+		const relativePath = () => {
+			const relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
+				? ""
+				: firstArgumentValue.hasDoneFirstResolve()
+					? firstArgumentValue.resolved
+					: firstArgumentValue.resolve());
 
-		if (relativePath == null || relativePath.toString().length < 1) {
-			throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${formatted.filePath} on index ${formatted.startsAt}`);
-		}
-		const fullPath = this.formatFullPathFromRelative(formatted.filePath, relativePath);
-		const payload = this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(fullPath, true));
+			if (relative == null || relative.toString().length < 1) {
+				throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${formatted.filePath} on index ${formatted.startsAt}`);
+			}
+			return relative.toString();
+		};
+
+		const fullPath = () => {
+			const relative = relativePath();
+			return this.formatFullPathFromRelative(formatted.filePath, relative);
+		};
+
+		const payload = () => {
+			const path = fullPath();
+			return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+		};
 
 		const map: IRequire = {
 			___kind: IdentifierMapKind.REQUIRE_CALL,

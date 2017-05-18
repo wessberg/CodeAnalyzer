@@ -40,7 +40,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	}
 
 	public serializeIImportExportBinding (payload: ImportExportBindingPayload): [string, ReplacementPositions] {
-		if (isIImportExportBinding(payload)) return this.serializeIImportExportBinding(payload.payload);
+		if (isIImportExportBinding(payload)) return this.serializeIImportExportBinding(payload.payload());
 		if (isNamespacedModuleMap(payload)) return this.serializeNamespacedModuleMap(payload);
 		if (!isIExportableIIdentifier(payload)) {
 
