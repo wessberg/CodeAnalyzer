@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.6**:
+
+- Added a blacklist filter for specific statement kinds that doesn't live on runtime (such as namespace declarations and interface declarations).
+
 **v1.0.5**:
 
 - Fixed bugs with infinite recursion and optimized performance.

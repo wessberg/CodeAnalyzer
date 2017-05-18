@@ -111,6 +111,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	private tokenPredicator: ITokenPredicator;
 	private typeUtil: ITypeUtil;
 	private files: Map<string, { version: number, content: string }> = new Map();
+	private static readonly SKIP_KINDS: Set<SyntaxKind> = new Set([SyntaxKind.InterfaceDeclaration, SyntaxKind.InterfaceKeyword, SyntaxKind.NamespaceKeyword]);
 
 	constructor (marshaller: IMarshaller,
 							 private fileLoader: IFileLoader,
@@ -311,7 +312,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const expressions: ICallExpression[] = [];
 
 		statements.forEach(statement => {
-
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) return;
 
 			// console.log(SyntaxKind[statement.kind], this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end));
 
@@ -360,6 +362,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const expressions: INewExpression[] = [];
 
 		statements.forEach(statement => {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) return;
+
 			if (!this.isResolvingStatement(statement)) {
 				if (isExpressionStatement(statement) && isNewExpression(statement.expression)) {
 					this.setResolvingStatement(statement);
@@ -407,6 +412,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const functionIndexer: FunctionIndexer = {};
 
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
+
 			if (!this.isResolvingStatement(statement)) {
 				if (isFunctionDeclaration(statement)) {
 					this.setResolvingStatement(statement);
@@ -462,6 +470,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const enumIndexer: EnumIndexer = {};
 
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
 
 			if (!this.isResolvingStatement(statement)) {
 				if (isEnumDeclaration(statement)) {
@@ -561,7 +571,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const assignmentMap: VariableIndexer = {};
 
 		for (const statement of statements) {
-			// console.log(SyntaxKind[statement.kind], this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end));
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
+
 			if (!this.isResolvingStatement(statement)) {
 				if (isVariableStatement(statement) || isVariableDeclarationList(statement) || isVariableDeclaration(statement)) {
 					this.setResolvingStatement(statement);
@@ -617,6 +629,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getClassDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): ClassIndexer {
 		const declarations: ClassIndexer = {};
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
+
 			if (!this.isResolvingStatement(statement)) {
 				if (isClassDeclaration(statement)) {
 					this.setResolvingStatement(statement);
@@ -668,6 +683,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getImportDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IImportDeclaration[] {
 		const declarations: IImportDeclaration[] = [];
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
 
 			if (
 				isImportDeclaration(statement) ||
@@ -727,6 +744,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getMutations (statements: (Statement|Expression|Node)[], deep: boolean = false): IMutationDeclaration[] {
 		const mutations: IMutationDeclaration[] = [];
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
 
 			if (!this.isResolvingStatement(statement)) {
 				if (
@@ -774,6 +793,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		const declarations: IExportDeclaration[] = [];
 
 		for (const statement of statements) {
+			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) continue;
 
 			if (!this.isResolvingStatement(statement)) {
 				if (
@@ -861,6 +882,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {(Statement|Declaration|Expression|Node)[]}
 	 */
 	private findChildStatements (statement: Statement|Expression|Declaration|Node): (Statement|Declaration|Expression|Node)[] {
+		// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
+		if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) return [];
 
 		if (isIfStatement(statement)) {
 			const thenChildren = statement.thenStatement == null ? [] : [statement.thenStatement];
