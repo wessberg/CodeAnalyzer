@@ -39,7 +39,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (options.shouldCompute) {
 			try {
 				computed = this.computeValueResolved(setup, flattened);
-				// console.log("flattened:", setup, flattened);
+				if (process.env.npm_config_debug) console.log("flattened:", setup, flattened);
 			} catch (ex) {
 				const keys = Object.keys(setupAdditionPositions);
 				for (const key of keys) {
@@ -51,7 +51,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 						const setupMiddle = setup.slice(replacementStart, replacementEnd);
 						const setupAfter = setup.slice(replacementEnd);
 						setup = `${setupBefore}\`${setupMiddle}\`${setupAfter}`;
-						// console.log("flattened:", setup, flattened);
+						if (process.env.npm_config_debug) console.log("flattened:", setup, flattened);
 						computed = this.computeValueResolved(setup, flattened);
 						break;
 					} catch (ex) {
@@ -62,7 +62,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			}
 		}
 
-		// console.log("computed:", computed);
+		if (process.env.npm_config_debug) console.log("computed:", computed);
 		const takenResult = takeKey == null || computed == null ? computed : computed[<keyof NonNullableArbitraryValue>takeKey];
 
 		valueable.resolving = false;

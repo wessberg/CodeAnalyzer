@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {DeclarationName, Expression, Identifier, Node, Statement, SyntaxKind, TypeNode, TypeReferenceNode} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {INameGetter} from "./interface/INameGetter";
 
@@ -28,7 +28,8 @@ export class NameGetter implements INameGetter {
 			isEnumMember(statement) ||
 			isImportSpecifier(statement) ||
 			isExportSpecifier(statement) ||
-			isNamespaceImport(statement)
+			isNamespaceImport(statement) ||
+			isNewExpression(statement)
 		) {
 			return statement.name == null ? null : <string>this.getNameOfMember(statement.name, false, true);
 		}
@@ -99,6 +100,10 @@ export class NameGetter implements INameGetter {
 
 		if (isFirstLiteralToken(name)) {
 			return this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+		}
+
+		if (isNewExpression(name)) {
+			return this.getNameOfMember(name.expression, false, forceNoBindingIdentifier);
 		}
 
 		if (isStringLiteral(name)) {

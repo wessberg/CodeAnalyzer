@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.4**:
+
+- More resolved values can now be correctly computed.
+
 **v1.0.3**:
 
 - Much work on resolving values.

@@ -610,3 +610,23 @@ test(`ValueResolver -> Computes all resolved values correctly. #39`, t => {
 	const resolved = assignments["val"].value.resolve();
 	t.true(resolved === 10);
 });
+
+test(`ValueResolver -> Computes all resolved values correctly. #40`, t => {
+
+	const statements = parse(`
+		class A {
+			private static readonly map: Map<string, string> = new Map();
+			
+			foo () {
+				A.map.set("foo", "bar");
+				return A.map.get("foo");		
+			}
+		}
+		const val = new A().foo();
+	`);
+
+	const assignments = service.getVariableAssignments(statements, true);
+	const resolved = assignments["val"].value.resolve();
+	console.log(resolved);
+	t.true(resolved === "bar");
+});

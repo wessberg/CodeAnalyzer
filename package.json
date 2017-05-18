@@ -39,7 +39,7 @@
   "dependencies": {
     "@wessberg/fileloader": "^1.0.2",
     "@wessberg/globalobject": "^1.0.2",
-    "@wessberg/marshaller": "^1.0.20",
+    "@wessberg/marshaller": "^1.0.22",
     "tslib": "^1.7.1"
   }
 }

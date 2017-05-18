@@ -132,7 +132,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			const marshalled = <string>this.marshaller.marshal(resolvedProp, "");
 
 			offset = str.length;
-			str += hasReturnStatement ? `${marshalled}` : `return this._${prop.name} === undefined ? ${marshalled} : this._${prop.name};`;
+			str += hasReturnStatement ? `${marshalled}` : `if (this._${prop.name} === undefined) {this._${prop.name} = ${marshalled};} return this._${prop.name};`;
 			str += "}\n";
 			const index = str.indexOf(marshalled, offset);
 			replacementPositions[propKey] = [index, index + marshalled.length];
