@@ -62,7 +62,6 @@ export class TokenSerializer implements ITokenSerializer {
 		return null;
 	}
 
-
 	/**
 	 * Serializes the given token (operand) and returns the textual representation of it.
 	 * @param {SyntaxKind} token

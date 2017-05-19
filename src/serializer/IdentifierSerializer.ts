@@ -77,7 +77,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		// TODO: Combine all deep combinations of keys and their versions. The math is just so hard that I gave up for now.
 		keys.forEach(key => {
 			const value = map[key];
-			const [firstVersion] =this.serializeIImportExportBinding(value);
+			const [firstVersion] = this.serializeIImportExportBinding(value);
 			newMap[key] = firstVersion;
 		});
 

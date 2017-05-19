@@ -106,7 +106,6 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-
 	private formatExportAssignment (statement: ExportAssignment): IExportDeclaration {
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;

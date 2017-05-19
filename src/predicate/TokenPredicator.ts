@@ -44,7 +44,6 @@ export class TokenPredicator implements ITokenPredicator {
 		}
 	}
 
-
 	/**
 	 * Returns true if the given item is a stringified keyword.
 	 * @param {ArbitraryValue} item

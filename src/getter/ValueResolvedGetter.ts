@@ -54,7 +54,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		setup.forEach(declaration => {
 			declaration.forEach((_, index) => {
 				if (index > highest) highest = index;
-			})
+			});
 		});
 		const joinedSetup = setup.map(declaration => declaration[position > declaration.length ? declaration.length - 1 : position]).join("\n");
 		if (position > highest) throw TypeError(`A computation failed for:\n${joinedSetup}${flattened}`);
@@ -80,7 +80,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 	}
 
 	private attemptComputation (setup: string[][], flattened: string): ArbitraryValue {
-		const consistentSetup = setup.length > 0 ? setup : [ [""] ];
+		const consistentSetup = setup.length > 0 ? setup : [[""]];
 		let count = 0;
 		const limit = 30;
 		setup.map(declaration => declaration.forEach(() => count++));

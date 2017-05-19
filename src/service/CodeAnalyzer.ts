@@ -79,6 +79,12 @@ import {CombinationUtil} from "../util/CombinationUtil";
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
 	private static readonly RESOLVING_STATEMENTS: Set<Statement|Expression|Node> = new Set();
+	private static readonly SKIP_KINDS: Set<SyntaxKind> = new Set([
+		SyntaxKind.InterfaceDeclaration,
+		SyntaxKind.InterfaceKeyword,
+		SyntaxKind.NamespaceKeyword,
+		SyntaxKind.DeclareKeyword
+	]);
 	private languageService: LanguageService;
 	private nameGetter: INameGetter;
 	private heritageClauseFormatter: IHeritageClauseFormatter;
@@ -114,14 +120,6 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	private tokenPredicator: ITokenPredicator;
 	private typeUtil: ITypeUtil;
 	private files: Map<string, { version: number, content: string }> = new Map();
-
-	private static readonly SKIP_KINDS: Set<SyntaxKind> = new Set([
-		SyntaxKind.InterfaceDeclaration,
-		SyntaxKind.InterfaceKeyword,
-		SyntaxKind.NamespaceKeyword,
-		SyntaxKind.DeclareKeyword
-	]);
-
 	constructor (marshaller: IMarshaller,
 							 private fileLoader: IFileLoader,
 							 public typescript: typeof ts = ts) {

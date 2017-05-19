@@ -48,5 +48,4 @@ export class ValueableFormatter implements IValueableFormatter {
 		return value;
 	}
 
-
 }

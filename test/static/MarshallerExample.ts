@@ -286,7 +286,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalSymbolToClass (data: symbol): {} {
-		const ctor = <new ()=> {}>this.marshalSymbolToConstructor(data);
+		const ctor = <new () => {}>this.marshalSymbolToConstructor(data);
 		return new ctor();
 	}
 
@@ -296,7 +296,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalMapToClass (data: Map<{}, {}>): {} {
-		const ctor = <new ()=> {}>this.marshalMapToConstructor(data);
+		const ctor = <new () => {}>this.marshalMapToConstructor(data);
 		return new ctor();
 	}
 
@@ -306,7 +306,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalSetToClass<T> (data: Set<T>): {} {
-		const ctor = <new ()=> {}>this.marshalSetToConstructor(data);
+		const ctor = <new () => {}>this.marshalSetToConstructor(data);
 		return new ctor();
 	}
 
@@ -316,7 +316,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalUndefinedToClass (_: undefined): {} {
-		const ctor = <new ()=> {}>this.marshalUndefinedToConstructor(_);
+		const ctor = <new () => {}>this.marshalUndefinedToConstructor(_);
 		return new ctor();
 	}
 
@@ -326,7 +326,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalNullToClass (_: null): {} {
-		const ctor = <new ()=> {}>this.marshalNullToConstructor(_);
+		const ctor = <new () => {}>this.marshalNullToConstructor(_);
 		return new ctor();
 	}
 
@@ -336,7 +336,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalObjectToClass<T> (data: { [key: string]: T }): {} {
-		const ctor = <new ()=> {}>this.marshalObjectToConstructor(data);
+		const ctor = <new () => {}>this.marshalObjectToConstructor(data);
 		return new ctor();
 	}
 
@@ -346,7 +346,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalBooleanToClass (data: boolean|Boolean): {} {
-		const ctor = <new ()=> {}>this.marshalBooleanToConstructor(data);
+		const ctor = <new () => {}>this.marshalBooleanToConstructor(data);
 		return new ctor();
 	}
 
@@ -356,7 +356,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalNumberToClass (data: number|Number): {} {
-		const ctor = <new ()=> {}>this.marshalNumberToConstructor(data);
+		const ctor = <new () => {}>this.marshalNumberToConstructor(data);
 		return new ctor();
 	}
 
@@ -366,7 +366,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalArrayToClass<T> (data: T[]): {} {
-		const ctor = <new ()=> {}>this.marshalArrayToConstructor(data);
+		const ctor = <new () => {}>this.marshalArrayToConstructor(data);
 		return new ctor();
 	}
 
@@ -376,7 +376,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalFunctionToClass (data: Function): {} {
-		const ctor = <new ()=> {}>this.marshalFunctionToConstructor(data);
+		const ctor = <new () => {}>this.marshalFunctionToConstructor(data);
 		return new ctor();
 	}
 
@@ -386,7 +386,7 @@ export class Marshaller {
 	 * @returns {{}}
 	 */
 	private marshalStringToClass (data: string): {} {
-		const ctor = <new ()=> {}>this.marshalStringToConstructor(data);
+		const ctor = <new () => {}>this.marshalStringToConstructor(data);
 		return new ctor();
 	}
 
@@ -398,14 +398,14 @@ export class Marshaller {
 	private marshalStringToConstructor (data: string|String): Function {
 		const primitive = data instanceof String ? data.valueOf() : data;
 		if (!primitive.trim().startsWith("class")) {
-			class Class {}
+			class Class {
+			}
+
 			(<any>Class)[<any>data] = data;
 			return Class;
 		}
 		return new Function(`return (${data})`)();
 	}
-
-
 
 	/**
 	 * Marshals a class into a constructor.
@@ -422,7 +422,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalSymbolToConstructor (data: symbol): Function {
-		class Class {}
+		class Class {
+		}
+
 		(<any>Class)[<any>data] = data;
 		return Class;
 	}
@@ -433,7 +435,8 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalMapToConstructor (data: Map<{}, {}>): Function {
-		class Class {}
+		class Class {
+		}
 
 		for (const entry of data.entries()) {
 			const [key, value] = entry;
@@ -449,7 +452,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalSetToConstructor<T> (data: Set<T>): Function {
-		class Class {}
+		class Class {
+		}
+
 		for (const key of data.keys()) {
 			(<any>Class)[<any>key] = key;
 		}
@@ -463,7 +468,8 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalUndefinedToConstructor (_: undefined): Function {
-		class Class {}
+		class Class {
+		}
 
 		return Class;
 	}
@@ -474,7 +480,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalNullToConstructor (_: null): Function {
-		class Class {}
+		class Class {
+		}
+
 		return Class;
 	}
 
@@ -484,7 +492,8 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalObjectToConstructor<T> (data: { [key: string]: T }): Function {
-		class Class {}
+		class Class {
+		}
 
 		Object.keys(data).forEach(key => {
 			(<any>Class)[key] = data[key];
@@ -498,7 +507,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalBooleanToConstructor (_: boolean|Boolean): Function {
-		class Class {}
+		class Class {
+		}
+
 		return Class;
 	}
 
@@ -508,7 +519,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalNumberToConstructor (data: number|Number): Function {
-		class Class {}
+		class Class {
+		}
+
 		(<any>Class)[<any>data] = data;
 		return Class;
 	}
@@ -519,7 +532,8 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalArrayToConstructor<T> (data: T[]): Function {
-		class Class {}
+		class Class {
+		}
 
 		data.forEach((item, index) => {
 			(<any>Class)[index] = item;
@@ -534,7 +548,9 @@ export class Marshaller {
 	 * @returns {Function}
 	 */
 	private marshalFunctionToConstructor (data: Function): Function {
-		class Class {}
+		class Class {
+		}
+
 		(<any>Class)[data.name] = data;
 		return Class;
 	}

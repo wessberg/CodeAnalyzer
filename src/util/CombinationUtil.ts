@@ -4,7 +4,22 @@ export class CombinationUtil implements ICombinationUtil {
 	public allCombinations (elements: number[]): number[][] {
 		return this.combine(elements);
 	}
+	public getPossibleCombinationsOfMultiDimensionalArray<T> (arr: T[][]): T[][] {
+		const r: T[][] = [], max = arr.length - 1;
 
+		function helper (inner: T[], i: number) {
+			for (let j = 0, l = arr[i].length; j < l; j++) {
+				var a = inner.slice(0); // clone arr
+				a.push(arr[i][j]);
+				if (i == max)
+					r.push(a);
+				else
+					helper(a, i + 1);
+			}
+		}
+		helper([], 0);
+		return r;
+	}
 	private combine (elements: number[]): number[][] {
 		const combs: number[][] = [];
 		let k, i, k_combs;
@@ -17,7 +32,6 @@ export class CombinationUtil implements ICombinationUtil {
 		}
 		return combs;
 	}
-
 	private k_combinations (elements: number[], k: number): number[][] {
 		let i, j, head, tailcombs;
 		const combs: number[][] = [];
@@ -45,22 +59,5 @@ export class CombinationUtil implements ICombinationUtil {
 			}
 		}
 		return combs;
-	}
-
-	public getPossibleCombinationsOfMultiDimensionalArray<T> (arr: T[][]): T[][] {
-		const r: T[][] = [], max = arr.length-1;
-
-		function helper(inner: T[], i: number) {
-			for (let j=0, l=arr[i].length; j<l; j++) {
-				var a = inner.slice(0); // clone arr
-				a.push(arr[i][j]);
-				if (i==max)
-					r.push(a);
-				else
-					helper(a, i+1);
-			}
-		}
-		helper([], 0);
-		return r;
 	}
 }

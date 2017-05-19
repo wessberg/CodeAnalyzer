@@ -74,7 +74,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return this.resolvePath(this.stripStartDotFromPath(joined));
 	}
 
-
 	private traceFullPath (filePath: string): string {
 		if (this.fileLoader.existsSync(filePath)) return filePath;
 		if (this.fileLoader.existsSync(join(__dirname, filePath))) return filePath;

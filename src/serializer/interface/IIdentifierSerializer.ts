@@ -1,7 +1,7 @@
 import {IClassDeclaration, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment} from "../../service/interface/ICodeAnalyzer";
 
 export declare type SerializedVersions = string[];
-export declare type SerializedReplacements = {[key: string]: string};
+export declare type SerializedReplacements = { [key: string]: string };
 
 export interface IIdentifierSerializer {
 	serializeIParameter (parameter: IParameter): SerializedVersions;
