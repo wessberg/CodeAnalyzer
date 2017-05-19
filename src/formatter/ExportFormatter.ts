@@ -95,6 +95,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				}
 			}
 		};
+		this.mapper.set(map.bindings[NAMESPACE_NAME], statement);
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
 			value: IdentifierMapKind.EXPORT,
@@ -146,6 +147,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				}
 			}
 		};
+		this.mapper.set(map.bindings["default"], statement);
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
 			value: IdentifierMapKind.EXPORT,
@@ -192,6 +194,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				}
 			}
 		};
+		this.mapper.set(map.bindings[identifier], statement);
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
 			value: IdentifierMapKind.EXPORT,
@@ -235,6 +238,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					}
 				}
 			};
+			this.mapper.set(map.bindings[isDefault ? "default" : name], statement);
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
 				value: IdentifierMapKind.EXPORT,
@@ -280,6 +284,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					}
 				}
 			};
+			this.mapper.set(map.bindings[isDefault ? "default" : name], statement);
+
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
 				value: IdentifierMapKind.EXPORT,
@@ -328,6 +334,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 						}
 					}
 				};
+				this.mapper.set(map.bindings[isDefault ? "default" : name], statement);
 				// Make the kind non-enumerable.
 				Object.defineProperty(map, "___kind", {
 					value: IdentifierMapKind.EXPORT,
@@ -380,7 +387,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 		if (clause == null) {
 			const payload = () => {
-				return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(modulePath(), true));
+				const path = modulePath();
+				return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
 			};
 
 			indexer[NAMESPACE_NAME] = {
@@ -391,12 +399,17 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				payload,
 				kind: ImportExportKind.NAMESPACE
 			};
+			this.mapper.set(indexer[NAMESPACE_NAME], statement);
 		} else {
 			clause.elements.forEach(element => {
+
 				const payload = () => {
 					const block = this.tracer.traceBlockScopeName(clause);
 					const clojure = this.tracer.traceClojure(modulePath());
-					return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+
+					return typeof clojure === "string"
+						? clojure
+						: this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
 				};
 
 				indexer[element.name.text] = {
@@ -407,9 +420,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					payload,
 					kind: ImportExportKind.NAMED
 				};
+				this.mapper.set(indexer[element.name.text], element);
 			});
 		}
-
 		return indexer;
 	}
 }

@@ -643,6 +643,18 @@ test(`ValueResolver -> Computes all resolved values correctly. #41`, t => {
 	const declarations = service.getClassDeclarations(statements, true);
 	const ctor = declarations["A"].constructor;
 	const resolved = ctor == null ? null : ctor.value.resolve();
-	console.log(resolved);
-	t.true(true);
+	t.true(resolved != null);
+});
+
+test(`ValueResolver -> Computes all resolved values correctly. #42`, t => {
+
+	const statements = parse(`
+		import {Color} from "static/ColorExample";
+		const val = Color.primary100;
+	`);
+
+	const vars = service.getVariableAssignments(statements, true);
+	const res = vars["val"].value.resolve();
+	console.log(res);
+	t.true(res != null);
 });

@@ -16,6 +16,5 @@ let fileLoaderIntegrated = new FileLoader();
 let service: ICodeAnalyzer;
 
 test.beforeEach(() => service = new CodeAnalyzer(marshallerIntegrated, fileLoaderIntegrated));
-
 export const parse = (code: string, file: string = filePath) => service.addFile(file, code);
 export {service};

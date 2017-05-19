@@ -103,6 +103,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					}
 				}
 			};
+			this.mapper.set(map.bindings[statement.name.text], statement);
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
 				value: IdentifierMapKind.IMPORT,
@@ -143,6 +144,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					}
 				}
 			};
+			this.mapper.set(map.bindings[statement.name.text], statement);
 			// Make the kind non-enumerable.
 			Object.defineProperty(map, "___kind", {
 				value: IdentifierMapKind.IMPORT,
@@ -197,6 +199,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				}
 			}
 		};
+		this.mapper.set(map.bindings[name], statement);
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {
 			value: IdentifierMapKind.IMPORT,
@@ -230,6 +233,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				payload,
 				kind: ImportExportKind.NAMESPACE
 			};
+			this.mapper.set(indexer[clause.namedBindings.name.text], clause.namedBindings);
 		}
 
 		else if (clause.namedBindings != null && isNamedImports(clause.namedBindings)) {
@@ -238,7 +242,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				const payload = () => {
 					const path = modulePath();
 					const clojure = this.tracer.traceClojure(path);
-					return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(clause, block, element.name.text, clojure);
+					return typeof clojure === "string" ? clojure : this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
 				};
 
 				indexer[element.name.text] = {
@@ -249,6 +253,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					payload,
 					kind: ImportExportKind.NAMED
 				};
+				this.mapper.set(indexer[element.name.text], element);
 			});
 		}
 

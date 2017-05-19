@@ -3,51 +3,61 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIImportExportBinding, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {ArbitraryValue, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ParameterKind, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
-import {IIdentifierSerializer, ReplacementPositions} from "./interface/IIdentifierSerializer";
+import {IIdentifierSerializer, SerializedReplacements, SerializedVersions} from "./interface/IIdentifierSerializer";
+import {ICache} from "../cache/interface/ICache";
+import {ICombinationUtil} from "../util/interface/ICombinationUtil";
 
 export class IdentifierSerializer implements IIdentifierSerializer {
-	// private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
 
 	constructor (private languageService: ICodeAnalyzer,
+							 private cache: ICache,
+							 private combinationUtil: ICombinationUtil,
 							 private marshaller: IMarshaller,
 							 private stringUtil: IStringUtil) {
 	}
 
-	public serializeIParameter (parameter: IParameter): [string, ReplacementPositions] {
+	public serializeIParameter (parameter: IParameter): SerializedVersions {
+		const cached = this.cache.getCachedSerializedParameter(parameter);
+		if (cached != null && !this.cache.cachedSerializedParameterNeedsUpdate(parameter)) return cached.content;
+
 		const flattened = parameter.value.expression == null ? "undefined" : parameter.value.hasDoneFirstResolve()
 			? parameter.value.resolved
 			: parameter.value.resolve();
 
-		const replacementPositions: ReplacementPositions = {};
+		// TODO: Remove the 'quoteIfNecessary' part?
 		const value = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(flattened, ""));
-		parameter.name.forEach(key => {
-			if (key != null) {
-				replacementPositions[key] = [0, value.length];
-			}
-		});
-		return [value, replacementPositions];
+
+		const versions = [value, `\`${value}\``];
+		this.cache.setCachedSerializedParameter(parameter, versions);
+		return versions;
 	}
 
-	public serializeIVariableAssignment (variableAssignment: IVariableAssignment): [string, ReplacementPositions] {
+	public serializeIVariableAssignment (variableAssignment: IVariableAssignment): SerializedVersions {
+		const cached = this.cache.getCachedSerializedVariable(variableAssignment);
+		if (cached != null && !this.cache.cachedSerializedVariableNeedsUpdate(variableAssignment)) return cached.content;
+
 		const flattened = variableAssignment.value.expression == null ? "undefined" : variableAssignment.value.hasDoneFirstResolve()
 			? variableAssignment.value.resolved
 			: variableAssignment.value.resolve();
 
-		const replacementPositions: ReplacementPositions = {};
 		const value = <string>this.marshaller.marshal<ArbitraryValue, string>(flattened, "");
-		replacementPositions[variableAssignment.name] = [0, value.length];
-		return [value, replacementPositions];
+		const versions = [value, `\`${value}\``];
+		this.cache.setCachedSerializedVariable(variableAssignment, versions);
+		return versions;
 	}
 
-	public serializeIImportExportBinding (payload: ImportExportBindingPayload): [string, ReplacementPositions] {
-		if (isIImportExportBinding(payload)) return this.serializeIImportExportBinding(payload.payload());
+	public serializeIImportExportBinding (payload: ImportExportBindingPayload): SerializedVersions {
+
+		if (isIImportExportBinding(payload)) {
+			return this.serializeIImportExportBinding(payload.payload());
+		}
+
 		if (isNamespacedModuleMap(payload)) return this.serializeNamespacedModuleMap(payload);
 		if (!isIExportableIIdentifier(payload)) {
 
-			const replacementPositions: ReplacementPositions = {};
+			// TODO: Remove the 'quoteIfNecessary' part?
 			const value = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(payload, ""));
-			replacementPositions[0] = [0, value.length];
-			return [value, replacementPositions];
+			return [value, `\`${value}\``];
 		}
 
 		if (isIClassDeclaration(payload)) return this.serializeIClassDeclaration(payload);
@@ -55,43 +65,37 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		if (isIEnumDeclaration(payload)) return this.serializeIEnumDeclaration(payload);
 		if (isIFunctionDeclaration(payload)) return this.serializeIFunctionDeclaration(payload);
 
-		const replacementPositions: ReplacementPositions = {};
+		// TODO: Remove the 'quoteIfNecessary' part?
 		const value = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(payload, ""));
-		replacementPositions[0] = [0, value.length];
-		return [value, replacementPositions];
+		return [value, `\`${value}\``];
 	}
 
-	public serializeNamespacedModuleMap (map: NamespacedModuleMap): [string, ReplacementPositions] {
+	public serializeNamespacedModuleMap (map: NamespacedModuleMap): SerializedVersions {
 		const newMap: ResolvedNamespacedModuleMap = {};
-		Object.keys(map).forEach(key => {
+		const keys = Object.keys(map);
+
+		// TODO: Combine all deep combinations of keys and their versions. The math is just so hard that I gave up for now.
+		keys.forEach(key => {
 			const value = map[key];
-			const [serialized] = this.serializeIImportExportBinding(value);
-			newMap[key] = serialized;
+			const [firstVersion] =this.serializeIImportExportBinding(value);
+			newMap[key] = firstVersion;
 		});
 
-		const replacementPositions: ReplacementPositions = {};
 		const value = <string>this.marshaller.marshal<ArbitraryValue, string>(newMap, "");
-
-		let cursor = 0;
-		Object.keys(newMap).forEach(key => {
-			const val = newMap[key];
-			const index = value.indexOf(val, cursor);
-			replacementPositions[key] = [index, index + val.length];
-			cursor = index;
-		});
-
-		return [value, replacementPositions];
+		return [value];
 	}
-
-	public serializeIClassDeclaration (classDeclaration: IClassDeclaration): [string, ReplacementPositions] {
+	public serializeIClassDeclaration (classDeclaration: IClassDeclaration): SerializedVersions {
+		const cached = this.cache.getCachedSerializedClass(classDeclaration);
+		if (cached != null && !this.cache.cachedSerializedClassNeedsUpdate(classDeclaration)) return cached.content;
 
 		let str = `class ${classDeclaration.name}`;
+
+		const replacements: SerializedReplacements = {};
+
 		if (classDeclaration.heritage != null && classDeclaration.heritage.extendsClass != null) {
 			str += ` extends ${classDeclaration.heritage.extendsClass.name}`;
 		}
 		str += "{\n";
-		const replacementPositions: { [key: string]: [number, number] } = {};
-		let offset = 0;
 
 		const ctor = classDeclaration.constructor;
 		if (ctor != null) {
@@ -105,13 +109,10 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 			const resolvedConstructorBody = value.hasDoneFirstResolve() ? value.resolved : value.resolve(true);
 			if (resolvedConstructorBody != null) {
-				offset = str.length;
-				const marshalled = <string>this.marshaller.marshal(resolvedConstructorBody, "");
 
 				// If the method had a return statement before, but doesn't anymore after it has been resolved, re-add a return statement.
-				str += marshalled;
-				const index = str.indexOf(marshalled, offset);
-				replacementPositions[ctor.name] = [index, index + marshalled.length];
+				replacements[<string>"constructor"] = <string>this.marshaller.marshal(resolvedConstructorBody, "");
+				str += this.addPlaceholder("constructor");
 			}
 
 			str += "}\n";
@@ -129,13 +130,11 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 			str += ` get ${prop.name} () {`;
 			const hasReturnStatement = resolvedProp == null ? false : this.languageService.statementsIncludeKind(this.languageService.toAST(resolvedProp.toString()), SyntaxKind.ReturnStatement, true);
-			const marshalled = <string>this.marshaller.marshal(resolvedProp, "");
 
-			offset = str.length;
-			str += hasReturnStatement ? `${marshalled}` : `if (this._${prop.name} === undefined) {this._${prop.name} = ${marshalled};} return this._${prop.name};`;
+			replacements[prop.name] = <string>this.marshaller.marshal(resolvedProp, "");
+
+			str += hasReturnStatement ? `${this.addPlaceholder(prop.name)}` : `if (this._${prop.name} === undefined) {this._${prop.name} = ${this.addPlaceholder(prop.name)};} return this._${prop.name};`;
 			str += "}\n";
-			const index = str.indexOf(marshalled, offset);
-			replacementPositions[propKey] = [index, index + marshalled.length];
 
 			// Add a setter
 			if (prop.modifiers.has("static")) {
@@ -159,77 +158,136 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 			str += ` ${method.name}`;
 			str += "(";
+			// TODO: Also factor these into the combinations
 			const [serialized] = this.serializeIParameterBody(method.parameters);
 			str += serialized;
 			str += ") {";
 			const resolvedMethodBody = value.hasDoneFirstResolve() ? value.resolved : value.resolve(true);
 			if (resolvedMethodBody != null) {
-				offset = str.length;
 				const ast = this.languageService.toAST(resolvedMethodBody.toString());
 				const hasReturnStatement = this.languageService.statementsIncludeKind(ast, SyntaxKind.ReturnStatement, true);
 
-				const marshalled = <string>this.marshaller.marshal(resolvedMethodBody, "");
+				replacements[method.name] = <string>this.marshaller.marshal(resolvedMethodBody, "");
+
 				// If the method had a return statement before, but doesn't anymore after it has been resolved, re-add a return statement.
-				str += !hasReturnStatement && method.returnStatement.startsAt >= 0 ? `return (${marshalled})` : `${marshalled}`;
-				const index = str.indexOf(marshalled, offset);
-				replacementPositions[methodKey] = [index, index + marshalled.length];
+				str += !hasReturnStatement && method.returnStatement.startsAt >= 0 ? `return (${this.addPlaceholder(method.name)})` : `${this.addPlaceholder(method.name)}`;
 			}
 			str += "}\n\n";
 		}
 
 		str += "}";
-		return [str, replacementPositions];
+
+		const versions = this.exchangeReplacements(str, replacements);
+		this.cache.setCachedSerializedClass(classDeclaration, versions);
+		console.log("versions:", versions);
+		return versions;
 
 	}
+	public serializeIEnumDeclaration (enumDeclaration: IEnumDeclaration): SerializedVersions {
+		const cached = this.cache.getCachedSerializedEnum(enumDeclaration);
+		if (cached != null && !this.cache.cachedSerializedEnumNeedsUpdate(enumDeclaration)) return cached.content;
 
-	public serializeIEnumDeclaration (enumDeclaration: IEnumDeclaration): [string, ReplacementPositions] {
-
-		const replacementPositions: ReplacementPositions = {};
 		const value = <string>this.marshaller.marshal<ArbitraryValue, string>(enumDeclaration.members, "");
-		replacementPositions[enumDeclaration.name] = [0, value.length];
-		return [value, replacementPositions];
+		const versions = [value];
+
+		this.cache.setCachedSerializedEnum(enumDeclaration, versions);
+		return versions;
 	}
 
-	public serializeIParameterBody (parameterBody: IParametersBody): [string, ReplacementPositions] {
+	public serializeIParameterBody (parameterBody: IParametersBody): SerializedVersions {
 		let str = "";
-		const replacementPositions: ReplacementPositions = {};
+		const replacements: SerializedReplacements = {};
 
-		let offset = 0;
 		parameterBody.parametersList.forEach((parameter, index) => {
+			let serializedName: string = "";
 			if (parameter.parameterKind === ParameterKind.STANDARD) {
-				str += parameter.name[0];
+				serializedName = <string>parameter.name[0];
 			}
 			else if (parameter.parameterKind === ParameterKind.OBJECT_BINDING) {
-				str += `{${parameter.name.join(",")}}`;
+				serializedName = `{${parameter.name.join(",")}}`;
 			}
 			else if (parameter.parameterKind === ParameterKind.ARRAY_BINDING) {
-				str += `[${parameter.name.join(",")}]`;
+				serializedName = `[${parameter.name.join(",")}]`;
 			}
+
+			str += serializedName;
+
+			// TODO: Remove 'quoteIfNecessary'?
 			const parameterInitializationValue = <string>this.stringUtil.quoteIfNecessary(parameter.value.hasDoneFirstResolve() ? parameter.value.resolved : parameter.value.resolve(true));
 			if (parameterInitializationValue != null) {
-				str += ` = ${parameterInitializationValue}`;
+				str += ` = `;
 
-				parameter.name.forEach(part => {
-					if (part != null) {
-						const index = str.indexOf(parameterInitializationValue, offset);
-						replacementPositions[part] = [index, index + parameterInitializationValue.length];
-						offset = index;
-					}
-				});
+				replacements[serializedName] = parameterInitializationValue;
+				str += this.addPlaceholder(serializedName);
 			}
 			if (index !== parameterBody.parametersList.length - 1) str += ", ";
 		});
-		return [str, replacementPositions];
-	}
 
-	public serializeIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): [string, ReplacementPositions] {
+		const versions = this.exchangeReplacements(str, replacements);
+		console.log("parameters:", versions);
+		return versions;
+	}
+	public serializeIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): SerializedVersions {
+		const cached = this.cache.getCachedSerializedFunction(functionDeclaration);
+		if (cached != null && !this.cache.cachedSerializedFunctionNeedsUpdate(functionDeclaration)) return cached.content;
+
 		let flattened = functionDeclaration.value.expression == null ? undefined : functionDeclaration.value.hasDoneFirstResolve()
 			? functionDeclaration.value.resolved
 			: functionDeclaration.value.resolve();
 
-		const replacementPositions: ReplacementPositions = {};
+		const replacements: SerializedReplacements = {};
+		let str = `function ${functionDeclaration.name}(`;
+
+		// TODO: Remove 'quoteIfNecessary'?
 		const value = <string>this.stringUtil.quoteIfNecessary(<string>this.marshaller.marshal<ArbitraryValue, string>(flattened, ""));
-		replacementPositions[functionDeclaration.name] = [0, value.length];
-		return [value, replacementPositions];
+
+		// TODO: Also factor these into the combinations
+		const [parameters] = this.serializeIParameterBody(functionDeclaration.parameters);
+		str += parameters;
+		str += ") {";
+		const hasReturnStatement = value == null ? false : this.languageService.statementsIncludeKind(this.languageService.toAST(value.toString()), SyntaxKind.ReturnStatement, true);
+		replacements[functionDeclaration.name] = value;
+		str += hasReturnStatement ? this.addPlaceholder(functionDeclaration.name) : `return (${this.addPlaceholder(functionDeclaration.name)})`;
+		str += "}";
+
+		const versions = this.exchangeReplacements(str, replacements);
+		this.cache.setCachedSerializedFunction(functionDeclaration, versions);
+		console.log("function:", versions);
+		return versions;
+	}
+
+	private addPlaceholder (identifier: string): string {
+		const wrapSpacing = "__________";
+		const uniqueName = "serializeReplacement";
+		return `${wrapSpacing}${uniqueName}${wrapSpacing}${identifier}${wrapSpacing}`;
+	}
+
+	private replacePlaceholder (identifier: string, inString: string, replacements: SerializedReplacements, quoted: boolean): string {
+		return inString.replace(new RegExp(this.addPlaceholder(identifier), "g"), quoted ? `\`${replacements[identifier]}\`` : replacements[identifier]);
+	};
+
+	private exchangeReplacements (str: string, replacements: SerializedReplacements): SerializedVersions {
+		// Setup replacements
+		const keys = Object.keys(replacements);
+		const versions: string[] = [];
+
+		// Create the base version
+		let baseString: string = `${str}`;
+		keys.forEach(key => baseString = this.replacePlaceholder(key, baseString, replacements, false));
+		versions.push(baseString);
+
+		// Create the variations.
+		const combinations = this.combinationsFromKeys(keys);
+		combinations.forEach(combination => {
+			let variation: string = `${str}`;
+			keys.forEach((key, index) => variation = this.replacePlaceholder(key, variation, replacements, combination.includes(index)));
+			versions.push(variation);
+		});
+		return versions;
+	}
+
+	private combinationsFromKeys (keys: string[]): number[][] {
+		const indexes = keys.map((_, index) => index);
+		return this.combinationUtil.allCombinations(indexes);
 	}
 }

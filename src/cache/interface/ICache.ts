@@ -1,6 +1,12 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifierMap, IImportDeclaration, IParameter, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../../service/interface/ICodeAnalyzer";
+import {SerializedVersions} from "../../serializer/interface/IIdentifierSerializer";
 
 export interface ICache {
+	getCachedSerializedVariableName (fileName: string, position: number, variableName: string): string;
+	getCachedSerializedParameterName (fileName: string, position: number, parameterName: (string|undefined)[]): string;
+	getCachedSerializedClassName (fileName: string, position: number, className: string): string;
+	getCachedSerializedEnumName (fileName: string, position: number, enumName: string): string;
+	getCachedSerializedFunctionName (fileName: string, position: number, functionName: string): string;
 	getCachedPropName (fileName: string, className: string, propName: string): string;
 	getCachedVariableName (fileName: string, variableName: string): string;
 	getCachedEnumName (fileName: string, enumName: string): string;
@@ -10,9 +16,15 @@ export interface ICache {
 	getCachedImportDeclarationsName (fileName: string): string;
 	getCachedExportDeclarationsName (fileName: string): string;
 	getCachedFunctionIndexerName (fileName: string): string;
+	getCachedIdentifierMapName (fileName: string): string;
 	getCachedVariableIndexerName (fileName: string): string;
 	getCachedEnumIndexerName (fileName: string): string;
 	getFromCache<T> (key: string): ICachedContent<T>|null;
+	getCachedSerializedVariable (variable: IVariableAssignment): ICachedContent<SerializedVersions>|null;
+	getCachedSerializedParameter (parameter: IParameter): ICachedContent<SerializedVersions>|null;
+	getCachedSerializedClass (classDeclaration: IClassDeclaration): ICachedContent<SerializedVersions>|null;
+	getCachedSerializedEnum (enumDeclaration: IEnumDeclaration): ICachedContent<SerializedVersions>|null;
+	getCachedSerializedFunction (functionDeclaration: IFunctionDeclaration): ICachedContent<SerializedVersions>|null;
 	getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment>|null;
 	getCachedFunction (fileName: string, functionName: string): ICachedContent<IFunctionDeclaration>|null;
 	getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration>|null;
@@ -21,9 +33,15 @@ export interface ICache {
 	getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer>|null;
 	getCachedImportDeclarations (fileName: string): ICachedContent<IImportDeclaration[]>|null;
 	getCachedExportDeclarations (fileName: string): ICachedContent<IExportDeclaration[]>|null;
+	getCachedIdentifierMap (fileName: string): ICachedContent<IIdentifierMap>|null;
 	getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null;
 	getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer>|null;
 	getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer>|null;
+	setCachedSerializedVariable (variable: IVariableAssignment, content: SerializedVersions): void;
+	setCachedSerializedParameter (parameter: IParameter, content: SerializedVersions): void;
+	setCachedSerializedClass (variable: IClassDeclaration, content: SerializedVersions): void;
+	setCachedSerializedEnum (enumDeclaration: IEnumDeclaration, content: SerializedVersions): void;
+	setCachedSerializedFunction (functionDeclaration: IFunctionDeclaration, content: SerializedVersions): void;
 	setCachedProp (fileName: string, content: IPropDeclaration): void;
 	setCachedVariable (fileName: string, content: IVariableAssignment): void;
 	setCachedEnum (fileName: string, content: IEnumDeclaration): void;
@@ -31,10 +49,16 @@ export interface ICache {
 	setCachedFunction (fileName: string, content: IFunctionDeclaration): void;
 	setCachedClassIndexer (fileName: string, content: ClassIndexer): void;
 	setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void;
+	setCachedIdentifierMap (fileName: string, content: IIdentifierMap): void;
 	setCachedImportDeclarations (fileName: string, content: IImportDeclaration[]): void;
 	setCachedExportDeclarations (fileName: string, content: IExportDeclaration[]): void;
 	setCachedEnumIndexer (fileName: string, content: EnumIndexer): void;
 	setCachedVariableIndexer (fileName: string, content: VariableIndexer): void;
+	cachedSerializedVariableNeedsUpdate (variable: IVariableAssignment): boolean;
+	cachedSerializedParameterNeedsUpdate (parameter: IParameter): boolean;
+	cachedSerializedClassNeedsUpdate (classDeclaration: IClassDeclaration): boolean;
+	cachedSerializedEnumNeedsUpdate (enumDeclaration: IEnumDeclaration): boolean;
+	cachedSerializedFunctionNeedsUpdate (functionDeclaration: IFunctionDeclaration): boolean;
 	cachedVariableNeedsUpdate (variable: IVariableAssignment): boolean;
 	cachedEnumNeedsUpdate (enumDeclaration: IEnumDeclaration): boolean;
 	cachedFunctionNeedsUpdate (functionDeclaration: IFunctionDeclaration): boolean;
@@ -43,6 +67,7 @@ export interface ICache {
 	cachedFunctionIndexerNeedsUpdate (filePath: string): boolean;
 	cachedImportDeclarationsNeedsUpdate (filePath: string): boolean;
 	cachedExportDeclarationsNeedsUpdate (filePath: string): boolean;
+	cachedIdentifierMapNeedsUpdate (filePath: string): boolean;
 	cachedClassIndexerNeedsUpdate (filePath: string): boolean;
 	cachedEnumIndexerNeedsUpdate (filePath: string): boolean;
 	cachedVariableIndexerNeedsUpdate (filePath: string): boolean;

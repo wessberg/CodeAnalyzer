@@ -21,7 +21,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		if (cached != null) return cached;
 
 		// If the path already ends with an extension, do nothing.
-		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext))) return filePath;
+		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext) && !filePath.endsWith(".d.ts"))) return filePath;
 		const [, path] = this.fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
 		const traced = this.traceFullPath(path == null ? `${filePath}${Config.defaultExtension}` : path);
 		ModuleFormatter.RESOLVED_PATHS.set(filePath, traced);

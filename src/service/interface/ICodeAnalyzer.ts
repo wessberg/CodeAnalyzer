@@ -145,7 +145,7 @@ export interface IPositionable {
 	endsAt: number;
 }
 
-export declare interface IParameter extends IPositionable, IKindable {
+export declare interface IParameter extends IFilePathable, IPositionable, IKindable {
 	name: (string|undefined)[];
 	parameterKind: ParameterKind;
 	type: ITypeable;
@@ -271,7 +271,7 @@ export declare type IIdentifier = IMutationDeclaration|IImportExportBinding|ICon
 export declare type IExportableIIdentifier = IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type ResolvedNamespacedModuleMap = { [key: string]: string };
-export declare type NamespacedModuleMap = { [key: string]: ImportExportBindingPayload };
+export declare type NamespacedModuleMap = {[key: string]: ImportExportBindingPayload };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };

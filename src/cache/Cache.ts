@@ -1,10 +1,31 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IImportDeclaration, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifierMap, IImportDeclaration, IParameter, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
+import {SerializedVersions} from "../serializer/interface/IIdentifierSerializer";
 
 export class Cache implements ICache {
 	private cache: Map<string, ICachedContent<{}>> = new Map();
 
 	constructor (private languageService: ICodeAnalyzer) {
+	}
+
+	public getCachedSerializedVariableName (fileName: string, position: number, variableName: string): string {
+		return `serializedVariable.${fileName}.${position}.${variableName}`;
+	}
+
+	public getCachedSerializedParameterName (fileName: string, position: number, parameterName: (string|undefined)[]): string {
+		return `serializedParameter.${fileName}.${position}.${parameterName.join(".")}`;
+	}
+
+	public getCachedSerializedClassName (fileName: string, position: number, className: string): string {
+		return `serializedClass.${fileName}.${position}.${className}`;
+	}
+
+	public getCachedSerializedEnumName (fileName: string, position: number, enumName: string): string {
+		return `serializedEnum.${fileName}.${position}.${enumName}`;
+	}
+
+	public getCachedSerializedFunctionName (fileName: string, position: number, functionName: string): string {
+		return `serializedFunction.${fileName}.${position}.${functionName}`;
 	}
 
 	public getCachedPropName (fileName: string, className: string, propName: string): string {
@@ -25,6 +46,10 @@ export class Cache implements ICache {
 
 	public getCachedFunctionName (fileName: string, className: string): string {
 		return `function.${fileName}.${className}`;
+	}
+
+	public getCachedIdentifierMapName (fileName: string): string {
+		return `identifierMap.${fileName}`;
 	}
 
 	public getCachedClassIndexerName (fileName: string): string {
@@ -54,6 +79,26 @@ export class Cache implements ICache {
 	public getFromCache<T> (key: string): ICachedContent<T>|null {
 		const record = this.cache.get(key);
 		return record == null ? null : <ICachedContent<T>>record;
+	}
+
+	public getCachedSerializedVariable (variable: IVariableAssignment): ICachedContent<SerializedVersions>|null {
+		return this.getFromCache<SerializedVersions>(this.getCachedSerializedVariableName(variable.filePath, variable.startsAt, variable.name));
+	}
+
+	public getCachedSerializedParameter (parameter: IParameter): ICachedContent<SerializedVersions>|null {
+		return this.getFromCache<SerializedVersions>(this.getCachedSerializedParameterName(parameter.filePath, parameter.startsAt, parameter.name));
+	}
+
+	public getCachedSerializedClass (classDeclaration: IClassDeclaration): ICachedContent<SerializedVersions>|null {
+		return this.getFromCache<SerializedVersions>(this.getCachedSerializedClassName(classDeclaration.filePath, classDeclaration.startsAt, classDeclaration.name));
+	}
+
+	public getCachedSerializedEnum (enumDeclaration: IEnumDeclaration): ICachedContent<SerializedVersions>|null {
+		return this.getFromCache<SerializedVersions>(this.getCachedSerializedEnumName(enumDeclaration.filePath, enumDeclaration.startsAt, enumDeclaration.name));
+	}
+
+	public getCachedSerializedFunction (functionDeclaration: IFunctionDeclaration): ICachedContent<SerializedVersions>|null {
+		return this.getFromCache<SerializedVersions>(this.getCachedSerializedFunctionName(functionDeclaration.filePath, functionDeclaration.startsAt, functionDeclaration.name));
 	}
 
 	public getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment>|null {
@@ -100,14 +145,43 @@ export class Cache implements ICache {
 		return this.getFromCache<VariableIndexer>(this.getCachedVariableIndexerName(fileName));
 	}
 
-	public setCachedProp (fileName: string, content: IPropDeclaration): void {
-		const version = this.languageService.getFileVersion(fileName);
-		this.cache.set(this.getCachedPropName(fileName, content.className, content.name), {content, version});
+	public getCachedIdentifierMap (fileName: string): ICachedContent<IIdentifierMap>|null {
+		return this.getFromCache<IIdentifierMap>(this.getCachedIdentifierMapName(fileName));
+	}
+
+	public setCachedSerializedVariable (variable: IVariableAssignment, content: SerializedVersions): void {
+		const version = this.languageService.getFileVersion(variable.filePath);
+		this.cache.set(this.getCachedSerializedVariableName(variable.filePath, variable.startsAt, variable.name), {content, version});
+	}
+
+	public setCachedSerializedParameter (parameter: IParameter, content: SerializedVersions): void {
+		const version = this.languageService.getFileVersion(parameter.filePath);
+		this.cache.set(this.getCachedSerializedParameterName(parameter.filePath, parameter.startsAt, parameter.name), {content, version});
+	}
+
+	public setCachedSerializedClass (classDeclaration: IClassDeclaration, content: SerializedVersions): void {
+		const version = this.languageService.getFileVersion(classDeclaration.filePath);
+		this.cache.set(this.getCachedSerializedClassName(classDeclaration.filePath, classDeclaration.startsAt, classDeclaration.name), {content, version});
+	}
+
+	public setCachedSerializedEnum (enumDeclaration: IEnumDeclaration, content: SerializedVersions): void {
+		const version = this.languageService.getFileVersion(enumDeclaration.filePath);
+		this.cache.set(this.getCachedSerializedEnumName(enumDeclaration.filePath, enumDeclaration.startsAt, enumDeclaration.name), {content, version});
+	}
+
+	public setCachedSerializedFunction (functionDeclaration: IFunctionDeclaration, content: SerializedVersions): void {
+		const version = this.languageService.getFileVersion(functionDeclaration.filePath);
+		this.cache.set(this.getCachedSerializedFunctionName(functionDeclaration.filePath, functionDeclaration.startsAt, functionDeclaration.name), {content, version});
 	}
 
 	public setCachedVariable (fileName: string, content: IVariableAssignment): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedVariableName(fileName, content.name), {content, version});
+	}
+
+	public setCachedProp (fileName: string, content: IPropDeclaration): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedPropName(fileName, content.className, content.name), {content, version});
 	}
 
 	public setCachedEnum (fileName: string, content: IEnumDeclaration): void {
@@ -128,6 +202,11 @@ export class Cache implements ICache {
 	public setCachedClassIndexer (fileName: string, content: ClassIndexer): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedClassIndexerName(fileName), {version, content});
+	}
+
+	public setCachedIdentifierMap (fileName: string, content: IIdentifierMap): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedIdentifierMapName(fileName), {version, content});
 	}
 
 	public setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void {
@@ -153,6 +232,46 @@ export class Cache implements ICache {
 	public setCachedVariableIndexer (fileName: string, content: VariableIndexer): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedVariableIndexerName(fileName), {version, content});
+	}
+
+	public cachedSerializedVariableNeedsUpdate (variable: IVariableAssignment): boolean {
+		const cache = this.getCachedSerializedVariable(variable);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(variable.filePath);
+		return version > cache.version;
+	}
+
+	public cachedSerializedParameterNeedsUpdate (parameter: IParameter): boolean {
+		const cache = this.getCachedSerializedParameter(parameter);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(parameter.filePath);
+		return version > cache.version;
+	}
+
+	public cachedSerializedClassNeedsUpdate (classDeclaration: IClassDeclaration): boolean {
+		const cache = this.getCachedSerializedClass(classDeclaration);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(classDeclaration.filePath);
+		return version > cache.version;
+	}
+
+	public cachedSerializedEnumNeedsUpdate (enumDeclaration: IEnumDeclaration): boolean {
+		const cache = this.getCachedSerializedEnum(enumDeclaration);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(enumDeclaration.filePath);
+		return version > cache.version;
+	}
+
+	public cachedSerializedFunctionNeedsUpdate (functionDeclaration: IFunctionDeclaration): boolean {
+		const cache = this.getCachedSerializedFunction(functionDeclaration);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(functionDeclaration.filePath);
+		return version > cache.version;
 	}
 
 	public cachedVariableNeedsUpdate (variable: IVariableAssignment): boolean {
@@ -197,6 +316,14 @@ export class Cache implements ICache {
 
 	public cachedFunctionIndexerNeedsUpdate (filePath: string): boolean {
 		const cache = this.getCachedFunctionIndexer(this.getCachedFunctionIndexerName(filePath));
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedIdentifierMapNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedIdentifierMap(this.getCachedIdentifierMapName(filePath));
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);

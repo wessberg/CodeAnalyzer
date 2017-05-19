@@ -1,11 +1,7 @@
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
-import {IStringUtil} from "../util/interface/IStringUtil";
 import {ITokenPredicator} from "./interface/ITokenPredicator";
 
 export class TokenPredicator implements ITokenPredicator {
-
-	constructor (private stringUtil: IStringUtil) {
-	}
 
 	/**
 	 * Returns true if the given item is a stringified keyword or a stringified operator.
@@ -13,7 +9,17 @@ export class TokenPredicator implements ITokenPredicator {
 	 * @returns {boolean}
 	 */
 	public isTokenLike (item: ArbitraryValue): boolean {
-		return this.stringUtil.isWhitespace(item) || this.isKeywordLike(item) || this.isOperatorLike(item);
+		return this.isWhitespace(item) || this.isKeywordLike(item) || this.isOperatorLike(item);
+	}
+
+	/**
+	 * Returns true if the given item is a string of pure whitespace.
+	 * @param {ArbitraryValue} item
+	 * @returns {boolean}
+	 */
+	public isWhitespace (item: ArbitraryValue): boolean {
+		if (typeof item !== "string") return false;
+		return /^[\t\n\r\s]+$/.test(item);
 	}
 
 	/**

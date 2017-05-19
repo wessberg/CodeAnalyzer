@@ -10,12 +10,14 @@ import {ITracer} from "../tracer/interface/ITracer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 import {isArrayBindingPattern, isObjectBindingPattern, isOmittedExpression} from "../predicate/PredicateFunctions";
+import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 
 export class ParametersFormatter implements IParametersFormatter {
 
 	constructor (private mapper: IMapper,
 							 private tracer: ITracer,
 							 private nameGetter: INameGetter,
+							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private valueExpressionGetter: IValueExpressionGetter,
@@ -38,6 +40,7 @@ export class ParametersFormatter implements IParametersFormatter {
 	 * @returns {IParameter}
 	 */
 	private formatParameter (parameter: ParameterDeclaration): IParameter {
+		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(parameter).filePath;
 		const startsAt = parameter.pos;
 		const endsAt = parameter.end;
 
@@ -74,6 +77,7 @@ export class ParametersFormatter implements IParametersFormatter {
 
 		const map: IParameter = {
 			___kind: IdentifierMapKind.PARAMETER,
+			filePath,
 			startsAt,
 			endsAt,
 			parameterKind,

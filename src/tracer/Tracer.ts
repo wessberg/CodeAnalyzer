@@ -5,10 +5,12 @@ import {isArrowFunction, isClassDeclaration, isClassExpression, isFunctionDeclar
 import {ICallExpression, ICodeAnalyzer, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
+import {IMapper} from "../mapper/interface/IMapper";
 
 export class Tracer implements ITracer {
 
 	constructor (private languageService: ICodeAnalyzer,
+							 private mapper: IMapper,
 							 private nameGetter: INameGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
 	}
@@ -50,6 +52,17 @@ export class Tracer implements ITracer {
 			});
 		}
 
+		if (from.kind === SyntaxKind.Constructor || this.isChildOfAnyOfKinds([SyntaxKind.Constructor], block, from)) {
+			Object.keys(clojure.classes).forEach(key => {
+				const ctor = clojure.classes[key].constructor;
+				if (ctor == null) return;
+
+				const parameters = ctor.parameters.parametersList;
+				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
+				if (parameter != null) parameterMatches.push(parameter);
+			});
+		}
+
 		if (this.isChildOfKind(SyntaxKind.ArrowFunction, block, from)) {
 			// TODO: Add this functionality.
 		}
@@ -78,10 +91,26 @@ export class Tracer implements ITracer {
 		if (variableMatch != null) allMatches.push(variableMatch);
 		if (classMatch != null) allMatches.push(classMatch);
 
-		importBindingMatches.forEach(match => allMatches.push(match));
-		exportBindingMatches.forEach(match => allMatches.push(match));
-		requireMatches.forEach(match => allMatches.push(match));
-		parameterMatches.forEach(parameterMatch => allMatches.push(parameterMatch));
+		importBindingMatches.forEach(match => {
+			const mapped = this.mapper.get(match);
+			if (mapped != null && mapped === from) return;
+			allMatches.push(match);
+		});
+		exportBindingMatches.forEach(match => {
+			const mapped = this.mapper.get(match);
+			if (mapped != null && mapped === from) return;
+			allMatches.push(match);
+		});
+		requireMatches.forEach(match => {
+			const mapped = this.mapper.get(match);
+			if (mapped != null && mapped === from) return;
+			allMatches.push(match);
+		});
+		parameterMatches.forEach(parameterMatch => {
+			const mapped = this.mapper.get(parameterMatch);
+			if (mapped != null && mapped === from) return;
+			allMatches.push(parameterMatch);
+		});
 
 		const closest = allMatches.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
@@ -90,10 +119,6 @@ export class Tracer implements ITracer {
 			if (aDistanceFromStart > bDistanceFromStart) return 1;
 			return 0;
 		})[0];
-
-		if (identifier === "require") {
-
-		}
 
 		return closest == null ? null : closest;
 	}

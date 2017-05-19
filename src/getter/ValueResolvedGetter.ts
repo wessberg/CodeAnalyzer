@@ -1,13 +1,14 @@
 import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {IMarshaller} from "@wessberg/marshaller";
-import {Expression, Node, Statement, SyntaxKind} from "typescript";
+import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIImportExportBinding, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
-import {IIdentifierSerializer, ReplacementPositions} from "../serializer/interface/IIdentifierSerializer";
+import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
 import {ArbitraryValue, ICodeAnalyzer, InitializationValue, INonNullableValueable, NAMESPACE_NAME, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {IFlattenOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
+import {ICombinationUtil} from "../util/interface/ICombinationUtil";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
@@ -16,7 +17,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 							 private marshaller: IMarshaller,
 							 private tracer: ITracer,
 							 private identifierSerializer: IIdentifierSerializer,
-							 private tokenPredicator: ITokenPredicator) {
+							 private tokenPredicator: ITokenPredicator,
+							 private combinationUtil: ICombinationUtil) {
 	}
 
 	/**
@@ -33,34 +35,11 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		valueable.resolving = true;
 
-		let [setup, setupAdditionPositions, flattened, options] = this.flattenValueExpression(valueable.expression, from, scope, insideThisScope);
+		let [setup, flattened, options] = this.flattenValueExpression(valueable.expression, from, scope, insideThisScope);
 		let computed: ArbitraryValue = flattened;
 
 		if (options.shouldCompute) {
-			try {
-				computed = this.computeValueResolved(setup, flattened);
-				if (process.env.npm_config_debug) console.log("flattened:", setup, flattened);
-			} catch (ex) {
-				const keys = Object.keys(setupAdditionPositions);
-				for (const key of keys) {
-					try {
-						const [replacementStart, replacementEnd] = setupAdditionPositions[key];
-						if (replacementStart === -1) break;
-						console.log("SETUP:", setup);
-
-						const setupBefore = setup.slice(0, replacementStart);
-						const setupMiddle = setup.slice(replacementStart, replacementEnd);
-						const setupAfter = setup.slice(replacementEnd);
-						setup = `${setupBefore}\`${setupMiddle}\`${setupAfter}`;
-						if (process.env.npm_config_debug) console.log("flattened:", setup, flattened);
-						computed = this.computeValueResolved(setup, flattened);
-						break;
-					} catch (ex) {
-						// Fail softly. We want to proceed to the next iteration.
-					}
-				}
-
-			}
+			computed = this.attemptComputation(setup, flattened);
 		}
 
 		if (process.env.npm_config_debug) console.log("computed:", computed);
@@ -68,6 +47,44 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		valueable.resolving = false;
 		return [takenResult, flattened];
+	}
+
+	private attemptComputationLongListStrategy (setup: string[][], flattened: string, position: number = 0): ArbitraryValue {
+		let highest = 0;
+		setup.forEach(declaration => {
+			declaration.forEach((_, index) => {
+				if (index > highest) highest = index;
+			})
+		});
+		const joinedSetup = setup.map(declaration => declaration[position > declaration.length ? declaration.length - 1 : position]).join("\n");
+		if (position > highest) throw TypeError(`A computation failed for:\n${joinedSetup}${flattened}`);
+		try {
+			return this.computeValueResolved(joinedSetup, flattened);
+		} catch (ex) {
+			return this.attemptComputationLongListStrategy(setup, flattened, position + 1);
+		}
+	}
+
+	private attemptComputationShortListStrategy (setup: string[][], flattened: string): ArbitraryValue {
+		// This is a VERY time consuming operation if there are many possible combinations, even though it is elegant.
+		const combinations = this.combinationUtil.getPossibleCombinationsOfMultiDimensionalArray(setup);
+
+		for (const combination of combinations) {
+			const joined = combination.join("\n");
+			try {
+				return this.computeValueResolved(joined, flattened);
+			} catch (ex) {
+			}
+		}
+		throw TypeError(`A computation failed for:\n${setup}${flattened}`);
+	}
+
+	private attemptComputation (setup: string[][], flattened: string): ArbitraryValue {
+		const consistentSetup = setup.length > 0 ? setup : [ [""] ];
+		let count = 0;
+		const limit = 30;
+		setup.map(declaration => declaration.forEach(() => count++));
+		return count >= limit ? this.attemptComputationLongListStrategy(consistentSetup, flattened) : this.attemptComputationShortListStrategy(consistentSetup, flattened);
 	}
 
 	/**
@@ -84,13 +101,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
-	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, expression: ArbitraryValue[], index: number, options: IFlattenOptions): [string, ReplacementPositions] {
+	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, expression: ArbitraryValue[], index: number, options: IFlattenOptions): string[] {
 
 		const isRecursive = part.name === scope;
 		const substitution = this.tracer.traceIdentifier(part.name, from, scope);
-		let sub: string = "";
+
+		let variations: string[] = [];
 		const name = part.name === "this" && !insideComputedThisScope ? "that" : part.name;
-		let replacements: ReplacementPositions = {};
 
 		if (isICallExpression(substitution) && substitution.identifier === "require") {
 
@@ -101,122 +118,68 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			if (importMatch != null) {
 				const properBinding = importMatch.bindings[NAMESPACE_NAME];
 				if (properBinding != null) {
-					const [intermediate] = this.flattenBoundPart(properBinding, from, scope, insideComputedThisScope, expression, index, options);
+					const intermediates = this.flattenBoundPart(properBinding, from, scope, insideComputedThisScope, expression, index, options);
 					const requireShim = `\nvar require = () => ${NAMESPACE_NAME}\n`;
-					return [`${intermediate}${requireShim}`, replacements];
+					return intermediates.map(intermediate => `${intermediate}${requireShim}`);
 				}
 			}
 		}
 
 		if (isIParameter(substitution)) {
-			const [initializedTo, replacementPositions] = this.identifierSerializer.serializeIParameter(substitution);
-			sub += `var ${name} = (${part.name} === undefined ? ${initializedTo} : ${part.name})`;
+			const versions = this.identifierSerializer.serializeIParameter(substitution);
+			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 			options.shouldCompute = false;
 			options.forceNoQuoting = true;
-
-			let offset = sub.indexOf(initializedTo);
-			Object.keys(replacementPositions).forEach(key => {
-				const [start, end] = replacementPositions[key];
-				replacementPositions[key] = [start + offset, end + offset];
-			});
-			replacements = replacementPositions;
 		}
 
 		else if (isIVariableAssignment(substitution) || isIImportExportBinding(substitution)) {
-			const [stringified, replacementPositions] = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload());
-			sub += `var ${name} = (${part.name} === undefined ? ${stringified} : ${part.name})`;
-
-			let offset = sub.indexOf(stringified);
-			Object.keys(replacementPositions).forEach(key => {
-				const [start, end] = replacementPositions[key];
-				replacementPositions[key] = [start + offset, end + offset];
-			});
-			replacements = replacementPositions;
+			const versions = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload());
+			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 		}
 
 		else if (isIClassDeclaration(substitution)) {
-			if (insideComputedThisScope) sub += "this";
-			else {
-				const [stringified, replacementPositions] = this.identifierSerializer.serializeIClassDeclaration(substitution);
-				sub += `var ${name} = (${name} === undefined ? ${part.name === "this" ? "new" : ""} ${stringified} : ${name})`;
-
-				let offset = sub.indexOf(stringified);
-				Object.keys(replacementPositions).forEach(key => {
-					const [start, end] = replacementPositions[key];
-					replacementPositions[key] = [start + offset, end + offset];
-				});
-				replacements = replacementPositions;
-			}
+			const versions = this.identifierSerializer.serializeIClassDeclaration(substitution);
+			variations = versions.map(version => `var ${name} = (${name} === undefined ? ${part.name === "this" ? "new" : ""} ${version} : ${name});`);
 		}
 
 		else if (isIEnumDeclaration(substitution)) {
-			const [stringified, replacementPositions] = this.identifierSerializer.serializeIEnumDeclaration(substitution);
-			sub += `var ${name} = (${part.name} === undefined ? ${stringified} : ${part.name})`;
-
-			let offset = sub.indexOf(stringified);
-			Object.keys(replacementPositions).forEach(key => {
-				const [start, end] = replacementPositions[key];
-				replacementPositions[key] = [start + offset, end + offset];
-			});
-			replacements = replacementPositions;
+			const versions = this.identifierSerializer.serializeIEnumDeclaration(substitution);
+			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 		}
 
 		else if (isIFunctionDeclaration(substitution)) {
 			if (isRecursive) {
-				sub = ValueResolvedGetter.FUNCTION_OUTER_SCOPE_NAME;
+				variations = [`${ValueResolvedGetter.FUNCTION_OUTER_SCOPE_NAME};`];
 			}
 			else {
-				const [stringified, replacementPositions] = this.identifierSerializer.serializeIFunctionDeclaration(substitution);
-				const [parameters] = this.identifierSerializer.serializeIParameterBody(substitution.parameters);
-
-				const hasReturnStatement = stringified == null ? false : this.languageService.statementsIncludeKind(this.languageService.toAST(stringified.toString()), SyntaxKind.ReturnStatement, true);
-				const bracketed = hasReturnStatement ? `{${stringified}}` : `{return (${stringified})}`;
-				sub += `var ${name} = (${part.name} === undefined ? ${`(function ${substitution.name}(${parameters}) ${bracketed})`} : ${part.name})`;
-
-				let offset = sub.indexOf(stringified);
-				Object.keys(replacementPositions).forEach(key => {
-					const [start, end] = replacementPositions[key];
-					replacementPositions[key] = [start + offset, end + offset];
-				});
-				replacements = replacementPositions;
+				const versions = this.identifierSerializer.serializeIFunctionDeclaration(substitution);
+				variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${`(${version})`} : ${part.name});`);
 			}
 		}
 
 		else {
 			// The identifier could not be found. Assume that it is part of the environment.
-			sub += part.name;
+			variations = [`${part.name};`];
 			console.log(`Assuming that '${part.name}' is part of the global environment...`);
 			// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 		}
-		sub += ";";
-		return [sub, replacements];
+
+		return variations;
 	}
 
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false): [string, ReplacementPositions, string, IFlattenOptions] {
+	private flattenValueExpression (valueExpression: InitializationValue, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false): [string[][], string, IFlattenOptions] {
 		let val: string = "";
-		let setup: string = "";
-		let setupAdditionPositions: ReplacementPositions = {};
+		let setup: string[][] = [];
 
 		const options: IFlattenOptions = {
 			shouldCompute: true,
 			forceNoQuoting: false
 		};
 
-		let totalOffset = 0;
-
 		valueExpression.forEach((part, index) => {
 			if (part instanceof BindingIdentifier) {
-				const [setupAddition, positions] = this.flattenBoundPart(part, from, scope, insideComputedThisScope, valueExpression, index, options);
-				setupAdditionPositions = positions;
-				const addition = `${setupAddition}\n`;
-				setup += addition;
-				Object.keys(setupAdditionPositions).forEach(key => {
-					const [start, end] = setupAdditionPositions[key];
-					if (start > -1) {
-						setupAdditionPositions[key] = [start + totalOffset, end + totalOffset];
-					}
-				});
-				totalOffset += addition.length;
+				const setupVariations = this.flattenBoundPart(part, from, scope, insideComputedThisScope, valueExpression, index, options);
+				setup.push(setupVariations);
 				val += part.name === "this" && !insideComputedThisScope ? "that" : part.name;
 			} else {
 				if (part === "const" || part === "var" || part === "let") return;
@@ -225,7 +188,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				else val += this.marshaller.marshal<ArbitraryValue, string>(part, "");
 			}
 		});
-		return [setup, setupAdditionPositions, val, options];
+		return [setup, val, options];
 	}
 
 }
