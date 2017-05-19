@@ -655,6 +655,5 @@ test(`ValueResolver -> Computes all resolved values correctly. #42`, t => {
 
 	const vars = service.getVariableAssignments(statements, true);
 	const res = vars["val"].value.resolve();
-	console.log(res);
 	t.true(res != null);
 });
