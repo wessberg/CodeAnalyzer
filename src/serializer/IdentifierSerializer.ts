@@ -1,6 +1,5 @@
 import {SyntaxKind} from "typescript";
 import {IMarshaller} from "@wessberg/marshaller";
-// import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIImportExportBinding, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {ArbitraryValue, IClassDeclaration, ICodeAnalyzer, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IIdentifier, ILiteralValue, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ParameterKind, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IIdentifierSerializer, SerializedReplacements, SerializedVersions} from "./interface/IIdentifierSerializer";
@@ -79,32 +78,6 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		return [val, `\`${val}\``];
 	}
 
-	/*
-	public serializeIImportExportBinding (payload: ImportExportBindingPayload): SerializedVersions {
-
-		if (isIImportExportBinding(payload)) {
-			return this.serializeIImportExportBinding(payload.payload());
-		}
-
-		if (isNamespacedModuleMap(payload)) return this.serializeNamespacedModuleMap(payload);
-		if (!isIExportableIIdentifier(payload)) {
-
-			// TODO: Remove the 'quoteIfNecessary' part?
-			const value = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(payload, ""));
-			return [value, `\`${value}\``];
-		}
-
-		if (isIClassDeclaration(payload)) return this.serializeIClassDeclaration(payload);
-		if (isIVariableAssignment(payload)) return this.serializeIVariableAssignment(payload);
-		if (isIEnumDeclaration(payload)) return this.serializeIEnumDeclaration(payload);
-		if (isIFunctionDeclaration(payload)) return this.serializeIFunctionDeclaration(payload);
-
-		// TODO: Remove the 'quoteIfNecessary' part?
-		const value = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(payload, ""));
-		return [value, `\`${value}\``];
-	}
-
-*/
 	public serializeNamespacedModuleMap (map: NamespacedModuleMap): SerializedVersions {
 		const newMap: ResolvedNamespacedModuleMap = {};
 		const keys = Object.keys(map);
@@ -123,8 +96,11 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration): SerializedVersions {
 		const cached = this.cache.getCachedSerializedClass(classDeclaration);
 		if (cached != null && !this.cache.cachedSerializedClassNeedsUpdate(classDeclaration)) return cached.content;
+		const parent = classDeclaration.heritage == null || classDeclaration.heritage.extendsClass == null ? null : classDeclaration.heritage.extendsClass.resolve();
 
-		let str = `class ${classDeclaration.name}`;
+		let str = "";
+		if (parent != null) str += this.serializeIClassDeclaration(parent);
+		str += `class ${classDeclaration.name}`;
 
 		const replacements: SerializedReplacements = {};
 

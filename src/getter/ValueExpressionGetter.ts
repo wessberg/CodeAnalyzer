@@ -5,7 +5,7 @@ import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseFormatter} from "../formatter/interface/IHeritageClauseFormatter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isRegularExpressionLiteral, isReturnStatement, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, InitializationValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
@@ -38,8 +38,30 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			return [marshalled];
 		}
 
+		if (isPropertyDeclaration(rawStatement)) {
+			const name = this.nameGetter.getName(rawStatement.name);
+			const initializer = rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer);
+			const isStatic = rawStatement.modifiers == null ? false : rawStatement.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
+			const staticIntro = isStatic ? ["static", " "] : [];
+
+			const getterIntro: ArbitraryValue[] = [...staticIntro, "get", " ", name, "(", ")", "{", ];
+			const getterOutro: ArbitraryValue[] = ["return", " ", "this", ".", `_${name}`, "}"];
+			let getter: ArbitraryValue[];
+
+			const setterIntro: ArbitraryValue[] = [...staticIntro, "set", " ", name, "(", "value", ")", "{"];
+			const setter: ArbitraryValue[] = [...setterIntro, "this", ".", `_${name}`, "=", "value", "}"];
+
+			if (initializer.length === 0) {
+				getter = [...getterIntro, ...getterOutro];
+			} else {
+				getter = [...getterIntro, "if", "(", "this", ".", `_${name}`, "===", "undefined", ")", "{", "this", ".", `_${name}`, "=", ...initializer, "}", ...getterOutro ];
+			}
+
+			return [...getter, ...setter];
+		}
+
 		if (isStringLiteral(rawStatement)) {
-			return [this.stringUtil.quoteIfNecessary(rawStatement.text)];
+			return [`\`${rawStatement.text}\``];
 		}
 
 		if (isRegularExpressionLiteral(rawStatement)) {
@@ -50,6 +72,30 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		if (isNoSubstitutionTemplateLiteral(rawStatement)) {
 			const marshalled = this.marshaller.marshal<string, string>(rawStatement.text);
 			return [this.stringUtil.quoteIfNecessary(marshalled)];
+		}
+
+		if (isArrayBindingPattern(rawStatement)) {
+			const arr: ArbitraryValue[] = ["["];
+
+			rawStatement.elements.forEach((binding, index) => {
+				if (!isOmittedExpression(binding)) {
+					arr.push(<string>this.nameGetter.getName(binding));
+				}
+				if (index !== rawStatement.elements.length - 1) arr.push(",");
+			});
+			arr.push("]");
+			return arr;
+		}
+
+		if (isObjectBindingPattern(rawStatement)) {
+			const arr: ArbitraryValue[] = ["{"];
+
+			rawStatement.elements.forEach((binding, index) => {
+				arr.push(<string>this.nameGetter.getName(binding));
+				if (index !== rawStatement.elements.length - 1) arr.push(",");
+			});
+			arr.push("}");
+			return arr;
 		}
 
 		if (isTemplateHead(rawStatement) || isTemplateMiddle(rawStatement) || isTemplateTail(rawStatement)) {
@@ -229,7 +275,11 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			const right = this.getValueExpression(rawStatement.right);
 
 			left.forEach(item => arr.push(item));
-			operator.forEach(item => arr.push(item));
+			operator.forEach(item => {
+				arr.push(" ");
+				arr.push(item);
+				arr.push(" ");
+			});
 			right.forEach(item => arr.push(item));
 			return arr;
 		}
@@ -400,7 +450,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		if (isClassExpression(rawStatement) || isClassDeclaration(rawStatement)) {
 			const name = rawStatement.name == null ? [] : [this.nameGetter.getNameOfMember(rawStatement.name, false, true)];
 			const heritage = rawStatement.heritageClauses == null ? null : this.heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
-			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage.name];
+			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", new BindingIdentifier(heritage.name)];
 			const members: InitializationValue = ["{"];
 
 			rawStatement.members.forEach(member => {
@@ -450,9 +500,9 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isParameterDeclaration(rawStatement)) {
-			const name = this.nameGetter.getNameOfMember(rawStatement.name);
+			const name = this.getValueExpression(rawStatement.name);
 			const initializer = rawStatement.initializer == null ? null : this.getValueExpression(rawStatement.initializer);
-			const arr: InitializationValue = [name];
+			const arr: InitializationValue = [...name];
 			if (initializer != null) {
 				arr.push("=");
 				initializer.forEach(item => arr.push(item));

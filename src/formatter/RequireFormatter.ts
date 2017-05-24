@@ -142,7 +142,6 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 				endsAt: isICallExpression(statement) ? statement.endsAt : statement.end,
 				value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
 			};
-			;
 		};
 
 		const map: IRequire = {

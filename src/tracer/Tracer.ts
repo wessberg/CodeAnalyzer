@@ -1,15 +1,17 @@
-import {Expression, Node, Statement, SyntaxKind} from "typescript";
+import {ClassDeclaration, Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {isArrowFunction, isClassDeclaration, isClassExpression, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile} from "../predicate/PredicateFunctions";
+import {isArrowFunction, isClassDeclaration, isClassExpression, isExtendsClause, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile, isTypeBinding} from "../predicate/PredicateFunctions";
 import {ICallExpression, ICodeAnalyzer, IdentifierMapKind, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
 import {IMapper} from "../mapper/interface/IMapper";
+import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 
 export class Tracer implements ITracer {
 
 	constructor (private languageService: ICodeAnalyzer,
+							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private mapper: IMapper,
 							 private nameGetter: INameGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
@@ -25,15 +27,26 @@ export class Tracer implements ITracer {
 	 * @returns {IIdentifier|null}
 	 */
 	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap, ofKind?: IdentifierMapKind): IIdentifier {
+		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
 
 		if (identifier === "super" && (ofKind == null || (ofKind === IdentifierMapKind.CLASS))) {
 			const scope = this.traceThis(from);
-			const derived = clojure.classes[scope];
-			const extendsClass = derived.heritage == null ? null : derived.heritage.extendsClass;
-			if (extendsClass == null) {
+			const classStatement = <ClassDeclaration>this.traceUpToKind(SyntaxKind.ClassDeclaration, from) || this.traceUpToKind(SyntaxKind.ClassExpression, from);
+			if (classStatement == null || classStatement.heritageClauses == null) throw new TypeError(`${this.constructor.name} could not find a parent class of a super() expression.`);
+			let parentName: string|null = null;
+
+			classStatement.heritageClauses.forEach(clause => {
+				if (isExtendsClause(clause)) {
+					// There can only be one extended class.
+					const [classIdentifier] = clause.types;
+					const [extendsClass] = this.typeExpressionGetter.getTypeExpression(classIdentifier);
+					if (isTypeBinding(extendsClass)) parentName = extendsClass.name;
+				}
+			});
+			if (parentName == null) {
 				throw new ReferenceError(`${this.constructor.name} could not trace the super class for ${clojure.classes[scope].name}`);
 			}
-			return clojure.classes[extendsClass.name];
+			return clojure.classes[<string>parentName];
 		}
 
 		const allMatches: IIdentifier[] = [];
@@ -93,8 +106,13 @@ export class Tracer implements ITracer {
 
 		const exportBindingMatches: IImportExportBinding[] = [];
 		clojure.exports.forEach(exportDeclaration => {
+			const mapped1 = this.mapper.get(exportDeclaration);
+			const mapped2 = this.mapper.get(exportDeclaration.bindings[identifier]);
+			if (mapped1 != null && mapped1 === from) return;
+			if (mapped2 != null && mapped2 === from) return;
+
 			const match = exportDeclaration.bindings[identifier];
-			if (match != null) exportBindingMatches.push(match);
+			if (match != null && exportDeclaration.filePath !== filePath ) exportBindingMatches.push(match);
 		});
 
 		if (functionMatch != null) allMatches.push(functionMatch);
@@ -107,16 +125,19 @@ export class Tracer implements ITracer {
 			if (mapped != null && mapped === from) return;
 			allMatches.push(match.payload());
 		});
+
 		exportBindingMatches.forEach(match => {
 			const mapped = this.mapper.get(match);
 			if (mapped != null && mapped === from) return;
 			allMatches.push(match.payload());
 		});
+
 		requireMatches.forEach(match => {
 			const mapped = this.mapper.get(match);
 			if (mapped != null && mapped === from) return;
 			allMatches.push(match);
 		});
+
 		parameterMatches.forEach(parameterMatch => {
 			const mapped = this.mapper.get(parameterMatch);
 			if (mapped != null && mapped === from) return;
@@ -124,13 +145,15 @@ export class Tracer implements ITracer {
 		});
 
 		const filtered = allMatches.filter(match => ofKind == null ? true : match.___kind === ofKind);
-		return filtered.sort((a, b) => {
+		const closest = filtered.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
 			const bDistanceFromStart = from.pos - b.startsAt;
 			if (aDistanceFromStart < bDistanceFromStart) return -1;
 			if (aDistanceFromStart > bDistanceFromStart) return 1;
 			return 0;
 		})[0];
+
+		return closest;
 	}
 
 	/**
@@ -139,9 +162,11 @@ export class Tracer implements ITracer {
 	 * @param {string} identifier
 	 * @param {Statement|Expression|Node} from
 	 * @param {string|null} scope
+	 * @param {IdentifierMapKind} [ofKind]
 	 * @returns {IIdentifier}
 	 */
-	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope: string|null): IIdentifier {
+	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope?: string|null, ofKind?: IdentifierMapKind): IIdentifier {
+		if (scope === undefined) scope = this.traceBlockScopeName(from);
 		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
 		const lookupIdentifier = identifier === "this" && scope != null && scope !== Config.name.global ? scope : identifier;
 
@@ -156,7 +181,7 @@ export class Tracer implements ITracer {
 			};
 		}
 
-		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure);
+		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure, ofKind);
 	}
 
 	/**
@@ -286,6 +311,15 @@ export class Tracer implements ITracer {
 		}
 
 		return extractor(current);
+	}
+
+	private traceUpToKind (kind: SyntaxKind, from: Statement|Expression|Node): Statement|Expression|Node|null {
+		let current: Statement|Expression|Node|undefined = from;
+		while (current != null) {
+			if (current.kind === kind) return current;
+			current = current.parent;
+		}
+		return null;
 	}
 
 	/**

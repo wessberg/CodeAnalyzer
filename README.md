@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.9**:
+
+- Added support for getting all identifiers and the values that they are initialized to in a map.
+
 **v1.0.8**:
 
 - Added support for 'super()' expressions from class methods.

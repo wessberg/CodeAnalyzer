@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifierMap, IImportDeclaration, IParameter, IPropDeclaration, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifierMap, IImportDeclaration, IParameter, IPropDeclaration, IVariableAssignment, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
 import {SerializedVersions} from "../serializer/interface/IIdentifierSerializer";
 
@@ -50,6 +50,14 @@ export class Cache implements ICache {
 
 	public getCachedIdentifierMapName (fileName: string): string {
 		return `identifierMap.${fileName}`;
+	}
+
+	public getCachedResolvedIdentifierValueMapName (fileName: string): string {
+		return `resolvedIdentifierValueMap.${fileName}`;
+	}
+
+	public getCachedResolvedSerializedIdentifierValueMapName (fileName: string): string {
+		return `resolvedSerializedIdentifierValueMap.${fileName}`;
 	}
 
 	public getCachedClassIndexerName (fileName: string): string {
@@ -149,6 +157,14 @@ export class Cache implements ICache {
 		return this.getFromCache<IIdentifierMap>(this.getCachedIdentifierMapName(fileName));
 	}
 
+	public getCachedResolvedIdentifierValueMap (fileName: string): ICachedContent<ResolvedIIdentifierValueMap>|null {
+		return this.getFromCache<ResolvedIIdentifierValueMap>(this.getCachedResolvedIdentifierValueMapName(fileName));
+	}
+
+	public getCachedResolvedSerializedIdentifierValueMap (fileName: string): ICachedContent<ResolvedSerializedIIdentifierValueMap>|null {
+		return this.getFromCache<ResolvedSerializedIIdentifierValueMap>(this.getCachedResolvedSerializedIdentifierValueMapName(fileName));
+	}
+
 	public setCachedSerializedVariable (variable: IVariableAssignment, content: SerializedVersions): void {
 		const version = this.languageService.getFileVersion(variable.filePath);
 		this.cache.set(this.getCachedSerializedVariableName(variable.filePath, variable.startsAt, variable.name), {content, version});
@@ -207,6 +223,16 @@ export class Cache implements ICache {
 	public setCachedIdentifierMap (fileName: string, content: IIdentifierMap): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedIdentifierMapName(fileName), {version, content});
+	}
+
+	public setCachedResolvedIdentifierValueMap (fileName: string, content: ResolvedIIdentifierValueMap): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedResolvedIdentifierValueMapName(fileName), {version, content});
+	}
+
+	public setCachedResolvedSerializedIdentifierValueMap (fileName: string, content: ResolvedSerializedIIdentifierValueMap): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedResolvedSerializedIdentifierValueMapName(fileName), {version, content});
 	}
 
 	public setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void {
@@ -324,6 +350,22 @@ export class Cache implements ICache {
 
 	public cachedIdentifierMapNeedsUpdate (filePath: string): boolean {
 		const cache = this.getCachedIdentifierMap(this.getCachedIdentifierMapName(filePath));
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedResolvedIdentifierValueMapNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedResolvedIdentifierValueMap(this.getCachedResolvedIdentifierValueMapName(filePath));
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedResolvedSerializedIdentifierValueMapNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedResolvedIdentifierValueMap(this.getCachedResolvedSerializedIdentifierValueMapName(filePath));
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);

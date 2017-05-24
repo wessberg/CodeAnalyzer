@@ -49,7 +49,7 @@ import {ValueResolvedGetter} from "../getter/ValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {Mapper} from "../mapper/Mapper";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
 import {TokenPredicator} from "../predicate/TokenPredicator";
 import {IdentifierSerializer} from "../serializer/IdentifierSerializer";
 import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
@@ -61,7 +61,7 @@ import {IStringUtil} from "../util/interface/IStringUtil";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {StringUtil} from "../util/StringUtil";
 import {TypeUtil} from "../util/TypeUtil";
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICallExpression, IClassDeclaration, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifierMap, IImportDeclaration, IMutationDeclaration, INewExpression, VariableIndexer} from "./interface/ICodeAnalyzer";
+import {ArbitraryValue, ClassIndexer, EnumIndexer, FunctionIndexer, ICallExpression, IClassDeclaration, ICodeAnalyzer, IdentifierMapKind, IExportDeclaration, IIdentifierMap, IImportDeclaration, IMutationDeclaration, INewExpression, ResolvedIIdentifierValueMap, ResolvedIIdentifierValueMapIndexer, ResolvedSerializedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMapIndexer, VariableIndexer} from "./interface/ICodeAnalyzer";
 import {IMutationFormatter} from "../formatter/interface/IMutationFormatter";
 import {MutationFormatter} from "../formatter/MutationFormatter";
 import {IRequireFormatter} from "../formatter/interface/IRequireFormatter";
@@ -120,7 +120,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	private tokenPredicator: ITokenPredicator;
 	private typeUtil: ITypeUtil;
 	private files: Map<string, { version: number, content: string }> = new Map();
-	constructor (marshaller: IMarshaller,
+	constructor (private marshaller: IMarshaller,
 							 private fileLoader: IFileLoader,
 							 public typescript: typeof ts = ts) {
 		this.languageService = this.typescript.createLanguageService(this, typescript.createDocumentRegistry());
@@ -132,11 +132,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.nameGetter = new NameGetter(marshaller);
 		this.sourceFilePropertiesGetter = new SourceFilePropertiesGetter();
 		this.typeExpressionGetter = new TypeExpressionGetter(this.nameGetter, this.tokenSerializer);
-		this.heritageClauseFormatter = new HeritageClauseFormatter(this.typeExpressionGetter);
-		this.valueExpressionGetter = new ValueExpressionGetter(marshaller, this.heritageClauseFormatter, this.sourceFilePropertiesGetter, this.typeExpressionGetter, this.nameGetter, this.tokenSerializer, this.tokenPredicator, this.stringUtil);
 		this.mapper = new Mapper();
 		this.cache = new Cache(this);
-		this.tracer = new Tracer(this, this.mapper, this.nameGetter, this.sourceFilePropertiesGetter);
+		this.tracer = new Tracer(this, this.typeExpressionGetter, this.mapper, this.nameGetter, this.sourceFilePropertiesGetter);
+		this.heritageClauseFormatter = new HeritageClauseFormatter(this.tracer, this.typeExpressionGetter);
+		this.valueExpressionGetter = new ValueExpressionGetter(marshaller, this.heritageClauseFormatter, this.sourceFilePropertiesGetter, this.typeExpressionGetter, this.nameGetter, this.tokenSerializer, this.tokenPredicator, this.stringUtil);
 		this.identifierSerializer = new IdentifierSerializer(this, this.cache, this.combinationUtil, marshaller, this.stringUtil);
 		this.valueResolvedGetter = new ValueResolvedGetter(this, marshaller, this.tracer, this.identifierSerializer, this.tokenPredicator, this.combinationUtil);
 		this.valueableFormatter = new ValueableFormatter(this.tracer, this.valueExpressionGetter, this.valueResolvedGetter);
@@ -150,7 +150,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.methodFormatter = new MethodFormatter(this.tracer, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
 		this.constructorFormatter = new ConstructorFormatter(this.mapper, this.tracer, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
 		this.functionFormatter = new FunctionFormatter(this.mapper, this.tracer, this.cache, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
-		this.classFormatter = new ClassFormatter(this.mapper, this.cache, this.decoratorsFormatter, this.propFormatter, this.methodFormatter, this.constructorFormatter, this.modifiersFormatter, this.heritageClauseFormatter, this.sourceFilePropertiesGetter);
+		this.classFormatter = new ClassFormatter(this.mapper, this.cache, this.decoratorsFormatter, this.propFormatter, this.methodFormatter, this.constructorFormatter, this.modifiersFormatter, this.valueableFormatter, this.heritageClauseFormatter, this.sourceFilePropertiesGetter);
 		this.callExpressionFormatter = new CallExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
 		this.requireFormatter = new RequireFormatter(this, this.sourceFilePropertiesGetter, this.valueableFormatter, this.callExpressionFormatter, this.stringUtil, this.fileLoader);
 		this.newExpressionFormatter = new NewExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
@@ -389,6 +389,149 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		});
 		return expressions;
+	}
+
+	/**
+	 * Gets a map of all identifiers for the given file and their resolved serialized values.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {ResolvedSerializedIIdentifierValueMap}
+	 */
+	public getResolvedSerializedIdentifierValuesForFile (fileName: string, deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
+		const cached = this.cache.getCachedResolvedSerializedIdentifierValueMap(fileName);
+		if (cached != null && !this.cache.cachedResolvedSerializedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;
+
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getResolvedSerializedIdentifierValuesForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+
+		const declarations = this.getResolvedSerializedIdentifierValues(statements, deep);
+		this.cache.setCachedResolvedSerializedIdentifierValueMap(fileName, <any>declarations);
+		return <any>declarations;
+	}
+
+	/**
+	 * Gets a map of all identifiers for the given statements and their resolved serialized values.
+	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {ResolvedSerializedIIdentifierValueMap}
+	 */
+	public getResolvedSerializedIdentifierValues (statements: (Statement|Expression|Node)[], deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
+
+		const map: ResolvedSerializedIIdentifierValueMapIndexer = {};
+		const unserialized = this.getResolvedIdentifierValues(statements, deep);
+
+		Object.keys(unserialized.map).forEach(key => {
+			const value = unserialized.map[key];
+			const type = this.marshaller.getTypeOf(value);
+
+			switch (type) {
+				case "object":
+					map[key] = <string>this.marshaller.marshal(<object>value, "");
+					break;
+
+				case "constructor":
+					const ctor = <{[key: string]: ArbitraryValue} & Function>value;
+					const staticKeys = Object.getOwnPropertyNames(ctor);
+
+					const mappedKeys: {[key: string]: string} = {};
+					staticKeys.forEach(staticKey => {
+						const value = ctor[staticKey];
+						mappedKeys[staticKey] = <string>this.marshaller.marshal(<object>value, "");
+					});
+					map[key] = mappedKeys;
+					break;
+
+				case "class":
+					const ctorForClass = <{[key: string]: ArbitraryValue} & Function>value;
+					const staticKeysForClass = Object.getOwnPropertyNames(ctorForClass.constructor);
+
+					const mappedKeysForClass: {[key: string]: string} = {};
+					staticKeysForClass.forEach(staticKey => {
+						const value = ctorForClass[staticKey];
+						mappedKeysForClass[staticKey] = <string>this.marshaller.marshal(<object>value, "");
+					});
+					map[key] = mappedKeysForClass;
+					break;
+				default:
+					map[key] = <string>this.marshaller.marshal(<object>value, "");
+			}
+		});
+
+		const resolvedMap: ResolvedSerializedIIdentifierValueMap = {
+			___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP,
+			map
+		};
+
+		Object.defineProperty(resolvedMap, "___kind", {
+			value: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP,
+			enumerable: false
+		});
+		return resolvedMap;
+	}
+
+	/**
+	 * Gets a map of all identifiers for the given file and their resolved values.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {ResolvedIIdentifierValueMap}
+	 */
+	public getResolvedIdentifierValuesForFile (fileName: string, deep: boolean = false): ResolvedIIdentifierValueMap {
+		const cached = this.cache.getCachedResolvedIdentifierValueMap(fileName);
+		if (cached != null && !this.cache.cachedResolvedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;
+
+		const statements = this.getFile(fileName);
+		if (statements == null) throw new ReferenceError(`${this.getResolvedIdentifierValuesForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
+
+		const declarations = this.getResolvedIdentifierValues(statements, deep);
+		this.cache.setCachedResolvedIdentifierValueMap(fileName, <any>declarations);
+		return <any>declarations;
+	}
+
+	/**
+	 * Gets a map of all identifiers for the given statements and their resolved values.
+	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {ResolvedIIdentifierValueMap}
+	 */
+	public getResolvedIdentifierValues (statements: (Statement|Expression|Node)[], deep: boolean = false): ResolvedIIdentifierValueMap {
+
+		const map: ResolvedIIdentifierValueMapIndexer = {};
+
+		const enums = this.getEnumDeclarations(statements,deep);
+		const variables = this.getVariableAssignments(statements, deep);
+		const classes = this.getClassDeclarations(statements, deep);
+		const functions = this.getFunctionDeclarations(statements, deep);
+		const imports = this.getImportDeclarations(statements, deep);
+		Object.keys(enums).forEach(name => map[name] = enums[name].members);
+		Object.keys(variables).forEach(name => map[name] = variables[name].value.resolve());
+		Object.keys(classes).forEach(name => map[name] = classes[name].value.resolve());
+		Object.keys(functions).forEach(name => map[name] = functions[name].value.resolve());
+
+		imports.forEach(importDeclaration => {
+			Object.keys(importDeclaration.bindings).forEach(name => {
+				const payload = importDeclaration.bindings[name].payload();
+
+				if (isIExportableIIdentifier(payload)) {
+					if (isIEnumDeclaration(payload)) map[name] = payload.members;
+					else if (isILiteralValue(payload)) {
+						map[name] = payload.value();
+					}
+					else {
+						map[name] = payload.value.resolve();
+					}
+				}
+			});
+		});
+		const resolvedMap: ResolvedIIdentifierValueMap = {
+			___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP,
+			map
+		};
+
+		Object.defineProperty(resolvedMap, "___kind", {
+			value: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP,
+			enumerable: false
+		});
+		return resolvedMap;
 	}
 
 	/**

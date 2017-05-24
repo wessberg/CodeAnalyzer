@@ -12,6 +12,7 @@ import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
 import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IPropFormatter} from "./interface/IPropFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export class ClassFormatter implements IClassFormatter {
 
@@ -22,6 +23,7 @@ export class ClassFormatter implements IClassFormatter {
 							 private methodFormatter: IMethodFormatter,
 							 private constructorFormatter: IConstructorFormatter,
 							 private modifiersFormatter: IModifiersFormatter,
+							 private valueableFormatter: IValueableFormatter,
 							 private heritageClauseFormatter: IHeritageClauseFormatter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
 	}
@@ -41,6 +43,7 @@ export class ClassFormatter implements IClassFormatter {
 		const classBodyEndsAt = statement.members.end;
 		const fullClassContents = fileContents.slice(classDeclarationStartsAt, classDeclarationEndsAt);
 		const bodyClassContents = fileContents.slice(classBodyStartsAt, classBodyEndsAt);
+		const value = this.valueableFormatter.format(statement);
 
 		const declaration: IClassDeclaration = {
 			___kind: IdentifierMapKind.CLASS,
@@ -59,7 +62,8 @@ export class ClassFormatter implements IClassFormatter {
 				endsAt: classBodyEndsAt,
 				contents: bodyClassContents
 			},
-			props: {}
+			props: {},
+			value
 		};
 
 		// Make the kind non-enumerable.

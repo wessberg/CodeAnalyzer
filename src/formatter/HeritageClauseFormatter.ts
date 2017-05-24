@@ -1,12 +1,14 @@
 import {HeritageClause, NodeArray} from "typescript";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {isExtendsClause, isImplementsClause, isTypeBinding} from "../predicate/PredicateFunctions";
-import {IHeritage} from "../service/interface/ICodeAnalyzer";
+import {IClassDeclaration, IdentifierMapKind, IHeritage} from "../service/interface/ICodeAnalyzer";
 import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
+import {ITracer} from "../tracer/interface/ITracer";
 
 export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 
-	constructor (private typeExpressionGetter: ITypeExpressionGetter) {
+	constructor (private tracer: ITracer,
+							 private typeExpressionGetter: ITypeExpressionGetter) {
 	}
 
 	/**
@@ -23,8 +25,16 @@ export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 				// There can only be one extended class.
 				const [classIdentifier] = clause.types;
 				const [extendsClass] = this.typeExpressionGetter.getTypeExpression(classIdentifier);
+				const that = this;
 				if (isTypeBinding(extendsClass)) {
-					obj.extendsClass = extendsClass;
+					obj.extendsClass = {
+						...extendsClass,
+						...{
+							resolve () {
+								return <IClassDeclaration>that.tracer.traceIdentifier(extendsClass.name, clause, undefined, IdentifierMapKind.CLASS);
+							}
+						}
+					};
 				}
 			}
 

@@ -83,7 +83,7 @@ test(`getFunctionDeclarations() -> Detects all function arguments initialization
 		}
 	`);
 	const assignments = service.getFunctionDeclarations(statements, true);
-	t.deepEqual(assignments["foo"].parameters.parametersList[0].value.expression, ["(", "`hello`", "+", "`goodbye`", ")"]);
+	t.deepEqual(assignments["foo"].parameters.parametersList[0].value.expression, ["(", "`hello`", " ", "+", " ", "`goodbye`", ")"]);
 });
 
 test(`getFunctionDeclarations() -> Detects all enum declarations properly. #1`, t => {

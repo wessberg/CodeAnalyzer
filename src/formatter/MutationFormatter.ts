@@ -79,7 +79,7 @@ export class MutationFormatter implements IMutationFormatter {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;
 					} else {
-						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, statement.right, scope, undefined, insideThisScope);
+						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, statement, scope, undefined, insideThisScope);
 						map.value.resolved = computed;
 						map.value.resolvedPrecompute = flattened;
 					}

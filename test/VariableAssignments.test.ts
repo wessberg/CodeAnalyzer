@@ -310,7 +310,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	`;
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["val"].value.expression, [new BindingIdentifier("matches"), "[", new BindingIdentifier("foo"), "[\"length\"]", "-", 1, "]"]);
+	t.deepEqual(assignments["val"].value.expression, [new BindingIdentifier("matches"), "[", new BindingIdentifier("foo"), "[\"length\"]", " ", "-",  " ", 1, "]"]);
 });
 
 test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {

@@ -71,8 +71,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 	private attemptComputationShortListStrategy (setup: string[][], flattened: string): ArbitraryValue {
 		// This is a VERY time consuming operation if there are many possible combinations, even though it is elegant.
 		const combinations = this.combinationUtil.getPossibleCombinationsOfMultiDimensionalArray(setup);
+		if (combinations.length === 0) return this.computeValueResolved("", flattened);
 
-		for (const combination of combinations) {
+		for (const combination of (combinations || setup)) {
 			const joined = combination.join("\n");
 			try {
 				return this.computeValueResolved(joined, flattened);
@@ -104,10 +105,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
-	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, expression: ArbitraryValue[], index: number, options: IFlattenOptions): string[] {
+	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, expression: ArbitraryValue[], index: number, options: IFlattenOptions, substitution = this.tracer.traceIdentifier(part.name, from, scope)): string[] {
 
 		const isRecursive = part.name === scope;
-		const substitution = this.tracer.traceIdentifier(part.name, from, scope);
 
 		let variations: string[] = [];
 		const name = this.normalizeBindingIdentifierName(part, insideComputedThisScope);
@@ -145,17 +145,11 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 		}
 
-		/*
-		else if (isIVariableAssignment(substitution) || isIImportExportBinding(substitution)) {
-			const versions = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload());
-			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
-		}
-		*/
-
 		else if (isIClassDeclaration(substitution)) {
 			const versions = this.identifierSerializer.serializeIClassDeclaration(substitution);
-			const isInvocation = this.isSuperInvocation(expression, index);
-			variations = versions.map(version => `var ${name} = (${name} === undefined ? ${isInvocation ? "() => " : ""} ${part.name === "this" || part.name === "super" ? "new" : ""} ${version} : ${name});`);
+			const variableName = part.name === "super" ? substitution.name : name;
+			if (part.name === "super") options.shouldCompute = false;
+			variations = versions.map(version => `var ${variableName} = (${variableName} === undefined ? ${part.name === "this" ? "new" : ""} ${version} : ${variableName});`);
 		}
 
 		else if (isIEnumDeclaration(substitution)) {
@@ -175,8 +169,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		else {
 			// The identifier could not be found. Assume that it is part of the environment.
-			variations = [`${part.name};`];
-			console.log(`Assuming that '${part.name}' is part of the global environment...`);
+			variations = []; // [`${part.name};`];
+			if (process.env.npm_config_debug) console.log(`Assuming that '${part.name}' is part of the global environment...`);
 			// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
 		}
 
@@ -206,16 +200,6 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			}
 		});
 		return [setup, val, options];
-	}
-
-	private isSuperInvocation (expression: ArbitraryValue[], from: number): boolean {
-		const part = expression[from];
-		if (!(part instanceof BindingIdentifier && part.name === "super")) return false;
-		const isLast = from === expression.length - 1;
-		if (isLast) return false;
-
-		const indexPlus1 = expression[from + 1];
-		return indexPlus1 === "(";
 	}
 
 	private normalizeBindingIdentifierName (name: IBindingIdentifier, insideComputedThisScope: boolean): string {

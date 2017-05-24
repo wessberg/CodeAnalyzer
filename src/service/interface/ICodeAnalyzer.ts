@@ -18,7 +18,7 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, MODULE_DEPENDENCIES = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023, LITERAL = 1024
+	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, MODULE_DEPENDENCIES = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023, LITERAL = 1024, RESOLVED_IDENTIFIER_VALUE_MAP = 1025, RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP = 1026
 }
 
 export interface IPayloadable {
@@ -128,8 +128,12 @@ export interface IConstructorDeclaration extends INameable, IFunctionLike, IFile
 	value: IValueable;
 }
 
+export interface IExtendsRelation extends ITypeBinding {
+	resolve (): IClassDeclaration;
+}
+
 export interface IHeritage {
-	extendsClass: ITypeBinding|null;
+	extendsClass: IExtendsRelation|null;
 	implementsInterfaces: ITypeBinding[];
 }
 
@@ -138,6 +142,7 @@ export interface IClassDeclaration extends IMemberDeclaration, INameable, IFileP
 	props: PropIndexer;
 	constructor: IConstructorDeclaration|null;
 	heritage: IHeritage|null;
+	value: IValueable;
 }
 
 export interface IPositionable {
@@ -265,16 +270,25 @@ export declare interface IIdentifierMap extends IKindable {
 	mutations: IMutationDeclaration[];
 }
 
+export declare interface ResolvedIIdentifierValueMap extends IKindable {
+	map: ResolvedIIdentifierValueMapIndexer;
+}
+
+export declare interface ResolvedSerializedIIdentifierValueMap extends IKindable {
+	map: ResolvedSerializedIIdentifierValueMapIndexer;
+}
+
 export interface ILiteralValue extends IKindable, IPositionable {
 	value: () => ArbitraryValue;
 }
 
-// export declare type ImportExportBindingPayload = IExportableIIdentifier|NamespacedModuleMap|ArbitraryValue;
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
 export declare type IIdentifier = ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = ILiteralValue|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type ResolvedNamespacedModuleMap = { [key: string]: string };
+export declare type ResolvedIIdentifierValueMapIndexer = {[key: string]: ResolvedIIdentifierValueMapIndexer|ArbitraryValue};
+export declare type ResolvedSerializedIIdentifierValueMapIndexer = {[key: string]: ResolvedSerializedIIdentifierValueMapIndexer|string};
 export declare type NamespacedModuleMap = { [key: string]: IIdentifier };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
@@ -315,6 +329,10 @@ export interface ICodeAnalyzer extends LanguageServiceHost {
 	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
 	getNewExpressions(statements: (Statement|Expression|Node)[], deep?: boolean): INewExpression[];
 	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
+	getResolvedSerializedIdentifierValuesForFile (fileName: string, deep?: boolean): ResolvedSerializedIIdentifierValueMap;
+	getResolvedSerializedIdentifierValues (statements: (Statement|Expression|Node)[], deep?: boolean): ResolvedSerializedIIdentifierValueMap;
+	getResolvedIdentifierValuesForFile (fileName: string, deep?: boolean): ResolvedIIdentifierValueMap;
+	getResolvedIdentifierValues (statements: (Statement|Expression|Node)[], deep?: boolean): ResolvedIIdentifierValueMap;
 	getMutationsForFile (fileName: string, deep?: boolean): IMutationDeclaration[];
 	getMutations (statements: (Statement|Expression|Node)[], deep?: boolean): IMutationDeclaration[];
 }
