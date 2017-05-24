@@ -400,7 +400,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		if (isClassExpression(rawStatement) || isClassDeclaration(rawStatement)) {
 			const name = rawStatement.name == null ? [] : [this.nameGetter.getNameOfMember(rawStatement.name, false, true)];
 			const heritage = rawStatement.heritageClauses == null ? null : this.heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
-			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage];
+			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", heritage.name];
 			const members: InitializationValue = ["{"];
 
 			rawStatement.members.forEach(member => {

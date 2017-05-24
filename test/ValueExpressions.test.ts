@@ -460,7 +460,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", " ", "extends", " ", {name: "MyOtherClass", typeArguments: [{name: "Lol", typeArguments: null}]}, "{", "}"]);
+	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", " ", "extends", " ", "MyOtherClass", "{", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #44`, t => {
