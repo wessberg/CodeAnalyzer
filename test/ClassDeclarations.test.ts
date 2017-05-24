@@ -1,5 +1,6 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
+import {IConstructorDeclaration} from "../src/service/interface/ICodeAnalyzer";
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 
@@ -209,4 +210,35 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 	const assignments = service.getClassDeclarations(statements);
 	const classDeclaration = assignments["MyClass"];
 	t.true(classDeclaration.methods["myMethod"] != null);
+});
+
+test(`getClassDeclarations() -> Extends -> Supports derived classes. #1`, t => {
+
+	const code = `
+		class A {}
+		class B extends A {}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	t.true(classDeclaration.heritage != null && classDeclaration.heritage.extendsClass != null && classDeclaration.heritage.extendsClass.name === "A");
+});
+
+test(`getClassDeclarations() -> Extends -> Supports derived classes. #2`, t => {
+
+	const code = `
+		class A {}
+		class B extends A {
+			constructor () {
+				super();
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	const ctor = <IConstructorDeclaration>classDeclaration.constructor;
+	t.notThrows(ctor.value.resolve);
 });

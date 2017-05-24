@@ -151,7 +151,7 @@ export class TokenSerializer implements ITokenSerializer {
 			case SyntaxKind.ReturnStatement:
 				return "return";
 			case SyntaxKind.SuperKeyword:
-				return "super";
+				return new BindingIdentifier("super");
 			case SyntaxKind.ThisKeyword:
 				return new BindingIdentifier("this");
 			case SyntaxKind.ThrowKeyword:

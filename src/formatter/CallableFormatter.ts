@@ -1,7 +1,7 @@
 import {CallExpression, NewExpression, ParenthesizedExpression, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {isArrowFunction, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
+import {isArrowFunction, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression, isSuperExpression} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
@@ -38,6 +38,10 @@ export abstract class CallableFormatter implements ICallableFormatter {
 		}
 
 		if (isNewExpression(exp)) {
+			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+		}
+
+		if (isSuperExpression(exp)) {
 			identifier = this.nameGetter.getNameOfMember(exp, false, true);
 		}
 

@@ -179,7 +179,6 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 		const versions = this.exchangeReplacements(str, replacements);
 		this.cache.setCachedSerializedClass(classDeclaration, versions);
-		console.log("versions:", versions);
 		return versions;
 
 	}
@@ -223,9 +222,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 			if (index !== parameterBody.parametersList.length - 1) str += ", ";
 		});
 
-		const versions = this.exchangeReplacements(str, replacements);
-		console.log("parameters:", versions);
-		return versions;
+		return this.exchangeReplacements(str, replacements);
 	}
 	public serializeIFunctionDeclaration (functionDeclaration: IFunctionDeclaration): SerializedVersions {
 		const cached = this.cache.getCachedSerializedFunction(functionDeclaration);
@@ -252,7 +249,6 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 
 		const versions = this.exchangeReplacements(str, replacements);
 		this.cache.setCachedSerializedFunction(functionDeclaration, versions);
-		console.log("function:", versions);
 		return versions;
 	}
 

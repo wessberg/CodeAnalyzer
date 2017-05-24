@@ -25,6 +25,13 @@ export class Tracer implements ITracer {
 	 */
 	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap): IIdentifier|null {
 
+		if (identifier === "super") {
+			const scope = this.traceThis(from);
+			const derived = clojure.classes[scope];
+			const extendsClass = derived.heritage == null ? null : derived.heritage.extendsClass;
+			return extendsClass == null ? null : clojure.classes[extendsClass.name];
+		}
+
 		const allMatches: IIdentifier[] = [];
 		const functionMatch = clojure.functions[identifier];
 		const enumMatch = clojure.enums[identifier];

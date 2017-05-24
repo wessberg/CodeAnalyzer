@@ -9,6 +9,7 @@ import {ArbitraryValue, ICodeAnalyzer, InitializationValue, INonNullableValueabl
 import {ITracer} from "../tracer/interface/ITracer";
 import {IFlattenOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
 import {ICombinationUtil} from "../util/interface/ICombinationUtil";
+import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
@@ -37,6 +38,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		let [setup, flattened, options] = this.flattenValueExpression(valueable.expression, from, scope, insideThisScope);
 		let computed: ArbitraryValue = flattened;
+
+		if (process.env.npm_config_debug) console.log("flattened:", flattened);
 
 		if (options.shouldCompute) {
 			computed = this.attemptComputation(setup, flattened);
@@ -107,7 +110,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		const substitution = this.tracer.traceIdentifier(part.name, from, scope);
 
 		let variations: string[] = [];
-		const name = part.name === "this" && !insideComputedThisScope ? "that" : part.name;
+		const name = this.normalizeBindingIdentifierName(part, insideComputedThisScope);
+		// if (name === "super") options.shouldCompute = false;
 
 		if (isICallExpression(substitution) && substitution.identifier === "require") {
 
@@ -139,7 +143,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		else if (isIClassDeclaration(substitution)) {
 			const versions = this.identifierSerializer.serializeIClassDeclaration(substitution);
-			variations = versions.map(version => `var ${name} = (${name} === undefined ? ${part.name === "this" ? "new" : ""} ${version} : ${name});`);
+			const isInvocation = this.isSuperInvocation(expression, index);
+			variations = versions.map(version => `var ${name} = (${name} === undefined ? ${isInvocation ? "() => " : ""} ${part.name === "this" || part.name === "super" ? "new" : ""} ${version} : ${name});`);
 		}
 
 		else if (isIEnumDeclaration(substitution)) {
@@ -178,9 +183,10 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		valueExpression.forEach((part, index) => {
 			if (part instanceof BindingIdentifier) {
+
 				const setupVariations = this.flattenBoundPart(part, from, scope, insideComputedThisScope, valueExpression, index, options);
 				setup.push(setupVariations);
-				val += part.name === "this" && !insideComputedThisScope ? "that" : part.name;
+				val += this.normalizeBindingIdentifierName(part, insideComputedThisScope);
 			} else {
 				if (part === "const" || part === "var" || part === "let") return;
 				if (part === GlobalObject) val += GlobalObjectIdentifier;
@@ -189,6 +195,22 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			}
 		});
 		return [setup, val, options];
+	}
+
+	private isSuperInvocation (expression: ArbitraryValue[], from: number): boolean {
+		const part = expression[from];
+		if (!(part instanceof BindingIdentifier && part.name === "super")) return false;
+		const isLast = from === expression.length - 1;
+		if (isLast) return false;
+
+		const indexPlus1 = expression[from + 1];
+		return indexPlus1 === "(";
+	}
+
+	private normalizeBindingIdentifierName (name: IBindingIdentifier, insideComputedThisScope: boolean): string {
+		return name.name === "this" && !insideComputedThisScope
+			? "that"
+			: name.name === "super" && !insideComputedThisScope ? "_super" : name.name;
 	}
 
 }

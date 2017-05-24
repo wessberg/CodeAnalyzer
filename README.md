@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.8**:
+
+- Added support for 'super()' expressions from class methods.
+
 **v1.0.7**:
 
 - More caching, better performance, better resolving of values, other bug fixes.
