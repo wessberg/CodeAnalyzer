@@ -1,11 +1,12 @@
 import {SyntaxKind} from "typescript";
 import {IMarshaller} from "@wessberg/marshaller";
-import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIImportExportBinding, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IFunctionDeclaration, ImportExportBindingPayload, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ParameterKind, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
+// import {isIClassDeclaration, isIEnumDeclaration, isIExportableIIdentifier, isIFunctionDeclaration, isIImportExportBinding, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, IClassDeclaration, ICodeAnalyzer, IdentifierMapKind, IEnumDeclaration, IFunctionDeclaration, IIdentifier, ILiteralValue, IParameter, IParametersBody, IVariableAssignment, NamespacedModuleMap, ParameterKind, ResolvedNamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IIdentifierSerializer, SerializedReplacements, SerializedVersions} from "./interface/IIdentifierSerializer";
 import {ICache} from "../cache/interface/ICache";
 import {ICombinationUtil} from "../util/interface/ICombinationUtil";
+import {isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 
 export class IdentifierSerializer implements IIdentifierSerializer {
 
@@ -46,6 +47,39 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		return versions;
 	}
 
+	public serializeIIdentifier (value: IIdentifier): SerializedVersions {
+		if (isILiteralValue(value)) return this.serializeILiteralValue(value);
+		if (isIParameter(value)) return this.serializeIParameter(value);
+		if (isNamespacedModuleMap(value)) return this.serializeNamespacedModuleMap(value);
+		if (isIClassDeclaration(value)) return this.serializeIClassDeclaration(value);
+		if (isIVariableAssignment(value)) return this.serializeIVariableAssignment(value);
+		if (isIEnumDeclaration(value)) return this.serializeIEnumDeclaration(value);
+		if (isIFunctionDeclaration(value)) return this.serializeIFunctionDeclaration(value);
+
+		throw new TypeError(`${this.constructor.name} could not serialize an identifier of kind ${IdentifierMapKind[value.___kind]}`);
+	}
+
+	public serialize (value: IIdentifier|ArbitraryValue): SerializedVersions {
+		if (isIIdentifier(value)) return this.serializeIIdentifier(value);
+		if (isNamespacedModuleMap(value)) return this.serializeNamespacedModuleMap(value);
+		return this.serializeArbitrary(value);
+	}
+
+	public serializeILiteralValue (literal: ILiteralValue): SerializedVersions {
+		const value = literal.value();
+		if (isILiteralValue(value)) return this.serializeILiteralValue(value);
+		if (isNamespacedModuleMap(value)) return this.serializeNamespacedModuleMap(value);
+		else if (isIIdentifier(value)) return this.serializeIIdentifier(value);
+
+		return this.serializeArbitrary(value);
+	}
+
+	public serializeArbitrary (value: ArbitraryValue): SerializedVersions {
+		const val = <string>this.stringUtil.quoteIfNecessary(this.marshaller.marshal<ArbitraryValue, string>(value, ""));
+		return [val, `\`${val}\``];
+	}
+
+	/*
 	public serializeIImportExportBinding (payload: ImportExportBindingPayload): SerializedVersions {
 
 		if (isIImportExportBinding(payload)) {
@@ -70,6 +104,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		return [value, `\`${value}\``];
 	}
 
+*/
 	public serializeNamespacedModuleMap (map: NamespacedModuleMap): SerializedVersions {
 		const newMap: ResolvedNamespacedModuleMap = {};
 		const keys = Object.keys(map);
@@ -77,13 +112,14 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 		// TODO: Combine all deep combinations of keys and their versions. The math is just so hard that I gave up for now.
 		keys.forEach(key => {
 			const value = map[key];
-			const [firstVersion] = this.serializeIImportExportBinding(value);
+			const [firstVersion] = this.serializeIIdentifier(value);
 			newMap[key] = firstVersion;
 		});
 
 		const value = <string>this.marshaller.marshal<ArbitraryValue, string>(newMap, "");
 		return [value];
 	}
+
 	public serializeIClassDeclaration (classDeclaration: IClassDeclaration): SerializedVersions {
 		const cached = this.cache.getCachedSerializedClass(classDeclaration);
 		if (cached != null && !this.cache.cachedSerializedClassNeedsUpdate(classDeclaration)) return cached.content;

@@ -3,7 +3,7 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIImportExportBinding, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
+import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isILiteralValue, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
 import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
 import {ArbitraryValue, ICodeAnalyzer, InitializationValue, INonNullableValueable, NAMESPACE_NAME, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
@@ -111,9 +111,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		let variations: string[] = [];
 		const name = this.normalizeBindingIdentifierName(part, insideComputedThisScope);
-		// if (name === "super") options.shouldCompute = false;
 
-		if (isICallExpression(substitution) && substitution.identifier === "require") {
+		if (isILiteralValue(substitution)) {
+			const versions = this.identifierSerializer.serializeILiteralValue(substitution);
+			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
+		}
+
+		else if (isICallExpression(substitution) && substitution.identifier === "require") {
 
 			const imports = this.languageService.getImportDeclarationsForFile(substitution.filePath, true);
 			const firstArgument = substitution.arguments.argumentsList[0];
@@ -129,17 +133,24 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			}
 		}
 
-		if (isIParameter(substitution)) {
+		else if (isIParameter(substitution)) {
 			const versions = this.identifierSerializer.serializeIParameter(substitution);
 			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 			options.shouldCompute = false;
 			options.forceNoQuoting = true;
 		}
 
+		else if (isIVariableAssignment(substitution)) {
+			const versions = this.identifierSerializer.serializeIVariableAssignment(substitution);
+			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
+		}
+
+		/*
 		else if (isIVariableAssignment(substitution) || isIImportExportBinding(substitution)) {
 			const versions = isIVariableAssignment(substitution) ? this.identifierSerializer.serializeIVariableAssignment(substitution) : this.identifierSerializer.serializeIImportExportBinding(substitution.payload());
 			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
 		}
+		*/
 
 		else if (isIClassDeclaration(substitution)) {
 			const versions = this.identifierSerializer.serializeIClassDeclaration(substitution);

@@ -5,14 +5,13 @@ import {Config} from "../static/Config";
 import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
 import "querystring";
-import {IMarshaller} from "@wessberg/marshaller";
 import {BindingIdentifier} from "../model/BindingIdentifier";
+import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 
 	constructor (protected stringUtil: IStringUtil,
-							 private marshaller: IMarshaller,
 							 private fileLoader: IFileLoader) {
 	}
 
@@ -40,7 +39,12 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 				const isNamespace = binding.name === NAMESPACE_NAME;
 				// If it isn't a namespace, just add the key to the object.
-				if (!isNamespace) indexer[key] = binding.payload();
+
+				if (!isNamespace) {
+					let payload = binding.payload();
+					while (isIImportExportBinding(payload)) payload = payload.payload();
+					indexer[key] = payload;
+				}
 				else {
 					if (!(moduleDeclaration.source instanceof BindingIdentifier)) {
 						const path = moduleDeclaration.source.fullPath();
@@ -50,9 +54,14 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 						}
 					}
 					// Merge the two.
-					let payload = <NamespacedModuleMap>binding.payload();
-					if (typeof payload === "string") payload = <NamespacedModuleMap>this.marshaller.marshal(payload, {});
-					Object.keys(payload).forEach(key => indexer[key] = payload[key]);
+					let payload = binding.payload();
+					while (isIImportExportBinding(payload)) payload = payload.payload();
+					if (isILiteralValue(payload)) {
+						const value = payload.value();
+						if (isNamespacedModuleMap(value)) {
+							Object.keys(value).forEach(key => indexer[key] = (<any>value)[key]);
+						}
+					}
 				}
 			});
 		});

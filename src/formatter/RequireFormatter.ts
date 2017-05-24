@@ -8,7 +8,6 @@ import {IFileLoader} from "@wessberg/fileloader";
 import {isCallExpression, isExternalModuleReference, isICallExpression, isParenthesizedExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IMarshaller} from "@wessberg/marshaller";
 
 export class RequireFormatter extends ModuleFormatter implements IRequireFormatter {
 
@@ -17,9 +16,8 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 							 private valueableFormatter: IValueableFormatter,
 							 private callExpressionFormatter: ICallExpressionFormatter,
 							 protected stringUtil: IStringUtil,
-							 marshaller: IMarshaller,
 							 fileLoader: IFileLoader) {
-		super(stringUtil, marshaller, fileLoader);
+		super(stringUtil, fileLoader);
 	}
 	/**
 	 * Formats the given CallExpression and returns an IRequire.
@@ -60,7 +58,12 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 
 		const payload = () => {
 			const path = fullPath();
-			return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+			return {
+				___kind: IdentifierMapKind.LITERAL,
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+			};
 		};
 
 		const map: IRequire = {
@@ -133,7 +136,13 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 
 		const payload = () => {
 			const path = fullPath();
-			return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+			return {
+				___kind: IdentifierMapKind.LITERAL,
+				startsAt: isICallExpression(statement) ? statement.startsAt : statement.pos,
+				endsAt: isICallExpression(statement) ? statement.endsAt : statement.end,
+				value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+			};
+			;
 		};
 
 		const map: IRequire = {

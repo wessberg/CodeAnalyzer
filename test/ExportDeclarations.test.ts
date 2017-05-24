@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {ImportExportKind, NAMESPACE_NAME} from "../src/service/interface/ICodeAnalyzer";
 import {fileName, parse, service} from "./util/Setup";
+import {isILiteralValue} from "../src/predicate/PredicateFunctions";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
 
@@ -59,7 +60,9 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t =
 
 	const statements = parse(code);
 	const exportDeclarations = service.getExportDeclarations(statements);
-	t.true(exportDeclarations[2] != null && Object.keys(exportDeclarations[2].bindings[NAMESPACE_NAME].payload()).length === 2);
+	const payload = exportDeclarations[2].bindings[NAMESPACE_NAME].payload();
+
+	t.true(isILiteralValue(payload) && Object.keys(payload.value()).length === 2);
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t => {

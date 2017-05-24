@@ -15,7 +15,6 @@ import {ModuleFormatter} from "./ModuleFormatter";
 import {IMutationFormatter} from "./interface/IMutationFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
-import {IMarshaller} from "@wessberg/marshaller";
 import {IRequireFormatter} from "./interface/IRequireFormatter";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
@@ -32,10 +31,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 							 private functionFormatter: IFunctionFormatter,
 							 private nameGetter: INameGetter,
 							 private tracer: ITracer,
-							 marshaller: IMarshaller,
 							 stringUtil: IStringUtil,
 							 fileLoader: IFileLoader) {
-		super(stringUtil, marshaller, fileLoader);
+		super(stringUtil, fileLoader);
 	}
 
 	public format (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration|ExpressionStatement|BinaryExpression|CallExpression): IExportDeclaration|null {
@@ -114,11 +112,16 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 			if (isLiteralExpression(statement.expression)) {
 				const value = this.valueableFormatter.format(statement.expression);
-				return value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+				return {
+					___kind: IdentifierMapKind.LITERAL,
+					startsAt: statement.expression.pos,
+					endsAt: statement.expression.end,
+					value: () => value.hasDoneFirstResolve() ? value.resolved : value.resolve()
+				}
 			} else {
 				const identifier = this.nameGetter.getName(statement.expression);
 				const scope = this.tracer.traceThis(statement);
-				return identifier == null ? null : this.tracer.traceIdentifier(identifier, statement, scope);
+				return this.tracer.traceIdentifier(identifier, statement, scope);
 			}
 		};
 
@@ -164,7 +167,14 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		const isCandidate = formatted.property === "exports" && formatted.identifier !== "undefined" && formatted.identifier !== undefined;
 		if (!isCandidate) return null;
 
-		const payload = () => formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve();
+		const payload = () => {
+			return {
+				___kind: IdentifierMapKind.LITERAL,
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				value: () => formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve()
+			}
+		};
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
@@ -387,7 +397,12 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (clause == null) {
 			const payload = () => {
 				const path = modulePath();
-				return this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true));
+				return {
+					___kind: IdentifierMapKind.LITERAL,
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+				}
 			};
 
 			indexer[NAMESPACE_NAME] = {
@@ -403,12 +418,15 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			clause.elements.forEach(element => {
 
 				const payload = () => {
+					const path = modulePath();
 					const block = this.tracer.traceBlockScopeName(clause);
-					const clojure = this.tracer.traceClojure(modulePath());
-
-					return typeof clojure === "string"
-						? clojure
-						: this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
+					const clojure = this.tracer.traceClojure(path);
+					return clojure == null ? {
+						___kind: IdentifierMapKind.LITERAL,
+						startsAt: element.pos,
+						endsAt: element.end,
+						value: () => path
+					} : this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
 				};
 
 				indexer[element.name.text] = {

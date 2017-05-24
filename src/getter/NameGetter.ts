@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {DeclarationName, Expression, Identifier, Node, Statement, SyntaxKind, TypeNode, TypeReferenceNode} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {isArrayLiteralExpression, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {INameGetter} from "./interface/INameGetter";
 import {Config} from "../static/Config";
@@ -11,7 +11,7 @@ export class NameGetter implements INameGetter {
 	constructor (private marshaller: IMarshaller) {
 	}
 
-	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string|null {
+	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string {
 		if (
 			isBindingElement(statement) ||
 			isParameterDeclaration(statement) ||
@@ -32,7 +32,8 @@ export class NameGetter implements INameGetter {
 			isNamespaceImport(statement) ||
 			isNewExpression(statement)
 		) {
-			return statement.name == null ? null : <string>this.getNameOfMember(statement.name, false, true);
+			if (statement.name == null) throw new ReferenceError(`${this.constructor.name} could not get the name for an expression of kind ${SyntaxKind[statement.kind]}`);
+			return <string>this.getNameOfMember(statement.name, false, true);
 		}
 
 		if (isSuperExpression(statement)) {
@@ -56,9 +57,23 @@ export class NameGetter implements INameGetter {
 			isDecorator(statement) ||
 			isExternalModuleReference(statement)
 		) {
-			return statement.expression == null ? null : <string>this.getNameOfMember(statement.expression, false, true);
+			if (statement.expression == null) throw new ReferenceError(`${this.constructor.name} could not get the name for an expression of kind ${SyntaxKind[statement.kind]}`);
+			return <string>this.getNameOfMember(statement.expression, false, true);
 		}
-		return null;
+
+		if (
+			isArrowFunction(statement)
+		) {
+			return Config.name.anonymous;
+		}
+
+		if (
+			isThisKeyword(statement)
+		) {
+			return "this";
+		}
+
+		throw new ReferenceError(`${this.constructor.name} could not get the name for an expression of kind ${SyntaxKind[statement.kind]}`);
 	}
 
 	/**
@@ -67,9 +82,9 @@ export class NameGetter implements INameGetter {
 	 * @param {DeclarationName} name
 	 * @param {boolean} [allowNonStringNames=false]
 	 * @param {boolean} [forceNoBindingIdentifier=false]
-	 * @returns {ArbitraryValue}
+	 * @returns {string|number|BindingIdentifier|RegExp}
 	 */
-	public getNameOfMember (name: DeclarationName|Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): ArbitraryValue {
+	public getNameOfMember (name: DeclarationName|Expression, allowNonStringNames: boolean = false, forceNoBindingIdentifier: boolean = false): string|number|BindingIdentifier|RegExp {
 
 		if (isSuperExpression(name)) {
 			return "super";
@@ -93,7 +108,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isIdentifierObject(name)) {
-			const marshalled = this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+			const marshalled = <string>this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
 
 			if (this.memberHasNoBindingIdentifier(name)) {
 				// Then this is the key of a property-assignment. We already know it isn't computed, so it can't be an identifier to another variable.
@@ -108,7 +123,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isFirstLiteralToken(name)) {
-			return this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+			return <string|number|BindingIdentifier|RegExp>this.marshaller.marshal<string, string|number|BindingIdentifier|RegExp>(name.text, allowNonStringNames ? undefined : "");
 		}
 
 		if (isNewExpression(name)) {
@@ -124,7 +139,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isRegularExpressionLiteral(name)) {
-			return this.marshaller.marshal<string, RegExpConstructor>(name.text, RegExp);
+			return <string|RegExp>this.marshaller.marshal<string, RegExpConstructor|string>(name.text, forceNoBindingIdentifier ? "" : RegExp);
 		}
 
 		if (isPropertyAccessExpression(name)) {

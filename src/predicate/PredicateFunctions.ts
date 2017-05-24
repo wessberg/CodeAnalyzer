@@ -1,5 +1,5 @@
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
-import {ArbitraryValue, ICallExpression, IClassDeclaration, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IFunctionDeclaration, IIdentifier, IImportExportBinding, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
+import {ArbitraryValue, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IExportDeclaration, IFunctionDeclaration, IIdentifier, IImportDeclaration, IImportExportBinding, ILiteralValue, IMutationDeclaration, INewExpression, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 
 /**
  * A predicate function that returns true if the given Statement is an ObjectLiteralExpression.
@@ -1011,9 +1011,18 @@ export function isRegularExpressionLiteral (statement: BindingName|EntityName|Ex
 export function isIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IIdentifier {
 	return isIVariableAssignment(statement) ||
 		isIParameter(statement) ||
+		isIArgument(statement) ||
+		isIDecorator(statement) ||
+		isICallExpression(statement) ||
+		isINewExpression(statement) ||
+		isIImportDeclaration(statement) ||
+		isIExportDeclaration(statement) ||
+		isIMutationDeclaration(statement) ||
+		isIConstructorDeclaration(statement) ||
 		isIImportExportBinding(statement) ||
 		isIClassDeclaration(statement) ||
 		isIEnumDeclaration(statement) ||
+		isILiteralValue(statement) ||
 		isIFunctionDeclaration(statement);
 }
 
@@ -1023,7 +1032,11 @@ export function isIIdentifier (statement: IIdentifier|ArbitraryValue): statement
  * @returns {boolean}
  */
 export function isIExportableIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IExportableIIdentifier {
-	return isIVariableAssignment(statement) || isIClassDeclaration(statement) || isIEnumDeclaration(statement) || isIFunctionDeclaration(statement);
+	return isILiteralValue(statement) ||
+		isIVariableAssignment(statement) ||
+		isIClassDeclaration(statement) ||
+		isIEnumDeclaration(statement) ||
+		isIFunctionDeclaration(statement);
 }
 
 /**
@@ -1033,6 +1046,69 @@ export function isIExportableIIdentifier (statement: IIdentifier|ArbitraryValue)
  */
 export function isNamespacedModuleMap (statement: IIdentifier|ArbitraryValue): statement is NamespacedModuleMap {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IMutationDeclaration.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIMutationDeclaration (statement: IIdentifier|ArbitraryValue): statement is IMutationDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.MUTATION;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an INewExpression.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isINewExpression (statement: IIdentifier|ArbitraryValue): statement is INewExpression {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NEW_EXPRESSION;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IImportDeclaration.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIImportDeclaration (statement: IIdentifier|ArbitraryValue): statement is IImportDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.IMPORT;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IImportDeclaration.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIExportDeclaration (statement: IIdentifier|ArbitraryValue): statement is IExportDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.EXPORT;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IConstructorDeclaration.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIConstructorDeclaration (statement: IIdentifier|ArbitraryValue): statement is IConstructorDeclaration {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.CONSTRUCTOR;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IDecorator.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIDecorator (statement: IIdentifier|ArbitraryValue): statement is IDecorator {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.DECORATOR;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IArgument.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIArgument (statement: IIdentifier|ArbitraryValue): statement is IArgument {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.ARGUMENT;
 }
 
 /**
@@ -1069,6 +1145,15 @@ export function isICallExpression (statement: IIdentifier|ArbitraryValue): state
  */
 export function isIImportExportBinding (statement: IIdentifier|ArbitraryValue): statement is IImportExportBinding {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.IMPORT_EXPORT_BINDING;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an ILiteralValue.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isILiteralValue (statement: IIdentifier|ArbitraryValue): statement is ILiteralValue {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.LITERAL;
 }
 
 /**

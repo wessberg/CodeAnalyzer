@@ -152,11 +152,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.functionFormatter = new FunctionFormatter(this.mapper, this.tracer, this.cache, this.nameGetter, this.valueExpressionGetter, this.valueResolvedGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter, this.modifiersFormatter, this.parametersFormatter);
 		this.classFormatter = new ClassFormatter(this.mapper, this.cache, this.decoratorsFormatter, this.propFormatter, this.methodFormatter, this.constructorFormatter, this.modifiersFormatter, this.heritageClauseFormatter, this.sourceFilePropertiesGetter);
 		this.callExpressionFormatter = new CallExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
-		this.requireFormatter = new RequireFormatter(this, this.sourceFilePropertiesGetter, this.valueableFormatter, this.callExpressionFormatter, this.stringUtil, marshaller, this.fileLoader);
+		this.requireFormatter = new RequireFormatter(this, this.sourceFilePropertiesGetter, this.valueableFormatter, this.callExpressionFormatter, this.stringUtil, this.fileLoader);
 		this.newExpressionFormatter = new NewExpressionFormatter(this.mapper, this.argumentsFormatter, this.sourceFilePropertiesGetter, this.valueableFormatter, this.nameGetter, this.typeExpressionGetter, this.tokenSerializer, this.typeUtil);
 		this.enumFormatter = new EnumFormatter(this.mapper, this.cache, this.nameGetter, this.sourceFilePropertiesGetter, this.decoratorsFormatter);
-		this.importFormatter = new ImportFormatter(this, this.sourceFilePropertiesGetter, this.nameGetter, this.requireFormatter, this.mapper, this.tracer, marshaller, this.stringUtil, fileLoader);
-		this.exportFormatter = new ExportFormatter(this, this.mapper, this.sourceFilePropertiesGetter, this.valueableFormatter, this.requireFormatter, this.callExpressionFormatter, this.variableFormatter, this.classFormatter, this.mutationFormatter, this.functionFormatter, this.nameGetter, this.tracer, marshaller, this.stringUtil, fileLoader);
+		this.importFormatter = new ImportFormatter(this, this.sourceFilePropertiesGetter, this.nameGetter, this.requireFormatter, this.mapper, this.tracer, this.stringUtil, fileLoader);
+		this.exportFormatter = new ExportFormatter(this, this.mapper, this.sourceFilePropertiesGetter, this.valueableFormatter, this.requireFormatter, this.callExpressionFormatter, this.variableFormatter, this.classFormatter, this.mutationFormatter, this.functionFormatter, this.nameGetter, this.tracer, this.stringUtil, fileLoader);
 	}
 
 	/**
