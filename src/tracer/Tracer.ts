@@ -112,7 +112,7 @@ export class Tracer implements ITracer {
 			if (mapped2 != null && mapped2 === from) return;
 
 			const match = exportDeclaration.bindings[identifier];
-			if (match != null && exportDeclaration.filePath !== filePath ) exportBindingMatches.push(match);
+			if (match != null && exportDeclaration.filePath !== filePath) exportBindingMatches.push(match);
 		});
 
 		if (functionMatch != null) allMatches.push(functionMatch);

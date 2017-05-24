@@ -430,10 +430,10 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 					break;
 
 				case "constructor":
-					const ctor = <{[key: string]: ArbitraryValue} & Function>value;
+					const ctor = <{ [key: string]: ArbitraryValue }&Function>value;
 					const staticKeys = Object.getOwnPropertyNames(ctor);
 
-					const mappedKeys: {[key: string]: string} = {};
+					const mappedKeys: { [key: string]: string } = {};
 					staticKeys.forEach(staticKey => {
 						const value = ctor[staticKey];
 						mappedKeys[staticKey] = <string>this.marshaller.marshal(<object>value, "");
@@ -442,10 +442,10 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 					break;
 
 				case "class":
-					const ctorForClass = <{[key: string]: ArbitraryValue} & Function>value;
+					const ctorForClass = <{ [key: string]: ArbitraryValue }&Function>value;
 					const staticKeysForClass = Object.getOwnPropertyNames(ctorForClass.constructor);
 
-					const mappedKeysForClass: {[key: string]: string} = {};
+					const mappedKeysForClass: { [key: string]: string } = {};
 					staticKeysForClass.forEach(staticKey => {
 						const value = ctorForClass[staticKey];
 						mappedKeysForClass[staticKey] = <string>this.marshaller.marshal(<object>value, "");
@@ -497,7 +497,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 		const map: ResolvedIIdentifierValueMapIndexer = {};
 
-		const enums = this.getEnumDeclarations(statements,deep);
+		const enums = this.getEnumDeclarations(statements, deep);
 		const variables = this.getVariableAssignments(statements, deep);
 		const classes = this.getClassDeclarations(statements, deep);
 		const functions = this.getFunctionDeclarations(statements, deep);

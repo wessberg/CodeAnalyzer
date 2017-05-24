@@ -44,7 +44,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			const isStatic = rawStatement.modifiers == null ? false : rawStatement.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
 			const staticIntro = isStatic ? ["static", " "] : [];
 
-			const getterIntro: ArbitraryValue[] = [...staticIntro, "get", " ", name, "(", ")", "{", ];
+			const getterIntro: ArbitraryValue[] = [...staticIntro, "get", " ", name, "(", ")", "{"];
 			const getterOutro: ArbitraryValue[] = ["return", " ", "this", ".", `_${name}`, "}"];
 			let getter: ArbitraryValue[];
 
@@ -54,7 +54,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			if (initializer.length === 0) {
 				getter = [...getterIntro, ...getterOutro];
 			} else {
-				getter = [...getterIntro, "if", "(", "this", ".", `_${name}`, "===", "undefined", ")", "{", "this", ".", `_${name}`, "=", ...initializer, "}", ...getterOutro ];
+				getter = [...getterIntro, "if", "(", "this", ".", `_${name}`, "===", "undefined", ")", "{", "this", ".", `_${name}`, "=", ...initializer, "}", ...getterOutro];
 			}
 
 			return [...getter, ...setter];

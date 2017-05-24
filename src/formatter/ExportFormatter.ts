@@ -117,7 +117,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					startsAt: statement.expression.pos,
 					endsAt: statement.expression.end,
 					value: () => value.hasDoneFirstResolve() ? value.resolved : value.resolve()
-				}
+				};
 			} else {
 				const identifier = this.nameGetter.getName(statement.expression);
 				const scope = this.tracer.traceThis(statement);
@@ -173,7 +173,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				startsAt: statement.pos,
 				endsAt: statement.end,
 				value: () => formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve()
-			}
+			};
 		};
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -402,7 +402,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					startsAt: statement.pos,
 					endsAt: statement.end,
 					value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
-				}
+				};
 			};
 
 			indexer[NAMESPACE_NAME] = {
