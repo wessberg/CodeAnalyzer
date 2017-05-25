@@ -332,3 +332,106 @@ test(`getClassDeclarations() -> Extends -> Supports derived classes. #4`, t => {
 		t.true(resolved === "ABC");
 	}
 });
+
+test(`getClassDeclarations() -> Extends -> Inherits properties and methods properly. #1`, t => {
+
+	const code = `
+		class A {
+		 foo () {
+		 	return \`A\`;
+		 }
+		}
+		
+		class B extends A {
+			bar () {
+				return this.foo();
+			}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	classDeclaration.mergeWithParent();
+	const method = classDeclaration.methods["bar"];
+	const resolved = method.value.resolve();
+	t.true(resolved === "A");
+});
+
+test(`getClassDeclarations() -> Extends -> Inherits properties and methods properly. #2`, t => {
+
+	const code = `
+		class A {
+		 foo () {
+		 	return \`A\`;
+		 }
+		}
+		
+		class B extends A {
+			bar () {
+				return this.foo();
+			}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	classDeclaration.mergeWithParent();
+	const method = classDeclaration.methods["foo"];
+	t.true(method != null);
+});
+
+test(`getClassDeclarations() -> Extends -> Inherits properties and methods properly. #3`, t => {
+
+	const code = `
+		class A {
+		 foo: string = "hello";
+		}
+		
+		class B extends A {}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	classDeclaration.mergeWithParent();
+	const prop = classDeclaration.props["foo"];
+	t.true(prop != null);
+});
+
+test(`getClassDeclarations() -> Extends -> Inherits properties and methods properly. #4`, t => {
+
+	const code = `
+		class A {
+		 constructor () {
+		 }
+		}
+		
+		class B extends A {}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["B"];
+	classDeclaration.mergeWithParent();
+	const ctor = classDeclaration.constructor;
+	t.true(ctor != null);
+});
+
+test(`getClassDeclarations() -> Extends -> Inherits properties and methods properly. #5`, t => {
+
+	const code = `
+		class A {
+		 foo: string = "hello";
+		}
+		
+		class B extends A {}
+		class C extends B {}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["C"];
+	classDeclaration.mergeWithParent();
+	const prop = classDeclaration.props["foo"];
+	t.true(prop != null);
+});

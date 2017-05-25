@@ -44,6 +44,9 @@ export class ClassFormatter implements IClassFormatter {
 		const fullClassContents = fileContents.slice(classDeclarationStartsAt, classDeclarationEndsAt);
 		const bodyClassContents = fileContents.slice(classBodyStartsAt, classBodyEndsAt);
 		const value = this.valueableFormatter.format(statement);
+		const that = this;
+
+		let hasMerged: boolean = false;
 
 		const declaration: IClassDeclaration = {
 			___kind: IdentifierMapKind.CLASS,
@@ -63,14 +66,13 @@ export class ClassFormatter implements IClassFormatter {
 				contents: bodyClassContents
 			},
 			props: {},
-			value
+			value,
+			mergeWithParent () {
+				if (hasMerged) return;
+				that.mergeWithParent(this);
+				hasMerged = true;
+			}
 		};
-
-		// Make the kind non-enumerable.
-		Object.defineProperty(declaration, "___kind", {
-			value: IdentifierMapKind.CLASS,
-			enumerable: false
-		});
 
 		statement.members.forEach(member => {
 
@@ -96,9 +98,59 @@ export class ClassFormatter implements IClassFormatter {
 			else throw new TypeError(`${ClassFormatter.constructor.name} didn't understand a class member of type ${SyntaxKind[member.kind]}`);
 		});
 
+		// Make the kind non-enumerable.
+		Object.defineProperty(declaration, "___kind", {
+			value: IdentifierMapKind.CLASS,
+			enumerable: false
+		});
+
 		this.mapper.set(declaration, statement);
 		this.cache.setCachedClass(filePath, declaration);
 		return declaration;
+	}
+
+	private mergeWithParent (declaration: IClassDeclaration): void {
+		if (declaration.heritage == null || declaration.heritage.extendsClass == null) return;
+
+		// Merge in the parent class properties.
+		const base = declaration.heritage.extendsClass.resolve();
+		if (base == null) {
+			console.log("base was null for", declaration.name);
+			// It the base class couldn't be resolved, it is probably a built-in class (such as HTMLElement).
+			return;
+		}
+
+		base.mergeWithParent();
+
+		// Merge in the parent constructor.
+		if (declaration.constructor == null) {
+			declaration.constructor = {
+				...base.constructor,
+				...{
+					className: declaration.name
+				}
+			};
+		}
+
+		// Merge in the parent classes methods.
+		Object.keys(base.methods).forEach(methodName => {
+			if (declaration.methods[methodName] == null) declaration.methods[methodName] = {
+				...base.methods[methodName],
+				...{
+					className: declaration.name
+				}
+			};
+		});
+
+		// Merge in the parent classes props
+		Object.keys(base.props).forEach(propName => {
+			if (declaration.props[propName] == null) declaration.props[propName] = {
+				...base.props[propName],
+				...{
+					className: declaration.name
+				}
+			};
+		});
 	}
 
 }

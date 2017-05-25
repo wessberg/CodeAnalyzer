@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.13**:
+
+- Derived classes can now inherit methods, props and constructors from their parents up through the inheritance chain by calling the `mergeWithParent` method on an `IClassDeclaration`.
+
 **v1.0.12**:
 
 - The `ArbitraryValue`, `IValueable` and `INonNullableValueable` interfaces are now exported for public consumption.

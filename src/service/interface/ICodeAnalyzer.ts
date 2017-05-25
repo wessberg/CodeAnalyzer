@@ -143,6 +143,7 @@ export interface IClassDeclaration extends IMemberDeclaration, INameable, IFileP
 	constructor: IConstructorDeclaration|null;
 	heritage: IHeritage|null;
 	value: IValueable;
+	mergeWithParent (): void;
 }
 
 export interface IPositionable {

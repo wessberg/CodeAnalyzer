@@ -188,6 +188,7 @@ export class Tracer implements ITracer {
 
 		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
+
 		if (clojure == null) {
 			return {
 				___kind: IdentifierMapKind.LITERAL,
