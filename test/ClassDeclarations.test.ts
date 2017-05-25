@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 import {IConstructorDeclaration} from "../src/service/interface/ICodeAnalyzer";
+import {BindingIdentifier} from "../src/model/BindingIdentifier";
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 
@@ -210,6 +211,29 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 	const assignments = service.getClassDeclarations(statements);
 	const classDeclaration = assignments["MyClass"];
 	t.true(classDeclaration.methods["myMethod"] != null);
+});
+
+test.only(`getClassDeclarations() -> Methods -> Understands return-expressions properly. #1`, t => {
+
+	const code = `
+		class MyClass {
+			public myMethod () {
+				const foo = 2; 
+				return foo + 2;
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["MyClass"];
+	const method = classDeclaration.methods["myMethod"];
+	const returnStatement = method.returnStatement;
+	if (returnStatement == null || returnStatement.value == null) t.fail("A return statement could not be found");
+	else {
+		t.deepEqual(method.value.expression, ["const", " ", "foo", "=", 2, ";", "return", " ", new BindingIdentifier("foo"), " ", "+", " ", 2, ";"]);
+		t.deepEqual(returnStatement.value.expression, [new BindingIdentifier("foo"), " ", "+", " ", 2]);
+	}
 });
 
 test(`getClassDeclarations() -> Extends -> Supports derived classes. #1`, t => {

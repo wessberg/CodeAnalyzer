@@ -1,17 +1,20 @@
 import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isReturnStatement} from "../predicate/PredicateFunctions";
-import {IFunctionLike, IMemberDeclaration, IParametersable} from "../service/interface/ICodeAnalyzer";
+import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../service/interface/ICodeAnalyzer";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 
 	constructor (protected sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private decoratorsFormatter: IDecoratorsFormatter, private modifiersFormatter: IModifiersFormatter,
-							 private parametersFormatter: IParametersFormatter) {
+							 private decoratorsFormatter: IDecoratorsFormatter,
+							 private modifiersFormatter: IModifiersFormatter,
+							 private parametersFormatter: IParametersFormatter,
+							 protected valueableFormatter: IValueableFormatter) {
 	}
 
 	/**
@@ -60,28 +63,31 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;
 		let returnStatementContents: string|null = null;
+		let value: IValueable|null = null;
 
 		if (declaration.body != null && declaration.body.statements != null) {
-			declaration.body.statements.forEach(bodyStatement => {
-
+			for (const bodyStatement of declaration.body.statements) {
 				if (isReturnStatement(bodyStatement)) {
 					if (bodyStatement.expression != null) {
 						returnStatementStartsAt = bodyStatement.expression.pos;
 						returnStatementEndsAt = bodyStatement.expression.end;
 						returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
+						value = this.valueableFormatter.format(bodyStatement.expression);
+						break;
 					}
 				}
-			});
+			}
 		}
 
 		return {
 			...this.formatCallableMemberDeclaration(declaration),
 			...{
 				modifiers: this.modifiersFormatter.format(declaration),
-				returnStatement: {
+				returnStatement: value == null ? null : {
 					startsAt: returnStatementStartsAt,
 					endsAt: returnStatementEndsAt,
-					contents: returnStatementContents
+					contents: returnStatementContents,
+					value
 				}
 			}
 		};

@@ -16,13 +16,14 @@ export class ValueableFormatter implements IValueableFormatter {
 	 * Formats the given Statement into an IValueable.
 	 * @param {Statement|Expression|Declaration|Node} statement
 	 * @param {string|number} [takeKey]
+	 * @param {Statement|Expression|Declaration|Node} [takeValueExpressionFrom]
 	 * @returns {IValueable}
 	 */
-	public format (statement: Statement|Expression|Declaration|Node|undefined, takeKey?: string|number): IValueable {
+	public format (statement: Statement|Expression|Declaration|Node|undefined, takeKey?: string|number, takeValueExpressionFrom?: Statement|Expression|Declaration|Node): IValueable {
 		const cached = ValueableFormatter.cachedValueables.get(statement);
 		if (cached != null && takeKey == null) return cached;
 
-		const valueExpression = statement == null ? null : this.valueExpressionGetter.getValueExpression(statement);
+		const valueExpression = statement == null ? null : this.valueExpressionGetter.getValueExpression(takeValueExpressionFrom || statement);
 		const scope = statement == null ? null : this.tracer.traceThis(statement);
 		const that = this;
 		const value: IValueable = {
@@ -33,11 +34,11 @@ export class ValueableFormatter implements IValueableFormatter {
 				return value.resolved !== undefined;
 			},
 			resolving: false,
-			resolve () {
+			resolve (insideThisScope: boolean = false) {
 				if (statement == null || value.expression == null) {
 					value.resolved = value.resolvedPrecompute = null;
 				} else {
-					const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, scope, takeKey);
+					const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, scope, takeKey, insideThisScope);
 					value.resolved = computed;
 					value.resolvedPrecompute = flattened;
 				}

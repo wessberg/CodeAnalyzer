@@ -105,7 +105,7 @@ export interface IArgumentsBody extends IPositionable {
 }
 
 export interface IReturnStatementable {
-	returnStatement: IPositionable&IContentsable;
+	returnStatement: null|(IPositionable&IContentsable&{ value: IValueable });
 }
 
 export interface IFunctionLike extends IParametersable, IMemberDeclaration, IReturnStatementable, IModifiersable {

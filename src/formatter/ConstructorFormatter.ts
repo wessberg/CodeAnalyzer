@@ -2,26 +2,22 @@ import {IModifiersFormatter} from "src/formatter/interface/IModifiersFormatter";
 import {ConstructorDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IConstructorDeclaration, IdentifierMapKind, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
+import {IConstructorDeclaration, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IConstructorFormatter} from "./interface/IConstructorFormatter";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export class ConstructorFormatter extends FunctionLikeFormatter implements IConstructorFormatter {
 	constructor (private mapper: IMapper,
-							 private tracer: ITracer,
-							 private valueExpressionGetter: IValueExpressionGetter,
-							 private valueResolvedGetter: IValueResolvedGetter,
 							 sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 decoratorsFormatter: IDecoratorsFormatter,
 							 modifiersFormatter: IModifiersFormatter,
-							 parametersFormatter: IParametersFormatter) {
+							 parametersFormatter: IParametersFormatter,
+							 valueableFormatter: IValueableFormatter) {
 
-		super(sourceFilePropertiesGetter, decoratorsFormatter, modifiersFormatter, parametersFormatter);
+		super(sourceFilePropertiesGetter, decoratorsFormatter, modifiersFormatter, parametersFormatter, valueableFormatter);
 	}
 
 	/**
@@ -34,9 +30,6 @@ export class ConstructorFormatter extends FunctionLikeFormatter implements ICons
 		const name = "constructor";
 
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
-		const valueExpression = declaration.body == null ? null : this.valueExpressionGetter.getValueExpression(declaration.body);
-		const that = this;
-		const scope = this.tracer.traceThis(declaration);
 
 		const map: IConstructorDeclaration = {
 			...this.formatFunctionLikeDeclaration(declaration),
@@ -45,25 +38,7 @@ export class ConstructorFormatter extends FunctionLikeFormatter implements ICons
 				name,
 				className,
 				filePath,
-				value: {
-					expression: valueExpression,
-					resolving: false,
-					resolved: undefined,
-					resolvedPrecompute: undefined,
-					hasDoneFirstResolve () {
-						return map.value.resolved !== undefined;
-					},
-					resolve (insideThisScope: boolean = false) {
-						if (map.value.expression == null) {
-							map.value.resolved = map.value.resolvedPrecompute = null;
-						} else {
-							const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope, undefined, insideThisScope);
-							map.value.resolved = computed;
-							map.value.resolvedPrecompute = flattened;
-						}
-						return map.value.resolved;
-					}
-				}
+				value: this.valueableFormatter.format(declaration, undefined, declaration.body)
 			}
 		};
 

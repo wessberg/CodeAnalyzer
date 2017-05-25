@@ -182,7 +182,7 @@ export class IdentifierSerializer implements IIdentifierSerializer {
 				replacements[method.name] = <string>this.marshaller.marshal(resolvedMethodBody, "");
 
 				// If the method had a return statement before, but doesn't anymore after it has been resolved, re-add a return statement.
-				str += !hasReturnStatement && method.returnStatement.startsAt >= 0 ? `return (${this.addPlaceholder(method.name)})` : `${this.addPlaceholder(method.name)}`;
+				str += !hasReturnStatement && method.returnStatement != null ? `return (${this.addPlaceholder(method.name)})` : `${this.addPlaceholder(method.name)}`;
 			}
 			str += "}\n\n";
 		}
