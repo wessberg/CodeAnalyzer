@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.11**:
+
+- Major overhaul in regards to serialization and value resolving.
+
 **v1.0.10**:
 
 - Return statements of methods and functions can now also be broken up into expressions and resolved individually. A bit of refactoring.
