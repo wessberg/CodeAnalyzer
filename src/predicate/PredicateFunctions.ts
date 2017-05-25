@@ -1011,6 +1011,7 @@ export function isRegularExpressionLiteral (statement: BindingName|EntityName|Ex
 export function isIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IIdentifier {
 	return isIVariableAssignment(statement) ||
 		isIParameter(statement) ||
+		isNamespacedModuleMap(statement) ||
 		isIArgument(statement) ||
 		isIDecorator(statement) ||
 		isICallExpression(statement) ||
@@ -1154,6 +1155,15 @@ export function isIImportExportBinding (statement: IIdentifier|ArbitraryValue): 
  */
 export function isILiteralValue (statement: IIdentifier|ArbitraryValue): statement is ILiteralValue {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.LITERAL;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is a NamespacedModuleMap.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isNamespacedModuleIndexer (statement: IIdentifier|ArbitraryValue): statement is NamespacedModuleMap {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
 }
 
 /**

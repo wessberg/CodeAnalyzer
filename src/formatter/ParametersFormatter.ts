@@ -51,21 +51,39 @@ export class ParametersFormatter implements IParametersFormatter {
 				: ParameterKind.STANDARD;
 
 		const name: (string|undefined)[] = [];
+		const nameFormatted: string[] = [];
 		if (isObjectBindingPattern(parameter.name)) {
-			parameter.name.elements.forEach(binding => {
-				name.push(<string>this.nameGetter.getName(binding));
+			const elements = parameter.name.elements;
+			nameFormatted.push("{");
+			elements.forEach((binding, index) => {
+				const named = <string>this.nameGetter.getName(binding);
+				name.push(named);
+				nameFormatted.push(named);
+				if (index !== elements.length -1) nameFormatted.push(",");
 			});
+			nameFormatted.push("}");
 		}
 
 		else if (isArrayBindingPattern(parameter.name)) {
-			parameter.name.elements.forEach((binding) => {
-				if (isOmittedExpression(binding)) name.push(undefined);
-				name.push(<string>this.nameGetter.getName(binding));
+			nameFormatted.push("[");
+			const elements = parameter.name.elements;
+			elements.forEach((binding, index) => {
+				if (isOmittedExpression(binding)) {
+					name.push(undefined);
+					nameFormatted.push(",");
+				} else {
+					const named = <string>this.nameGetter.getName(binding);
+					name.push(named);
+					nameFormatted.push(named);
+					if (index !== elements.length - 1) nameFormatted.push(",");
+				}
 			});
 		}
 
 		else {
-			name.push(<string>this.nameGetter.getNameOfMember(parameter.name, false, true));
+			const named = <string>this.nameGetter.getNameOfMember(parameter.name, false, true);
+			name.push(named);
+			nameFormatted.push(named);
 		}
 
 		const typeExpression = parameter.type == null ? null : this.typeExpressionGetter.getTypeExpression(parameter);
@@ -82,6 +100,7 @@ export class ParametersFormatter implements IParametersFormatter {
 			endsAt,
 			parameterKind,
 			name,
+			nameFormatted,
 			type: {
 				expression: typeExpression,
 				flattened: typeFlattened,

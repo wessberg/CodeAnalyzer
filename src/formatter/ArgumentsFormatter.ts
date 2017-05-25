@@ -1,17 +1,13 @@
 import {CallExpression, Expression, NewExpression} from "typescript";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {IArgument, IdentifierMapKind, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
+import {IArgument, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
+import {IValueableFormatter} from "./interface/IValueableFormatter";
 
 export class ArgumentsFormatter implements IArgumentsFormatter {
 
 	constructor (private mapper: IMapper,
-							 private tracer: ITracer,
-							 private valueResolvedGetter: IValueResolvedGetter,
-							 private valueExpressionGetter: IValueExpressionGetter) {
+							 private valueableFormatter: IValueableFormatter) {
 	}
 
 	/**
@@ -31,33 +27,12 @@ export class ArgumentsFormatter implements IArgumentsFormatter {
 	private formatArgument (argument: Expression): IArgument {
 		const startsAt = argument.pos;
 		const endsAt = argument.end;
-		const valueExpression = this.valueExpressionGetter.getValueExpression(argument);
-		const that = this;
-		const scope = this.tracer.traceThis(argument);
 
 		const map: IArgument = {
 			___kind: IdentifierMapKind.ARGUMENT,
 			startsAt,
 			endsAt,
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				resolvedPrecompute: undefined,
-				hasDoneFirstResolve () {
-					return map.value.resolved !== undefined;
-				},
-				resolve () {
-					if (map.value.expression == null) {
-						map.value.resolved = map.value.resolvedPrecompute = null;
-					} else {
-						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, argument, scope);
-						map.value.resolved = computed;
-						map.value.resolvedPrecompute = flattened;
-					}
-					return map.value.resolved;
-				}
-			}
+			value: this.valueableFormatter.format(argument)
 		};
 		// Make the kind non-enumerable.
 		Object.defineProperty(map, "___kind", {

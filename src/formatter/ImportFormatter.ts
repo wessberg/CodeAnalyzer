@@ -121,12 +121,14 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			const clojure = this.tracer.traceClojure(statement);
 
 			const payload = () => {
-				return clojure == null ? {
+				const obj = clojure == null ? {
 					___kind: IdentifierMapKind.LITERAL,
 					startsAt: statement.moduleReference.pos,
 					endsAt: statement.moduleReference.end,
-					value: () => clojure
+					value: () => [clojure]
 				} : this.tracer.findNearestMatchingIdentifier(statement, block, source.toString(), clojure);
+				this.mapper.set(obj, statement.moduleReference);
+				return obj;
 			};
 
 			const map: IImportDeclaration = {
@@ -261,12 +263,14 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		if (namedBindings != null && isNamespaceImport(namedBindings)) {
 			const payload = () => {
 				const path = modulePath();
-				return {
+				const obj = {
 					___kind: IdentifierMapKind.LITERAL,
 					startsAt: namedBindings.pos,
 					endsAt: namedBindings.end,
-					value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+					value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
 				};
+				this.mapper.set(obj, namedBindings);
+				return obj;
 			};
 
 			indexer[namedBindings.name.text] = {
@@ -286,12 +290,14 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				const payload = () => {
 					const path = modulePath();
 					const clojure = this.tracer.traceClojure(path);
-					return clojure == null ? {
+					const obj = clojure == null ? {
 						___kind: IdentifierMapKind.LITERAL,
 						startsAt: element.pos,
 						endsAt: element.end,
-						value: () => path
+						value: () => [path]
 					} : this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
+					this.mapper.set(obj, element);
+					return obj;
 				};
 
 				indexer[element.name.text] = {

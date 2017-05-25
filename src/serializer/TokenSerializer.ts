@@ -1,4 +1,4 @@
-import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode} from "typescript";
+import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode, Statement, Expression, Node} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isTypeBinding} from "../predicate/PredicateFunctions";
@@ -30,9 +30,10 @@ export class TokenSerializer implements ITokenSerializer {
 	/**
 	 * Checks the token and returns the appropriate native version if possible, otherwise it returns the serialized version.
 	 * @param {SyntaxKind} token
+	 * @param {Statement|Expression|Node} parent
 	 * @returns {ArbitraryValue}
 	 */
-	public marshalToken (token: SyntaxKind|BinaryOperator|TypeNode): ArbitraryValue {
+	public marshalToken (token: SyntaxKind|BinaryOperator|TypeNode, parent: Statement|Expression|Node): ArbitraryValue {
 		switch (token) {
 			case SyntaxKind.NullKeyword:
 				return null;
@@ -43,7 +44,7 @@ export class TokenSerializer implements ITokenSerializer {
 			case SyntaxKind.FalseKeyword:
 				return false;
 			default:
-				return this.serializeToken(token);
+				return this.serializeToken(token, parent);
 		}
 	}
 
@@ -65,9 +66,10 @@ export class TokenSerializer implements ITokenSerializer {
 	/**
 	 * Serializes the given token (operand) and returns the textual representation of it.
 	 * @param {SyntaxKind} token
+	 * @param {Statement|Expression|Node} parent
 	 * @returns {string|BindingIdentifier}
 	 */
-	public serializeToken (token: SyntaxKind|TypeNode): string|IBindingIdentifier {
+	public serializeToken (token: SyntaxKind|TypeNode, parent: Statement|Expression|Node): string|IBindingIdentifier {
 		switch (token) {
 			case SyntaxKind.BreakStatement:
 				return "break";
@@ -151,9 +153,9 @@ export class TokenSerializer implements ITokenSerializer {
 			case SyntaxKind.ReturnStatement:
 				return "return";
 			case SyntaxKind.SuperKeyword:
-				return new BindingIdentifier("super");
+				return new BindingIdentifier("super", parent);
 			case SyntaxKind.ThisKeyword:
-				return new BindingIdentifier("this");
+				return new BindingIdentifier("this", parent);
 			case SyntaxKind.ThrowKeyword:
 				return "throw";
 			case SyntaxKind.TryKeyword:

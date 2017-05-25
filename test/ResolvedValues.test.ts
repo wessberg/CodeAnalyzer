@@ -86,10 +86,11 @@ test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
 			foo: number = 50;
 			bar = this.foo;
 		}
+		const val = new MyClass().foo;
 	`);
 
-	const assignments = service.getClassDeclarations(statements);
-	t.deepEqual(assignments["MyClass"].props["bar"].value.resolve(), 50);
+	const assignments = service.getVariableAssignments(statements);
+	t.deepEqual(assignments["val"].value.resolve(), 50);
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #7`, t => {
@@ -631,22 +632,6 @@ test(`ValueResolver -> Computes all resolved values correctly. #40`, t => {
 });
 
 test(`ValueResolver -> Computes all resolved values correctly. #41`, t => {
-
-	const statements = parse(`
-		class A {
-			constructor (foo) {
-				console.log(foo.toString());		
-			}
-		}
-	`);
-
-	const declarations = service.getClassDeclarations(statements, true);
-	const ctor = declarations["A"].constructor;
-	const resolved = ctor == null ? null : ctor.value.resolve();
-	t.true(resolved != null);
-});
-
-test(`ValueResolver -> Computes all resolved values correctly. #42`, t => {
 
 	const statements = parse(`
 		import {Color} from "static/ColorExample";

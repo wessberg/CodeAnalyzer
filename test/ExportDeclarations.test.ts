@@ -62,7 +62,7 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #5`, t =
 	const exportDeclarations = service.getExportDeclarations(statements);
 	const payload = exportDeclarations[2].bindings[NAMESPACE_NAME].payload();
 
-	t.true(isILiteralValue(payload) && Object.keys(payload.value()).length === 2);
+	t.true(isILiteralValue(payload) && Object.keys(payload.value()[0]).length === 2);
 });
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #6`, t => {

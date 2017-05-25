@@ -8,10 +8,12 @@ import {IFileLoader} from "@wessberg/fileloader";
 import {isCallExpression, isExternalModuleReference, isICallExpression, isParenthesizedExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {IMapper} from "../mapper/interface/IMapper";
 
 export class RequireFormatter extends ModuleFormatter implements IRequireFormatter {
 
 	constructor (private languageService: ICodeAnalyzer,
+							 private mapper: IMapper,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private valueableFormatter: IValueableFormatter,
 							 private callExpressionFormatter: ICallExpressionFormatter,
@@ -58,12 +60,14 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 
 		const payload = () => {
 			const path = fullPath();
-			return {
+			const obj = {
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: statement.pos,
 				endsAt: statement.end,
-				value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+				value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
 			};
+			this.mapper.set(obj, statement);
+			return obj;
 		};
 
 		const map: IRequire = {
@@ -136,12 +140,14 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 
 		const payload = () => {
 			const path = fullPath();
-			return {
+			const obj = {
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: isICallExpression(statement) ? statement.startsAt : statement.pos,
 				endsAt: isICallExpression(statement) ? statement.endsAt : statement.end,
-				value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+				value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
 			};
+			if (!isICallExpression(statement)) this.mapper.set(obj, statement);
+			return obj;
 		};
 
 		const map: IRequire = {

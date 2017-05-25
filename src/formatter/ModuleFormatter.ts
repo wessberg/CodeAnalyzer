@@ -31,7 +31,11 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
 	}
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
-		const indexer: NamespacedModuleMap = {};
+		const indexer: NamespacedModuleMap = {
+			___kind: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
+			startsAt: Infinity,
+			endsAt: Infinity
+		};
 
 		modules.forEach(moduleDeclaration => {
 			Object.keys(moduleDeclaration.bindings).forEach(key => {
@@ -57,10 +61,11 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 					let payload = binding.payload();
 					while (isIImportExportBinding(payload)) payload = payload.payload();
 					if (isILiteralValue(payload)) {
-						const value = payload.value();
+						const [value] = payload.value();
 						if (isNamespacedModuleMap(value)) {
 							Object.keys(value).forEach(key => indexer[key] = (<any>value)[key]);
 						}
+						;
 					}
 				}
 			});
@@ -68,6 +73,16 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 		Object.defineProperty(indexer, "___kind", {
 			value: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
+			enumerable: false
+		});
+
+		Object.defineProperty(indexer, "startsAt", {
+			value: Infinity,
+			enumerable: false
+		});
+
+		Object.defineProperty(indexer, "endsAt", {
+			value: Infinity,
 			enumerable: false
 		});
 		return indexer;

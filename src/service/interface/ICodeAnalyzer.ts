@@ -152,6 +152,7 @@ export interface IPositionable {
 
 export declare interface IParameter extends IFilePathable, IPositionable, IKindable {
 	name: (string|undefined)[];
+	nameFormatted: string[];
 	parameterKind: ParameterKind;
 	type: ITypeable;
 	value: IValueable;
@@ -279,17 +280,20 @@ export declare interface ResolvedSerializedIIdentifierValueMap extends IKindable
 }
 
 export interface ILiteralValue extends IKindable, IPositionable {
-	value: () => ArbitraryValue;
+	value: () => ArbitraryValue[];
 }
 
+export declare interface NamespacedModuleMap extends IKindable, IPositionable {
+	[key: string]: IIdentifier|IdentifierMapKind;
+};
+
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IIdentifier = NamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = ILiteralValue|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type ResolvedNamespacedModuleMap = { [key: string]: string };
 export declare type ResolvedIIdentifierValueMapIndexer = { [key: string]: ResolvedIIdentifierValueMapIndexer|ArbitraryValue };
 export declare type ResolvedSerializedIIdentifierValueMapIndexer = { [key: string]: ResolvedSerializedIIdentifierValueMapIndexer|string };
-export declare type NamespacedModuleMap = { [key: string]: IIdentifier };
 export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };

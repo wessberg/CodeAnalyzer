@@ -1,7 +1,7 @@
 import {ClassDeclaration, Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {isArrowFunction, isClassDeclaration, isClassExpression, isExtendsClause, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile, isTypeBinding} from "../predicate/PredicateFunctions";
+import {isArrowFunction, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExtendsClause, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile, isTypeBinding} from "../predicate/PredicateFunctions";
 import {ICallExpression, ICodeAnalyzer, IdentifierMapKind, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
@@ -56,8 +56,7 @@ export class Tracer implements ITracer {
 		const classMatch = clojure.classes[identifier];
 
 		let parameterMatches: IParameter[] = [];
-
-		if (this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
+		if (from.kind === SyntaxKind.FunctionExpression || from.kind === SyntaxKind.FunctionDeclaration || this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
 			Object.keys(clojure.functions).forEach(key => {
 				const parameters = clojure.functions[key].parameters.parametersList;
 				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
@@ -65,7 +64,7 @@ export class Tracer implements ITracer {
 			});
 		}
 
-		if (this.isChildOfKind(SyntaxKind.MethodDeclaration, block, from)) {
+		if (from.kind === SyntaxKind.MethodDeclaration || this.isChildOfKind(SyntaxKind.MethodDeclaration, block, from)) {
 			Object.keys(clojure.classes).forEach(key => {
 				const methods = clojure.classes[key].methods;
 				Object.keys(methods).forEach(methodName => {
@@ -122,7 +121,9 @@ export class Tracer implements ITracer {
 
 		importBindingMatches.forEach(match => {
 			const mapped = this.mapper.get(match);
-			if (mapped != null && mapped === from) return;
+			if (mapped != null && mapped === from) {
+				return;
+			}
 			allMatches.push(match.payload());
 		});
 
@@ -134,7 +135,9 @@ export class Tracer implements ITracer {
 
 		requireMatches.forEach(match => {
 			const mapped = this.mapper.get(match);
-			if (mapped != null && mapped === from) return;
+			if (mapped != null && mapped === from) {
+				return;
+			};
 			allMatches.push(match);
 		});
 
@@ -148,11 +151,10 @@ export class Tracer implements ITracer {
 		const closest = filtered.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
 			const bDistanceFromStart = from.pos - b.startsAt;
-			if (aDistanceFromStart < bDistanceFromStart) return -1;
-			if (aDistanceFromStart > bDistanceFromStart) return 1;
+			if (aDistanceFromStart > bDistanceFromStart) return -1;
+			if (aDistanceFromStart < bDistanceFromStart) return 1;
 			return 0;
 		})[0];
-
 		return closest;
 	}
 
@@ -167,8 +169,22 @@ export class Tracer implements ITracer {
 	 */
 	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope?: string|null, ofKind?: IdentifierMapKind): IIdentifier {
 		if (scope === undefined) scope = this.traceBlockScopeName(from);
-		if (identifier === "this" && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
-		const lookupIdentifier = identifier === "this" && scope != null && scope !== Config.name.global ? scope : identifier;
+		if ((identifier === "this" || identifier === "super") && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
+		let lookupIdentifier: string = identifier;
+
+		if (identifier === "super") {
+
+			const clojure = this.traceClojure(from);
+			if (clojure == null) throw new ReferenceError(`${this.constructor.name} could not trace the super class from scope '${scope}'`);
+			const thisScope = this.traceThis(from);
+			const derivedClass = clojure.classes[thisScope];
+			if (derivedClass == null) throw new ReferenceError(`${this.constructor.name} could not find a class for the scope '${thisScope}'`);
+			if (derivedClass.heritage == null || derivedClass.heritage.extendsClass == null) throw new ReferenceError(`${this.constructor.name} could not find a super class for the scope '${thisScope}'`);
+			lookupIdentifier = derivedClass.heritage.extendsClass.name;
+
+		} else if (identifier === "this" && scope != null && scope !== Config.name.global) {
+			lookupIdentifier = scope;
+		}
 
 		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
@@ -177,7 +193,7 @@ export class Tracer implements ITracer {
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: from.pos,
 				endsAt: from.end,
-				value: () => clojure
+				value: () => [clojure]
 			};
 		}
 
@@ -214,7 +230,8 @@ export class Tracer implements ITracer {
 
 			if (
 				isMethodDeclaration(block) ||
-				isPropertyDeclaration(block)
+				isPropertyDeclaration(block) ||
+				isConstructorDeclaration(block)
 			) {
 				if (block.parent == null) {
 					const name = this.nameGetter.getName(block);
@@ -271,6 +288,12 @@ export class Tracer implements ITracer {
 			}
 
 			if (
+				isConstructorDeclaration(block)
+			) {
+				return "constructor";
+			}
+
+			if (
 				isPropertyDeclaration(block)
 			) {
 				if (block.parent == null) {
@@ -303,6 +326,7 @@ export class Tracer implements ITracer {
 			!isFunctionExpression(current) &&
 			!isFunctionDeclaration(current) &&
 			!isMethodDeclaration(current) &&
+			!isConstructorDeclaration(current) &&
 			!isArrowFunction(current) &&
 			!isPropertyDeclaration(current) &&
 			!isSourceFile(current)) {

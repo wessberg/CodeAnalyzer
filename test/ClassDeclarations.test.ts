@@ -213,7 +213,7 @@ test(`getClassDeclarations() -> Methods -> Detects method declarations correctly
 	t.true(classDeclaration.methods["myMethod"] != null);
 });
 
-test.only(`getClassDeclarations() -> Methods -> Understands return-expressions properly. #1`, t => {
+test(`getClassDeclarations() -> Methods -> Understands return-expressions properly. #1`, t => {
 
 	const code = `
 		class MyClass {
@@ -231,8 +231,8 @@ test.only(`getClassDeclarations() -> Methods -> Understands return-expressions p
 	const returnStatement = method.returnStatement;
 	if (returnStatement == null || returnStatement.value == null) t.fail("A return statement could not be found");
 	else {
-		t.deepEqual(method.value.expression, ["const", " ", "foo", "=", 2, ";", "return", " ", new BindingIdentifier("foo"), " ", "+", " ", 2, ";"]);
-		t.deepEqual(returnStatement.value.expression, [new BindingIdentifier("foo"), " ", "+", " ", 2]);
+		t.deepEqual(method.value.expression, ["const", " ", "foo", "=", 2, ";", "return", " ", new BindingIdentifier("foo", <any>""), " ", "+", " ", 2, ";"]);
+		t.deepEqual(returnStatement.value.expression, [new BindingIdentifier("foo", <any>""), " ", "+", " ", 2]);
 	}
 });
 
@@ -265,4 +265,70 @@ test(`getClassDeclarations() -> Extends -> Supports derived classes. #2`, t => {
 	const classDeclaration = assignments["B"];
 	const ctor = <IConstructorDeclaration>classDeclaration.constructor;
 	t.notThrows(ctor.value.resolve);
+});
+
+test(`getClassDeclarations() -> Extends -> Supports derived classes. #3`, t => {
+
+	const code = `
+		class A {
+		 a () {
+		 	return \`A\`;
+		 }
+		}
+		
+		class B extends A {
+		 b () {
+		 	return \`\${this.a()}B\`;
+		 }
+		}
+		
+		class C extends B {
+		 c () {
+		 	return \`\${this.b()}C\`;
+		 }
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["C"];
+	const method = classDeclaration.methods["c"];
+	const resolved = method.returnStatement == null ? null : method.value.resolve();
+	if (resolved == null) t.fail("could not find a 'foo' method");
+	else {
+		t.true(resolved === "ABC");
+	}
+});
+
+test(`getClassDeclarations() -> Extends -> Supports derived classes. #4`, t => {
+
+	const code = `
+		class A {
+		 foo () {
+		 	return \`A\`;
+		 }
+		}
+		
+		class B extends A {
+		 foo () {
+		 	return \`\${super.foo()}B\`;
+		 }
+		}
+		
+		class C extends B {
+		 foo () {
+		 	return \`\${super.foo()}C\`;
+		 }
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["C"];
+	const method = classDeclaration.methods["foo"];
+	const resolved = method.returnStatement == null ? null : method.value.resolve();
+	if (resolved == null) t.fail("could not find a 'foo' method");
+	else {
+		t.true(resolved === "ABC");
+	}
 });

@@ -112,12 +112,15 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 			if (isLiteralExpression(statement.expression)) {
 				const value = this.valueableFormatter.format(statement.expression);
-				return {
+				const obj = {
 					___kind: IdentifierMapKind.LITERAL,
 					startsAt: statement.expression.pos,
 					endsAt: statement.expression.end,
-					value: () => value.hasDoneFirstResolve() ? value.resolved : value.resolve()
+					value: () => value.expression == null ? [] : value.expression
 				};
+				this.mapper.set(obj, statement.expression);
+				return obj;
+
 			} else {
 				const identifier = this.nameGetter.getName(statement.expression);
 				const scope = this.tracer.traceThis(statement);
@@ -168,12 +171,14 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (!isCandidate) return null;
 
 		const payload = () => {
-			return {
+			const obj = {
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: statement.pos,
 				endsAt: statement.end,
-				value: () => formatted.value.hasDoneFirstResolve() ? formatted.value.resolved : formatted.value.resolve()
+				value: () => formatted.value.expression == null ? [] : formatted.value.expression
 			};
+			this.mapper.set(obj, statement);
+			return obj;
 		};
 		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -397,12 +402,14 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		if (clause == null) {
 			const payload = () => {
 				const path = modulePath();
-				return {
+				const obj = {
 					___kind: IdentifierMapKind.LITERAL,
 					startsAt: statement.pos,
 					endsAt: statement.end,
-					value: () => this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))
+					value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
 				};
+				this.mapper.set(obj, statement);
+				return obj;
 			};
 
 			indexer[NAMESPACE_NAME] = {
@@ -421,12 +428,14 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					const path = modulePath();
 					const block = this.tracer.traceBlockScopeName(clause);
 					const clojure = this.tracer.traceClojure(path);
-					return clojure == null ? {
+					const obj = clojure == null ? {
 						___kind: IdentifierMapKind.LITERAL,
 						startsAt: element.pos,
 						endsAt: element.end,
-						value: () => path
+						value: () => [path]
 					} : this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
+					this.mapper.set(obj, element);
+					return obj;
 				};
 
 				indexer[element.name.text] = {

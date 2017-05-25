@@ -1,7 +1,7 @@
 import {IMarshaller} from "@wessberg/marshaller";
 import {DeclarationName, Expression, Identifier, Node, Statement, SyntaxKind, TypeNode, TypeReferenceNode} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {isArrayLiteralExpression, isArrowFunction, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isConstructorDeclaration, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {INameGetter} from "./interface/INameGetter";
 import {Config} from "../static/Config";
@@ -38,6 +38,10 @@ export class NameGetter implements INameGetter {
 
 		if (isSuperExpression(statement)) {
 			return "super";
+		}
+
+		if (isConstructorDeclaration(statement)) {
+			return "constructor";
 		}
 
 		if (isIdentifierObject(statement)) {
@@ -90,6 +94,10 @@ export class NameGetter implements INameGetter {
 			return "super";
 		}
 
+		if (isConstructorDeclaration(name)) {
+			return "constructor";
+		}
+
 		if (isTypeAssertionExpression(name)) {
 			return this.getNameOfMember(name.expression, allowNonStringNames, forceNoBindingIdentifier);
 		}
@@ -117,7 +125,7 @@ export class NameGetter implements INameGetter {
 
 			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
 			if (this.marshaller.getTypeOf(this.marshaller.marshal<ArbitraryValue, ArbitraryValue>(name.text)) === "string" && !forceNoBindingIdentifier) {
-				return new BindingIdentifier(name.text);
+				return new BindingIdentifier(name.text, name);
 			}
 			return marshalled;
 		}
@@ -135,7 +143,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isThisKeyword(name)) {
-			return new BindingIdentifier("this");
+			return new BindingIdentifier("this", name);
 		}
 
 		if (isRegularExpressionLiteral(name)) {
@@ -144,8 +152,7 @@ export class NameGetter implements INameGetter {
 
 		if (isPropertyAccessExpression(name)) {
 			const baseName = <string>this.getNameOfMember(name.expression, false, false);
-
-			return new BindingIdentifier(baseName.toString());
+			return new BindingIdentifier(baseName.toString(), name.expression);
 		}
 
 		if (isCallExpression(name)) {
@@ -163,7 +170,7 @@ export class NameGetter implements INameGetter {
 		if (isElementAccessExpression(name)) {
 			const baseName = <string>this.getNameOfMember(name.expression, false, false);
 
-			return new BindingIdentifier(baseName.toString());
+			return new BindingIdentifier(baseName.toString(), name);
 		}
 
 		throw new TypeError(`${this.getNameOfMember.name} could not compute the name of a ${SyntaxKind[name.kind]}.`);

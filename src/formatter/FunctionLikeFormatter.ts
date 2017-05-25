@@ -72,7 +72,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 						returnStatementStartsAt = bodyStatement.expression.pos;
 						returnStatementEndsAt = bodyStatement.expression.end;
 						returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
-						value = this.valueableFormatter.format(bodyStatement.expression);
+						value = this.valueableFormatter.format(bodyStatement.expression, undefined, undefined);
 						break;
 					}
 				}

@@ -36,7 +36,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #4`, t => {
 		const foo: string = \`this has the substitution \${substitution}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "${", new BindingIdentifier("substitution"), "}", "`"]);
+	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "${", new BindingIdentifier("substitution", <any>""), "}", "`"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #5`, t => {
@@ -46,7 +46,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #5`, t => {
 		const foo: string = \`this has the substitution \${2}\`;
 	`);
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", 2, "`"]);
+	t.deepEqual(assignments["foo"].value.expression, ["`", "this has the substitution ", "${", 2, "}", "`"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #6`, t => {
@@ -119,7 +119,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #12`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("key"), "]", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("key", <any>""), "]", ":", 1, "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #13`, t => {
@@ -152,7 +152,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #15`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Symbol"), "(", "`Hello world!`", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Symbol", <any>""), "(", "`Hello world!`", ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #16`, t => {
@@ -183,7 +183,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #18`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", ")", "]", ":", 1, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey", <any>""), "(", ")", "]", ":", 1, "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #19`, t => {
@@ -195,7 +195,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #19`, t => {
 
 	const assignments = service.getVariableAssignments(statements);
 
-	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey"), "(", "`1`", ",", false, ",", "[", 123, "]", ")", "]", ":", Infinity, "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "[", new BindingIdentifier("getKey", <any>""), "(", "`1`", ",", false, ",", "[", 123, "]", ")", "]", ":", Infinity, "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #20`, t => {
@@ -205,7 +205,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #20`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "foo", ":", "{", "bar", ":", "{", "baz", ":", "new", " ", new BindingIdentifier("Foo"), "(", true, ",", false, ")", "}", "}", "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "foo", ":", "{", "bar", ":", "{", "baz", ":", "new", " ", new BindingIdentifier("Foo", <any>""), "(", true, ",", false, ")", "}", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #21`, t => {
@@ -226,7 +226,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #22`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub"), "?", 1, ":", 0]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub", <any>""), "?", 1, ":", 0]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #23`, t => {
@@ -237,7 +237,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #23`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub"), " ", "&&", " ", true, "?", false, " ", "&&", " ", 1, "?", false, ":", null, ":", null]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("sub", <any>""), " ", "&&", " ", true, "?", false, " ", "&&", " ", 1, "?", false, ":", null, ":", null]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #24`, t => {
@@ -247,7 +247,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #24`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["new", " ", new BindingIdentifier("Foo"), "(", true, ")"]);
+	t.deepEqual(assignments["a"].value.expression, ["new", " ", new BindingIdentifier("Foo", <any>""), "(", true, ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #25`, t => {
@@ -257,7 +257,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #25`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo"), "[\"A\"]"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", <any>""), "[\"A\"]"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #26`, t => {
@@ -267,7 +267,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #26`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo"), "[\"A\"]", "[\"B\"]", "[\"C\"]", "[\"D\"]"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Foo", <any>""), "[\"A\"]", "[\"B\"]", "[\"C\"]", "[\"D\"]"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #27`, t => {
@@ -307,7 +307,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #30`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something"), "[\"Other\"]", "[\"Than\"]", "(", "`baz`", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", <any>""), "[\"Other\"]", "[\"Than\"]", "(", "`baz`", ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
@@ -317,7 +317,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #31`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something"), "[", 2, "]", "[\"Other\"]", "[\"Than\"]", "(", "`baz`", ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("Something", <any>""), "[", 2, "]", "[\"Other\"]", "[\"Than\"]", "(", "`baz`", ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
@@ -327,7 +327,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #32`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("test"), "(", "(", "foobar", ")", "=>", false, ")"]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("test", <any>""), "(", "(", "foobar", ")", "=>", false, ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #33`, t => {
@@ -357,7 +357,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #35`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "...", new BindingIdentifier("foo", <any>""), ",", "...", new BindingIdentifier("bar", <any>""), "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #36`, t => {
@@ -367,7 +367,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #36`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["{", "...", "{", "foo", ":", 1, "}", ",", "...", new BindingIdentifier("bar"), "}"]);
+	t.deepEqual(assignments["a"].value.expression, ["{", "...", "{", "foo", ":", 1, "}", ",", "...", new BindingIdentifier("bar", <any>""), "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #37`, t => {
@@ -377,7 +377,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #37`, t => {
 	`);
 
 	const assignments = service.getVariableAssignments(statements);
-	t.deepEqual(assignments["a"].value.expression, ["[", "...", new BindingIdentifier("foo"), ",", "...", new BindingIdentifier("bar"), "]"]);
+	t.deepEqual(assignments["a"].value.expression, ["[", "...", new BindingIdentifier("foo", <any>""), ",", "...", new BindingIdentifier("bar", <any>""), "]"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #38`, t => {
@@ -392,9 +392,9 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #38`, t => {
 	const assignments = service.getVariableAssignments(statements);
 
 	t.deepEqual(assignments["assignmentMap"].value.expression, ["{", "}"]);
-	t.deepEqual(assignments["declarations"].value.expression, [new BindingIdentifier("statement"), "[\"declarationList\"]", "[\"declarations\"]"]);
-	t.deepEqual(assignments["boundName"].value.expression, [new BindingIdentifier("declaration"), "[\"name\"]", "[\"text\"]"]);
-	t.deepEqual(assignments["value"].value.expression, [new BindingIdentifier("this"), "[\"getInitializedValue\"]", "(", new BindingIdentifier("foo"), "[\"initializer\"]", ")"]);
+	t.deepEqual(assignments["declarations"].value.expression, [new BindingIdentifier("statement", <any>""), "[\"declarationList\"]", "[\"declarations\"]"]);
+	t.deepEqual(assignments["boundName"].value.expression, [new BindingIdentifier("declaration", <any>""), "[\"name\"]", "[\"text\"]"]);
+	t.deepEqual(assignments["value"].value.expression, [new BindingIdentifier("this", <any>""), "[\"getInitializedValue\"]", "(", new BindingIdentifier("foo", <any>""), "[\"initializer\"]", ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #39`, t => {
@@ -460,7 +460,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #43`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", " ", "extends", " ", new BindingIdentifier("MyOtherClass"), "{", "}"]);
+	t.deepEqual(assignments["wow"].value.expression, ["class", " ", "MyClass", " ", "extends", " ", new BindingIdentifier("MyOtherClass", <any>""), "{", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #44`, t => {
@@ -496,7 +496,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #46`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["val"].value.expression, ["(", new BindingIdentifier("foo"), "[\"something\"]", " ", "||", " ", "[", "]", ")", "[\"concat\"]", "(", new BindingIdentifier("otherthing"), ")"]);
+	t.deepEqual(assignments["val"].value.expression, ["(", new BindingIdentifier("foo", <any>""), "[\"something\"]", " ", "||", " ", "[", "]", ")", "[\"concat\"]", "(", new BindingIdentifier("otherthing", <any>""), ")"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #47`, t => {
@@ -508,8 +508,8 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #47`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("something")]);
-	t.deepEqual(assignments["b"].value.expression, [new BindingIdentifier("something")]);
+	t.deepEqual(assignments["a"].value.expression, [new BindingIdentifier("something", <any>"")]);
+	t.deepEqual(assignments["b"].value.expression, [new BindingIdentifier("something", <any>"")]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #48`, t => {
@@ -523,7 +523,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #48`, t => {
 
 	const statements = parse(code);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["something"].value.expression, [new BindingIdentifier("foo")]);
+	t.deepEqual(assignments["something"].value.expression, [new BindingIdentifier("foo", <any>"")]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #49`, t => {

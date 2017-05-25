@@ -21,6 +21,6 @@ export class ModifiersFormatter implements IModifiersFormatter {
 			}
 
 		}
-		return new Set(statement.modifiers == null ? [] : statement.modifiers.map(modifier => <string>this.tokenSerializer.serializeToken(modifier.kind)));
+		return new Set(statement.modifiers == null ? [] : statement.modifiers.map(modifier => <string>this.tokenSerializer.serializeToken(modifier.kind, modifier)));
 	}
 }

@@ -3,7 +3,6 @@ import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFileProper
 import {IMapper} from "../mapper/interface/IMapper";
 import {ArbitraryValue, IdentifierMapKind, IMutationDeclaration, INonNullableValueable} from "../service/interface/ICodeAnalyzer";
 import {IMutationFormatter} from "./interface/IMutationFormatter";
-import {ITracer} from "../tracer/interface/ITracer";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
 import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {isBinaryExpression, isElementAccessExpression, isExpressionStatement, isIdentifierObject, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
@@ -13,7 +12,6 @@ import {IValueableFormatter} from "./interface/IValueableFormatter";
 export class MutationFormatter implements IMutationFormatter {
 
 	constructor (private mapper: IMapper,
-							 private tracer: ITracer,
 							 private valueableFormatter: IValueableFormatter,
 							 private nameGetter: INameGetter,
 							 private valueExpressionGetter: IValueExpressionGetter,
@@ -58,7 +56,6 @@ export class MutationFormatter implements IMutationFormatter {
 		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(statement).filePath;
 		const valueExpression = this.valueExpressionGetter.getValueExpression(statement.right);
 		const that = this;
-		const scope = this.tracer.traceThis(statement);
 
 		const map: IMutationDeclaration = {
 			___kind: IdentifierMapKind.MUTATION,
@@ -75,11 +72,11 @@ export class MutationFormatter implements IMutationFormatter {
 				hasDoneFirstResolve () {
 					return map.value.resolved !== undefined;
 				},
-				resolve (insideThisScope: boolean = false) {
+				resolve () {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;
 					} else {
-						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, statement, scope, undefined, insideThisScope);
+						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, statement);
 						map.value.resolved = computed;
 						map.value.resolvedPrecompute = flattened;
 					}

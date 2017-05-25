@@ -77,7 +77,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 				return exp;
 			}
 
-			return [this.tokenSerializer.serializeToken(statement.kind)];
+			return [this.tokenSerializer.serializeToken(statement.kind, statement)];
 		}
 
 		if (isTypeLiteralNode(statement)) {
@@ -111,7 +111,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 					exp.push(name);
 
 					if (member.questionToken != null) {
-						exp.push(this.tokenSerializer.serializeToken(member.questionToken.kind));
+						exp.push(this.tokenSerializer.serializeToken(member.questionToken.kind, member.questionToken));
 					}
 					if (type != null) {
 						exp.push(": ");

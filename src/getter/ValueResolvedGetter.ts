@@ -1,211 +1,169 @@
-import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {IMarshaller} from "@wessberg/marshaller";
 import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isILiteralValue, isIParameter, isIVariableAssignment} from "../predicate/PredicateFunctions";
-import {IIdentifierSerializer} from "../serializer/interface/IIdentifierSerializer";
-import {ArbitraryValue, ICodeAnalyzer, InitializationValue, INonNullableValueable, NAMESPACE_NAME, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
+import {isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
-import {IFlattenOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
-import {ICombinationUtil} from "../util/interface/ICombinationUtil";
-import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
+import {ITracedExpressionsFormatterOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
+import {IMapper} from "../mapper/interface/IMapper";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
-	private static readonly FUNCTION_OUTER_SCOPE_NAME: string = "__outer__";
 
-	constructor (private languageService: ICodeAnalyzer,
+	constructor (private mapper: IMapper,
 							 private marshaller: IMarshaller,
 							 private tracer: ITracer,
-							 private identifierSerializer: IIdentifierSerializer,
-							 private tokenPredicator: ITokenPredicator,
-							 private combinationUtil: ICombinationUtil) {
+							 private tokenPredicator: ITokenPredicator) {
 	}
-
 	/**
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
 	 * @param {INonNullableValueable} valueable
 	 * @param {Statement|Expression|Node} from
-	 * @param {string|null} scope
 	 * @param {string|number} [takeKey]
-	 * @param {boolean} [insideThisScope=false]
 	 * @returns {ArbitraryValue}
 	 */
-	public getValueResolved (valueable: INonNullableValueable, from: Statement|Expression|Node, scope: string|null, takeKey?: string|number, insideThisScope: boolean = false): [ArbitraryValue, ArbitraryValue] {
+	public getValueResolved (valueable: INonNullableValueable, from: Statement|Expression|Node, takeKey?: string|number): [ArbitraryValue, ArbitraryValue] {
 		if (valueable.resolving) return [null, null];
-
 		valueable.resolving = true;
 
-		let [setup, flattened, options] = this.flattenValueExpression(valueable.expression, from, scope, insideThisScope);
-		let computed: ArbitraryValue = flattened;
-
-		if (process.env.npm_config_debug) console.log("flattened:", flattened);
-
-		if (options.shouldCompute) {
-			computed = this.attemptComputation(setup, flattened);
-		}
-
-		if (process.env.npm_config_debug) console.log("computed:", computed);
+		const exps = this.flattenValueExpressions(valueable.expression, from);
+		const joined = exps.map(part => <string>this.marshaller.marshal(part, "")).join("");
+		const computed = this.attemptComputation(joined);
 		const takenResult = takeKey == null || computed == null ? computed : computed[<keyof NonNullableArbitraryValue>takeKey];
-
 		valueable.resolving = false;
-		return [takenResult, flattened];
+		return [takenResult, joined];
 	}
 
-	private attemptComputationLongListStrategy (setup: string[][], flattened: string, position: number = 0): ArbitraryValue {
-		let highest = 0;
-		setup.forEach(declaration => {
-			declaration.forEach((_, index) => {
-				if (index > highest) highest = index;
+	private getExpressionsFromTracedIdentifier ({traced, from, identifier, scope, isSignature, next}: ITracedExpressionsFormatterOptions): ArbitraryValue[] {
+
+		if (isILiteralValue(traced)) {
+			const val = traced.value();
+			const arr: ArbitraryValue[] = [];
+			val.forEach((part, index) => {
+				if (isIIdentifier(part)) {
+					const partNext = index === val.length - 1 ? undefined : val[index + 1];
+					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: this.mapper.get(traced) || from, identifier, scope, isSignature, next: partNext});
+					value.forEach(item => arr.push(item));
+				}
+
+				else if (part instanceof BindingIdentifier) {
+					const expressions = this.flattenValueExpressions([part], part.location);
+					expressions.forEach(item => arr.push(item));
+				}
+
+				else arr.push(part);
 			});
-		});
-		const joinedSetup = setup.map(declaration => declaration[position > declaration.length ? declaration.length - 1 : position]).join("\n");
-		if (position > highest) throw TypeError(`A computation failed for:\n${joinedSetup}${flattened}`);
-		try {
-			return this.computeValueResolved(joinedSetup, flattened);
-		} catch (ex) {
-			return this.attemptComputationLongListStrategy(setup, flattened, position + 1);
+			return arr;
 		}
-	}
 
-	private attemptComputationShortListStrategy (setup: string[][], flattened: string): ArbitraryValue {
-		// This is a VERY time consuming operation if there are many possible combinations, even though it is elegant.
-		const combinations = this.combinationUtil.getPossibleCombinationsOfMultiDimensionalArray(setup);
-		if (combinations.length === 0) return this.computeValueResolved("", flattened);
+		if (isNamespacedModuleMap(traced)) {
+			const keys = Object.keys(traced);
+			const arr: ArbitraryValue[] = ["{"];
+			keys.forEach((key, index) => {
+				arr.push(key);
+				arr.push(":");
+				const value = traced[key];
+				const partNext = index === keys.length - 1 ? undefined : traced[keys[index + 1]];
+				const expression = this.getExpressionsFromTracedIdentifier({traced: <IIdentifier>value, from, identifier, scope, isSignature, next: partNext});
+				expression.forEach(part => arr.push(part));
+				if (index !== keys.length - 1) arr.push(",");
+			});
+			arr.push("}");
+			return arr;
+		}
 
-		for (const combination of (combinations || setup)) {
-			const joined = combination.join("\n");
-			try {
-				return this.computeValueResolved(joined, flattened);
-			} catch (ex) {
+		if (isIVariableAssignment(traced)) {
+			if (next != null && this.tokenPredicator.throwsIfPrimitive(next)) return [traced.name];
+			const exp = traced.value.expression == null ? ["undefined"] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
+			return ["(", "(", ")", "=>", "{", "try", "{", traced.name, ";", "return", " ", traced.name, ";", "}", "catch", "(", "e", ")", "{", "return", "(", ...exp, ")", "}", "}", ")", "(", ")"];
+		}
+
+		if (isIParameter(traced)) {
+			if (isSignature) {
+				const initializer = traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
+				const assignment = initializer.length > 0 ? ["="] : [];
+				return [...traced.nameFormatted, ...assignment, ...initializer];
+			} else {
+				return [traced.name.find(part => part === identifier.name)];
 			}
 		}
-		throw TypeError(`A computation failed for:\n${setup}${flattened}`);
+
+		if (isIClassDeclaration(traced)) {
+			const newExpression = (identifier.name === "this" || identifier.name === "super") ? ["new", " "] : [];
+			const newExpressionOutro = (identifier.name === "this" || identifier.name === "super") && next !== "{" && next !== "(" ? ["(", ")"] : [];
+			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from), ...newExpressionOutro];
+		}
+
+		if (isIEnumDeclaration(traced)) {
+			return [traced.members];
+		}
+
+		if (isIFunctionDeclaration(traced)) {
+			const parameters: ArbitraryValue[] = [];
+			traced.parameters.parametersList.forEach((parameter, index) => {
+				const partNext = index === traced.parameters.parametersList.length - 1 ? undefined : traced.parameters.parametersList[index + 1];
+				const exp = this.getExpressionsFromTracedIdentifier({traced: parameter, from, identifier, scope, isSignature: true, next: partNext});
+				exp.forEach(part => parameters.push(part));
+				if (index !== traced.parameters.parametersList.length - 1) parameters.push(",");
+			});
+
+			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from)), "}"];
+		}
+
+		throw new TypeError(`${this.constructor.name} could not get expressions for an IIdentifier of kind ${IdentifierMapKind[traced.___kind]}`);
 	}
 
-	private attemptComputation (setup: string[][], flattened: string): ArbitraryValue {
-		const consistentSetup = setup.length > 0 ? setup : [[""]];
-		let count = 0;
-		const limit = 30;
-		setup.map(declaration => declaration.forEach(() => count++));
-		return count >= limit ? this.attemptComputationLongListStrategy(consistentSetup, flattened) : this.attemptComputationShortListStrategy(consistentSetup, flattened);
+	private getExpressionsFromIdentifier (identifier: BindingIdentifier, scope: string, next: ArbitraryValue|undefined): ArbitraryValue[] {
+
+		// If the identifier is the scope itself, return a reference to it.
+		if (scope === identifier.name) return [identifier.name];
+		const thisScope = this.tracer.traceThis(identifier.location);
+		if ((identifier.name === "this" || identifier.name === "super") && scope === thisScope) return [identifier.name];
+
+		const traced = this.tracer.traceIdentifier(identifier.name, identifier.location, identifier.name === "this" || identifier.name === "super" ? thisScope : scope);
+		if (isIIdentifier(traced)) return this.getExpressionsFromTracedIdentifier({traced, from: identifier.location, identifier, scope, isSignature: false, next});
+
+		if (process.env.npm_config_debug) console.log(`Assuming that '${identifier.name}' is part of the global environment...`);
+		return [identifier.name];
+	}
+
+	private handleValueExpression (expression: ArbitraryValue, scope: string, next: ArbitraryValue|undefined): ArbitraryValue[] {
+		if (expression instanceof BindingIdentifier) {
+			return this.getExpressionsFromIdentifier(expression, scope, next);
+		} else {
+			if (typeof expression === "string" && (expression === "let" || expression === "const")) return ["var"];
+			return [expression];
+		}
+	}
+
+	private flattenValueExpressions (expressions: ArbitraryValue[], from: Statement|Expression|Node): ArbitraryValue[] {
+		const merged: ArbitraryValue[] = [];
+		const scope = this.tracer.traceBlockScopeName(from);
+		expressions.forEach((expression, index) => {
+			const next = index === expressions.length - 1 ? undefined : expressions[index + 1];
+			this.handleValueExpression(expression, scope, next).forEach(exp => merged.push(exp));
+		});
+		return merged;
+	}
+
+	private attemptComputation (flattened: string): ArbitraryValue {
+		return this.computeValueResolved(flattened);
 	}
 
 	/**
 	 * Computes/Evaluates the given expression to a concrete value.
-	 * @param {string} scope
 	 * @param {string} flattened
 	 * @returns {ArbitraryValue}
 	 */
-	private computeValueResolved (scope: string, flattened: string): ArbitraryValue {
+	private computeValueResolved (flattened: string): ArbitraryValue {
 		try {
-			return new Function(`${scope} return (${flattened})`)();
+			return new Function(`return (${flattened})`)();
 		} catch (ex) {
-			return new Function(`${scope}${flattened}`)();
-		}
-	}
-
-	private flattenBoundPart (part: BindingIdentifier, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false, expression: ArbitraryValue[], index: number, options: IFlattenOptions, substitution = this.tracer.traceIdentifier(part.name, from, scope)): string[] {
-
-		const isRecursive = part.name === scope;
-
-		let variations: string[] = [];
-		const name = this.normalizeBindingIdentifierName(part, insideComputedThisScope);
-
-		if (isILiteralValue(substitution)) {
-			const versions = this.identifierSerializer.serializeILiteralValue(substitution);
-			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
-		}
-
-		else if (isICallExpression(substitution) && substitution.identifier === "require") {
-
-			const imports = this.languageService.getImportDeclarationsForFile(substitution.filePath, true);
-			const firstArgument = substitution.arguments.argumentsList[0];
-			const requirePath = firstArgument.value.hasDoneFirstResolve() ? firstArgument.value.resolved : firstArgument.value.resolve();
-			const importMatch = imports.find(importDeclaration => !(importDeclaration.source instanceof BindingIdentifier) && (importDeclaration.source.relativePath === requirePath || importDeclaration.source.fullPath === requirePath));
-			if (importMatch != null) {
-				const properBinding = importMatch.bindings[NAMESPACE_NAME];
-				if (properBinding != null) {
-					const intermediates = this.flattenBoundPart(properBinding, from, scope, insideComputedThisScope, expression, index, options);
-					const requireShim = `\nvar require = () => ${NAMESPACE_NAME}\n`;
-					return intermediates.map(intermediate => `${intermediate}${requireShim}`);
-				}
+			try {
+				return new Function(`${flattened}`)();
+			} catch (ex) {
+				throw TypeError(`A computation failed for:\n${flattened}. Reason: ${ex.message}`);
 			}
 		}
-
-		else if (isIParameter(substitution)) {
-			const versions = this.identifierSerializer.serializeIParameter(substitution);
-			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
-			options.shouldCompute = false;
-			options.forceNoQuoting = true;
-		}
-
-		else if (isIVariableAssignment(substitution)) {
-			const versions = this.identifierSerializer.serializeIVariableAssignment(substitution);
-			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
-		}
-
-		else if (isIClassDeclaration(substitution)) {
-			const versions = this.identifierSerializer.serializeIClassDeclaration(substitution);
-			const variableName = part.name === "super" ? substitution.name : name;
-			if (part.name === "super") options.shouldCompute = false;
-			variations = versions.map(version => `var ${variableName} = (${variableName} === undefined ? ${part.name === "this" ? "new" : ""} ${version} : ${variableName});`);
-		}
-
-		else if (isIEnumDeclaration(substitution)) {
-			const versions = this.identifierSerializer.serializeIEnumDeclaration(substitution);
-			variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${version} : ${part.name});`);
-		}
-
-		else if (isIFunctionDeclaration(substitution)) {
-			if (isRecursive) {
-				variations = [`${ValueResolvedGetter.FUNCTION_OUTER_SCOPE_NAME};`];
-			}
-			else {
-				const versions = this.identifierSerializer.serializeIFunctionDeclaration(substitution);
-				variations = versions.map(version => `var ${name} = (${part.name} === undefined ? ${`(${version})`} : ${part.name});`);
-			}
-		}
-
-		else {
-			// The identifier could not be found. Assume that it is part of the environment.
-			variations = []; // [`${part.name};`];
-			if (process.env.npm_config_debug) console.log(`Assuming that '${part.name}' is part of the global environment...`);
-			// throw new TypeError(`${this.flattenValueExpression.name} could not flatten a substitution for identifier: ${part.name} in scope: ${scope}`);
-		}
-
-		return variations;
 	}
-
-	private flattenValueExpression (valueExpression: InitializationValue, from: Statement|Expression|Node, scope: string|null, insideComputedThisScope: boolean = false): [string[][], string, IFlattenOptions] {
-		let val: string = "";
-		let setup: string[][] = [];
-
-		const options: IFlattenOptions = {
-			shouldCompute: true,
-			forceNoQuoting: false
-		};
-
-		valueExpression.forEach((part, index) => {
-			if (part instanceof BindingIdentifier) {
-
-				const setupVariations = this.flattenBoundPart(part, from, scope, insideComputedThisScope, valueExpression, index, options);
-				setup.push(setupVariations);
-				val += this.normalizeBindingIdentifierName(part, insideComputedThisScope);
-			} else {
-				if (part === "const" || part === "var" || part === "let") return;
-				if (part === GlobalObject) val += GlobalObjectIdentifier;
-				else if (this.tokenPredicator.isTokenLike(part)) val += <string>part;
-				else val += this.marshaller.marshal<ArbitraryValue, string>(part, "");
-			}
-		});
-		return [setup, val, options];
-	}
-
-	private normalizeBindingIdentifierName (name: IBindingIdentifier, insideComputedThisScope: boolean): string {
-		return name.name === "this" && !insideComputedThisScope
-			? "that"
-			: name.name === "super" && !insideComputedThisScope ? "_super" : name.name;
-	}
-
 }
