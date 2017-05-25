@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.12**:
+
+- The `ArbitraryValue`, `IValueable` and `INonNullableValueable` interfaces are now exported for public consumption.
+
 **v1.0.11**:
 
 - Major overhaul in regards to serialization and value resolving.
