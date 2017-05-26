@@ -1,5 +1,5 @@
 import {IBindingIdentifier} from "./interface/IBindingIdentifier";
-import {Statement, Expression, Node} from "typescript";
+import {Expression, Node, Statement} from "typescript";
 
 const locations: Map<BindingIdentifier, Statement|Expression|Node> = new Map();
 

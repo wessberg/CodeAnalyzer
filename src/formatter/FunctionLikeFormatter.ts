@@ -1,6 +1,6 @@
-import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "typescript";
+import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {isReturnStatement} from "../predicate/PredicateFunctions";
+import {isBlockDeclaration, isReturnStatement} from "../predicate/PredicateFunctions";
 import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../service/interface/ICodeAnalyzer";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
@@ -22,7 +22,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @param {ConstructorDeclaration|MethodDeclaration | FunctionDeclaration} declaration
 	 * @returns {IMemberDeclaration}
 	 */
-	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration): IMemberDeclaration&IParametersable {
+	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction): IMemberDeclaration&IParametersable {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
@@ -58,15 +58,16 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @param {MethodDeclaration|FunctionDeclaration} declaration
 	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
 	 */
-	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration): IFunctionLike {
+	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration|ArrowFunction): IFunctionLike {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;
 		let returnStatementContents: string|null = null;
 		let value: IValueable|null = null;
 
-		if (declaration.body != null && declaration.body.statements != null) {
-			for (const bodyStatement of declaration.body.statements) {
+		const body = declaration.body;
+		if (body != null && isBlockDeclaration(body) && body.statements != null) {
+			for (const bodyStatement of body.statements) {
 				if (isReturnStatement(bodyStatement)) {
 					if (bodyStatement.expression != null) {
 						returnStatementStartsAt = bodyStatement.expression.pos;

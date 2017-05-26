@@ -7,10 +7,12 @@ import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
 import {IMapper} from "../mapper/interface/IMapper";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
+import {ICache} from "../cache/interface/ICache";
 
 export class Tracer implements ITracer {
 
 	constructor (private languageService: ICodeAnalyzer,
+							 private cache: ICache,
 							 private typeExpressionGetter: ITypeExpressionGetter,
 							 private mapper: IMapper,
 							 private nameGetter: INameGetter,
@@ -56,6 +58,7 @@ export class Tracer implements ITracer {
 		const classMatch = clojure.classes[identifier];
 
 		let parameterMatches: IParameter[] = [];
+
 		if (from.kind === SyntaxKind.FunctionExpression || from.kind === SyntaxKind.FunctionDeclaration || this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
 			Object.keys(clojure.functions).forEach(key => {
 				const parameters = clojure.functions[key].parameters.parametersList;
@@ -87,7 +90,13 @@ export class Tracer implements ITracer {
 		}
 
 		if (this.isChildOfKind(SyntaxKind.ArrowFunction, block, from)) {
-			// TODO: Add this functionality.
+			clojure.arrowFunctions.forEach(arrowFunction => {
+				const parameters = arrowFunction.parameters.parametersList;
+				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
+				if (parameter != null) {
+					parameterMatches.push(parameter);
+				}
+			});
 		}
 
 		const requireMatches: ICallExpression[] = [];
@@ -137,7 +146,8 @@ export class Tracer implements ITracer {
 			const mapped = this.mapper.get(match);
 			if (mapped != null && mapped === from) {
 				return;
-			};
+			}
+			;
 			allMatches.push(match);
 		});
 
@@ -148,14 +158,14 @@ export class Tracer implements ITracer {
 		});
 
 		const filtered = allMatches.filter(match => ofKind == null ? true : match.___kind === ofKind);
-		const closest = filtered.sort((a, b) => {
+
+		return filtered.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
 			const bDistanceFromStart = from.pos - b.startsAt;
 			if (aDistanceFromStart > bDistanceFromStart) return -1;
 			if (aDistanceFromStart < bDistanceFromStart) return 1;
 			return 0;
 		})[0];
-		return closest;
 	}
 
 	/**
@@ -163,15 +173,19 @@ export class Tracer implements ITracer {
 	 * It starts from the given file.
 	 * @param {string} identifier
 	 * @param {Statement|Expression|Node} from
-	 * @param {string|null} scope
+	 * @param {string} [scope]
 	 * @param {IdentifierMapKind} [ofKind]
 	 * @returns {IIdentifier}
 	 */
-	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope?: string|null, ofKind?: IdentifierMapKind): IIdentifier {
-		if (scope === undefined) scope = this.traceBlockScopeName(from);
+	public traceIdentifier (identifier: string, from: Statement|Expression|Node, scope?: string, ofKind?: IdentifierMapKind): IIdentifier {
+		if (scope === undefined) scope = identifier === "this" || identifier === "super" ? this.traceThis(from) : this.traceBlockScopeName(from);
 		if ((identifier === "this" || identifier === "super") && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
-		let lookupIdentifier: string = identifier;
 
+		const filePath = from.getSourceFile().fileName;
+		const cached = this.cache.getCachedTracedIdentifier(filePath, identifier, scope);
+		if (cached != null && !this.cache.cachedTracedIdentifierNeedsUpdate(filePath, identifier, scope)) return cached.content;
+
+		let lookupIdentifier: string = identifier;
 		if (identifier === "super") {
 
 			const clojure = this.traceClojure(from);
@@ -197,8 +211,9 @@ export class Tracer implements ITracer {
 				value: () => [clojure]
 			};
 		}
-
-		return this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure, ofKind);
+		const nearest = this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure, ofKind);
+		this.cache.setCachedTracedIdentifier(filePath, identifier, scope, nearest);
+		return nearest;
 	}
 
 	/**

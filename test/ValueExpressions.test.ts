@@ -419,7 +419,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #40`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", ":", "(", ")", "=>", "{", "const", " ", "bar", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
@@ -434,7 +434,7 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #41`, t => {
 
 	`);
 	const assignments = service.getVariableAssignments(statements, true);
-	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", ":", "string", "=", "`hehe`", ";", "}", "}"]);
+	t.deepEqual(assignments["foo"].value.expression, ["{", "a", "(", ")", "{", "let", " ", "bar", "=", "`hehe`", ";", "}", "}"]);
 });
 
 test(`ValueExpressions -> Detects all valueExpressions correctly. #42`, t => {

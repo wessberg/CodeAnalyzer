@@ -1,5 +1,5 @@
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, WhileStatement} from "typescript";
-import {ArbitraryValue, IArgument, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IExportDeclaration, IFunctionDeclaration, IIdentifier, IImportDeclaration, IImportExportBinding, ILiteralValue, IMutationDeclaration, INewExpression, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
+import {ArbitraryValue, IArgument, IArrowFunction, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IExportDeclaration, IFunctionDeclaration, IIdentifier, IImportDeclaration, IImportExportBinding, ILiteralValue, IMutationDeclaration, INewExpression, IParameter, ITypeBinding, IVariableAssignment, LiteralExpression, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 
 /**
  * A predicate function that returns true if the given Statement is an ObjectLiteralExpression.
@@ -79,6 +79,7 @@ export function isLiteralExpression (statement: Statement|Declaration|Expression
 		case SyntaxKind.NoSubstitutionTemplateLiteral:
 		case SyntaxKind.RegularExpressionLiteral:
 		case SyntaxKind.ObjectLiteralExpression:
+		case SyntaxKind.TemplateExpression:
 			return true;
 		default:
 			return false;
@@ -379,6 +380,15 @@ export function isTrueKeyword (statement: TypeNode|Statement|Declaration|Express
  */
 export function isStaticKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is Modifier {
 	return statement.kind === SyntaxKind.StaticKeyword;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is the keyword 'async'.
+ * @param {TypeNode|Statement|Declaration|Expression|Node} statement
+ * @returns {boolean}
+ */
+export function isAsyncKeyword (statement: TypeNode|Statement|Declaration|Expression|Node): statement is Modifier {
+	return statement.kind === SyntaxKind.AsyncKeyword;
 }
 
 /**
@@ -1011,6 +1021,7 @@ export function isRegularExpressionLiteral (statement: BindingName|EntityName|Ex
 export function isIIdentifier (statement: IIdentifier|ArbitraryValue): statement is IIdentifier {
 	return isIVariableAssignment(statement) ||
 		isIParameter(statement) ||
+		isIArrowFunction(statement) ||
 		isNamespacedModuleMap(statement) ||
 		isIArgument(statement) ||
 		isIDecorator(statement) ||
@@ -1036,6 +1047,7 @@ export function isIExportableIIdentifier (statement: IIdentifier|ArbitraryValue)
 	return isILiteralValue(statement) ||
 		isIVariableAssignment(statement) ||
 		isIClassDeclaration(statement) ||
+		isIArrowFunction(statement) ||
 		isIEnumDeclaration(statement) ||
 		isIFunctionDeclaration(statement);
 }
@@ -1128,6 +1140,15 @@ export function isIVariableAssignment (statement: IIdentifier|ArbitraryValue): s
  */
 export function isIParameter (statement: IIdentifier|ArbitraryValue): statement is IParameter {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.PARAMETER;
+}
+
+/**
+ * A predicate function that returns true if the given Statement is an IArrowFunction.
+ * @param {IIdentifier|ArbitraryValue} statement
+ * @returns {boolean}
+ */
+export function isIArrowFunction (statement: IIdentifier|ArbitraryValue): statement is IArrowFunction {
+	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.ARROW_FUNCTION;
 }
 
 /**

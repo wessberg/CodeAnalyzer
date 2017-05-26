@@ -1,4 +1,4 @@
-import {ConstructorDeclaration, FunctionDeclaration, MethodDeclaration, ParameterDeclaration} from "typescript";
+import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, MethodDeclaration, ParameterDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
@@ -27,10 +27,10 @@ export class ParametersFormatter implements IParametersFormatter {
 
 	/**
 	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
-	 * @param {ConstructorDeclaration | MethodDeclaration | FunctionDeclaration} declaration
+	 * @param {ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction} declaration
 	 * @returns {IParameter[]}
 	 */
-	public format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration): IParameter[] {
+	public format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction): IParameter[] {
 		return declaration.parameters.map(param => this.formatParameter(param));
 	}
 
@@ -59,7 +59,7 @@ export class ParametersFormatter implements IParametersFormatter {
 				const named = <string>this.nameGetter.getName(binding);
 				name.push(named);
 				nameFormatted.push(named);
-				if (index !== elements.length -1) nameFormatted.push(",");
+				if (index !== elements.length - 1) nameFormatted.push(",");
 			});
 			nameFormatted.push("}");
 		}

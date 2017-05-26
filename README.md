@@ -100,6 +100,13 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.14**:
+
+- You can now retrieve all arrow functions with the `getArrowFunctionsForFile` and `getArrowFunctions` methods.
+- Performance improvements by extensive use of caching.
+- Bug fixes all across the board.
+- Important browser API's will be shimmed so that node understands stuff like `HTMLElement` when resolving values.
+
 **v1.0.13**:
 
 - Derived classes can now inherit methods, props and constructors from their parents up through the inheritance chain by calling the `mergeWithParent` method on an `IClassDeclaration`.

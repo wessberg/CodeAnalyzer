@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifierMap, IImportDeclaration, IPropDeclaration, IVariableAssignment, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICachedContent, IClassDeclaration, ICodeAnalyzer, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifier, IIdentifierMap, IImportDeclaration, IPropDeclaration, IVariableAssignment, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../service/interface/ICodeAnalyzer";
 import {ICache} from "./interface/ICache";
 
 export class Cache implements ICache {
@@ -23,8 +23,12 @@ export class Cache implements ICache {
 		return `class.${fileName}.${className}`;
 	}
 
-	public getCachedFunctionName (fileName: string, className: string): string {
-		return `function.${fileName}.${className}`;
+	public getCachedFunctionName (fileName: string, functionName: string): string {
+		return `function.${fileName}.${functionName}`;
+	}
+
+	public getCachedTracedIdentifierName (fileName: string, identifier: string, scope: string): string {
+		return `function.${fileName}.${identifier}.${scope}`;
 	}
 
 	public getCachedIdentifierMapName (fileName: string): string {
@@ -49,6 +53,10 @@ export class Cache implements ICache {
 
 	public getCachedExportDeclarationsName (fileName: string): string {
 		return `exportDeclarations.${fileName}`;
+	}
+
+	public getCachedArrowFunctionsName (fileName: string): string {
+		return `arrowFunctions.${fileName}`;
 	}
 
 	public getCachedFunctionIndexerName (fileName: string): string {
@@ -76,6 +84,10 @@ export class Cache implements ICache {
 		return this.getFromCache<IFunctionDeclaration>(this.getCachedFunctionName(fileName, functionName));
 	}
 
+	public getCachedTracedIdentifier (fileName: string, identifier: string, scope: string): ICachedContent<IIdentifier>|null {
+		return this.getFromCache<IIdentifier>(this.getCachedTracedIdentifierName(fileName, identifier, scope));
+	}
+
 	public getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration>|null {
 		return this.getFromCache<IEnumDeclaration>(this.getCachedEnumName(fileName, enumName));
 	}
@@ -98,6 +110,10 @@ export class Cache implements ICache {
 
 	public getCachedExportDeclarations (fileName: string): ICachedContent<IExportDeclaration[]>|null {
 		return this.getFromCache<IExportDeclaration[]>(this.getCachedExportDeclarationsName(fileName));
+	}
+
+	public getCachedArrowFunctions (fileName: string): ICachedContent<IArrowFunction[]>|null {
+		return this.getFromCache<IArrowFunction[]>(this.getCachedArrowFunctionsName(fileName));
 	}
 
 	public getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null {
@@ -149,6 +165,11 @@ export class Cache implements ICache {
 		this.cache.set(this.getCachedFunctionName(fileName, content.name), {version, content});
 	}
 
+	public setCachedTracedIdentifier (fileName: string, identifier: string, scope: string, content: IIdentifier): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedTracedIdentifierName(fileName, identifier, scope), {version, content});
+	}
+
 	public setCachedClassIndexer (fileName: string, content: ClassIndexer): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedClassIndexerName(fileName), {version, content});
@@ -182,6 +203,11 @@ export class Cache implements ICache {
 	public setCachedExportDeclarations (fileName: string, content: IExportDeclaration[]): void {
 		const version = this.languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedExportDeclarationsName(fileName), {version, content});
+	}
+
+	public setCachedArrowFunctions (fileName: string, content: IArrowFunction[]): void {
+		const version = this.languageService.getFileVersion(fileName);
+		this.cache.set(this.getCachedArrowFunctionsName(fileName), {version, content});
 	}
 
 	public setCachedEnumIndexer (fileName: string, content: EnumIndexer): void {
@@ -235,7 +261,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedFunctionIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedFunctionIndexer(this.getCachedFunctionIndexerName(filePath));
+		const cache = this.getCachedFunctionIndexer(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -243,7 +269,15 @@ export class Cache implements ICache {
 	}
 
 	public cachedIdentifierMapNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedIdentifierMap(this.getCachedIdentifierMapName(filePath));
+		const cache = this.getCachedIdentifierMap(filePath);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedTracedIdentifierNeedsUpdate (filePath: string, identifier: string, scope: string): boolean {
+		const cache = this.getCachedTracedIdentifier(filePath, identifier, scope);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -251,7 +285,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedResolvedIdentifierValueMapNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedResolvedIdentifierValueMap(this.getCachedResolvedIdentifierValueMapName(filePath));
+		const cache = this.getCachedResolvedIdentifierValueMap(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -259,7 +293,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedResolvedSerializedIdentifierValueMapNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedResolvedIdentifierValueMap(this.getCachedResolvedSerializedIdentifierValueMapName(filePath));
+		const cache = this.getCachedResolvedIdentifierValueMap(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -267,7 +301,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedImportDeclarationsNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedImportDeclarations(this.getCachedImportDeclarationsName(filePath));
+		const cache = this.getCachedImportDeclarations(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -275,7 +309,15 @@ export class Cache implements ICache {
 	}
 
 	public cachedExportDeclarationsNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedExportDeclarations(this.getCachedExportDeclarationsName(filePath));
+		const cache = this.getCachedExportDeclarations(filePath);
+		if (cache == null) return true;
+
+		const version = this.languageService.getFileVersion(filePath);
+		return version > cache.version;
+	}
+
+	public cachedArrowFunctionsNeedsUpdate (filePath: string): boolean {
+		const cache = this.getCachedArrowFunctions(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -283,7 +325,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedClassIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedClassIndexer(this.getCachedClassIndexerName(filePath));
+		const cache = this.getCachedClassIndexer(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -291,7 +333,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedEnumIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedEnumIndexer(this.getCachedEnumIndexerName(filePath));
+		const cache = this.getCachedEnumIndexer(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);
@@ -299,7 +341,7 @@ export class Cache implements ICache {
 	}
 
 	public cachedVariableIndexerNeedsUpdate (filePath: string): boolean {
-		const cache = this.getCachedVariableIndexer(this.getCachedVariableIndexerName(filePath));
+		const cache = this.getCachedVariableIndexer(filePath);
 		if (cache == null) return true;
 
 		const version = this.languageService.getFileVersion(filePath);

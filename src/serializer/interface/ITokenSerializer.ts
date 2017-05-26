@@ -1,4 +1,4 @@
-import {BinaryOperator, NodeFlags, SyntaxKind, TypeNode, Statement, Expression, Node} from "typescript";
+import {BinaryOperator, Expression, Node, NodeFlags, Statement, SyntaxKind, TypeNode} from "typescript";
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
 import {ArbitraryValue, TypeExpression} from "../../service/interface/ICodeAnalyzer";
 

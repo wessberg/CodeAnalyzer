@@ -1,3 +1,4 @@
+import "../shim/browser";
 import {IMarshaller} from "@wessberg/marshaller";
 import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
@@ -7,6 +8,7 @@ import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, N
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITracedExpressionsFormatterOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
+import {Config} from "../static/Config";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
 
@@ -74,7 +76,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		if (isIVariableAssignment(traced)) {
 			if (next != null && this.tokenPredicator.throwsIfPrimitive(next)) return [traced.name];
-			const exp = traced.value.expression == null ? ["undefined"] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
+
+			if (traced.value.expression == null) return [traced.name];
+			if (traced.value.expression.some(part => part instanceof BindingIdentifier && (part.name === "this" || part.name === "super"))) {
+				return [traced.name];
+			}
+
+			const exp = this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
 			return ["(", "(", ")", "=>", "{", "try", "{", traced.name, ";", "return", " ", traced.name, ";", "}", "catch", "(", "e", ")", "{", "return", "(", ...exp, ")", "}", "}", ")", "(", ")"];
 		}
 
@@ -91,6 +99,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (isIClassDeclaration(traced)) {
 			const newExpression = (identifier.name === "this" || identifier.name === "super") ? ["new", " "] : [];
 			const newExpressionOutro = (identifier.name === "this" || identifier.name === "super") && next !== "{" && next !== "(" ? ["(", ")"] : [];
+
 			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from), ...newExpressionOutro];
 		}
 
@@ -118,9 +127,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		// If the identifier is the scope itself, return a reference to it.
 		if (scope === identifier.name) return [identifier.name];
 		const thisScope = this.tracer.traceThis(identifier.location);
-		if ((identifier.name === "this" || identifier.name === "super") && scope === thisScope) return [identifier.name];
 
-		const traced = this.tracer.traceIdentifier(identifier.name, identifier.location, identifier.name === "this" || identifier.name === "super" ? thisScope : scope);
+		if ((identifier.name === "this" || identifier.name === "super") && (scope === thisScope)) return [identifier.name];
+
+		// This will sometimes happen if the scope is determined from a built-in class and thus is unknown.
+		if (scope === Config.name.global && thisScope !== Config.name.global) return [identifier.name];
+
+		const traced = this.tracer.traceIdentifier(identifier.name, identifier.location);
 		if (isIIdentifier(traced)) return this.getExpressionsFromTracedIdentifier({traced, from: identifier.location, identifier, scope, isSignature: false, next});
 
 		if (process.env.npm_config_debug) console.log(`Assuming that '${identifier.name}' is part of the global environment...`);
@@ -162,7 +175,11 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			try {
 				return new Function(`${flattened}`)();
 			} catch (ex) {
-				throw TypeError(`A computation failed for:\n${flattened}. Reason: ${ex.message}`);
+				const reason = `A computation failed for:\n${flattened}. Reason: ${ex.message}`;
+				if (process.env.npm_config_debug) console.error(reason);
+				return null;
+				// if (process.env.npm_config_debug) throw TypeError(reason);
+				// else return null;
 			}
 		}
 	}

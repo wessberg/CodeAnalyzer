@@ -115,7 +115,6 @@ export class ClassFormatter implements IClassFormatter {
 		// Merge in the parent class properties.
 		const base = declaration.heritage.extendsClass.resolve();
 		if (base == null) {
-			console.log("base was null for", declaration.name);
 			// It the base class couldn't be resolved, it is probably a built-in class (such as HTMLElement).
 			return;
 		}

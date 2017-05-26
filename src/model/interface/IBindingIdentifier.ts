@@ -1,4 +1,4 @@
-import {Statement, Expression, Node} from "typescript";
+import {Expression, Node, Statement} from "typescript";
 
 export interface IBindingIdentifier {
 	name: string;
