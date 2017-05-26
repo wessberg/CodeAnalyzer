@@ -83,6 +83,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		SyntaxKind.NamespaceKeyword,
 		SyntaxKind.DeclareKeyword
 	]);
+
+	private static readonly SKIP_MATCHING_PATHS: RegExp[] = [
+		/tslib\.[^.]*\.(js|ts)/,
+		/typescript-helpers/,
+		/rollup-plugin-/
+	];
+
 	private languageService: LanguageService;
 	private nameGetter: INameGetter;
 	private heritageClauseFormatter: IHeritageClauseFormatter;
@@ -282,6 +289,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {ICallExpression[]}
 	 */
 	public getCallExpressionsForFile (fileName: string, deep: boolean = false): ICallExpression[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getCallExpressionsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		return this.getCallExpressions(statements, deep);
@@ -350,6 +359,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {INewExpression[]}
 	 */
 	public getNewExpressionsForFile (fileName: string, deep: boolean = false): INewExpression[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getNewExpressionsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		return this.getNewExpressions(statements, deep);
@@ -394,6 +405,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {ResolvedSerializedIIdentifierValueMap}
 	 */
 	public getResolvedSerializedIdentifierValuesForFile (fileName: string, deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP, map: {}};
+
 		const cached = this.cache.getCachedResolvedSerializedIdentifierValueMap(fileName);
 		if (cached != null && !this.cache.cachedResolvedSerializedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;
 
@@ -474,6 +487,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {ResolvedIIdentifierValueMap}
 	 */
 	public getResolvedIdentifierValuesForFile (fileName: string, deep: boolean = false): ResolvedIIdentifierValueMap {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP, map: {}};
+
 		const cached = this.cache.getCachedResolvedIdentifierValueMap(fileName);
 		if (cached != null && !this.cache.cachedResolvedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;
 
@@ -540,6 +555,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {FunctionIndexer}
 	 */
 	public getFunctionDeclarationsForFile (fileName: string, deep: boolean = false): FunctionIndexer {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {};
+
 		const cached = this.cache.getCachedFunctionIndexer(fileName);
 		if (cached != null && !this.cache.cachedFunctionIndexerNeedsUpdate(fileName)) return cached.content;
 
@@ -598,6 +615,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {EnumIndexer}
 	 */
 	public getEnumDeclarationsForFile (fileName: string, deep: boolean = false): EnumIndexer {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {};
+
 		const cached = this.cache.getCachedEnumIndexer(fileName);
 		if (cached != null && !this.cache.cachedEnumIndexerNeedsUpdate(fileName)) return cached.content;
 
@@ -657,6 +676,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IIdentifierMap}
 	 */
 	public getAllIdentifiersForFile (fileName: string, deep: boolean = false): IIdentifierMap {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {___kind: IdentifierMapKind.IDENTIFIER_MAP, enums: {}, classes: {}, variables: {}, functions: {}, callExpressions: [], imports: [], exports: [], mutations: [], arrowFunctions: []};
+
 		const cached = this.cache.getCachedIdentifierMap(fileName);
 		if (cached != null && !this.cache.cachedIdentifierMapNeedsUpdate(fileName)) return cached.content;
 
@@ -706,6 +727,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {VariableIndexer}
 	 */
 	public getVariableAssignmentsForFile (fileName: string, deep: boolean = false): VariableIndexer {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {};
+
 		const cached = this.cache.getCachedVariableIndexer(fileName);
 		if (cached != null && !this.cache.cachedVariableIndexerNeedsUpdate(fileName)) return cached.content;
 
@@ -762,6 +785,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {ClassIndexer}
 	 */
 	public getClassDeclarationsForFile (fileName: string, deep: boolean = false): ClassIndexer {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return {};
+
 		const cached = this.cache.getCachedClassIndexer(fileName);
 		if (cached != null && !this.cache.cachedClassIndexerNeedsUpdate(fileName)) return cached.content;
 
@@ -819,6 +844,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IArrowFunction[]}
 	 */
 	public getArrowFunctionsForFile (fileName: string, deep: boolean = false): IArrowFunction[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const cached = this.cache.getCachedArrowFunctions(fileName);
 		if (cached != null && !this.cache.cachedArrowFunctionsNeedsUpdate(fileName)) return cached.content;
 
@@ -873,6 +900,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IImportDeclaration[]}
 	 */
 	public getImportDeclarationsForFile (fileName: string, deep: boolean = false): IImportDeclaration[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const cached = this.cache.getCachedImportDeclarations(fileName);
 		if (cached != null && !this.cache.cachedImportDeclarationsNeedsUpdate(fileName)) return cached.content;
 
@@ -938,6 +967,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IMutationDeclaration[]}
 	 */
 	public getMutationsForFile (fileName: string, deep: boolean = false): IMutationDeclaration[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const statements = this.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.getMutationsForFile.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 		return this.getMutations(statements, deep);
@@ -980,6 +1011,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IExportDeclaration[]}
 	 */
 	public getExportDeclarationsForFile (fileName: string, deep: boolean = false): IExportDeclaration[] {
+		if (CodeAnalyzer.SKIP_MATCHING_PATHS.some(regex => regex.test(fileName))) return [];
+
 		const cached = this.cache.getCachedExportDeclarations(fileName);
 		if (cached != null && !this.cache.cachedExportDeclarationsNeedsUpdate(fileName)) return cached.content;
 

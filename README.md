@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.15**:
+
+- Added a blacklist filter for specific file names (such as tslib.ts or rollup plugins.)
+
 **v1.0.14**:
 
 - You can now retrieve all arrow functions with the `getArrowFunctionsForFile` and `getArrowFunctions` methods.
