@@ -12,6 +12,15 @@ export class NameGetter implements INameGetter {
 	}
 
 	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string {
+
+		if (
+			isFunctionDeclaration(statement) ||
+			isFunctionExpression(statement)
+		) {
+			if (statement.name == null) return Config.name.anonymous;
+			return <string>this.getNameOfMember(statement.name, false, true);
+		}
+
 		if (
 			isBindingElement(statement) ||
 			isParameterDeclaration(statement) ||
@@ -19,8 +28,6 @@ export class NameGetter implements INameGetter {
 			isPropertyDeclaration(statement) ||
 			isPropertyAssignment(statement) ||
 			isVariableDeclaration(statement) ||
-			isFunctionDeclaration(statement) ||
-			isFunctionExpression(statement) ||
 			isClassDeclaration(statement) ||
 			isClassExpression(statement) ||
 			isMethodDeclaration(statement) ||

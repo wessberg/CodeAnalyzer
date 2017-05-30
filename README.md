@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.18**:
+
+- Fixed an issue where getting names of anonymous functions would sometimes crash.
+
 **v1.0.17**:
 
 - Added lots of more interfaces to the exports of the module.
