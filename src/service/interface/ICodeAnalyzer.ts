@@ -43,18 +43,38 @@ export interface IKindable {
 export declare type IExportDeclaration = IModuleDeclaration;
 export declare type IImportDeclaration = IModuleDeclaration;
 
+export interface IExportDeclarationable {
+	exportDeclaration: IExportDeclaration;
+}
+
+export interface IImportDeclarationable {
+	importDeclaration: IImportDeclaration;
+}
+
 export interface IModuleDeclaration extends IPositionable, IFilePathable, IKindable {
 	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
 	bindings: ImportExportIndexer;
 }
 
+export interface IModuleDeclarationable {
+	moduleDeclaration: IModuleDeclaration;
+}
+
 export interface ICallExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
 }
 
+export interface ICallExpressionable {
+	callExpression: ICallExpression;
+}
+
 export interface IEnumDeclaration extends INameable, IPositionable, IDecoratorsable, IFilePathable, IKindable {
 	members: { [key: string]: number|string };
+}
+
+export interface IEnumDeclarationable {
+	enumDeclaration: IEnumDeclaration;
 }
 
 export interface IIdentifierable {
@@ -70,6 +90,10 @@ export interface ICallable extends IIdentifierable, IPropertyable {
 
 export interface INewExpression extends IPositionable, IArgumentsable, ICallable, IFilePathable, IKindable {
 	type: ITypeable;
+}
+
+export interface INewExpressionable {
+	newExpression: INewExpression;
 }
 
 export interface IBody extends IContentsable, IPositionable {
@@ -115,8 +139,16 @@ export interface IFunctionDeclaration extends IFunctionLike, IFilePathable, IKin
 	value: IValueable;
 }
 
+export interface IFunctionDeclarationable {
+	functionDeclaration: IFunctionDeclaration;
+}
+
 export interface IArrowFunction extends IFunctionLike, IFilePathable, IKindable {
 	value: IValueable;
+}
+
+export interface IArrowFunctionable {
+	arrowFunction: IArrowFunction;
 }
 
 export interface IClassNameable {
@@ -127,8 +159,16 @@ export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePatha
 	value: IValueable;
 }
 
+export interface IMethodDeclarationable {
+	methodDeclaration: IMethodDeclaration;
+}
+
 export interface IConstructorDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable {
 	value: IValueable;
+}
+
+export interface IConstructorDeclarationable {
+	constructorDeclaration: IConstructorDeclaration;
 }
 
 export interface IExtendsRelation extends ITypeBinding {
@@ -140,6 +180,10 @@ export interface IHeritage {
 	implementsInterfaces: ITypeBinding[];
 }
 
+export interface IHeritageable {
+	heritage: IHeritage;
+}
+
 export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable, IKindable, IModifiersable {
 	methods: ResolvedMethodMap;
 	props: PropIndexer;
@@ -147,6 +191,10 @@ export interface IClassDeclaration extends IMemberDeclaration, INameable, IFileP
 	heritage: IHeritage|null;
 	value: IValueable;
 	mergeWithParent (): void;
+}
+
+export interface IClassDeclarationable {
+	classDeclaration: IClassDeclaration;
 }
 
 export interface IPositionable {
@@ -162,6 +210,10 @@ export declare interface IParameter extends IFilePathable, IPositionable, IKinda
 	value: IValueable;
 }
 
+export interface IParameterable {
+	parameter: IParameter;
+}
+
 export interface IRequire extends IPositionable, IKindable, IModulePath, IFilePathable, IPayloadable, IArgumentsable {
 }
 
@@ -169,14 +221,21 @@ export declare interface IArgument extends IPositionable, IKindable {
 	value: IValueable;
 }
 
+export interface IArgumentable {
+	argument: IArgument;
+}
+
 export interface IArbitraryObject<T> {
 	[key: string]: T;
-
 	[key: number]: T;
 }
 
 export interface IDecorator extends IPositionable, IKindable {
 	name: string;
+}
+
+export interface IDecoratorable {
+	decorator: IDecorator;
 }
 
 export interface IDecoratorsable {
@@ -190,6 +249,10 @@ export interface isStaticable {
 export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable, IModifiersable {
 	type: ITypeable;
 	value: IValueable;
+}
+
+export interface IPropDeclarationable {
+	propDeclaration: IPropDeclaration;
 }
 
 export interface INameable {
@@ -248,9 +311,17 @@ export interface IMutationDeclaration extends IPositionable, IFilePathable, IKin
 	value: IValueable;
 }
 
+export interface IMutationDeclarationable {
+	mutationDeclaration: IMutationDeclaration;
+}
+
 export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable, IModifiersable {
 	value: IValueable;
 	type: ITypeable;
+}
+
+export interface IVariableAssignmentable {
+	variableAssignment: IVariableAssignment;
 }
 
 export interface IFilePathable {

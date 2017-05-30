@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.17**:
+
+- Added lots of more interfaces to the exports of the module.
+
 **v1.0.16**:
 
 - Removed Typescript as a constructor argument to instead use the one that is located in node_modules.
