@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.16**:
+
+- Removed Typescript as a constructor argument to instead use the one that is located in node_modules.
+
 **v1.0.15**:
 
 - Added a blacklist filter for specific file names (such as tslib.ts or rollup plugins.)

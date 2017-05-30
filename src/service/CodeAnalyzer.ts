@@ -1,6 +1,6 @@
 import {IFileLoader} from "@wessberg/fileloader";
 import {IMarshaller} from "@wessberg/marshaller";
-import * as ts from "typescript";
+import * as typescript from "typescript";
 import {ArrowFunction, BinaryExpression, CallExpression, ClassDeclaration, CompilerOptions, Declaration, ExportAssignment, ExportDeclaration, Expression, ExpressionStatement, FunctionDeclaration, ImportDeclaration, ImportEqualsDeclaration, IScriptSnapshot, LanguageService, ModuleKind, Node, NodeArray, ScriptTarget, Statement, SyntaxKind, VariableStatement} from "typescript";
 import {Cache} from "../cache/Cache";
 import {ICache} from "../cache/interface/ICache";
@@ -125,9 +125,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	private typeUtil: ITypeUtil;
 	private files: Map<string, { version: number, content: string }> = new Map();
 	constructor (private marshaller: IMarshaller,
-							 private fileLoader: IFileLoader,
-							 public typescript: typeof ts = ts) {
-		this.languageService = this.typescript.createLanguageService(this, typescript.createDocumentRegistry());
+							 private fileLoader: IFileLoader) {
+		this.languageService = typescript.createLanguageService(this, typescript.createDocumentRegistry());
 		this.typeUtil = new TypeUtil();
 		this.tokenSerializer = new TokenSerializer();
 		this.tokenPredicator = new TokenPredicator();
@@ -260,7 +259,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getScriptSnapshot (fileName: string): IScriptSnapshot|undefined {
 		const file = this.files.get(fileName);
 		if (file == null) return undefined;
-		return this.typescript.ScriptSnapshot.fromString(file.content);
+		return typescript.ScriptSnapshot.fromString(file.content);
 	}
 
 	/**
@@ -277,7 +276,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {string}
 	 */
 	public getDefaultLibFileName (options: CompilerOptions): string {
-		return this.typescript.getDefaultLibFilePath(options);
+		return typescript.getDefaultLibFilePath(options);
 	}
 
 	/**
