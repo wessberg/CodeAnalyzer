@@ -1,7 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
-test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
+test(`getCallExpressions() -> Detects call expressions correctly. #1`, t => {
 	const code = `
 		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -12,7 +12,7 @@ test(`getCallExpressions() -> Detects methods correctly. #1`, t => {
 	t.true(expression != null);
 });
 
-test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
+test(`getCallExpressions() -> Detects call expressions correctly. #2`, t => {
 	const code = `
 		helloWorld<Foo, Bar>("Hello world!");
 	`;
@@ -23,7 +23,7 @@ test(`getCallExpressions() -> Detects methods correctly. #2`, t => {
 	t.true(expression != null);
 });
 
-test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
+test(`getCallExpressions() -> Detects call expressions correctly. #3`, t => {
 
 	const code = `
 		helloWorld<Foo, Bar>("Hello world!");
@@ -35,10 +35,37 @@ test(`getCallExpressions() -> Detects methods correctly. #3`, t => {
 	t.true(expression != null);
 });
 
-test(`getCallExpressions() -> Detects methods correctly. #4`, t => {
+test(`getCallExpressions() -> Detects call expressions correctly. #4`, t => {
 
 	const code = `
 		service.helloWorld<Foo, Bar>("Hello world!");
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements, true);
+	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects call expressions correctly. #5`, t => {
+
+	const code = `
+		if (!service.helloWorld<IFoo>("Foo!")) {
+		}
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements, true);
+	const expression = callExpressions.find(exp => exp.identifier === "helloWorld");
+	t.true(expression != null);
+});
+
+test(`getCallExpressions() -> Detects call expressions correctly. #6`, t => {
+
+	const code = `
+		class Foo {
+			constructor (foo = service.helloWorld<IFoo>("Foo!"))
+		}
 	`;
 
 	const statements = parse(code);

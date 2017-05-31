@@ -49,7 +49,7 @@ import {ValueResolvedGetter} from "../getter/ValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {Mapper} from "../mapper/Mapper";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
 import {TokenPredicator} from "../predicate/TokenPredicator";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {TokenSerializer} from "../serializer/TokenSerializer";
@@ -1127,9 +1127,10 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) return [];
 
 		if (isIfStatement(statement)) {
+
 			const thenChildren = statement.thenStatement == null ? [] : [statement.thenStatement];
 			const elseChildren = statement.elseStatement == null ? [] : [statement.elseStatement];
-			return [...thenChildren, ...elseChildren];
+			return [statement.expression, ...thenChildren, ...elseChildren];
 		}
 
 		if (isShorthandPropertyAssignment(statement)) {
@@ -1137,14 +1138,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isDefaultClause(statement) || isCaseClause(statement)) {
-			const statements: (Statement|Declaration|Expression|Node)[] = [];
+			const statements: (Statement|Declaration|Expression|Node)[] = isCaseClause(statement) ? [statement.expression] : [];
 			statement.statements.forEach(child => statements.push(child));
-
 			return statements;
 		}
 
 		if (isWhileStatement(statement)) {
-			return [statement.statement];
+			return [statement.expression, statement.statement];
 		}
 
 		if (isExportAssignment(statement)) {
@@ -1171,7 +1171,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isSwitchStatement(statement)) {
-			return [statement.caseBlock];
+			return [statement.expression, statement.caseBlock];
 		}
 
 		if (isBlockDeclaration(statement)) {
@@ -1183,7 +1183,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isArrowFunction(statement)) {
-			return [statement.body];
+			return [...statement.parameters, ...(statement.body == null ? [] : [statement.body])];
 		}
 
 		if (isLabeledStatement(statement)) {
@@ -1193,7 +1193,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		if (isConditionalExpression(statement)) {
 			const whenTrue = statement.whenTrue == null ? [] : [statement.whenTrue];
 			const whenFalse = statement.whenFalse == null ? [] : [statement.whenFalse];
-			return [...whenTrue, ...whenFalse];
+			return [statement.condition, ...whenTrue, ...whenFalse];
 		}
 
 		if (isBinaryExpression(statement)) {
@@ -1201,7 +1201,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isFunctionDeclaration(statement)) {
-			return statement.body == null ? [] : [statement.body];
+			return [...statement.parameters, ...(statement.body == null ? [] : [statement.body])];
 		}
 
 		if (isExpressionStatement(statement)) {
@@ -1209,11 +1209,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isTryStatement(statement)) {
-			const tryBlock = this.findChildStatements(statement.tryBlock);
+
 			const catchClause = statement.catchClause == null ? [] : [statement.catchClause.block];
 			const finallyBlock = statement.finallyBlock == null ? [] : [statement.finallyBlock];
 
-			return [...tryBlock, ...catchClause, ...finallyBlock];
+			return [statement.tryBlock, ...catchClause, ...finallyBlock];
 		}
 
 		if (isSpreadAssignment(statement) || isSpreadElement(statement)) {
@@ -1254,7 +1254,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isFunctionExpression(statement)) {
-			return [statement.body];
+			return [...statement.parameters, ...(statement.body == null ? [] : [statement.body])];
 		}
 
 		if (isTypeOfExpression(statement)) {
@@ -1262,7 +1262,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isMethodDeclaration(statement)) {
-			return statement.body == null ? [] : [statement.body];
+			return [...statement.parameters, ...(statement.body == null ? [] : [statement.body])];
 		}
 
 		if (isTemplateExpression(statement)) {
@@ -1285,7 +1285,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isConstructorDeclaration(statement)) {
-			return statement.body == null ? [] : [statement.body];
+			return [...statement.parameters, ...(statement.body == null ? [] : [statement.body])];
 		}
 
 		if (isArrayLiteralExpression(statement)) {
@@ -1307,21 +1307,30 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isForStatement(statement)) {
+			const condition = statement.condition == null ? [] : [statement.condition];
+			const incrementor = statement.incrementor == null ? [] : [statement.incrementor];
 			const initializer = statement.initializer == null ? [] : [statement.initializer];
 			const body = statement.statement == null ? [] : [statement.statement];
-			return [...initializer, ...body];
+			return [...condition, ...incrementor, ...initializer, ...body];
 		}
 
 		if (isForInStatement(statement)) {
 			const initializer = statement.initializer == null ? [] : [statement.initializer];
+			const expression = statement.expression == null ? [] : [statement.expression];
 			const body = statement.statement == null ? [] : [statement.statement];
-			return [...initializer, ...body];
+			return [...expression, ...initializer, ...body];
 		}
 
 		if (isForOfStatement(statement)) {
 			const initializer = statement.initializer == null ? [] : [statement.initializer];
+			const expression = statement.expression == null ? [] : [statement.expression];
 			const body = statement.statement == null ? [] : [statement.statement];
-			return [...initializer, ...body];
+			return [...expression, ...initializer, ...body];
+		}
+
+		if (isParameterDeclaration(statement)) {
+			const initializer = statement.initializer == null ? [] : [statement.initializer];
+			return [...initializer];
 		}
 
 		if (isTypeAssertionExpression(statement)) {
@@ -1420,8 +1429,8 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 			return [];
 		}
 
-		// throw new TypeError(`${this.findChildStatements.name} could not find child statements for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
-		return [];
+		throw new TypeError(`${this.findChildStatements.name} could not find child statements for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
+		// return [];
 	}
 
 	/**

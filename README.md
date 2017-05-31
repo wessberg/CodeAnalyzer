@@ -100,6 +100,11 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.21**:
+
+- Parsing for expressions with "deep" wouldn't find all expressions.
+- Fixed bugs.
+
 **v1.0.20**:
 
 - Moved some logic into a separate module ('compiler-common') to instead depend on that one.
