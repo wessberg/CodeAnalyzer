@@ -536,3 +536,15 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #49`, t => {
 	const imports = service.getImportDeclarations(statements, true);
 	t.true(imports.length === 1);
 });
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #50`, t => {
+
+	const code = `
+		const val = void 0;
+	`;
+
+	const statements = parse(code);
+	const variables = service.getVariableAssignments(statements, true);
+	const expression = variables["val"].value.expression;
+	t.deepEqual(expression, ["void", " ", 0]);
+});

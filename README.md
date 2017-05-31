@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.26**:
+
+- Added handling for finding ValueExpressions of `VoidExpression`s.
+
 **v1.0.25**:
 
 - Added handling for finding child statements of `VoidExpression`s.
