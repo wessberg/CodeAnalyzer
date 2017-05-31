@@ -1,6 +1,6 @@
 import {TypeExpression} from "src/service/interface/ICodeAnalyzer";
 import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
-import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
+import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isThisTypeNode, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
@@ -20,6 +20,10 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 
 		if (isIndexedAccessTypeNode(statement)) {
 			return [...this.getTypeExpression(statement.objectType), "[", ...this.getTypeExpression(statement.indexType), "]"];
+		}
+
+		if (isThisTypeNode(statement)) {
+			return ["this"];
 		}
 
 		if (isTypeNode(statement)) {

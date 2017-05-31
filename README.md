@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.23**:
+
+- Added handling for formatting type expressions of kind `ThisType`
+
 **v1.0.22**:
 
 - Added handling for finding child statements of `TypeAliasDeclaration`s.
