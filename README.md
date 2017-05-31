@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.22**:
+
+- Added handling for finding child statements of `TypeAliasDeclaration`s.
+
 **v1.0.21**:
 
 - Parsing for expressions with "deep" wouldn't find all expressions.

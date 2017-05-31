@@ -1023,6 +1023,15 @@ export function isRegularExpressionLiteral (statement: BindingName|EntityName|Ex
 }
 
 /**
+ * A predicate function that returns true if the given Statement is a TypeAliasDeclaration.
+ * @param {BindingName|EntityName|Expression} statement
+ * @returns {boolean}
+ */
+export function isTypeAliasDeclaration (statement: BindingName|EntityName|Expression|Node): statement is TypeAliasDeclaration {
+	return statement.kind === SyntaxKind.TypeAliasDeclaration;
+}
+
+/**
  * A predicate function that returns true if the given Statement is an IIdentifier.
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}

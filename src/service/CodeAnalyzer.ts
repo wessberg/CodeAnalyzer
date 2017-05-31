@@ -49,7 +49,7 @@ import {ValueResolvedGetter} from "../getter/ValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {Mapper} from "../mapper/Mapper";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAliasDeclaration, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isWhileStatement} from "../predicate/PredicateFunctions";
 import {TokenPredicator} from "../predicate/TokenPredicator";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {TokenSerializer} from "../serializer/TokenSerializer";
@@ -1398,6 +1398,10 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		}
 
 		if (isRegularExpressionLiteral(statement)) {
+			return [];
+		}
+
+		if (isTypeAliasDeclaration(statement)) {
 			return [];
 		}
 
