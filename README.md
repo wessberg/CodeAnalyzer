@@ -100,9 +100,13 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.24**:
+
+- Bumped dependency on *@wessberg/GlobalObject* to v1.0.5.
+
 **v1.0.23**:
 
-- Added handling for formatting type expressions of kind `ThisType`
+- Added handling for formatting type expressions of kind `ThisType`.
 
 **v1.0.22**:
 
