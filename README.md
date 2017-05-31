@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.20**:
+
+- Moved some logic into a separate module ('compiler-common') to instead depend on that one.
+
 **v1.0.19**:
 
 - Fixed bugs.

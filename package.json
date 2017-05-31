@@ -38,6 +38,7 @@
     "typescript": "latest"
   },
   "dependencies": {
+    "@wessberg/compiler-common": "^1.0.0",
     "@wessberg/fileloader": "^1.0.2",
     "@wessberg/globalobject": "^1.0.2",
     "@wessberg/marshaller": "^1.0.22",
