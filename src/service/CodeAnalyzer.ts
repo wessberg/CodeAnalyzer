@@ -328,8 +328,6 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
 			if (CodeAnalyzer.SKIP_KINDS.has(statement.kind)) return;
 
-			// console.log(SyntaxKind[statement.kind], this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end));
-
 			const actualStatement = deep || isCallExpression(statement) ? statement : isExpressionStatement(statement) && isCallExpression(statement.expression) ? statement.expression : statement;
 
 			if (!this.isResolvingStatement(actualStatement)) {

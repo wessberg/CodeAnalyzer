@@ -1,13 +1,14 @@
 import {TypeExpression} from "src/service/interface/ICodeAnalyzer";
 import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
-import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
+import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 
-	constructor (private nameGetter: INameGetter, private tokenSerializer: ITokenSerializer) {
+	constructor (private nameGetter: INameGetter,
+							 private tokenSerializer: ITokenSerializer) {
 	}
 
 	/**
@@ -16,6 +17,10 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 	 * @returns {TypeExpression}
 	 */
 	public getTypeExpression (statement: ParameterDeclaration|TypeAliasDeclaration|TypeNode): TypeExpression {
+
+		if (isIndexedAccessTypeNode(statement)) {
+			return [...this.getTypeExpression(statement.objectType), "[", ...this.getTypeExpression(statement.indexType), "]"];
+		}
 
 		if (isTypeNode(statement)) {
 			if ((isTypeReferenceNode(statement) || isTypeReference(statement)) && isIdentifierObject(statement.typeName)) {

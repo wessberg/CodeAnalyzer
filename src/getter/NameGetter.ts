@@ -73,6 +73,13 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (
+			isParenthesizedExpression(statement) ||
+			isTypeAssertionExpression(statement)
+		) {
+			return this.getName(statement.expression);
+		}
+
+		if (
 			isArrowFunction(statement)
 		) {
 			return Config.name.anonymous;

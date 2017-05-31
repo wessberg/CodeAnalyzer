@@ -152,6 +152,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 	private flattenValueExpressions (expressions: ArbitraryValue[], from: Statement|Expression|Node): ArbitraryValue[] {
 		const merged: ArbitraryValue[] = [];
 		const scope = this.tracer.traceBlockScopeName(from);
+
 		expressions.forEach((expression, index) => {
 			const next = index === expressions.length - 1 ? undefined : expressions[index + 1];
 			this.handleValueExpression(expression, scope, next).forEach(exp => merged.push(exp));

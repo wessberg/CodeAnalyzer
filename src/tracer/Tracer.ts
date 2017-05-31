@@ -159,13 +159,14 @@ export class Tracer implements ITracer {
 
 		const filtered = allMatches.filter(match => ofKind == null ? true : match.___kind === ofKind);
 
-		return filtered.sort((a, b) => {
+		const closest = filtered.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
 			const bDistanceFromStart = from.pos - b.startsAt;
-			if (aDistanceFromStart > bDistanceFromStart) return -1;
-			if (aDistanceFromStart < bDistanceFromStart) return 1;
+			if (aDistanceFromStart < bDistanceFromStart) return -1;
+			if (aDistanceFromStart > bDistanceFromStart) return 1;
 			return 0;
 		})[0];
+		return closest;
 	}
 
 	/**
@@ -211,6 +212,7 @@ export class Tracer implements ITracer {
 				value: () => [clojure]
 			};
 		}
+
 		const nearest = this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure, ofKind);
 		this.cache.setCachedTracedIdentifier(filePath, identifier, scope, nearest);
 		return nearest;
