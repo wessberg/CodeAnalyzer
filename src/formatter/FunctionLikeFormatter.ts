@@ -1,4 +1,4 @@
-import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, MethodDeclaration} from "typescript";
+import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, SetAccessorDeclaration} from "typescript";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isBlockDeclaration, isReturnStatement} from "../predicate/PredicateFunctions";
 import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../service/interface/ICodeAnalyzer";
@@ -18,11 +18,11 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	}
 
 	/**
-	 * Takes a ConstructorDeclaration or a MethodDeclaration and returns an IMemberDeclaration.
-	 * @param {ConstructorDeclaration|MethodDeclaration | FunctionDeclaration} declaration
+	 * Takes a ConstructorDeclaration, MethodDeclaration, FunctionDeclaration, ArrowFunction, GetAccessorDeclaration or SetAccessorDeclaration and returns an IMemberDeclaration.
+	 * @param {ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration} declaration
 	 * @returns {IMemberDeclaration}
 	 */
-	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction): IMemberDeclaration&IParametersable {
+	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): IMemberDeclaration&IParametersable {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
@@ -54,11 +54,11 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	}
 
 	/**
-	 * Formats a MethodDeclaration or a FunctionDeclaration and returns what they have in common.
-	 * @param {MethodDeclaration|FunctionDeclaration} declaration
+	 * Formats a ConstructorDeclaration, MethodDeclaration, FunctionDeclaration, ArrowFunction, GetAccessorDeclaration or SetAccessorDeclaration and returns what they have in common.
+	 * @param {MethodDeclaration|FunctionDeclaration|ConstructorDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration} declaration
 	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
 	 */
-	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration|ArrowFunction): IFunctionLike {
+	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration): IFunctionLike {
 		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;

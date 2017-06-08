@@ -100,6 +100,11 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.27**:
+
+- Added handling for evaluating declarations of kinds `GetAccessorDeclaration` and `SetAccessorDeclaration`.
+- Code formatting.
+
 **v1.0.26**:
 
 - Added handling for finding ValueExpressions of `VoidExpression`s.

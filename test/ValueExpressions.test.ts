@@ -548,3 +548,35 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #50`, t => {
 	const expression = variables["val"].value.expression;
 	t.deepEqual(expression, ["void", " ", 0]);
 });
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #51`, t => {
+
+	const code = `
+		class Foo {
+			static get bar (): string {
+				return "Foo";
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const classes = service.getClassDeclarations(statements, true);
+	const expression = classes["Foo"].value.expression;
+	t.deepEqual(expression, ["class", " ", "Foo", "{", "static", " ", "get", " ", "bar", "(", ")", "{", "return", " ", "`Foo`", ";", "}", "}"]);
+});
+
+test(`ValueExpressions -> Detects all valueExpressions correctly. #52`, t => {
+
+	const code = `
+		class Foo {
+			static set bar (arg): string {
+				this.bar = arg;
+			}
+		}
+	`;
+
+	const statements = parse(code);
+	const classes = service.getClassDeclarations(statements, true);
+	const expression = classes["Foo"].value.expression;
+	t.deepEqual(expression, ["class", " ", "Foo", "{", "static", " ", "set", " ", "bar", "(", "arg", ")", "{", new BindingIdentifier("this", <any>""), '["bar"]', " ", "=", " ", new BindingIdentifier("arg", <any>""), ";", "}", "}"]);
+});

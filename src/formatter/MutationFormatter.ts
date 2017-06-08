@@ -18,6 +18,7 @@ export class MutationFormatter implements IMutationFormatter {
 							 private valueResolvedGetter: IValueResolvedGetter,
 							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
 	}
+
 	/**
 	 * Formats the given BinaryExpression|ExpressionStatement and returns an IMutationDeclaration (or null, if it isn't an assignment).
 	 * @param {BinaryExpression} statement

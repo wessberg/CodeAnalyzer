@@ -1,5 +1,5 @@
 import {IConfig} from "./interface/IConfig";
-import {PathIntelligence, IdentifierIntelligence} from "@wessberg/compiler-common";
+import {IdentifierIntelligence, PathIntelligence} from "@wessberg/compiler-common";
 
 export const Config: IConfig = {
 	name: {

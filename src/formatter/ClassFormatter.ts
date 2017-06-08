@@ -2,7 +2,7 @@ import {ClassDeclaration, SyntaxKind} from "typescript";
 import {ICache} from "../cache/interface/ICache";
 import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {IMapper} from "../mapper/interface/IMapper";
-import {isConstructorDeclaration, isMethodDeclaration, isPropertyDeclaration} from "../predicate/PredicateFunctions";
+import {isConstructorDeclaration, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration} from "../predicate/PredicateFunctions";
 import {IClassDeclaration, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {IClassFormatter} from "./interface/IClassFormatter";
@@ -13,6 +13,8 @@ import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IPropFormatter} from "./interface/IPropFormatter";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {IGetAccessorFormatter} from "./interface/IGetAccessorFormatter";
+import {ISetAccessorFormatter} from "./interface/ISetAccessorFormatter";
 
 export class ClassFormatter implements IClassFormatter {
 
@@ -21,6 +23,8 @@ export class ClassFormatter implements IClassFormatter {
 							 private decoratorsFormatter: IDecoratorsFormatter,
 							 private propFormatter: IPropFormatter,
 							 private methodFormatter: IMethodFormatter,
+							 private getAccessorFormatter: IGetAccessorFormatter,
+							 private setAccessorFormatter: ISetAccessorFormatter,
 							 private constructorFormatter: IConstructorFormatter,
 							 private modifiersFormatter: IModifiersFormatter,
 							 private valueableFormatter: IValueableFormatter,
@@ -92,6 +96,16 @@ export class ClassFormatter implements IClassFormatter {
 
 			else if (isMethodDeclaration(member)) {
 				const formatted = this.methodFormatter.format(member, className);
+				declaration.methods[formatted.name] = formatted;
+			}
+
+			else if (isGetAccessorDeclaration(member)) {
+				const formatted = this.getAccessorFormatter.format(member, className);
+				declaration.methods[formatted.name] = formatted;
+			}
+
+			else if (isSetAccessorDeclaration(member)) {
+				const formatted = this.setAccessorFormatter.format(member, className);
 				declaration.methods[formatted.name] = formatted;
 			}
 

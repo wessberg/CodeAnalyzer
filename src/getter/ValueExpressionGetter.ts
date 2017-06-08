@@ -5,7 +5,7 @@ import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseFormatter} from "../formatter/interface/IHeritageClauseFormatter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIfStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, InitializationValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "../util/interface/IStringUtil";
@@ -449,6 +449,11 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 
 		if (isClassExpression(rawStatement) || isClassDeclaration(rawStatement)) {
 			const name = rawStatement.name == null ? [] : [this.nameGetter.getNameOfMember(rawStatement.name, false, true)];
+
+			// TODO: At this point, we always assume that the extends clause is an atomic reference to something,
+			// TODO: For example: Foo extends Bar. But, an extends clause can be anything, for example: Foo extends Bar.Baz
+			// TODO: Or even Foo extends class Bar {}. We need to be able to take this into account.
+			// TODO: see https://github.com/wessberg/CodeAnalyzer/issues/5 for more info.
 			const heritage = rawStatement.heritageClauses == null ? null : this.heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
 			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", new BindingIdentifier(heritage.name, rawStatement)];
 			const members: InitializationValue = ["{"];
@@ -543,12 +548,12 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			return arr;
 		}
 
-		if (isFunctionExpression(rawStatement) || isFunctionDeclaration(rawStatement) || isMethodDeclaration(rawStatement)) {
+		if (isFunctionExpression(rawStatement) || isFunctionDeclaration(rawStatement) || isMethodDeclaration(rawStatement) || isGetAccessorDeclaration(rawStatement) || isSetAccessorDeclaration(rawStatement)) {
 			const arr: InitializationValue = isFunctionExpression(rawStatement) || isFunctionDeclaration(rawStatement) ? ["function", " "] : [];
 			const body = rawStatement.body == null ? null : this.getValueExpression(rawStatement.body);
 			const name = rawStatement.name;
 			if (name != null) {
-				if (isMethodDeclaration(rawStatement)) {
+				if (isMethodDeclaration(rawStatement) || isGetAccessorDeclaration(rawStatement) || isSetAccessorDeclaration(rawStatement)) {
 					const isStatic = rawStatement.modifiers == null ? false : rawStatement.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
 					const isAsync = rawStatement.modifiers == null ? false : rawStatement.modifiers.find(modifier => isAsyncKeyword(modifier)) != null;
 					if (isStatic) {
@@ -561,7 +566,9 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 						arr.push(" ");
 					}
 				}
-				arr.push(this.nameGetter.getNameOfMember(name));
+				if (isGetAccessorDeclaration(rawStatement)) arr.push("get", " ");
+				if (isSetAccessorDeclaration(rawStatement)) arr.push("set", " ");
+				arr.push(this.nameGetter.getNameOfMember(name, false, true));
 			}
 
 			arr.push("(");

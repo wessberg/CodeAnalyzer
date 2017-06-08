@@ -1,4 +1,4 @@
-import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, FunctionDeclaration, MethodDeclaration, PropertyDeclaration, VariableDeclaration, VariableStatement} from "typescript";
+import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, PropertyDeclaration, SetAccessorDeclaration, VariableDeclaration, VariableStatement} from "typescript";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
@@ -8,7 +8,7 @@ export class ModifiersFormatter implements IModifiersFormatter {
 	constructor (private tokenSerializer: ITokenSerializer) {
 	}
 
-	public format (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration|ConstructorDeclaration|ArrowFunction): Set<string> {
+	public format (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration|ConstructorDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): Set<string> {
 		if (isVariableDeclaration(statement) && statement.modifiers == null) {
 			const parent = statement.parent;
 			if (parent != null && isVariableDeclarationList(parent)) {

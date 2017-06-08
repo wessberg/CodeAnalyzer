@@ -1,4 +1,4 @@
-import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDeclaration, MethodDeclaration, PropertyDeclaration} from "typescript";
+import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, PropertyDeclaration, SetAccessorDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {DecoratorIndexer, IDecorator, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
@@ -11,10 +11,10 @@ export class DecoratorsFormatter implements IDecoratorsFormatter {
 
 	/**
 	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
-	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction} declaration
+	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration} declaration
 	 * @returns {DecoratorIndexer}
 	 */
-	public format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction): DecoratorIndexer {
+	public format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration): DecoratorIndexer {
 		const obj: DecoratorIndexer = {};
 		if (declaration.decorators == null) return obj;
 

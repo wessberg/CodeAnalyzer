@@ -10,6 +10,7 @@ export class ValueableFormatter implements IValueableFormatter {
 	constructor (private valueExpressionGetter: IValueExpressionGetter,
 							 private valueResolvedGetter: IValueResolvedGetter) {
 	}
+
 	/**
 	 * Formats the given Statement into an IValueable.
 	 * @param {Statement|Expression|Declaration|Node} statement

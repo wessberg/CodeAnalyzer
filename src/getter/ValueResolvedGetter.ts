@@ -17,6 +17,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 							 private tracer: ITracer,
 							 private tokenPredicator: ITokenPredicator) {
 	}
+
 	/**
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
 	 * @param {INonNullableValueable} valueable
@@ -40,8 +41,10 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		if (isILiteralValue(traced)) {
 			const val = traced.value();
+
 			const arr: ArbitraryValue[] = [];
 			val.forEach((part, index) => {
+
 				if (isIIdentifier(part)) {
 					const partNext = index === val.length - 1 ? undefined : val[index + 1];
 					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: this.mapper.get(traced) || from, identifier, scope, isSignature, next: partNext});
@@ -53,7 +56,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 					expressions.forEach(item => arr.push(item));
 				}
 
-				else arr.push(part);
+				else {
+					arr.push(part);
+				}
 			});
 			return arr;
 		}
@@ -99,7 +104,6 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (isIClassDeclaration(traced)) {
 			const newExpression = (identifier.name === "this" || identifier.name === "super") ? ["new", " "] : [];
 			const newExpressionOutro = (identifier.name === "this" || identifier.name === "super") && next !== "{" && next !== "(" ? ["(", ")"] : [];
-
 			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from), ...newExpressionOutro];
 		}
 

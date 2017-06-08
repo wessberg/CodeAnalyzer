@@ -642,3 +642,24 @@ test(`ValueResolver -> Computes all resolved values correctly. #41`, t => {
 	const res = vars["val"].value.resolve();
 	t.true(res != null);
 });
+
+/*
+test(`ValueResolver -> Computes all resolved values correctly. #42`, t => {
+
+	const statements = parse(`
+		import {Class2} from "static/inheritance1/Class2";
+
+		export class Class3 extends Class2 {
+			markup () {
+				return super.markup();
+			}
+		}
+	`);
+
+	const classes = service.getClassDeclarations(statements, true);
+	const method = classes["Class3"].methods["markup"];
+	const class3 = method.value.resolve();
+	console.log(class3);
+	t.true(true);
+});
+*/

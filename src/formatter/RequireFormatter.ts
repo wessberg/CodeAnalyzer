@@ -21,6 +21,7 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 							 fileLoader: IFileLoader) {
 		super(stringUtil, fileLoader);
 	}
+
 	/**
 	 * Formats the given CallExpression and returns an IRequire.
 	 * @param {CallExpression} statement

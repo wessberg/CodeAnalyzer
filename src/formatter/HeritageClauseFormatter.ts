@@ -24,7 +24,13 @@ export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 			if (isExtendsClause(clause)) {
 				// There can only be one extended class.
 				const [classIdentifier] = clause.types;
+
+				// TODO: At this point, we always assume that the extends clause is an atomic reference to something,
+				// TODO: For example: Foo extends Bar. But, an extends clause can be anything, for example: Foo extends Bar.Baz
+				// TODO: Or even Foo extends class Bar {}. We need to be able to take this into account.
+				// TODO: see https://github.com/wessberg/CodeAnalyzer/issues/5 for more info.
 				const [extendsClass] = this.typeExpressionGetter.getTypeExpression(classIdentifier);
+
 				const that = this;
 				if (isTypeBinding(extendsClass)) {
 					obj.extendsClass = {

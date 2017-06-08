@@ -41,6 +41,7 @@ export class StringUtil implements IStringUtil {
 		const endOffset = endsWithQuote ? 1 : 0;
 		return trimmed.slice(startOffset, trimmed.length - endOffset);
 	}
+
 	/**
 	 * Quotes the given content if it is a string and doesn't start and end with a clashing quote.
 	 * @param {ArbitraryValue} content

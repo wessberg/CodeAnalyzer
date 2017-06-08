@@ -1,4 +1,4 @@
-import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, MethodDeclaration, ParameterDeclaration} from "typescript";
+import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, ParameterDeclaration, SetAccessorDeclaration} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
@@ -26,11 +26,11 @@ export class ParametersFormatter implements IParametersFormatter {
 	}
 
 	/**
-	 * Takes the parameters from a ConstructorDeclaration or a MethodDeclaration and returns an array of IParameters.
-	 * @param {ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction} declaration
+	 * Takes the parameters from the given declaration and returns an array of IParameters.
+	 * @param {ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration} declaration
 	 * @returns {IParameter[]}
 	 */
-	public format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction): IParameter[] {
+	public format (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): IParameter[] {
 		return declaration.parameters.map(param => this.formatParameter(param));
 	}
 
