@@ -49,7 +49,7 @@ import {ValueResolvedGetter} from "../getter/ValueResolvedGetter";
 import {IMapper} from "../mapper/interface/IMapper";
 import {Mapper} from "../mapper/Mapper";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAliasDeclaration, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayLiteralExpression, isArrowFunction, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isClassDeclaration, isClassExpression, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFalseKeyword, isFirstLiteralToken, isFirstNode, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIEnumDeclaration, isIExportableIIdentifier, isIfStatement, isILiteralValue, isImportDeclaration, isImportEqualsDeclaration, isLabeledStatement, isLiteralToken, isMethodDeclaration, isNewExpression, isNullKeyword, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateToken, isThisKeyword, isThrowStatement, isTrueKeyword, isTryStatement, isTypeAliasDeclaration, isTypeAssertionExpression, isTypeOfExpression, isUndefinedKeyword, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
 import {TokenPredicator} from "../predicate/TokenPredicator";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {TokenSerializer} from "../serializer/TokenSerializer";
@@ -88,12 +88,12 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		SyntaxKind.NamespaceKeyword,
 		SyntaxKind.DeclareKeyword
 	]);
+	public valueExpressionGetter: IValueExpressionGetter;
 	private readonly pathValidator: IPathValidator = new PathValidator();
 	private languageService: LanguageService;
 	private nameGetter: INameGetter;
 	private heritageClauseFormatter: IHeritageClauseFormatter;
 	private variableFormatter: IVariableFormatter;
-	private valueExpressionGetter: IValueExpressionGetter;
 	private valueResolvedGetter: IValueResolvedGetter;
 	private typeExpressionGetter: ITypeExpressionGetter;
 	private sourceFilePropertiesGetter: ISourceFilePropertiesGetter;
@@ -135,7 +135,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		this.stringUtil = new StringUtil(marshaller);
 		this.nameGetter = new NameGetter(marshaller);
 		this.sourceFilePropertiesGetter = new SourceFilePropertiesGetter();
-		this.typeExpressionGetter = new TypeExpressionGetter(this.nameGetter, this.tokenSerializer);
+		this.typeExpressionGetter = new TypeExpressionGetter(this, this.nameGetter, this.sourceFilePropertiesGetter, this.tokenSerializer);
 		this.mapper = new Mapper();
 		this.cache = new Cache(this);
 		this.tracer = new Tracer(this, this.cache, this.typeExpressionGetter, this.mapper, this.nameGetter, this.sourceFilePropertiesGetter);
@@ -1213,7 +1213,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 			return [statement.condition, ...whenTrue, ...whenFalse];
 		}
 
-		if (isBinaryExpression(statement)) {
+		if (isBinaryExpression(statement) || isFirstNode(statement)) {
 			return [statement.left, statement.right];
 		}
 

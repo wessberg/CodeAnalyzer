@@ -100,6 +100,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.28**:
+
+- Added handling for evaluating declarations of kind `FirstNode`.
+
 **v1.0.27**:
 
 - Added handling for evaluating declarations of kinds `GetAccessorDeclaration` and `SetAccessorDeclaration`.

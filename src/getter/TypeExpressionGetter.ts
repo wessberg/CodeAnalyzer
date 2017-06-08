@@ -1,13 +1,17 @@
-import {TypeExpression} from "src/service/interface/ICodeAnalyzer";
-import {ParameterDeclaration, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
+import {ICodeAnalyzer, TypeExpression} from "src/service/interface/ICodeAnalyzer";
+import {Declaration, Expression, Node, ParameterDeclaration, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
 import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isThisTypeNode, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
+import {ISourceFilePropertiesGetter} from "./interface/ISourceFilePropertiesGetter";
+import {BindingIdentifier} from "../model/BindingIdentifier";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 
-	constructor (private nameGetter: INameGetter,
+	constructor (private codeAnalyzer: ICodeAnalyzer,
+							 private nameGetter: INameGetter,
+							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
 							 private tokenSerializer: ITokenSerializer) {
 	}
 
@@ -135,8 +139,8 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 			return exp;
 		}
 
-		if (isTypeReference(statement) && isIdentifierObject(statement.typeName)) {
-			const name = statement.typeName.text;
+		if (isTypeReference(statement)) {
+			const name = this.getFlattenedName(statement.typeName);
 			let typeArguments: TypeExpression|null = null;
 			const typeArgs = statement.typeArguments;
 			if (typeArgs != null) {
@@ -170,6 +174,11 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 		}
 
 		if (statement.type != null) return this.getTypeExpression(statement.type);
-		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]}`);
+		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
+	}
+
+	private getFlattenedName (statement: Statement|Expression|Declaration|Node): string {
+		const expression = this.codeAnalyzer.valueExpressionGetter.getValueExpression(statement);
+		return expression.map(exp => exp instanceof BindingIdentifier ? exp.name : exp).join("");
 	}
 }

@@ -132,6 +132,20 @@ test(`getClassDeclarations() -> Fields -> Detects the types of all class fields 
 	t.true(classDeclaration.props["field1"].type.flattened === "Foo<Bar, Baz>");
 });
 
+test(`getClassDeclarations() -> Fields -> Detects the types of all class fields correctly. #4`, t => {
+
+	const code = `
+		class MyClass {
+			field1: NodeJS.Timer|null
+		}
+	`;
+
+	const statements = parse(code);
+	const assignments = service.getClassDeclarations(statements);
+	const classDeclaration = assignments["MyClass"];
+	t.true(classDeclaration.props["field1"].type.flattened === "NodeJS.Timer|null");
+});
+
 test(`getClassDeclarations() -> Fields -> Detects the decorators of class fields correctly. #1`, t => {
 
 	const code = `

@@ -1,6 +1,7 @@
 import {ArrayLiteralExpression, BooleanLiteral, Expression, LanguageServiceHost, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, Statement, StringLiteral, SyntaxKind} from "typescript";
 
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
+import {IValueExpressionGetter} from "../../getter/interface/IValueExpressionGetter";
 
 export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED
@@ -397,6 +398,7 @@ export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
 
 export interface ICodeAnalyzer extends LanguageServiceHost {
+	valueExpressionGetter: IValueExpressionGetter;
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	getFile(fileName: string): NodeArray<Statement>;
 	removeFile (fileName: string): void;
