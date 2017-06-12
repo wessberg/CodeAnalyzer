@@ -4,6 +4,11 @@
 ## Installation
 Simply do: `npm install @wessberg/codeanalyzer`.
 
+## DISCLAIMER
+
+This a very early alpha version. Do not expect it to compute proper values for all kinds of expressions.
+
+
 ## Description
 The service is a very flexible and powerful tool for extracting metadata and state snapshots of your code and the identifiers that lives within it.
 
@@ -99,6 +104,10 @@ Here, the value of the variable `val` will be `{}` since this is the value it is
 The LanguageService will not track any mutations for already-initialized variables.
 
 ## Changelog:
+
+**v1.0.28**:
+
+- Added a disclaimer to the README.
 
 **v1.0.28**:
 
