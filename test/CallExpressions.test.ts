@@ -74,6 +74,17 @@ test(`getCallExpressions() -> Detects call expressions correctly. #6`, t => {
 	t.true(expression != null);
 });
 
+test(`getCallExpressions() -> Detects call expressions correctly. #7`, t => {
+
+	const code = `
+		(0, () => {})();
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements, true);
+	t.true(callExpressions[0].identifier != null);
+});
+
 test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
 
 	const code = `
