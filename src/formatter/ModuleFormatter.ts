@@ -10,6 +10,7 @@ import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "..
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
+	private static readonly DEFAULT_MODULE_FILEPATH: "index.js";
 
 	constructor (protected stringUtil: IStringUtil,
 							 private fileLoader: IFileLoader) {
@@ -110,7 +111,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		if (moduleDirectory == null) throw new ReferenceError(`${this.constructor.name} could not trace a module with path: ${filePath}: The module could not be found inside 'node_modules' and it wasn't a relative path!`);
 		const packageJSON = this.traceUp("package.json", moduleDirectory);
 		if (packageJSON == null) throw new ReferenceError(`${this.constructor.name} could not trace a package.json file inside package: ${moduleDirectory}!`);
-		const libPath = this.takeLibPathFromPackageJSON(packageJSON);
+		const libPath = this.takeLibPathFromPackageJSON(packageJSON) || ModuleFormatter.DEFAULT_MODULE_FILEPATH;
 		if (libPath == null) throw new ReferenceError(`${this.constructor.name} could not find a "main", "module" or "browser" field inside package.json at path: ${packageJSON}!`);
 		return libPath;
 	}

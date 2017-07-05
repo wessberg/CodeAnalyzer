@@ -105,6 +105,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.29**:
+
+- Added a fallback path to modules with `package.json` files without any value for the "main" field.
+
 **v1.0.28**:
 
 - Added a disclaimer to the README.
