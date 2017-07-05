@@ -105,6 +105,14 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.32**:
+
+- Parsing package.json files will now skip browser fields if it contains multiple paths.
+
+**v1.0.31**:
+
+- Fixed a bug with the previous version.
+
 **v1.0.30**:
 
 - Fixed a bug with the previous version.

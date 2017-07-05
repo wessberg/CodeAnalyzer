@@ -151,7 +151,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 		for (const field of fields) {
 			const value = json[field];
-			if (value != null) return join(packageJSONPath, "../", value);
+			// The "browser" field may be an object of nested paths. Skip if that is the case.
+			if (value != null && typeof value === "string") return join(packageJSONPath, "../", value);
 		}
 
 		return null;
