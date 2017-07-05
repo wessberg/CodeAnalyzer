@@ -105,6 +105,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.34**:
+
+- Identifiers for CallExpressions are now arrays of tokens.
+
 **v1.0.33**:
 
 - Added support for CallExpressions that are BinaryExpressions.

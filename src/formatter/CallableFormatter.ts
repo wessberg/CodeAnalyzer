@@ -69,8 +69,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 		}
 
 		else if (isBinaryExpression(exp)) {
-			const value = this.valueableFormatter.format(exp);
-			identifier = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+			identifier = this.valueableFormatter.format(exp);
 		}
 
 		if (identifier == null) {
