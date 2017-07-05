@@ -400,7 +400,7 @@ export declare type InitializationValue = ArbitraryValueArray;
 export interface ICodeAnalyzer extends LanguageServiceHost {
 	valueExpressionGetter: IValueExpressionGetter;
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
-	getFile(fileName: string): NodeArray<Statement>;
+	getFile(fileName: string): NodeArray<Statement>|null;
 	removeFile (fileName: string): void;
 	toAST (code: string): NodeArray<Statement>;
 	getFileVersion (filePath: string): number;

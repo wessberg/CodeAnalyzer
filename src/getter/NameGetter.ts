@@ -2,13 +2,13 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {DeclarationName, Expression, Identifier, Node, Statement, SyntaxKind, TypeNode, TypeReferenceNode} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isArrayLiteralExpression, isArrowFunction, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isConstructorDeclaration, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
-import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {INameGetter} from "./interface/INameGetter";
 import {Config} from "../static/Config";
+import {ITypeDetector} from "@wessberg/typedetector";
 
 export class NameGetter implements INameGetter {
 
-	constructor (private marshaller: IMarshaller) {
+	constructor (private marshaller: IMarshaller, private typeDetector: ITypeDetector) {
 	}
 
 	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string {
@@ -36,8 +36,7 @@ export class NameGetter implements INameGetter {
 			isEnumMember(statement) ||
 			isImportSpecifier(statement) ||
 			isExportSpecifier(statement) ||
-			isNamespaceImport(statement) ||
-			isNewExpression(statement)
+			isNamespaceImport(statement)
 		) {
 			if (statement.name == null) throw new ReferenceError(`${this.constructor.name} could not get the name for an expression of kind ${SyntaxKind[statement.kind]}`);
 			return <string>this.getNameOfMember(statement.name, false, true);
@@ -49,6 +48,10 @@ export class NameGetter implements INameGetter {
 
 		if (isConstructorDeclaration(statement)) {
 			return "constructor";
+		}
+
+		if (isNewExpression(statement)) {
+			return this.getName(statement.expression);
 		}
 
 		if (isIdentifierObject(statement)) {
@@ -130,22 +133,22 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isIdentifierObject(name)) {
-			const marshalled = <string>this.marshaller.marshal<string, ArbitraryValue>(name.text, allowNonStringNames ? undefined : "");
+			const marshalled = allowNonStringNames ? this.marshaller.unmarshal(name.text) : name.text;
 
 			if (this.memberHasNoBindingIdentifier(name)) {
 				// Then this is the key of a property-assignment. We already know it isn't computed, so it can't be an identifier to another variable.
-				return marshalled;
+				return <string|number|BindingIdentifier|RegExp>marshalled;
 			}
 
 			// Otherwise, it most likely is a reference to a variable or other Identifier unless it is a global symbol like "Infinity" or "Nan".
-			if (this.marshaller.getTypeOf(this.marshaller.marshal<ArbitraryValue, ArbitraryValue>(name.text)) === "string" && !forceNoBindingIdentifier) {
+			if (this.typeDetector.getTypeof(this.marshaller.unmarshal(name.text)) === "string" && !forceNoBindingIdentifier) {
 				return new BindingIdentifier(name.text, name);
 			}
-			return marshalled;
+			return <string|number|BindingIdentifier|RegExp>marshalled;
 		}
 
 		if (isFirstLiteralToken(name)) {
-			return <string|number|BindingIdentifier|RegExp>this.marshaller.marshal<string, string|number|BindingIdentifier|RegExp>(name.text, allowNonStringNames ? undefined : "");
+			return allowNonStringNames ? <string|number|BindingIdentifier|RegExp>this.marshaller.unmarshal(name.text) : name.text;
 		}
 
 		if (isNewExpression(name)) {
@@ -161,7 +164,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isRegularExpressionLiteral(name)) {
-			return <string|RegExp>this.marshaller.marshal<string, RegExpConstructor|string>(name.text, forceNoBindingIdentifier ? "" : RegExp);
+			return allowNonStringNames ? <RegExp>this.marshaller.unmarshal(name.text) : name.text;
 		}
 
 		if (isPropertyAccessExpression(name)) {

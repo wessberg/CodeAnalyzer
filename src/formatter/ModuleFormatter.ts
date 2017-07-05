@@ -11,6 +11,7 @@ import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "..
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 	private static readonly DEFAULT_MODULE_FILEPATH: string = "index.js";
+	private static readonly ALLOWED_EXTENSIONS: string[] = [...new Set([...Config.supportedFileExtensions, ".json"])];
 
 	constructor (protected stringUtil: IStringUtil,
 							 private fileLoader: IFileLoader) {
@@ -106,13 +107,22 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		if (this.fileLoader.existsSync(join(__dirname, filePath))) return filePath;
 
 		const nodeModules = this.traceDown("node_modules", filePath);
-		if (nodeModules == null) throw new ReferenceError(`${this.constructor.name} could not trace a module with path: ${filePath}: No 'node_modules' folder were found!`);
+
+		// Give up and return the path given as an argument.
+		if (nodeModules == null) return filePath;
 		const moduleDirectory = this.traceUp(filePath, nodeModules);
-		if (moduleDirectory == null) throw new ReferenceError(`${this.constructor.name} could not trace a module with path: ${filePath}: The module could not be found inside 'node_modules' and it wasn't a relative path!`);
+
+		// Give up and return the path given as an argument.
+		if (moduleDirectory == null) return filePath;
 		const packageJSON = this.traceUp("package.json", moduleDirectory);
-		if (packageJSON == null) throw new ReferenceError(`${this.constructor.name} could not trace a package.json file inside package: ${moduleDirectory}!`);
+		if (packageJSON == null) {
+			// The import is to a file, not a module.
+			return moduleDirectory;
+		}
 		const libPath = this.takeLibPathFromPackageJSON(packageJSON) || ModuleFormatter.DEFAULT_MODULE_FILEPATH;
-		if (libPath == null) throw new ReferenceError(`${this.constructor.name} could not find a "main", "module" or "browser" field inside package.json at path: ${packageJSON}!`);
+
+		// Give up and return the path given as an argument.
+		if (libPath == null) return filePath;
 		return libPath;
 	}
 
@@ -124,8 +134,12 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 			const joined = join(from, reconstructed);
 			const extension = extname(joined);
 			const joinedWithoutExtension = extension === "" ? joined : joined.slice(0, joined.lastIndexOf(extension));
-			const matchWithExt = this.fileLoader.existsSync(joined);
-			if (matchWithExt) return joined;
+			let [matchWithExt, matchedPath] = this.fileLoader.existsWithFirstMatchedExtensionSync(joined, ModuleFormatter.ALLOWED_EXTENSIONS);
+			if (matchWithExt) return matchedPath;
+			[matchWithExt, matchedPath] = this.fileLoader.existsWithFirstMatchedExtensionSync(joinedWithoutExtension, ModuleFormatter.ALLOWED_EXTENSIONS);
+			if (matchWithExt) return matchedPath;
+
+			// It may simply be a directory.
 			const matchWithoutExt = this.fileLoader.existsSync(joinedWithoutExtension);
 			if (matchWithoutExt) return joinedWithoutExtension;
 			splitted.splice(0, 1);

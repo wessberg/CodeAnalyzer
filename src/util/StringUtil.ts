@@ -1,9 +1,10 @@
 import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "./interface/IStringUtil";
 import {IMarshaller} from "@wessberg/marshaller";
+import {ITypeDetector} from "@wessberg/typedetector";
 
 export class StringUtil implements IStringUtil {
-	constructor (private marshaller: IMarshaller) {
+	constructor (private marshaller: IMarshaller, private typeDetector: ITypeDetector) {
 	}
 
 	/**
@@ -92,6 +93,6 @@ export class StringUtil implements IStringUtil {
 
 		if (trimmed.startsWith("return")) return true;
 		if (trimmed.startsWith("new ")) return true;
-		return this.marshaller.getTypeOf(this.marshaller.marshal(trimmed)) !== "string";
+		return this.typeDetector.getTypeof(this.marshaller.marshal(trimmed)) !== "string";
 	}
 }

@@ -1748,7 +1748,7 @@ export class Marshaller {
 	 * @param {T} data
 	 * @returns {IArbitraryObject<{}|null|?>|null}
 	 */
-	private marshalToObject<T> (data: T): IArbitraryObject<{}|null|undefined>|null {
+	private marshalToObject<T> (data: T): IArbitraryObject|null {
 		if (data === undefined) return this.marshalUndefinedToObject(data);
 		if (data === null) return this.marshalNullToObject(data);
 		if (this.typeDetector.isObject(data))    return data;
@@ -1773,7 +1773,7 @@ export class Marshaller {
 	private marshalToNull<T> (data: T): null {
 		if (data === undefined) return this.marshalUndefinedToNull(data);
 		if (data == null) return null;
-		if (this.typeDetector.isObject(data))    return this.marshalObjectToNull(data);
+		if (this.typeDetector.isObject(data))    return this.marshalObjectToNull(<any>data);
 		if (this.typeDetector.isClassConstructor(data)) return this.marshalConstructorToNull(<Function>data);
 		if (this.typeDetector.isClassInstance(data)) return this.marshalClassToNull(data);
 		if (this.typeDetector.isFunction(data)) return this.marshalFunctionToNull(data);

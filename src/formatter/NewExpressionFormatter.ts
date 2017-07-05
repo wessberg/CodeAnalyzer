@@ -34,7 +34,6 @@ export class NewExpressionFormatter extends CallableFormatter implements INewExp
 		const map: INewExpression = {
 			...this.formatCallable(statement),
 			___kind: IdentifierMapKind.NEW_EXPRESSION,
-			originalStatement: statement,
 			startsAt: statement.pos,
 			endsAt: statement.end,
 			arguments: {

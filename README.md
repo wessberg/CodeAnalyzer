@@ -105,6 +105,11 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.35**:
+
+- Better resolving of files in node_modules.
+- Bumped dependencies and refactored.
+
 **v1.0.34**:
 
 - Identifiers for CallExpressions are now arrays of tokens.

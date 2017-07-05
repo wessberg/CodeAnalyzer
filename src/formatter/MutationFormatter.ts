@@ -45,7 +45,14 @@ export class MutationFormatter implements IMutationFormatter {
 		}
 
 		if (isElementAccessExpression(statement.left)) {
-			property = this.nameGetter.getName(statement.left.expression);
+			try {
+				property = this.nameGetter.getName(statement.left.expression);
+			} catch (ex) {
+				// It is a non-trivial expression. Format it and set it as a property.
+				const formatted = this.valueableFormatter.format(statement.left.expression);
+				property = formatted.expression;
+			}
+
 			const value = this.valueableFormatter.format(statement.left.argumentExpression);
 			identifier = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}

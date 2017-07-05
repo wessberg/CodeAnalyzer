@@ -503,7 +503,7 @@ test(`ValueResolver -> Computes all resolved values correctly. #33`, t => {
 	t.true(resolved != null && typeof resolved === "string" && resolved.includes(`:host {font-size: 2px;}`));
 });
 
-test(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
+test.skip(`ValueResolver -> Computes all resolved values correctly. #34`, t => {
 
 	const statements = parse(`
 		import * as Foo from "static/ReExportExamples";

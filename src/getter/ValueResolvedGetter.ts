@@ -3,7 +3,7 @@ import {IMarshaller} from "@wessberg/marshaller";
 import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
-import {isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITracer} from "../tracer/interface/ITracer";
 import {ITracedExpressionsFormatterOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
@@ -30,7 +30,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		valueable.resolving = true;
 
 		const exps = this.flattenValueExpressions(valueable.expression, from);
-		const joined = exps.map(part => <string>this.marshaller.marshal(part, "")).join("");
+		const joined = exps.map(part => typeof part === "string" ? part : this.marshaller.marshal(part)).join("");
 		const computed = this.attemptComputation(joined);
 		const takenResult = takeKey == null || computed == null ? computed : computed[<keyof NonNullableArbitraryValue>takeKey];
 		valueable.resolving = false;
@@ -121,6 +121,25 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 			});
 
 			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from)), "}"];
+		}
+
+		if (isICallExpression(traced)) {
+			// TODO: If it is a 'require' expression, we want to trace the module in a different way.
+			let identifier = Array.isArray(traced.identifier) ? this.flattenValueExpressions(traced.identifier, this.mapper.get(traced) || from) : [traced.identifier];
+
+			let expression: ArbitraryValue[] = [...identifier];
+			if (traced.property != null) {
+				let property = Array.isArray(traced.property) ? this.flattenValueExpressions(traced.property, this.mapper.get(traced) || from) : [`"${traced.property}"`];
+				expression = [...expression, "[", ...property, "]"];
+			}
+
+			expression.push("(");
+			traced.arguments.argumentsList.forEach((arg, index) => {
+				const expressions = arg.value.expression == null ? [] : this.flattenValueExpressions(arg.value.expression, this.mapper.get(traced) || from);
+				expressions.forEach(exp => expression.push(exp));
+				if (index !== traced.arguments.argumentsList.length - 1) expressions.push(",");
+			});
+			expression.push(")");
 		}
 
 		throw new TypeError(`${this.constructor.name} could not get expressions for an IIdentifier of kind ${IdentifierMapKind[traced.___kind]}`);

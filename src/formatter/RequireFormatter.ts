@@ -44,13 +44,21 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		const value = this.valueableFormatter.format(expression);
 
 		const relativePath = () => {
-			const relative = this.stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
+			let relative = this.stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
 				? value.resolved
 				: value.resolve());
 
-			if (relative == null || relative.toString().length < 1) {
-				throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${filePath} on index ${statement.pos}`);
+			if (typeof relative === "function") {
+				try {
+					// Attempt to invoke the function.
+					relative = relative();
+				} catch (ex) {
+					// Set the value to the empty string.
+					relative = "";
+				}
 			}
+
+			if (relative == null) relative = "";
 			return relative.toString();
 		};
 
@@ -122,15 +130,22 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 
 		const firstArgumentValue = formatted.arguments.argumentsList[0].value;
 		const relativePath = () => {
-			const relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
+			let relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
 				? ""
 				: firstArgumentValue.hasDoneFirstResolve()
 					? firstArgumentValue.resolved
 					: firstArgumentValue.resolve());
 
-			if (relative == null || relative.toString().length < 1) {
-				throw new TypeError(`${RequireFormatter.constructor.name} detected a require statement with an empty path in file: ${formatted.filePath} on index ${formatted.startsAt}`);
+			if (typeof relative === "function") {
+				try {
+					// Attempt to invoke the function.
+					relative = relative();
+				} catch (ex) {
+					// Set the value to the empty string.
+					relative = "";
+				}
 			}
+			if (relative == null) relative = "";
 			return relative.toString();
 		};
 

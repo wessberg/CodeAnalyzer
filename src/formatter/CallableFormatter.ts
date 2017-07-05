@@ -1,7 +1,7 @@
-import {CallExpression, NewExpression, ParenthesizedExpression, SyntaxKind} from "typescript";
+import {CallExpression, NewExpression, ParenthesizedExpression} from "typescript";
 import {INameGetter} from "../getter/interface/INameGetter";
 import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {isArrowFunction, isBinaryExpression, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression, isSuperExpression} from "../predicate/PredicateFunctions";
+import {isArrowFunction, isBinaryExpression, isCallExpression, isElementAccessExpression, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression, isSuperExpression} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITypeUtil} from "../util/interface/ITypeUtil";
@@ -55,26 +55,46 @@ export abstract class CallableFormatter implements ICallableFormatter {
 			property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}
 
-		else if (isPropertyAccessExpression(exp)) {
+		else if (isPropertyAccessExpression(exp) || isElementAccessExpression(exp)) {
 
 			// The left-hand side of the expression might be a literal (for example, "hello".toString()).
 			if (isLiteralExpression(exp.expression)) {
 				const value = this.valueableFormatter.format(exp.expression);
 				property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 			} else {
-				// The left-hand side is simply an identifier.
-				property = this.nameGetter.getNameOfMember(exp.expression);
+				try {
+					// The left-hand side is simply an identifier.
+					property = this.nameGetter.getNameOfMember(exp.expression);
+				} catch (ex) {
+					// It might be more complex than that - such as a ConditionalExpression
+					const value = this.valueableFormatter.format(exp.expression);
+					property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
+				}
 			}
-			identifier = this.nameGetter.getNameOfMember(exp.name, false, true);
+
+			identifier = isPropertyAccessExpression(exp)
+				? this.nameGetter.getNameOfMember(exp.name, false, true)
+				: exp.argumentExpression == null
+					? null
+					: isBinaryExpression(exp.argumentExpression)
+						? this.valueableFormatter.format(exp)
+						: this.nameGetter.getNameOfMember(exp.argumentExpression, false, true);
+
 		}
 
 		else if (isBinaryExpression(exp)) {
-			identifier = this.valueableFormatter.format(exp);
+			const formatted = this.valueableFormatter.format(exp);
+			identifier = formatted.expression;
 		}
 
-		if (identifier == null) {
-			throw new TypeError(`${this.formatCallable.name} could not format a CallExpression|NewExpression with an expression of kind ${SyntaxKind[exp.kind]}`);
+		else if (isCallExpression(exp)) {
+			const callable = this.formatCallable(exp);
+			identifier = callable.identifier;
+			property = callable.property;
 		}
+
+		// TODO: Consider re-adding error handling here
+
 		return {
 			property,
 			identifier

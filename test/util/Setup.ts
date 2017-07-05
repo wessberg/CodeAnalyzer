@@ -11,10 +11,11 @@ let base = __dirname;
 while (!base.endsWith("test") && !base.endsWith("test/")) base = join(base, "../");
 export const fileName = "a_file.ts";
 export const filePath = join(base, fileName);
-let marshallerIntegrated = new Marshaller(new TypeDetector());
+let typeDetectorIntegrated = new TypeDetector();
+let marshallerIntegrated = new Marshaller(typeDetectorIntegrated);
 let fileLoaderIntegrated = new FileLoader();
 let service: ICodeAnalyzer;
 
-test.beforeEach(() => service = new CodeAnalyzer(marshallerIntegrated, fileLoaderIntegrated));
+test.beforeEach(() => service = new CodeAnalyzer(marshallerIntegrated, typeDetectorIntegrated, fileLoaderIntegrated));
 export const parse = (code: string, file: string = filePath) => service.addFile(file, code);
 export {service};

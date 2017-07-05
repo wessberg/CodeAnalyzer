@@ -136,7 +136,7 @@ export class ClassFormatter implements IClassFormatter {
 		base.mergeWithParent();
 
 		// Merge in the parent constructor.
-		if (declaration.constructor == null) {
+		if (declaration.constructor == null && base.constructor != null) {
 			declaration.constructor = {
 				...base.constructor,
 				...{
