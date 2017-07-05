@@ -10,7 +10,7 @@ import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "..
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
-	private static readonly DEFAULT_MODULE_FILEPATH: "index.js";
+	private static readonly DEFAULT_MODULE_FILEPATH: string = "index.js";
 
 	constructor (protected stringUtil: IStringUtil,
 							 private fileLoader: IFileLoader) {
