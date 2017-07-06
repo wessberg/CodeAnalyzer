@@ -1,9 +1,6 @@
-import {FileLoader} from "@wessberg/fileloader";
-import {Marshaller} from "@wessberg/marshaller";
-import {TypeDetector} from "@wessberg/typedetector";
 import {test} from "ava";
-import {ICodeAnalyzer} from "../../src/service/interface/ICodeAnalyzer";
-import {CodeAnalyzer} from "../../src/service/CodeAnalyzer";
+import {ICodeAnalyzer} from "../../src/analyzer/interface/ICodeAnalyzer";
+import {CodeAnalyzer} from "../../src/analyzer/CodeAnalyzer";
 import {join} from "path";
 
 // Setup
@@ -11,11 +8,8 @@ let base = __dirname;
 while (!base.endsWith("test") && !base.endsWith("test/")) base = join(base, "../");
 export const fileName = "a_file.ts";
 export const filePath = join(base, fileName);
-let typeDetectorIntegrated = new TypeDetector();
-let marshallerIntegrated = new Marshaller(typeDetectorIntegrated);
-let fileLoaderIntegrated = new FileLoader();
 let service: ICodeAnalyzer;
 
-test.beforeEach(() => service = new CodeAnalyzer(marshallerIntegrated, typeDetectorIntegrated, fileLoaderIntegrated));
+test.beforeEach(() => service = new CodeAnalyzer());
 export const parse = (code: string, file: string = filePath) => service.addFile(file, code);
 export {service};

@@ -1,11 +1,6 @@
 import {Expression, Node, Statement} from "typescript";
-import {ArbitraryValue, IIdentifier, INonNullableValueable} from "../../service/interface/ICodeAnalyzer";
 import {BindingIdentifier} from "../../model/BindingIdentifier";
-
-export interface IFlattenOptions {
-	shouldCompute: boolean;
-	forceNoQuoting: boolean;
-}
+import {ArbitraryValue, IIdentifier, INonNullableValueable} from "../../identifier/interface/IIdentifier";
 
 export interface ITracedExpressionsFormatterOptions {
 	traced: IIdentifier;

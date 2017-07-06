@@ -1,29 +1,10 @@
 import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, ParameterDeclaration, SetAccessorDeclaration} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {IdentifierMapKind, INonNullableValueable, IParameter, ParameterKind} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
-import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 import {isArrayBindingPattern, isObjectBindingPattern, isOmittedExpression} from "../predicate/PredicateFunctions";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
+import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, tokenSerializer, tracer, typeExpressionGetter, typeUtil, valueExpressionGetter, valueResolvedGetter} from "../services";
+import {IdentifierMapKind, INonNullableValueable, IParameter, ParameterKind} from "../identifier/interface/IIdentifier";
 
 export class ParametersFormatter implements IParametersFormatter {
-
-	constructor (private mapper: IMapper,
-							 private tracer: ITracer,
-							 private nameGetter: INameGetter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private typeExpressionGetter: ITypeExpressionGetter,
-							 private valueResolvedGetter: IValueResolvedGetter,
-							 private valueExpressionGetter: IValueExpressionGetter,
-							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {
-	}
 
 	/**
 	 * Takes the parameters from the given declaration and returns an array of IParameters.
@@ -40,7 +21,7 @@ export class ParametersFormatter implements IParametersFormatter {
 	 * @returns {IParameter}
 	 */
 	private formatParameter (parameter: ParameterDeclaration): IParameter {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(parameter).filePath;
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(parameter).filePath;
 		const startsAt = parameter.pos;
 		const endsAt = parameter.end;
 
@@ -56,7 +37,7 @@ export class ParametersFormatter implements IParametersFormatter {
 			const elements = parameter.name.elements;
 			nameFormatted.push("{");
 			elements.forEach((binding, index) => {
-				const named = <string>this.nameGetter.getName(binding);
+				const named = <string>nameGetter.getName(binding);
 				name.push(named);
 				nameFormatted.push(named);
 				if (index !== elements.length - 1) nameFormatted.push(",");
@@ -72,7 +53,7 @@ export class ParametersFormatter implements IParametersFormatter {
 					name.push(undefined);
 					nameFormatted.push(",");
 				} else {
-					const named = <string>this.nameGetter.getName(binding);
+					const named = <string>nameGetter.getName(binding);
 					name.push(named);
 					nameFormatted.push(named);
 					if (index !== elements.length - 1) nameFormatted.push(",");
@@ -81,19 +62,18 @@ export class ParametersFormatter implements IParametersFormatter {
 		}
 
 		else {
-			const named = <string>this.nameGetter.getNameOfMember(parameter.name, false, true);
+			const named = <string>nameGetter.getNameOfMember(parameter.name, false, true);
 			name.push(named);
 			nameFormatted.push(named);
 		}
 
-		const typeExpression = parameter.type == null ? null : this.typeExpressionGetter.getTypeExpression(parameter);
-		const typeFlattened = typeExpression == null ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
-		const valueExpression = parameter.initializer != null ? this.valueExpressionGetter.getValueExpression(parameter.initializer) : null;
-		const that = this;
-		const scope = this.tracer.traceThis(parameter);
+		const typeExpression = parameter.type == null ? null : typeExpressionGetter.getTypeExpression(parameter);
+		const typeFlattened = typeExpression == null ? null : tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : typeUtil.takeTypeBindings(typeExpression);
+		const valueExpression = parameter.initializer != null ? valueExpressionGetter.getValueExpression(parameter.initializer) : null;
+		const scope = tracer.traceThis(parameter);
 
-		const map: IParameter = {
+		const map: IParameter = identifierUtil.setKind({
 			___kind: IdentifierMapKind.PARAMETER,
 			filePath,
 			startsAt,
@@ -118,20 +98,16 @@ export class ParametersFormatter implements IParametersFormatter {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;
 					} else {
-						const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, parameter, scope);
+						const [computed, flattened] = valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, parameter, scope);
 						map.value.resolved = computed;
 						map.value.resolvedPrecompute = flattened;
 					}
 					return map.value.resolved;
 				}
 			}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.PARAMETER,
-			enumerable: false
-		});
-		this.mapper.set(map, parameter);
+		}, IdentifierMapKind.PARAMETER);
+
+		mapper.set(map, parameter);
 		return map;
 	}
 

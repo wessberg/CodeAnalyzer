@@ -1,6 +1,6 @@
 import {FunctionDeclaration} from "typescript";
-import {IFunctionDeclaration} from "../../service/interface/ICodeAnalyzer";
 import {IFunctionLikeFormatter} from "./IFunctionLikeFormatter";
+import {IFunctionDeclaration} from "../../identifier/interface/IIdentifier";
 
 export interface IFunctionFormatter extends IFunctionLikeFormatter {
 	format (declaration: FunctionDeclaration): IFunctionDeclaration;

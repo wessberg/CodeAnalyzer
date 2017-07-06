@@ -1,13 +1,9 @@
 import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, PropertyDeclaration, SetAccessorDeclaration} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {IMapper} from "../mapper/interface/IMapper";
-import {DecoratorIndexer, IDecorator, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
+import {identifierUtil, mapper, nameGetter} from "../services";
+import {DecoratorIndexer, IDecorator, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
 export class DecoratorsFormatter implements IDecoratorsFormatter {
-
-	constructor (private mapper: IMapper, private nameGetter: INameGetter) {
-	}
 
 	/**
 	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
@@ -19,21 +15,16 @@ export class DecoratorsFormatter implements IDecoratorsFormatter {
 		if (declaration.decorators == null) return obj;
 
 		declaration.decorators.forEach(decorator => {
-			const name = <string>this.nameGetter.getNameOfMember(decorator.expression, false, true);
+			const name = <string>nameGetter.getNameOfMember(decorator.expression, false, true);
 
-			const map: IDecorator = {
+			const map: IDecorator = identifierUtil.setKind({
 				___kind: IdentifierMapKind.DECORATOR,
 				startsAt: decorator.pos,
 				endsAt: decorator.end,
 				name
-			};
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.DECORATOR,
-				enumerable: false
-			});
+			}, IdentifierMapKind.DECORATOR);
 
-			this.mapper.set(map, decorator);
+			mapper.set(map, decorator);
 			obj[name] = map;
 		});
 		return obj;

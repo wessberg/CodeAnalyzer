@@ -1,7 +1,7 @@
 import {test} from "ava";
-import {ImportExportKind, NAMESPACE_NAME} from "../src/service/interface/ICodeAnalyzer";
 import {fileName, parse, service} from "./util/Setup";
 import {isILiteralValue} from "../src/predicate/PredicateFunctions";
+import {ImportExportKind, NAMESPACE_NAME} from "../src/identifier/interface/IIdentifier";
 
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
 

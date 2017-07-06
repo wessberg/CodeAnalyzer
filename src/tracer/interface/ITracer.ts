@@ -1,5 +1,5 @@
 import {Expression, Node, Statement} from "typescript";
-import {IdentifierMapKind, IIdentifier, IIdentifierMap} from "../../service/interface/ICodeAnalyzer";
+import {IdentifierMapKind, IIdentifier, IIdentifierMap} from "../../identifier/interface/IIdentifier";
 
 export interface ITracer {
 	findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap): IIdentifier;

@@ -2,8 +2,8 @@ import {BinaryOperator, Expression, Node, NodeFlags, Statement, SyntaxKind, Type
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isTypeBinding} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, TypeExpression} from "../service/interface/ICodeAnalyzer";
 import {ITokenSerializer} from "./interface/ITokenSerializer";
+import {ArbitraryValue, TypeExpression} from "../identifier/interface/IIdentifier";
 
 export class TokenSerializer implements ITokenSerializer {
 

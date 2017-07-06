@@ -7,7 +7,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #1`
 	const statements = parse(`
 		const foo: number = 0;
 	`);
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.true(assignments["foo"] != null);
 });
 
@@ -16,7 +16,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #2`
 		let bar = true;
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.true(assignments["bar"] != null);
 });
 
@@ -25,7 +25,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #3`
 		var baz = [1, 2, 3];
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.true(assignments["baz"] != null);
 });
 
@@ -35,7 +35,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #4`
 		const a = true, b = false, c = Infinity;
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.true(assignments["a"] != null);
 	t.true(assignments["b"] != null);
 	t.true(assignments["c"] != null);
@@ -48,7 +48,7 @@ test(`getVariableAssignments() -> Detects all variable assignments properly. #5`
 			collection = (Animation.tweeners[prop] || []).concat(Animation.tweeners["*"]),
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.true(assignments["tween"] != null);
 	t.true(assignments["collection"] != null);
 });
@@ -61,7 +61,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 			const bar: number = 1;
 		}
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["bar"] != null);
 });
 
@@ -74,7 +74,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["baz"] != null);
 });
 
@@ -87,7 +87,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["foo"] != null);
 });
 
@@ -102,7 +102,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["foo"] != null);
 });
 
@@ -117,7 +117,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["bar"] != null);
 });
 
@@ -132,7 +132,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["bar"] != null);
 });
 
@@ -153,7 +153,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		}
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["bar"] != null);
 });
 
@@ -164,14 +164,14 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 		const foo = bar = () => {const baz = Symbol("hello");};
 
 	`);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["foo"] != null);
 });
 
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #9`, t => {
 
 	const statements = parse(FULL_CODE_EXAMPLE_1);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["args"] != null);
 	t.true(assignments["parseXML"] != null);
 	t.true(assignments["parser"] != null);
@@ -183,7 +183,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #10`, t => {
 
 	const statements = parse(FULL_CODE_EXAMPLE_2);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["i"] != null);
 	t.true(assignments["node"] != null);
 	t.true(assignments["forVar"] != null);
@@ -209,7 +209,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #11`, t => {
 
 	const statements = parse(FULL_CODE_EXAMPLE_3);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["i"] != null);
 	t.true(assignments["isAsync"] != null);
 	t.true(assignments["name"] != null);
@@ -269,7 +269,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #12`, t => {
 
 	const statements = parse(FULL_CODE_EXAMPLE_4);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["myVar"] != null);
 	t.true(assignments["version"] != null);
 	t.true(assignments["pathWithExtension"] != null);
@@ -290,7 +290,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 test(`getVariableAssignments() -> Detects all variable assignments recursively if deep is true. #13`, t => {
 
 	const statements = parse(FULL_CODE_EXAMPLE_6);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.true(assignments["isFunction"] != null);
 	t.true(assignments["rmargin"] != null);
 	t.true(assignments["node"] != null);
@@ -309,7 +309,7 @@ test(`getVariableAssignments() -> Detects all variable assignments recursively i
 	
 	`;
 	const statements = parse(code);
-	const assignments = service.getVariableAssignments(statements, true);
+	const assignments = service.getVariableDeclarations(statements, true);
 	t.deepEqual(assignments["val"].value.expression, [new BindingIdentifier("matches", <any>""), "[", new BindingIdentifier("foo", <any>""), "[\"length\"]", " ", "-",  " ", 1, "]"]);
 });
 
@@ -319,7 +319,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #1`, t => {
 		const a = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, null);
 });
 
@@ -329,7 +329,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #2`, t => {
 		const a: string = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "string");
 });
 
@@ -339,7 +339,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #3`, t => {
 		const a: string|symbol = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "string|symbol");
 });
 
@@ -349,7 +349,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #4`, t => {
 		const a: Foo[] = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "Foo[]");
 });
 
@@ -359,7 +359,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #5`, t => {
 		const a: {[key: string]: any} = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "{[key: string]: any}");
 });
 
@@ -369,7 +369,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #6`, t => {
 		const a: {[key: string]: any, foo: number} = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "{[key: string]: any, foo: number}");
 });
 
@@ -379,7 +379,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #7`, t => {
 		const a: {foo?: number} = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "{foo?: number}");
 });
 
@@ -389,7 +389,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #8`, t => {
 		const a: {foo?: number} & {bar: boolean} = "hello";
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "{foo?: number} & {bar: boolean}");
 });
 
@@ -399,6 +399,6 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 		const a: Foobar = Foobar.HELLO;
 	`);
 
-	const assignments = service.getVariableAssignments(statements);
+	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });

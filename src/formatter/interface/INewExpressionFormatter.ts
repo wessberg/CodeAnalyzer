@@ -1,5 +1,5 @@
 import {NewExpression} from "typescript";
-import {INewExpression} from "../../service/interface/ICodeAnalyzer";
+import {INewExpression} from "../../identifier/interface/IIdentifier";
 
 export interface INewExpressionFormatter {
 	format (statement: NewExpression): INewExpression;

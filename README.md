@@ -67,7 +67,7 @@ interface CodeAnalyzer {
 }
 ```
 
-For full documentation, consult [the full interface](src/service/interface/ICodeAnalyzer.ts) or [the implementation](src/service/CodeAnalyzer.ts)
+For full documentation, consult [the full interface](src/analyzer/interface/ICodeAnalyzer.ts) or [the implementation](src/analyzer/CodeAnalyzer.ts)
 
 ## Differences from [Prepack](https://prepack.io/)
 
@@ -104,6 +104,11 @@ Here, the value of the variable `val` will be `{}` since this is the value it is
 The LanguageService will not track any mutations for already-initialized variables.
 
 ## Changelog:
+
+**v1.0.36**:
+
+- Refactoring.
+- Renamed `getVariableAssignments` and `getVariableAssignmentsForFile` to `getVariableDeclarations` and `getVariableDeclarationsForFile` respectively.
 
 **v1.0.35**:
 

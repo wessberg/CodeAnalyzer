@@ -1,15 +1,10 @@
 import {Declaration, Expression, Node, Statement} from "typescript";
-import {INonNullableValueable, IValueable} from "../service/interface/ICodeAnalyzer";
-import {IValueExpressionGetter} from "../getter/interface/IValueExpressionGetter";
-import {IValueResolvedGetter} from "../getter/interface/IValueResolvedGetter";
 import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {valueExpressionGetter, valueResolvedGetter} from "../services";
+import {INonNullableValueable, IValueable} from "../identifier/interface/IIdentifier";
 
 export class ValueableFormatter implements IValueableFormatter {
 	private static readonly cachedValueables: Map<Statement|Expression|Declaration|Node|undefined, IValueable> = new Map();
-
-	constructor (private valueExpressionGetter: IValueExpressionGetter,
-							 private valueResolvedGetter: IValueResolvedGetter) {
-	}
 
 	/**
 	 * Formats the given Statement into an IValueable.
@@ -22,8 +17,7 @@ export class ValueableFormatter implements IValueableFormatter {
 		const cached = ValueableFormatter.cachedValueables.get(statement);
 		if (cached != null && takeKey == null) return cached;
 
-		const valueExpression = statement == null ? null : this.valueExpressionGetter.getValueExpression(takeValueExpressionFrom || statement);
-		const that = this;
+		const valueExpression = statement == null ? null : valueExpressionGetter.getValueExpression(takeValueExpressionFrom || statement);
 		const value: IValueable = {
 			expression: valueExpression,
 			resolved: undefined,
@@ -36,7 +30,7 @@ export class ValueableFormatter implements IValueableFormatter {
 				if (statement == null || value.expression == null) {
 					value.resolved = value.resolvedPrecompute = null;
 				} else {
-					const [computed, flattened] = that.valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, takeKey);
+					const [computed, flattened] = valueResolvedGetter.getValueResolved(<INonNullableValueable>value, statement, takeKey);
 					value.resolved = computed;
 					value.resolvedPrecompute = flattened;
 				}

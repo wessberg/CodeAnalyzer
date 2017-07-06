@@ -1,7 +1,6 @@
-import {ArrayLiteralExpression, BooleanLiteral, Expression, LanguageServiceHost, Node, NodeArray, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, Statement, StringLiteral, SyntaxKind} from "typescript";
+import {ArrayLiteralExpression, BooleanLiteral, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectLiteralExpression, RegularExpressionLiteral, StringLiteral} from "typescript";
 
 import {IBindingIdentifier} from "../../model/interface/IBindingIdentifier";
-import {IValueExpressionGetter} from "../../getter/interface/IValueExpressionGetter";
 
 export enum ImportExportKind {
 	NAMESPACE, DEFAULT, NAMED
@@ -18,7 +17,7 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, MODULE_DEPENDENCIES = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023, LITERAL = 1024, RESOLVED_IDENTIFIER_VALUE_MAP = 1025, RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP = 1026, ARROW_FUNCTION = 1027, ARROW_FUNCTIONS = 1028, GET_ACCESSOR = 1029, SET_ACCESSOR = 1030
+	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, IMPORTS = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023, LITERAL = 1024, RESOLVED_IDENTIFIER_VALUE_MAP = 1025, RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP = 1026, ARROW_FUNCTION = 1027, ARROW_FUNCTIONS = 1028, GET_ACCESSOR = 1029, SET_ACCESSOR = 1030, EXPORTS = 1031, CALL_EXPRESSIONS = 1032, MUTATIONS = 1033
 }
 
 export interface IPayloadable {
@@ -314,7 +313,7 @@ export interface ICachedContent<T> extends IVersionable {
 	content: T;
 }
 
-export interface IBaseVariableAssignment extends IPositionable, IFilePathable, IKindable, IModifiersable {
+export interface IBaseVariableDeclaration extends IPositionable, IFilePathable, IKindable, IModifiersable {
 	type: ITypeable;
 }
 
@@ -330,13 +329,13 @@ export interface IMutationDeclarationable {
 	mutationDeclaration: IMutationDeclaration;
 }
 
-export interface IVariableAssignment extends IPositionable, INameable, IFilePathable, IKindable, IModifiersable {
+export interface IVariableDeclaration extends IPositionable, INameable, IFilePathable, IKindable, IModifiersable {
 	value: IValueable;
 	type: ITypeable;
 }
 
-export interface IVariableAssignmentable {
-	variableAssignment: IVariableAssignment;
+export interface IVariableDeclarationable {
+	variableDeclaration: IVariableDeclaration;
 }
 
 export interface IFilePathable {
@@ -379,8 +378,8 @@ export declare interface NamespacedModuleMap extends IKindable, IPositionable {
 };
 
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|NamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
-export declare type IExportableIIdentifier = IArrowFunction|ILiteralValue|IVariableAssignment|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|NamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IExportableIIdentifier = IArrowFunction|ILiteralValue|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
 export declare type ResolvedIIdentifierValueMapIndexer = { [key: string]: ResolvedIIdentifierValueMapIndexer|ArbitraryValue };
 export declare type ResolvedSerializedIIdentifierValueMapIndexer = { [key: string]: ResolvedSerializedIIdentifierValueMapIndexer|string };
@@ -388,7 +387,7 @@ export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
 export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
 export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };
 export declare type ClassIndexer = { [key: string]: IClassDeclaration };
-export declare type VariableIndexer = { [key: string]: IVariableAssignment };
+export declare type VariableIndexer = { [key: string]: IVariableDeclaration };
 export declare type DecoratorIndexer = { [key: string]: IDecorator };
 export declare type PropIndexer = { [key: string]: IPropDeclaration };
 export declare type NonNullableArbitraryValue = string|boolean|symbol|number|Function|object|IBindingIdentifier|ITypeBinding|{};
@@ -396,39 +395,3 @@ export declare type ArbitraryValue = NonNullableArbitraryValue|null|undefined;
 export declare type ArbitraryValueIndexable = ArbitraryValue|IArbitraryObject<ArbitraryValue>;
 export declare type ArbitraryValueArray = ArbitraryValueIndexable[];
 export declare type InitializationValue = ArbitraryValueArray;
-
-export interface ICodeAnalyzer extends LanguageServiceHost {
-	valueExpressionGetter: IValueExpressionGetter;
-	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
-	getFile(fileName: string): NodeArray<Statement>|null;
-	removeFile (fileName: string): void;
-	toAST (code: string): NodeArray<Statement>;
-	getFileVersion (filePath: string): number;
-	statementsIncludeKind (statements: (Statement|Expression|Node)[], kind: SyntaxKind, deep?: boolean): boolean;
-	getClassDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): ClassIndexer;
-	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
-	getAllIdentifiers(statements: (Statement|Expression|Node)[], deep?: boolean): IIdentifierMap;
-	getAllIdentifiersForFile(fileName: string, deep?: boolean): IIdentifierMap;
-	getVariableAssignments(statements: (Statement|Expression|Node)[], deep?: boolean): VariableIndexer;
-	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
-	getEnumDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): EnumIndexer;
-	getEnumDeclarationsForFile(fileName: string, deep?: boolean): EnumIndexer;
-	getFunctionDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): FunctionIndexer;
-	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
-	getImportDeclarationsForFile (fileName: string, deep?: boolean): IImportDeclaration[];
-	getImportDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): IImportDeclaration[];
-	getExportDeclarationsForFile (fileName: string, deep?: boolean): IExportDeclaration[];
-	getExportDeclarations (statements: (Statement|Expression|Node)[], deep?: boolean): IExportDeclaration[];
-	getArrowFunctionsForFile (fileName: string, deep?: boolean): IArrowFunction[];
-	getArrowFunctions (statements: (Statement|Expression|Node)[], deep?: boolean): IArrowFunction[];
-	getCallExpressions(statements: (Statement|Expression|Node)[], deep?: boolean): ICallExpression[];
-	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
-	getNewExpressions(statements: (Statement|Expression|Node)[], deep?: boolean): INewExpression[];
-	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
-	getResolvedSerializedIdentifierValuesForFile (fileName: string, deep?: boolean): ResolvedSerializedIIdentifierValueMap;
-	getResolvedSerializedIdentifierValues (statements: (Statement|Expression|Node)[], deep?: boolean): ResolvedSerializedIIdentifierValueMap;
-	getResolvedIdentifierValuesForFile (fileName: string, deep?: boolean): ResolvedIIdentifierValueMap;
-	getResolvedIdentifierValues (statements: (Statement|Expression|Node)[], deep?: boolean): ResolvedIIdentifierValueMap;
-	getMutationsForFile (fileName: string, deep?: boolean): IMutationDeclaration[];
-	getMutations (statements: (Statement|Expression|Node)[], deep?: boolean): IMutationDeclaration[];
-}

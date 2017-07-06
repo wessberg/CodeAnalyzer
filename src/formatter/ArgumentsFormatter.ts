@@ -1,14 +1,9 @@
 import {CallExpression, Expression, NewExpression} from "typescript";
-import {IMapper} from "../mapper/interface/IMapper";
-import {IArgument, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
 import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {identifierUtil, mapper, valueableFormatter} from "../services";
+import {IArgument, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
 export class ArgumentsFormatter implements IArgumentsFormatter {
-
-	constructor (private mapper: IMapper,
-							 private valueableFormatter: IValueableFormatter) {
-	}
 
 	/**
 	 * Takes the arguments from a CallExpression and returns an array of IArguments.
@@ -28,18 +23,14 @@ export class ArgumentsFormatter implements IArgumentsFormatter {
 		const startsAt = argument.pos;
 		const endsAt = argument.end;
 
-		const map: IArgument = {
+		const map: IArgument = identifierUtil.setKind({
 			___kind: IdentifierMapKind.ARGUMENT,
 			startsAt,
 			endsAt,
-			value: this.valueableFormatter.format(argument)
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.ARGUMENT,
-			enumerable: false
-		});
-		this.mapper.set(map, argument);
+			value: valueableFormatter.format(argument)
+		}, IdentifierMapKind.ARGUMENT);
+
+		mapper.set(map, argument);
 		return map;
 	}
 }

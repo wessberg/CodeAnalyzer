@@ -1,23 +1,11 @@
 import {ClassDeclaration, Expression, Node, Statement, SyntaxKind} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isArrowFunction, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExtendsClause, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile, isTypeBinding} from "../predicate/PredicateFunctions";
-import {ICallExpression, ICodeAnalyzer, IdentifierMapKind, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {ICache} from "../cache/interface/ICache";
+import {allIdentifiersGetter, cache, mapper, nameGetter, sourceFilePropertiesGetter, typeExpressionGetter} from "../services";
+import {ICallExpression, IdentifierMapKind, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../identifier/interface/IIdentifier";
 
 export class Tracer implements ITracer {
-
-	constructor (private languageService: ICodeAnalyzer,
-							 private cache: ICache,
-							 private typeExpressionGetter: ITypeExpressionGetter,
-							 private mapper: IMapper,
-							 private nameGetter: INameGetter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter) {
-	}
 
 	/**
 	 * Finds matching declarations for the given identifier and returns the one that is nearest to the given statement.
@@ -29,7 +17,7 @@ export class Tracer implements ITracer {
 	 * @returns {IIdentifier|null}
 	 */
 	public findNearestMatchingIdentifier (from: Statement|Expression|Node, block: string, identifier: string, clojure: IIdentifierMap, ofKind?: IdentifierMapKind): IIdentifier {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
 
 		if (identifier === "super" && (ofKind == null || (ofKind === IdentifierMapKind.CLASS))) {
 			const scope = this.traceThis(from);
@@ -41,7 +29,7 @@ export class Tracer implements ITracer {
 				if (isExtendsClause(clause)) {
 					// There can only be one extended class.
 					const [classIdentifier] = clause.types;
-					const [extendsClass] = this.typeExpressionGetter.getTypeExpression(classIdentifier);
+					const [extendsClass] = typeExpressionGetter.getTypeExpression(classIdentifier);
 					if (isTypeBinding(extendsClass)) parentName = extendsClass.name;
 				}
 			});
@@ -114,8 +102,8 @@ export class Tracer implements ITracer {
 
 		const exportBindingMatches: IImportExportBinding[] = [];
 		clojure.exports.forEach(exportDeclaration => {
-			const mapped1 = this.mapper.get(exportDeclaration);
-			const mapped2 = this.mapper.get(exportDeclaration.bindings[identifier]);
+			const mapped1 = mapper.get(exportDeclaration);
+			const mapped2 = mapper.get(exportDeclaration.bindings[identifier]);
 			if (mapped1 != null && mapped1 === from) return;
 			if (mapped2 != null && mapped2 === from) return;
 
@@ -129,7 +117,7 @@ export class Tracer implements ITracer {
 		if (classMatch != null) allMatches.push(classMatch);
 
 		importBindingMatches.forEach(match => {
-			const mapped = this.mapper.get(match);
+			const mapped = mapper.get(match);
 			if (mapped != null && mapped === from) {
 				return;
 			}
@@ -137,13 +125,13 @@ export class Tracer implements ITracer {
 		});
 
 		exportBindingMatches.forEach(match => {
-			const mapped = this.mapper.get(match);
+			const mapped = mapper.get(match);
 			if (mapped != null && mapped === from) return;
 			allMatches.push(match.payload());
 		});
 
 		requireMatches.forEach(match => {
-			const mapped = this.mapper.get(match);
+			const mapped = mapper.get(match);
 			if (mapped != null && mapped === from) {
 				return;
 			}
@@ -152,7 +140,7 @@ export class Tracer implements ITracer {
 		});
 
 		parameterMatches.forEach(parameterMatch => {
-			const mapped = this.mapper.get(parameterMatch);
+			const mapped = mapper.get(parameterMatch);
 			if (mapped != null && mapped === from) return;
 			allMatches.push(parameterMatch);
 		});
@@ -183,8 +171,8 @@ export class Tracer implements ITracer {
 		if ((identifier === "this" || identifier === "super") && scope == null) throw new ReferenceError(`${this.traceIdentifier.name} could not trace the context of 'this' when no scope was given!`);
 
 		const filePath = from.getSourceFile().fileName;
-		const cached = this.cache.getCachedTracedIdentifier(filePath, identifier, scope);
-		if (cached != null && !this.cache.cachedTracedIdentifierNeedsUpdate(filePath, identifier, scope)) return cached.content;
+		const cached = cache.getCachedTracedIdentifier(filePath, identifier, scope);
+		if (cached != null && !cache.cachedTracedIdentifierNeedsUpdate(filePath, identifier, scope)) return cached.content;
 
 		let lookupIdentifier: string = identifier;
 		if (identifier === "super") {
@@ -214,7 +202,7 @@ export class Tracer implements ITracer {
 		}
 
 		const nearest = this.findNearestMatchingIdentifier(from, block, lookupIdentifier, clojure, ofKind);
-		this.cache.setCachedTracedIdentifier(filePath, identifier, scope, nearest);
+		cache.setCachedTracedIdentifier(filePath, identifier, scope, nearest);
 		return nearest;
 	}
 
@@ -234,7 +222,7 @@ export class Tracer implements ITracer {
 				isFunctionExpression(block) ||
 				isFunctionDeclaration(block)
 			) {
-				const name = block.name == null ? block.parent == null ? Config.name.global : this.traceThis(block.parent) : this.nameGetter.getName(block);
+				const name = block.name == null ? block.parent == null ? Config.name.global : this.traceThis(block.parent) : nameGetter.getName(block);
 				return name == null ? Config.name.global : name;
 			}
 
@@ -242,7 +230,7 @@ export class Tracer implements ITracer {
 				isClassDeclaration(block) ||
 				isClassExpression(block)
 			) {
-				const name = this.nameGetter.getName(block);
+				const name = nameGetter.getName(block);
 				return name == null ? Config.name.global : name;
 			}
 
@@ -252,7 +240,7 @@ export class Tracer implements ITracer {
 				isConstructorDeclaration(block)
 			) {
 				if (block.parent == null) {
-					const name = this.nameGetter.getName(block);
+					const name = nameGetter.getName(block);
 					return name == null ? Config.name.global : name;
 				}
 				return this.traceThis(block.parent);
@@ -273,13 +261,13 @@ export class Tracer implements ITracer {
 	 * @returns {IIdentifierMap|null}
 	 */
 	public traceClojure (from: Statement|Expression|Node|string): IIdentifierMap|null {
-		const filePath = typeof from === "string" ? from : this.sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
+		const filePath = typeof from === "string" ? from : sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
 		if (Config.builtIns.has(filePath)) {
 			return null;
 		}
 
 		// TODO: We shouldn't go deep and get ALL identifiers (which will ignore concepts such as conditional branches or even if the statement has access to the statement).
-		return this.languageService.getAllIdentifiersForFile(filePath, true);
+		return allIdentifiersGetter.getForFile(filePath, true);
 	}
 
 	/**
@@ -301,7 +289,7 @@ export class Tracer implements ITracer {
 				isClassDeclaration(block) ||
 				isClassExpression(block)
 			) {
-				const name = this.nameGetter.getName(block);
+				const name = nameGetter.getName(block);
 				return name == null ? Config.name.global : name;
 			}
 
@@ -315,7 +303,7 @@ export class Tracer implements ITracer {
 				isPropertyDeclaration(block)
 			) {
 				if (block.parent == null) {
-					const name = this.nameGetter.getName(block);
+					const name = nameGetter.getName(block);
 					return name == null ? Config.name.global : name;
 				}
 				return this.traceBlockScopeName(block.parent);
@@ -385,7 +373,7 @@ export class Tracer implements ITracer {
 	private isChildOfKind (kind: SyntaxKind, identifier: string, from: Statement|Expression|Node): boolean {
 		let current: Statement|Expression|Node|undefined = from;
 		while (current != null) {
-			if (current.kind === kind && this.nameGetter.getName(current) === identifier) return true;
+			if (current.kind === kind && nameGetter.getName(current) === identifier) return true;
 			current = current.parent;
 		}
 		return false;

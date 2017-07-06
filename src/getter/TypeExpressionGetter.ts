@@ -1,19 +1,11 @@
-import {ICodeAnalyzer, TypeExpression} from "src/service/interface/ICodeAnalyzer";
 import {Declaration, Expression, Node, ParameterDeclaration, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
 import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isThisTypeNode, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {INameGetter} from "./interface/INameGetter";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
-import {ISourceFilePropertiesGetter} from "./interface/ISourceFilePropertiesGetter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
+import {nameGetter, sourceFilePropertiesGetter, tokenSerializer, valueExpressionGetter} from "../services";
+import {TypeExpression} from "../identifier/interface/IIdentifier";
 
 export class TypeExpressionGetter implements ITypeExpressionGetter {
-
-	constructor (private codeAnalyzer: ICodeAnalyzer,
-							 private nameGetter: INameGetter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private tokenSerializer: ITokenSerializer) {
-	}
 
 	/**
 	 * Tokenizes the type information from the given statement and returns a TypeExpression.
@@ -90,7 +82,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 				return exp;
 			}
 
-			return [this.tokenSerializer.serializeToken(statement.kind, statement)];
+			return [tokenSerializer.serializeToken(statement.kind, statement)];
 		}
 
 		if (isTypeLiteralNode(statement)) {
@@ -102,7 +94,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 					exp.push("[");
 
 					member.parameters.forEach(parameter => {
-						exp.push(<string>this.nameGetter.getNameOfMember(parameter.name, false, true));
+						exp.push(<string>nameGetter.getNameOfMember(parameter.name, false, true));
 						if (parameter.type != null) {
 							exp.push(": ");
 							const type = this.getTypeExpression(parameter.type);
@@ -119,12 +111,12 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 				}
 
 				if (isPropertySignature(member)) {
-					const name = <string>this.nameGetter.getNameOfMember(member.name, false, true);
+					const name = <string>nameGetter.getNameOfMember(member.name, false, true);
 					const type = member.type == null ? null : this.getTypeExpression(member.type);
 					exp.push(name);
 
 					if (member.questionToken != null) {
-						exp.push(this.tokenSerializer.serializeToken(member.questionToken.kind, member.questionToken));
+						exp.push(tokenSerializer.serializeToken(member.questionToken.kind, member.questionToken));
 					}
 					if (type != null) {
 						exp.push(": ");
@@ -157,7 +149,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 		}
 
 		if (isExpressionWithTypeArguments(statement)) {
-			const name = this.nameGetter.getNameOfMember(statement.expression, false, true);
+			const name = nameGetter.getNameOfMember(statement.expression, false, true);
 			let typeArguments: TypeExpression|null = null;
 			const typeArgs = statement.typeArguments;
 			if (typeArgs != null) {
@@ -174,11 +166,11 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 		}
 
 		if (statement.type != null) return this.getTypeExpression(statement.type);
-		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
+		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
 	}
 
 	private getFlattenedName (statement: Statement|Expression|Declaration|Node): string {
-		const expression = this.codeAnalyzer.valueExpressionGetter.getValueExpression(statement);
+		const expression = valueExpressionGetter.getValueExpression(statement);
 		return expression.map(exp => exp instanceof BindingIdentifier ? exp.name : exp).join("");
 	}
 }

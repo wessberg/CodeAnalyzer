@@ -1,11 +1,8 @@
-import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {IStringUtil} from "./interface/IStringUtil";
-import {IMarshaller} from "@wessberg/marshaller";
-import {ITypeDetector} from "@wessberg/typedetector";
+import {marshaller, typeDetector} from "../services";
+import {ArbitraryValue} from "../identifier/interface/IIdentifier";
 
 export class StringUtil implements IStringUtil {
-	constructor (private marshaller: IMarshaller, private typeDetector: ITypeDetector) {
-	}
 
 	/**
 	 * Returns true if the given item is a string of pure whitespace.
@@ -93,6 +90,6 @@ export class StringUtil implements IStringUtil {
 
 		if (trimmed.startsWith("return")) return true;
 		if (trimmed.startsWith("new ")) return true;
-		return this.typeDetector.getTypeof(this.marshaller.marshal(trimmed)) !== "string";
+		return typeDetector.getTypeof(marshaller.marshal(trimmed)) !== "string";
 	}
 }

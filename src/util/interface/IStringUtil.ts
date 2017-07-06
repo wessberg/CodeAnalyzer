@@ -1,4 +1,4 @@
-import {ArbitraryValue} from "../../service/interface/ICodeAnalyzer";
+import {ArbitraryValue} from "../../identifier/interface/IIdentifier";
 
 export interface IStringUtil {
 	stripQuotesIfNecessary (content: ArbitraryValue): ArbitraryValue;

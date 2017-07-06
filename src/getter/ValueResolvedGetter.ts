@@ -1,22 +1,13 @@
 import "../shim/browser";
-import {IMarshaller} from "@wessberg/marshaller";
 import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
-import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, NonNullableArbitraryValue} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
 import {ITracedExpressionsFormatterOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
-import {IMapper} from "../mapper/interface/IMapper";
 import {Config} from "../static/Config";
+import {mapper, marshaller, tokenPredicator, tracer} from "../services";
+import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, NonNullableArbitraryValue} from "../identifier/interface/IIdentifier";
 
 export class ValueResolvedGetter implements IValueResolvedGetter {
-
-	constructor (private mapper: IMapper,
-							 private marshaller: IMarshaller,
-							 private tracer: ITracer,
-							 private tokenPredicator: ITokenPredicator) {
-	}
 
 	/**
 	 * Replaces BindingIdentifiers with actual values and flattens valueExpressions into concrete values.
@@ -30,7 +21,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		valueable.resolving = true;
 
 		const exps = this.flattenValueExpressions(valueable.expression, from);
-		const joined = exps.map(part => typeof part === "string" ? part : this.marshaller.marshal(part)).join("");
+		const joined = exps.map(part => typeof part === "string" ? part : marshaller.marshal(part)).join("");
 		const computed = this.attemptComputation(joined);
 		const takenResult = takeKey == null || computed == null ? computed : computed[<keyof NonNullableArbitraryValue>takeKey];
 		valueable.resolving = false;
@@ -47,7 +38,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 				if (isIIdentifier(part)) {
 					const partNext = index === val.length - 1 ? undefined : val[index + 1];
-					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: this.mapper.get(traced) || from, identifier, scope, isSignature, next: partNext});
+					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: mapper.get(traced) || from, identifier, scope, isSignature, next: partNext});
 					value.forEach(item => arr.push(item));
 				}
 
@@ -80,20 +71,20 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 
 		if (isIVariableAssignment(traced)) {
-			if (next != null && this.tokenPredicator.throwsIfPrimitive(next)) return [traced.name];
+			if (next != null && tokenPredicator.throwsIfPrimitive(next)) return [traced.name];
 
 			if (traced.value.expression == null) return [traced.name];
 			if (traced.value.expression.some(part => part instanceof BindingIdentifier && (part.name === "this" || part.name === "super"))) {
 				return [traced.name];
 			}
 
-			const exp = this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
+			const exp = this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from);
 			return ["(", "(", ")", "=>", "{", "try", "{", traced.name, ";", "return", " ", traced.name, ";", "}", "catch", "(", "e", ")", "{", "return", "(", ...exp, ")", "}", "}", ")", "(", ")"];
 		}
 
 		if (isIParameter(traced)) {
 			if (isSignature) {
-				const initializer = traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from);
+				const initializer = traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from);
 				const assignment = initializer.length > 0 ? ["="] : [];
 				return [...traced.nameFormatted, ...assignment, ...initializer];
 			} else {
@@ -104,7 +95,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (isIClassDeclaration(traced)) {
 			const newExpression = (identifier.name === "this" || identifier.name === "super") ? ["new", " "] : [];
 			const newExpressionOutro = (identifier.name === "this" || identifier.name === "super") && next !== "{" && next !== "(" ? ["(", ")"] : [];
-			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from), ...newExpressionOutro];
+			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from), ...newExpressionOutro];
 		}
 
 		if (isIEnumDeclaration(traced)) {
@@ -120,22 +111,22 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				if (index !== traced.parameters.parametersList.length - 1) parameters.push(",");
 			});
 
-			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, this.mapper.get(traced) || from)), "}"];
+			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from)), "}"];
 		}
 
 		if (isICallExpression(traced)) {
 			// TODO: If it is a 'require' expression, we want to trace the module in a different way.
-			let identifier = Array.isArray(traced.identifier) ? this.flattenValueExpressions(traced.identifier, this.mapper.get(traced) || from) : [traced.identifier];
+			let identifier = Array.isArray(traced.identifier) ? this.flattenValueExpressions(traced.identifier, mapper.get(traced) || from) : [traced.identifier];
 
 			let expression: ArbitraryValue[] = [...identifier];
 			if (traced.property != null) {
-				let property = Array.isArray(traced.property) ? this.flattenValueExpressions(traced.property, this.mapper.get(traced) || from) : [`"${traced.property}"`];
+				let property = Array.isArray(traced.property) ? this.flattenValueExpressions(traced.property, mapper.get(traced) || from) : [`"${traced.property}"`];
 				expression = [...expression, "[", ...property, "]"];
 			}
 
 			expression.push("(");
 			traced.arguments.argumentsList.forEach((arg, index) => {
-				const expressions = arg.value.expression == null ? [] : this.flattenValueExpressions(arg.value.expression, this.mapper.get(traced) || from);
+				const expressions = arg.value.expression == null ? [] : this.flattenValueExpressions(arg.value.expression, mapper.get(traced) || from);
 				expressions.forEach(exp => expression.push(exp));
 				if (index !== traced.arguments.argumentsList.length - 1) expressions.push(",");
 			});
@@ -149,14 +140,14 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 		// If the identifier is the scope itself, return a reference to it.
 		if (scope === identifier.name) return [identifier.name];
-		const thisScope = this.tracer.traceThis(identifier.location);
+		const thisScope = tracer.traceThis(identifier.location);
 
 		if ((identifier.name === "this" || identifier.name === "super") && (scope === thisScope)) return [identifier.name];
 
 		// This will sometimes happen if the scope is determined from a built-in class and thus is unknown.
 		if (scope === Config.name.global && thisScope !== Config.name.global) return [identifier.name];
 
-		const traced = this.tracer.traceIdentifier(identifier.name, identifier.location);
+		const traced = tracer.traceIdentifier(identifier.name, identifier.location);
 		if (isIIdentifier(traced)) return this.getExpressionsFromTracedIdentifier({traced, from: identifier.location, identifier, scope, isSignature: false, next});
 
 		if (process.env.npm_config_debug) console.log(`Assuming that '${identifier.name}' is part of the global environment...`);
@@ -174,7 +165,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 	private flattenValueExpressions (expressions: ArbitraryValue[], from: Statement|Expression|Node): ArbitraryValue[] {
 		const merged: ArbitraryValue[] = [];
-		const scope = this.tracer.traceBlockScopeName(from);
+		const scope = tracer.traceBlockScopeName(from);
 
 		expressions.forEach((expression, index) => {
 			const next = index === expressions.length - 1 ? undefined : expressions[index + 1];

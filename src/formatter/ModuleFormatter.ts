@@ -1,21 +1,16 @@
-import {IFileLoader} from "@wessberg/fileloader";
 import {dirname, extname, join} from "path";
-import {IdentifierMapKind, IModuleDeclaration, NAMESPACE_NAME, NamespacedModuleMap} from "../service/interface/ICodeAnalyzer";
 import {Config} from "../static/Config";
-import {IStringUtil} from "../util/interface/IStringUtil";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
 import "querystring";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
+import {fileLoader, identifierUtil, stringUtil} from "../services";
+import {IdentifierMapKind, IModuleDeclaration, NAMESPACE_NAME, NamespacedModuleMap} from "../identifier/interface/IIdentifier";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 	private static readonly DEFAULT_MODULE_FILEPATH: string = "index.js";
 	private static readonly ALLOWED_EXTENSIONS: string[] = [...new Set([...Config.supportedFileExtensions, ".json"])];
-
-	constructor (protected stringUtil: IStringUtil,
-							 private fileLoader: IFileLoader) {
-	}
 
 	public resolvePath (filePath: string): string {
 		const cached = ModuleFormatter.RESOLVED_PATHS.get(filePath);
@@ -23,7 +18,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 		// If the path already ends with an extension, do nothing.
 		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext) && !filePath.endsWith(".d.ts"))) return filePath;
-		const [, path] = this.fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
+		const [, path] = fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
 		const traced = this.traceFullPath(path == null ? `${filePath}${Config.defaultExtension}` : path);
 		ModuleFormatter.RESOLVED_PATHS.set(filePath, traced);
 		return traced;
@@ -35,11 +30,11 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 	}
 
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
-		const indexer: NamespacedModuleMap = {
+		const indexer: NamespacedModuleMap = identifierUtil.setKind({
 			___kind: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
 			startsAt: Infinity,
 			endsAt: Infinity
-		};
+		}, IdentifierMapKind.NAMESPACED_MODULE_INDEXER);
 
 		modules.forEach(moduleDeclaration => {
 			Object.keys(moduleDeclaration.bindings).forEach(key => {
@@ -75,11 +70,6 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 			});
 		});
 
-		Object.defineProperty(indexer, "___kind", {
-			value: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
-			enumerable: false
-		});
-
 		Object.defineProperty(indexer, "startsAt", {
 			value: Infinity,
 			enumerable: false
@@ -93,7 +83,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 	}
 
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
-		const relativePathStripped = <string>this.stringUtil.stripQuotesIfNecessary(relativePath);
+		const relativePathStripped = <string>stringUtil.stripQuotesIfNecessary(relativePath);
 		if (Config.builtIns.has(relativePathStripped)) {
 			return relativePathStripped;
 		}
@@ -103,8 +93,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 	}
 
 	private traceFullPath (filePath: string): string {
-		if (this.fileLoader.existsSync(filePath)) return filePath;
-		if (this.fileLoader.existsSync(join(__dirname, filePath))) return filePath;
+		if (fileLoader.existsSync(filePath)) return filePath;
+		if (fileLoader.existsSync(join(__dirname, filePath))) return filePath;
 
 		const nodeModules = this.traceDown("node_modules", filePath);
 
@@ -134,13 +124,13 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 			const joined = join(from, reconstructed);
 			const extension = extname(joined);
 			const joinedWithoutExtension = extension === "" ? joined : joined.slice(0, joined.lastIndexOf(extension));
-			let [matchWithExt, matchedPath] = this.fileLoader.existsWithFirstMatchedExtensionSync(joined, ModuleFormatter.ALLOWED_EXTENSIONS);
+			let [matchWithExt, matchedPath] = fileLoader.existsWithFirstMatchedExtensionSync(joined, ModuleFormatter.ALLOWED_EXTENSIONS);
 			if (matchWithExt) return matchedPath;
-			[matchWithExt, matchedPath] = this.fileLoader.existsWithFirstMatchedExtensionSync(joinedWithoutExtension, ModuleFormatter.ALLOWED_EXTENSIONS);
+			[matchWithExt, matchedPath] = fileLoader.existsWithFirstMatchedExtensionSync(joinedWithoutExtension, ModuleFormatter.ALLOWED_EXTENSIONS);
 			if (matchWithExt) return matchedPath;
 
 			// It may simply be a directory.
-			const matchWithoutExt = this.fileLoader.existsSync(joinedWithoutExtension);
+			const matchWithoutExt = fileLoader.existsSync(joinedWithoutExtension);
 			if (matchWithoutExt) return joinedWithoutExtension;
 			splitted.splice(0, 1);
 		}
@@ -151,7 +141,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		let targetPath: string|null = null;
 		while (_current !== "/") {
 			targetPath = join(_current, target);
-			const hasTarget = this.fileLoader.existsSync(targetPath);
+			const hasTarget = fileLoader.existsSync(targetPath);
 			if (hasTarget) break;
 			_current = join(_current, "../");
 			if (_current.includes(("../"))) return null;
@@ -160,7 +150,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 	}
 
 	private takeLibPathFromPackageJSON (packageJSONPath: string): string|null {
-		const json = JSON.parse(this.fileLoader.loadSync(packageJSONPath).toString());
+		const json = JSON.parse(fileLoader.loadSync(packageJSONPath).toString());
 		const fields: string[] = ["browser", "module", "main"];
 
 		for (const field of fields) {

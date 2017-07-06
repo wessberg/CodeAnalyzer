@@ -1,12 +1,9 @@
 import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, PropertyDeclaration, SetAccessorDeclaration, VariableDeclaration, VariableStatement} from "typescript";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
+import {tokenSerializer} from "../services";
 
 export class ModifiersFormatter implements IModifiersFormatter {
-
-	constructor (private tokenSerializer: ITokenSerializer) {
-	}
 
 	public format (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration|ConstructorDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): Set<string> {
 		if (isVariableDeclaration(statement) && statement.modifiers == null) {
@@ -21,6 +18,6 @@ export class ModifiersFormatter implements IModifiersFormatter {
 			}
 
 		}
-		return new Set(statement.modifiers == null ? [] : statement.modifiers.map(modifier => <string>this.tokenSerializer.serializeToken(modifier.kind, modifier)));
+		return new Set(statement.modifiers == null ? [] : statement.modifiers.map(modifier => <string>tokenSerializer.serializeToken(modifier.kind, modifier)));
 	}
 }

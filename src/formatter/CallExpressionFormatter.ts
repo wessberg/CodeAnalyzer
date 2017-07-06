@@ -1,28 +1,10 @@
 import {CallExpression} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IMapper} from "../mapper/interface/IMapper";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ICallExpression, IdentifierMapKind} from "../service/interface/ICodeAnalyzer";
-import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {CallableFormatter} from "./CallableFormatter";
-import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {argumentsFormatter, identifierUtil, mapper, sourceFilePropertiesGetter} from "../services";
+import {ICallExpression, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
 export class CallExpressionFormatter extends CallableFormatter implements ICallExpressionFormatter {
-
-	constructor (private mapper: IMapper,
-							 private argumentsFormatter: IArgumentsFormatter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 valueableFormatter: IValueableFormatter,
-							 nameGetter: INameGetter,
-							 typeExpressionGetter: ITypeExpressionGetter,
-							 tokenSerializer: ITokenSerializer,
-							 typeUtil: ITypeUtil) {
-		super(valueableFormatter, nameGetter, typeExpressionGetter, tokenSerializer, typeUtil);
-	}
 
 	/**
 	 * Formats a CallExpression into an ICallExpression.
@@ -30,7 +12,7 @@ export class CallExpressionFormatter extends CallableFormatter implements ICallE
 	 * @returns {ICallExpression}
 	 */
 	public format (statement: CallExpression): ICallExpression {
-		const map: ICallExpression = {
+		const map: ICallExpression = identifierUtil.setKind({
 			...this.formatCallable(statement),
 			___kind: IdentifierMapKind.CALL_EXPRESSION,
 			startsAt: statement.pos,
@@ -38,18 +20,13 @@ export class CallExpressionFormatter extends CallableFormatter implements ICallE
 			arguments: {
 				startsAt: statement.arguments.pos,
 				endsAt: statement.arguments.end,
-				argumentsList: this.argumentsFormatter.format(statement)
+				argumentsList: argumentsFormatter.format(statement)
 			},
 			type: this.formatTypeArguments(statement),
-			filePath: this.sourceFilePropertiesGetter.getSourceFileProperties(statement).filePath
-		};
+			filePath: sourceFilePropertiesGetter.getSourceFileProperties(statement).filePath
+		}, IdentifierMapKind.CALL_EXPRESSION);
 
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.CALL_EXPRESSION,
-			enumerable: false
-		});
-		this.mapper.set(map, statement);
+		mapper.set(map, statement);
 		return map;
 	}
 }

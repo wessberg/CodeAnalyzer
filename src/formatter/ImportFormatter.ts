@@ -1,28 +1,12 @@
-import {IFileLoader} from "@wessberg/fileloader";
 import {CallExpression, Identifier, ImportClause, ImportDeclaration, ImportEqualsDeclaration, SyntaxKind, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IMapper} from "../mapper/interface/IMapper";
 import {IBindingIdentifier} from "../model/interface/IBindingIdentifier";
 import {isArrayBindingPattern, isCallExpression, isExternalModuleReference, isIdentifierObject, isImportDeclaration, isImportEqualsDeclaration, isNamedImports, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ICodeAnalyzer, IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../service/interface/ICodeAnalyzer";
-import {ITracer} from "../tracer/interface/ITracer";
-import {IStringUtil} from "../util/interface/IStringUtil";
 import {IImportFormatter} from "./interface/IImportFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
-import {IRequireFormatter} from "./interface/IRequireFormatter";
+import {exportDeclarationGetter, identifierUtil, mapper, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer} from "../services";
+import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
-	constructor (private languageService: ICodeAnalyzer,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private nameGetter: INameGetter,
-							 private requireFormatter: IRequireFormatter,
-							 private mapper: IMapper,
-							 private tracer: ITracer,
-							 stringUtil: IStringUtil,
-							 fileLoader: IFileLoader) {
-		super(stringUtil, fileLoader);
-	}
 
 	public format (statement: ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression): IImportDeclaration|null {
 		if (isImportDeclaration(statement)) return this.formatImportDeclaration(statement);
@@ -36,11 +20,11 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 	}
 
 	private formatImportDeclaration (statement: ImportDeclaration): IImportDeclaration {
-		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
+		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
 		const relativePath = () => {
-			const path = <string>this.nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
+			const path = <string>nameGetter.getNameOfMember(statement.moduleSpecifier, false, true);
 			if (path.toString().length < 1) {
 				throw new TypeError(`${ImportFormatter.constructor.name} detected an import with an empty path around here: ${sourceFileProperties.fileContents.slice(statement.pos, statement.end)} in file: ${filePath} on index ${statement.pos}`);
 			}
@@ -52,7 +36,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			return this.formatFullPathFromRelative(filePath, relative);
 		};
 
-		const map: IImportDeclaration = {
+		const map: IImportDeclaration = identifierUtil.setKind({
 			___kind: IdentifierMapKind.IMPORT,
 			startsAt: statement.pos,
 			endsAt: statement.end,
@@ -63,24 +47,20 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			},
 			filePath,
 			bindings: statement.importClause == null ? {} : this.formatImportClause(statement.importClause, fullPath)
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.IMPORT,
-			enumerable: false
-		});
-		this.mapper.set(map, statement);
+		}, IdentifierMapKind.IMPORT);
+
+		mapper.set(map, statement);
 		return map;
 	}
 
 	private formatImportEqualsDeclaration (statement: ImportEqualsDeclaration): IImportDeclaration {
-		const sourceFileProperties = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
+		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
 		if (isExternalModuleReference(statement.moduleReference)) {
-			const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = <IRequire>this.requireFormatter.format(statement.moduleReference);
+			const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = <IRequire>requireFormatter.format(statement.moduleReference);
 
-			const map: IImportDeclaration = {
+			const map: IImportDeclaration = identifierUtil.setKind({
 				___kind: IdentifierMapKind.IMPORT,
 				startsAt,
 				endsAt,
@@ -100,15 +80,10 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING
 					}
 				}
-			};
-			this.mapper.set(map.bindings[statement.name.text], statement);
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.IMPORT,
-				enumerable: false
-			});
+			}, IdentifierMapKind.IMPORT);
+			mapper.set(map.bindings[statement.name.text], statement);
 
-			this.mapper.set(map, statement);
+			mapper.set(map, statement);
 			return map;
 
 		} else {
@@ -116,9 +91,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				throw new TypeError(`${ImportFormatter.constructor.name} could not find the name for a module reference!`);
 			}
 
-			const source = <IBindingIdentifier>this.nameGetter.getNameOfMember(statement.moduleReference, false, false);
-			const block = this.tracer.traceBlockScopeName(statement);
-			const clojure = this.tracer.traceClojure(statement);
+			const source = <IBindingIdentifier>nameGetter.getNameOfMember(statement.moduleReference, false, false);
+			const block = tracer.traceBlockScopeName(statement);
+			const clojure = tracer.traceClojure(statement);
 
 			const payload = () => {
 				const obj = clojure == null ? {
@@ -126,12 +101,12 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					startsAt: statement.moduleReference.pos,
 					endsAt: statement.moduleReference.end,
 					value: () => [clojure]
-				} : this.tracer.findNearestMatchingIdentifier(statement, block, source.toString(), clojure);
-				this.mapper.set(obj, statement.moduleReference);
+				} : tracer.findNearestMatchingIdentifier(statement, block, source.toString(), clojure);
+				mapper.set(obj, statement.moduleReference);
 				return obj;
 			};
 
-			const map: IImportDeclaration = {
+			const map: IImportDeclaration = identifierUtil.setKind({
 				___kind: IdentifierMapKind.IMPORT,
 				startsAt: statement.pos,
 				endsAt: statement.end,
@@ -148,15 +123,10 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 						kind: ImportExportKind.DEFAULT
 					}
 				}
-			};
-			this.mapper.set(map.bindings[statement.name.text], statement);
-			// Make the kind non-enumerable.
-			Object.defineProperty(map, "___kind", {
-				value: IdentifierMapKind.IMPORT,
-				enumerable: false
-			});
+			}, IdentifierMapKind.IMPORT);
+			mapper.set(map.bindings[statement.name.text], statement);
 
-			this.mapper.set(map, statement);
+			mapper.set(map, statement);
 			return map;
 		}
 	}
@@ -178,7 +148,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 	}
 
 	private formatCallExpression (statement: CallExpression|VariableDeclaration): IImportDeclaration|null {
-		const requireCall = this.requireFormatter.format(statement);
+		const requireCall = requireFormatter.format(statement);
 		if (requireCall == null) return null;
 		const {startsAt, endsAt, relativePath, fullPath, filePath, payload} = requireCall;
 
@@ -193,7 +163,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 
 			if (isObjectBindingPattern(statement.name)) {
 				statement.name.elements.forEach(binding => {
-					name.push(<string>this.nameGetter.getName(binding));
+					name.push(<string>nameGetter.getName(binding));
 					kind = ImportExportKind.NAMED;
 				});
 			}
@@ -201,13 +171,13 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			else if (isArrayBindingPattern(statement.name)) {
 				statement.name.elements.forEach((binding) => {
 					if (isOmittedExpression(binding)) name.push(undefined);
-					name.push(<string>this.nameGetter.getName(binding));
+					name.push(<string>nameGetter.getName(binding));
 					kind = ImportExportKind.NAMED;
 				});
 			}
 
 			else {
-				name.push(<string>this.nameGetter.getNameOfMember(statement.name, false, true));
+				name.push(<string>nameGetter.getNameOfMember(statement.name, false, true));
 				kind = ImportExportKind.NAMESPACE;
 			}
 		}
@@ -224,10 +194,10 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				payload,
 				kind
 			};
-			this.mapper.set(bindings[part], statement);
+			mapper.set(bindings[part], statement);
 		});
 
-		const map: IImportDeclaration = {
+		const map: IImportDeclaration = identifierUtil.setKind({
 			___kind: IdentifierMapKind.IMPORT,
 			startsAt,
 			endsAt,
@@ -238,15 +208,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			},
 			filePath,
 			bindings
-		};
+		}, IdentifierMapKind.IMPORT);
 
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.IMPORT,
-			enumerable: false
-		});
-
-		this.mapper.set(map, statement);
+		mapper.set(map, statement);
 		return map;
 	}
 
@@ -267,9 +231,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					___kind: IdentifierMapKind.LITERAL,
 					startsAt: namedBindings.pos,
 					endsAt: namedBindings.end,
-					value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
+					value: () => [this.moduleToNamespacedObjectLiteral(exportDeclarationGetter.getForFile(path, true))]
 				};
-				this.mapper.set(obj, namedBindings);
+				mapper.set(obj, namedBindings);
 				return obj;
 			};
 
@@ -281,22 +245,22 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				payload,
 				kind: ImportExportKind.NAMESPACE
 			};
-			this.mapper.set(indexer[namedBindings.name.text], namedBindings);
+			mapper.set(indexer[namedBindings.name.text], namedBindings);
 		}
 
 		else if (namedBindings != null && isNamedImports(namedBindings)) {
 			namedBindings.elements.forEach(element => {
-				const block = this.tracer.traceBlockScopeName(clause);
+				const block = tracer.traceBlockScopeName(clause);
 				const payload = () => {
 					const path = modulePath();
-					const clojure = this.tracer.traceClojure(path);
+					const clojure = tracer.traceClojure(path);
 					const obj = clojure == null ? {
 						___kind: IdentifierMapKind.LITERAL,
 						startsAt: element.pos,
 						endsAt: element.end,
 						value: () => [path]
-					} : this.tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
-					this.mapper.set(obj, element);
+					} : tracer.findNearestMatchingIdentifier(element, block, element.name.text, clojure);
+					mapper.set(obj, element);
 					return obj;
 				};
 
@@ -308,14 +272,14 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 					payload,
 					kind: ImportExportKind.NAMED
 				};
-				this.mapper.set(indexer[element.name.text], element);
+				mapper.set(indexer[element.name.text], element);
 			});
 		}
 
 		if (clause.name != null) {
 			const payload = () => {
 				const path = modulePath();
-				const fileExports = this.languageService.getExportDeclarationsForFile(path, true);
+				const fileExports = exportDeclarationGetter.getForFile(path, true);
 				const match = fileExports.find(exportDeclaration => exportDeclaration.bindings["default"] != null);
 				if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
 				return match.bindings["default"].payload();

@@ -1,22 +1,11 @@
 import {CallExpression, NewExpression, ParenthesizedExpression} from "typescript";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
 import {isArrowFunction, isBinaryExpression, isCallExpression, isElementAccessExpression, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression, isSuperExpression} from "../predicate/PredicateFunctions";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../service/interface/ICodeAnalyzer";
-import {ITypeUtil} from "../util/interface/ITypeUtil";
 import {ICallableFormatter} from "./interface/ICallableFormatter";
 import {Config} from "../static/Config";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {nameGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
+import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../identifier/interface/IIdentifier";
 
 export abstract class CallableFormatter implements ICallableFormatter {
-
-	constructor (private valueableFormatter: IValueableFormatter,
-							 private nameGetter: INameGetter,
-							 private typeExpressionGetter: ITypeExpressionGetter,
-							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {
-	}
 
 	/**
 	 * Formats the callable identifier and property path (if any) of a given CallExpression or NewExpression and returns an ICallable.
@@ -30,19 +19,19 @@ export abstract class CallableFormatter implements ICallableFormatter {
 		const exp = statement.expression;
 
 		if (isIdentifierObject(exp)) {
-			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+			identifier = nameGetter.getNameOfMember(exp, false, true);
 		}
 
 		if (isFunctionExpression(exp)) {
-			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+			identifier = nameGetter.getNameOfMember(exp, false, true);
 		}
 
 		if (isNewExpression(exp)) {
-			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+			identifier = nameGetter.getNameOfMember(exp, false, true);
 		}
 
 		if (isSuperExpression(exp)) {
-			identifier = this.nameGetter.getNameOfMember(exp, false, true);
+			identifier = nameGetter.getNameOfMember(exp, false, true);
 		}
 
 		if (isParenthesizedExpression(exp)) {
@@ -51,7 +40,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 		if (isArrowFunction(exp)) {
 			identifier = Config.name.anonymous;
-			const value = this.valueableFormatter.format(exp);
+			const value = valueableFormatter.format(exp);
 			property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}
 
@@ -59,31 +48,31 @@ export abstract class CallableFormatter implements ICallableFormatter {
 
 			// The left-hand side of the expression might be a literal (for example, "hello".toString()).
 			if (isLiteralExpression(exp.expression)) {
-				const value = this.valueableFormatter.format(exp.expression);
+				const value = valueableFormatter.format(exp.expression);
 				property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 			} else {
 				try {
 					// The left-hand side is simply an identifier.
-					property = this.nameGetter.getNameOfMember(exp.expression);
+					property = nameGetter.getNameOfMember(exp.expression);
 				} catch (ex) {
 					// It might be more complex than that - such as a ConditionalExpression
-					const value = this.valueableFormatter.format(exp.expression);
+					const value = valueableFormatter.format(exp.expression);
 					property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 				}
 			}
 
 			identifier = isPropertyAccessExpression(exp)
-				? this.nameGetter.getNameOfMember(exp.name, false, true)
+				? nameGetter.getNameOfMember(exp.name, false, true)
 				: exp.argumentExpression == null
 					? null
 					: isBinaryExpression(exp.argumentExpression)
-						? this.valueableFormatter.format(exp)
-						: this.nameGetter.getNameOfMember(exp.argumentExpression, false, true);
+						? valueableFormatter.format(exp)
+						: nameGetter.getNameOfMember(exp.argumentExpression, false, true);
 
 		}
 
 		else if (isBinaryExpression(exp)) {
-			const formatted = this.valueableFormatter.format(exp);
+			const formatted = valueableFormatter.format(exp);
 			identifier = formatted.expression;
 		}
 
@@ -107,7 +96,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 	 * @returns {ITypeable}
 	 */
 	protected formatTypeArguments (statement: CallExpression|NewExpression): ITypeable {
-		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => this.typeExpressionGetter.getTypeExpression(typeArg));
+		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => typeExpressionGetter.getTypeExpression(typeArg));
 		let typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {
 			typeExpressions.forEach((typeExp, index) => {
@@ -115,8 +104,8 @@ export abstract class CallableFormatter implements ICallableFormatter {
 				if (index !== typeExpressions.length - 1) typeExpression.push(", ");
 			});
 		}
-		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : this.typeUtil.takeTypeBindings(typeExpression);
+		const typeFlattened = typeExpression == null || typeExpression.length < 1 ? null : tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null || typeExpression.length < 1 ? null : typeUtil.takeTypeBindings(typeExpression);
 
 		return {
 			expression: typeExpression.length < 1 ? null : typeExpression,

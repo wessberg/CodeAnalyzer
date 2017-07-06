@@ -1,6 +1,6 @@
 import {ArrowFunction} from "typescript";
-import {IArrowFunction} from "../../service/interface/ICodeAnalyzer";
 import {IFunctionLikeFormatter} from "./IFunctionLikeFormatter";
+import {IArrowFunction} from "../../identifier/interface/IIdentifier";
 
 export interface IArrowFunctionFormatter extends IFunctionLikeFormatter {
 	format (declaration: ArrowFunction): IArrowFunction;

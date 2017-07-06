@@ -1,26 +1,11 @@
 import {CallExpression, ExternalModuleReference, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
-import {ICallExpression, ICodeAnalyzer, IdentifierMapKind, IRequire} from "../service/interface/ICodeAnalyzer";
 import {IRequireFormatter} from "./interface/IRequireFormatter";
-import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
-import {IStringUtil} from "../util/interface/IStringUtil";
 import {ModuleFormatter} from "./ModuleFormatter";
-import {IFileLoader} from "@wessberg/fileloader";
 import {isCallExpression, isExternalModuleReference, isICallExpression, isParenthesizedExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {IMapper} from "../mapper/interface/IMapper";
+import {callExpressionFormatter, exportDeclarationGetter, identifierUtil, mapper, sourceFilePropertiesGetter, stringUtil, valueableFormatter} from "../services";
+import {ICallExpression, IdentifierMapKind, IRequire} from "../identifier/interface/IIdentifier";
 
 export class RequireFormatter extends ModuleFormatter implements IRequireFormatter {
-
-	constructor (private languageService: ICodeAnalyzer,
-							 private mapper: IMapper,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private valueableFormatter: IValueableFormatter,
-							 private callExpressionFormatter: ICallExpressionFormatter,
-							 protected stringUtil: IStringUtil,
-							 fileLoader: IFileLoader) {
-		super(stringUtil, fileLoader);
-	}
 
 	/**
 	 * Formats the given CallExpression and returns an IRequire.
@@ -38,13 +23,13 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 	}
 
 	private formatExternalModuleReference (statement: ExternalModuleReference): IRequire {
-		const {filePath} = this.sourceFilePropertiesGetter.getSourceFileProperties(statement);
+		const {filePath} = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const {expression} = statement;
 		if (expression == null) throw new ReferenceError(`${this.constructor.name} could not extract a require path for an ImportEquals expression!`);
-		const value = this.valueableFormatter.format(expression);
+		const value = valueableFormatter.format(expression);
 
 		const relativePath = () => {
-			let relative = this.stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
+			let relative = stringUtil.stripQuotesIfNecessary(value.hasDoneFirstResolve()
 				? value.resolved
 				: value.resolve());
 
@@ -73,13 +58,13 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: statement.pos,
 				endsAt: statement.end,
-				value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
+				value: () => [this.moduleToNamespacedObjectLiteral(exportDeclarationGetter.getForFile(path, true))]
 			};
-			this.mapper.set(obj, statement);
+			mapper.set(obj, statement);
 			return obj;
 		};
 
-		const map: IRequire = {
+		return identifierUtil.setKind({
 			___kind: IdentifierMapKind.REQUIRE_CALL,
 			startsAt: statement.parent == null ? statement.pos : statement.parent.pos,
 			endsAt: statement.parent == null ? statement.end : statement.parent.end,
@@ -92,13 +77,7 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 				endsAt: statement.end,
 				argumentsList: []
 			}
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.REQUIRE_CALL,
-			enumerable: false
-		});
-		return map;
+		}, IdentifierMapKind.REQUIRE_CALL);
 	}
 
 	private formatVariableDeclaration (statement: VariableDeclaration): IRequire|null {
@@ -125,12 +104,12 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 	}
 
 	private formatCallExpression (statement: CallExpression|ICallExpression): IRequire|null {
-		const formatted = isICallExpression(statement) ? statement : this.callExpressionFormatter.format(statement);
+		const formatted = isICallExpression(statement) ? statement : callExpressionFormatter.format(statement);
 		if (formatted.identifier !== "require") return null;
 
 		const firstArgumentValue = formatted.arguments.argumentsList[0].value;
 		const relativePath = () => {
-			let relative = this.stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
+			let relative = stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
 				? ""
 				: firstArgumentValue.hasDoneFirstResolve()
 					? firstArgumentValue.resolved
@@ -160,13 +139,13 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 				___kind: IdentifierMapKind.LITERAL,
 				startsAt: isICallExpression(statement) ? statement.startsAt : statement.pos,
 				endsAt: isICallExpression(statement) ? statement.endsAt : statement.end,
-				value: () => [this.moduleToNamespacedObjectLiteral(this.languageService.getExportDeclarationsForFile(path, true))]
+				value: () => [this.moduleToNamespacedObjectLiteral(exportDeclarationGetter.getForFile(path, true))]
 			};
-			if (!isICallExpression(statement)) this.mapper.set(obj, statement);
+			if (!isICallExpression(statement)) mapper.set(obj, statement);
 			return obj;
 		};
 
-		const map: IRequire = {
+		return identifierUtil.setKind({
 			___kind: IdentifierMapKind.REQUIRE_CALL,
 			startsAt: isICallExpression(statement) ? statement.startsAt : statement.pos,
 			endsAt: isICallExpression(statement) ? statement.endsAt : statement.end,
@@ -175,13 +154,7 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 			filePath: formatted.filePath,
 			payload,
 			arguments: formatted.arguments
-		};
-		// Make the kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.REQUIRE_CALL,
-			enumerable: false
-		});
-		return map;
+		}, IdentifierMapKind.REQUIRE_CALL);
 	}
 
 }

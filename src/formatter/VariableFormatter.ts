@@ -1,29 +1,10 @@
 import {ArrayBindingPattern, Identifier, ObjectBindingPattern, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
-import {ICache} from "../cache/interface/ICache";
-import {INameGetter} from "../getter/interface/INameGetter";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
-import {ITypeExpressionGetter} from "../getter/interface/ITypeExpressionGetter";
-import {IMapper} from "../mapper/interface/IMapper";
 import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {IBaseVariableAssignment, IdentifierMapKind, IVariableAssignment, VariableIndexer} from "../service/interface/ICodeAnalyzer";
-import {ITypeUtil} from "../util/interface/ITypeUtil";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {cache, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
+import {IBaseVariableDeclaration, IdentifierMapKind, IVariableDeclaration, VariableIndexer} from "../identifier/interface/IIdentifier";
 
 export class VariableFormatter implements IVariableFormatter {
-
-	constructor (private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private nameGetter: INameGetter,
-							 private mapper: IMapper,
-							 private cache: ICache,
-							 private valueableFormatter: IValueableFormatter,
-							 private modifiersFormatter: IModifiersFormatter,
-							 private typeExpressionGetter: ITypeExpressionGetter,
-							 private tokenSerializer: ITokenSerializer,
-							 private typeUtil: ITypeUtil) {
-	}
 
 	/**
 	 * Formats the given VariableStatement and returns a VariableIndexer.
@@ -46,18 +27,18 @@ export class VariableFormatter implements IVariableFormatter {
 		return assignmentMap;
 	}
 
-	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableAssignment {
+	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableDeclaration {
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
-		const typeExpression = declaration.type == null ? null : this.typeExpressionGetter.getTypeExpression(declaration.type);
-		const typeFlattened = typeExpression == null ? null : this.tokenSerializer.serializeTypeExpression(typeExpression);
-		const typeBindings = typeExpression == null ? null : this.typeUtil.takeTypeBindings(typeExpression);
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
+		const typeExpression = declaration.type == null ? null : typeExpressionGetter.getTypeExpression(declaration.type);
+		const typeFlattened = typeExpression == null ? null : tokenSerializer.serializeTypeExpression(typeExpression);
+		const typeBindings = typeExpression == null ? null : typeUtil.takeTypeBindings(typeExpression);
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 
 		return {
 			___kind: IdentifierMapKind.VARIABLE,
 			filePath,
-			modifiers: this.modifiersFormatter.format(declaration),
+			modifiers: modifiersFormatter.format(declaration),
 			startsAt,
 			endsAt,
 			type: {
@@ -68,33 +49,27 @@ export class VariableFormatter implements IVariableFormatter {
 		};
 	}
 
-	private formatStandardVariableDeclaration (declaration: VariableDeclaration&{ name: Identifier }): IVariableAssignment {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
+	private formatStandardVariableDeclaration (declaration: VariableDeclaration&{ name: Identifier }): IVariableDeclaration {
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const name = declaration.name.text;
 
-		const cached = this.cache.getCachedVariable(filePath, name);
-		if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) return cached.content;
+		const cached = cache.getCachedVariable(filePath, name);
+		if (cached != null && !cache.cachedVariableNeedsUpdate(cached.content)) return cached.content;
 		const base = this.formatBaseVariableAssignment(declaration);
-		const value = this.valueableFormatter.format(declaration.initializer);
+		const value = valueableFormatter.format(declaration.initializer);
 
-		const map: IVariableAssignment = {
+		const map: IVariableDeclaration = identifierUtil.setKind({
 			...base,
 			name,
 			value
-		};
+		}, IdentifierMapKind.VARIABLE);
 
-		// Make the ___kind non-enumerable.
-		Object.defineProperty(map, "___kind", {
-			value: IdentifierMapKind.VARIABLE,
-			enumerable: false
-		});
-
-		this.mapper.set(map, declaration);
-		this.cache.setCachedVariable(filePath, map);
+		mapper.set(map, declaration);
+		cache.setCachedVariable(filePath, map);
 		return map;
 	}
 
-	private formatVariableDeclaration (declaration: VariableDeclaration): IVariableAssignment[] {
+	private formatVariableDeclaration (declaration: VariableDeclaration): IVariableDeclaration[] {
 
 		if (!isIdentifierObject(declaration.name)) {
 		} else {
@@ -112,65 +87,53 @@ export class VariableFormatter implements IVariableFormatter {
 		throw new TypeError(`${this.formatVariableDeclaration.name} could not format variable declaration because a name couldn't be determined!`);
 	}
 
-	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ArrayBindingPattern }): IVariableAssignment[] {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
-		const assignments: IVariableAssignment[] = [];
+	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ArrayBindingPattern }): IVariableDeclaration[] {
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
+		const assignments: IVariableDeclaration[] = [];
 
 		declaration.name.elements.forEach((binding, index) => {
 			if (isOmittedExpression(binding)) return;
 
-			const name = <string>this.nameGetter.getName(binding);
-			const cached = name == null ? null : this.cache.getCachedVariable(filePath, name);
-			if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
+			const name = <string>nameGetter.getName(binding);
+			const cached = name == null ? null : cache.getCachedVariable(filePath, name);
+			if (cached != null && !cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {
 				const base = this.formatBaseVariableAssignment(declaration);
-				const value = this.valueableFormatter.format(declaration.initializer, index);
+				const value = valueableFormatter.format(declaration.initializer, index);
 
-				const map: IVariableAssignment = {
+				const map: IVariableDeclaration = identifierUtil.setKind({
 					...base,
 					name,
 					value
-				};
+				}, IdentifierMapKind.VARIABLE);
 
-				// Make the ___kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.VARIABLE,
-					enumerable: false
-				});
-
-				this.cache.setCachedVariable(filePath, map);
+				cache.setCachedVariable(filePath, map);
 				assignments.push(map);
 			}
 		});
 		return assignments;
 	}
 
-	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ObjectBindingPattern }): IVariableAssignment[] {
-		const filePath = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
-		const assignments: IVariableAssignment[] = [];
+	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ObjectBindingPattern }): IVariableDeclaration[] {
+		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
+		const assignments: IVariableDeclaration[] = [];
 
 		declaration.name.elements.forEach(binding => {
-			const name = <string>this.nameGetter.getName(binding);
-			const cached = name == null ? null : this.cache.getCachedVariable(filePath, name);
-			if (cached != null && !this.cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
+			const name = <string>nameGetter.getName(binding);
+			const cached = name == null ? null : cache.getCachedVariable(filePath, name);
+			if (cached != null && !cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {
 				const base = this.formatBaseVariableAssignment(declaration);
-				const value = this.valueableFormatter.format(declaration.initializer, name);
+				const value = valueableFormatter.format(declaration.initializer, name);
 
-				const map: IVariableAssignment = {
+				const map: IVariableDeclaration = identifierUtil.setKind({
 					...base,
 					name,
 					value
-				};
+				}, IdentifierMapKind.VARIABLE);
 
-				// Make the ___kind non-enumerable.
-				Object.defineProperty(map, "___kind", {
-					value: IdentifierMapKind.VARIABLE,
-					enumerable: false
-				});
-
-				this.mapper.set(map, declaration);
-				this.cache.setCachedVariable(filePath, map);
+				mapper.set(map, declaration);
+				cache.setCachedVariable(filePath, map);
 				assignments.push(map);
 			}
 		});

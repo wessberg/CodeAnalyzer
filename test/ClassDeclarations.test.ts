@@ -1,7 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
-import {IConstructorDeclaration} from "../src/service/interface/ICodeAnalyzer";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
+import {IConstructorDeclaration} from "../src/identifier/interface/IIdentifier";
 
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 

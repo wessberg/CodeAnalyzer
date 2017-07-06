@@ -1,21 +1,10 @@
 import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, SetAccessorDeclaration} from "typescript";
-import {ISourceFilePropertiesGetter} from "../getter/interface/ISourceFilePropertiesGetter";
 import {isBlockDeclaration, isReturnStatement} from "../predicate/PredicateFunctions";
-import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../service/interface/ICodeAnalyzer";
-import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
-import {IModifiersFormatter} from "./interface/IModifiersFormatter";
-import {IParametersFormatter} from "./interface/IParametersFormatter";
-import {IValueableFormatter} from "./interface/IValueableFormatter";
+import {decoratorsFormatter, modifiersFormatter, parametersFormatter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
+import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../identifier/interface/IIdentifier";
 
 export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
-
-	constructor (protected sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private decoratorsFormatter: IDecoratorsFormatter,
-							 private modifiersFormatter: IModifiersFormatter,
-							 private parametersFormatter: IParametersFormatter,
-							 protected valueableFormatter: IValueableFormatter) {
-	}
 
 	/**
 	 * Takes a ConstructorDeclaration, MethodDeclaration, FunctionDeclaration, ArrowFunction, GetAccessorDeclaration or SetAccessorDeclaration and returns an IMemberDeclaration.
@@ -23,7 +12,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @returns {IMemberDeclaration}
 	 */
 	protected formatCallableMemberDeclaration (declaration: ConstructorDeclaration|MethodDeclaration|FunctionDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): IMemberDeclaration&IParametersable {
-		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
+		const fileContents = sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
 		const body = declaration.body;
@@ -39,7 +28,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 			startsAt,
 			endsAt,
 			contents,
-			decorators: this.decoratorsFormatter.format(declaration),
+			decorators: decoratorsFormatter.format(declaration),
 			body: {
 				startsAt: bodyStartsAt,
 				endsAt: bodyEndsAt,
@@ -48,7 +37,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 			parameters: {
 				startsAt: argumentsStartsAt,
 				endsAt: argumentsEndsAt,
-				parametersList: this.parametersFormatter.format(declaration)
+				parametersList: parametersFormatter.format(declaration)
 			}
 		};
 	}
@@ -59,7 +48,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 	 * @returns {IMemberDeclaration & IParametersable & IFunctionLike}
 	 */
 	protected formatFunctionLikeDeclaration (declaration: MethodDeclaration|FunctionDeclaration|ConstructorDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration): IFunctionLike {
-		const fileContents = this.sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
+		const fileContents = sourceFilePropertiesGetter.getSourceFileProperties(declaration).fileContents;
 		let returnStatementStartsAt: number = -1;
 		let returnStatementEndsAt: number = -1;
 		let returnStatementContents: string|null = null;
@@ -73,7 +62,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 						returnStatementStartsAt = bodyStatement.expression.pos;
 						returnStatementEndsAt = bodyStatement.expression.end;
 						returnStatementContents = fileContents.slice(returnStatementStartsAt, returnStatementEndsAt);
-						value = this.valueableFormatter.format(bodyStatement.expression, undefined, undefined);
+						value = valueableFormatter.format(bodyStatement.expression, undefined, undefined);
 						break;
 					}
 				}
@@ -83,7 +72,7 @@ export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 		return {
 			...this.formatCallableMemberDeclaration(declaration),
 			...{
-				modifiers: this.modifiersFormatter.format(declaration),
+				modifiers: modifiersFormatter.format(declaration),
 				returnStatement: value == null ? null : {
 					startsAt: returnStatementStartsAt,
 					endsAt: returnStatementEndsAt,

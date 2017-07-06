@@ -1,7 +1,7 @@
 import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {isSourceFile} from "../predicate/PredicateFunctions";
-import {ISourceFileProperties} from "../service/interface/ICodeAnalyzer";
 import {ISourceFilePropertiesGetter} from "./interface/ISourceFilePropertiesGetter";
+import {ISourceFileProperties} from "../identifier/interface/IIdentifier";
 
 export class SourceFilePropertiesGetter implements ISourceFilePropertiesGetter {
 	/**

@@ -1,4 +1,4 @@
-import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifier, IIdentifierMap, IImportDeclaration, IPropDeclaration, IVariableAssignment, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../../service/interface/ICodeAnalyzer";
+import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifier, IIdentifierMap, IImportDeclaration, IPropDeclaration, IVariableDeclaration, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../../identifier/interface/IIdentifier";
 
 export interface ICache {
 	getCachedPropName (fileName: string, className: string, propName: string): string;
@@ -18,7 +18,7 @@ export interface ICache {
 	getCachedVariableIndexerName (fileName: string): string;
 	getCachedEnumIndexerName (fileName: string): string;
 	getFromCache<T> (key: string): ICachedContent<T>|null;
-	getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableAssignment>|null;
+	getCachedVariable (fileName: string, variableName: string): ICachedContent<IVariableDeclaration>|null;
 	getCachedFunction (fileName: string, functionName: string): ICachedContent<IFunctionDeclaration>|null;
 	getCachedEnum (fileName: string, enumName: string): ICachedContent<IEnumDeclaration>|null;
 	getCachedProp (fileName: string, className: string, propName: string): ICachedContent<IPropDeclaration>|null;
@@ -35,7 +35,7 @@ export interface ICache {
 	getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer>|null;
 	getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer>|null;
 	setCachedProp (fileName: string, content: IPropDeclaration): void;
-	setCachedVariable (fileName: string, content: IVariableAssignment): void;
+	setCachedVariable (fileName: string, content: IVariableDeclaration): void;
 	setCachedEnum (fileName: string, content: IEnumDeclaration): void;
 	setCachedClass (fileName: string, content: IClassDeclaration): void;
 	setCachedFunction (fileName: string, content: IFunctionDeclaration): void;
@@ -50,7 +50,7 @@ export interface ICache {
 	setCachedArrowFunctions (fileName: string, content: IArrowFunction[]): void;
 	setCachedEnumIndexer (fileName: string, content: EnumIndexer): void;
 	setCachedVariableIndexer (fileName: string, content: VariableIndexer): void;
-	cachedVariableNeedsUpdate (variable: IVariableAssignment): boolean;
+	cachedVariableNeedsUpdate (variable: IVariableDeclaration): boolean;
 	cachedEnumNeedsUpdate (enumDeclaration: IEnumDeclaration): boolean;
 	cachedFunctionNeedsUpdate (functionDeclaration: IFunctionDeclaration): boolean;
 	cachedPropNeedsUpdate (prop: IPropDeclaration): boolean;

@@ -1,5 +1,5 @@
-import {ArbitraryValue} from "../service/interface/ICodeAnalyzer";
 import {ITokenPredicator} from "./interface/ITokenPredicator";
+import {ArbitraryValue} from "../identifier/interface/IIdentifier";
 
 export class TokenPredicator implements ITokenPredicator {
 

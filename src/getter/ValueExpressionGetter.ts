@@ -1,26 +1,12 @@
 import {GlobalObjectIdentifier} from "@wessberg/globalobject";
-import {IMarshaller} from "@wessberg/marshaller";
-import {ISourceFilePropertiesGetter} from "src/getter/interface/ISourceFilePropertiesGetter";
 import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
-import {IHeritageClauseFormatter} from "../formatter/interface/IHeritageClauseFormatter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {ITokenPredicator} from "../predicate/interface/ITokenPredicator";
 import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isFirstNode, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIfStatement, isLabeledStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
-import {ITokenSerializer} from "../serializer/interface/ITokenSerializer";
-import {ArbitraryValue, InitializationValue} from "../service/interface/ICodeAnalyzer";
-import {IStringUtil} from "../util/interface/IStringUtil";
-import {INameGetter} from "./interface/INameGetter";
 import {IValueExpressionGetter} from "./interface/IValueExpressionGetter";
+import {heritageClauseFormatter, marshaller, nameGetter, sourceFilePropertiesGetter, stringUtil, tokenPredicator, tokenSerializer} from "../services";
+import {ArbitraryValue, InitializationValue} from "../identifier/interface/IIdentifier";
 
 export class ValueExpressionGetter implements IValueExpressionGetter {
-	constructor (private marshaller: IMarshaller,
-							 private heritageClauseFormatter: IHeritageClauseFormatter,
-							 private sourceFilePropertiesGetter: ISourceFilePropertiesGetter,
-							 private nameGetter: INameGetter,
-							 private tokenSerializer: ITokenSerializer,
-							 private tokenPredicator: ITokenPredicator,
-							 private stringUtil: IStringUtil) {
-	}
 
 	/**
 	 * Checks and formats the initialization value of the given statement (if any) and returns it.
@@ -36,8 +22,8 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isPropertyDeclaration(rawStatement)) {
-			const className = rawStatement.parent == null ? "" : this.nameGetter.getName(rawStatement.parent);
-			const name = this.nameGetter.getName(rawStatement.name);
+			const className = rawStatement.parent == null ? "" : nameGetter.getName(rawStatement.parent);
+			const name = nameGetter.getName(rawStatement.name);
 			const initializer = rawStatement.initializer == null ? [] : this.getValueExpression(rawStatement.initializer);
 			const isStatic = rawStatement.modifiers == null ? false : rawStatement.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
 			const staticIntro = isStatic ? ["static", " "] : [];
@@ -66,8 +52,8 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isNoSubstitutionTemplateLiteral(rawStatement)) {
-			const marshalled = this.marshaller.unmarshal(rawStatement.text);
-			return [this.stringUtil.quoteIfNecessary(marshalled)];
+			const marshalled = marshaller.unmarshal(rawStatement.text);
+			return [stringUtil.quoteIfNecessary(marshalled)];
 		}
 
 		if (isArrayBindingPattern(rawStatement)) {
@@ -75,7 +61,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 
 			rawStatement.elements.forEach((binding, index) => {
 				if (!isOmittedExpression(binding)) {
-					arr.push(<string>this.nameGetter.getName(binding));
+					arr.push(<string>nameGetter.getName(binding));
 				}
 				if (index !== rawStatement.elements.length - 1) arr.push(",");
 			});
@@ -87,7 +73,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			const arr: ArbitraryValue[] = ["{"];
 
 			rawStatement.elements.forEach((binding, index) => {
-				arr.push(<string>this.nameGetter.getName(binding));
+				arr.push(<string>nameGetter.getName(binding));
 				if (index !== rawStatement.elements.length - 1) arr.push(",");
 			});
 			arr.push("}");
@@ -95,7 +81,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isTemplateHead(rawStatement) || isTemplateMiddle(rawStatement) || isTemplateTail(rawStatement)) {
-			const marshalled = this.marshaller.unmarshal(rawStatement.text);
+			const marshalled = marshaller.unmarshal(rawStatement.text);
 			return [marshalled];
 		}
 
@@ -139,15 +125,15 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isPrefixUnaryExpression(rawStatement)) {
-			return [this.tokenSerializer.serializeToken(rawStatement.operator, rawStatement), ...this.getValueExpression(rawStatement.operand)];
+			return [tokenSerializer.serializeToken(rawStatement.operator, rawStatement), ...this.getValueExpression(rawStatement.operand)];
 		}
 
 		if (isPostfixUnaryExpression(rawStatement)) {
-			return [...this.getValueExpression(rawStatement.operand), this.tokenSerializer.serializeToken(rawStatement.operator, rawStatement)];
+			return [...this.getValueExpression(rawStatement.operand), tokenSerializer.serializeToken(rawStatement.operator, rawStatement)];
 		}
 
 		if (isDeleteExpression(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...this.getValueExpression(rawStatement.expression)];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (isEmptyStatement(rawStatement)) {
@@ -155,7 +141,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isVariableDeclarationList(rawStatement)) {
-			const keyword = this.tokenSerializer.serializeFlag(rawStatement.flags) || "var";
+			const keyword = tokenSerializer.serializeFlag(rawStatement.flags) || "var";
 			const values: InitializationValue = [keyword, " "];
 
 			rawStatement.declarations.forEach((declaration, index) => {
@@ -206,19 +192,19 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isThrowStatement(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...this.getValueExpression(rawStatement.expression)];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...this.getValueExpression(rawStatement.expression)];
 		}
 
 		if (isBreakStatement(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
 		}
 
 		if (isContinueStatement(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
 		}
 
 		if (isDoStatement(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement), "{", ...this.getValueExpression(rawStatement.expression), "}"];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement), "{", ...this.getValueExpression(rawStatement.expression), "}"];
 		}
 
 		if (isDefaultClause(rawStatement)) {
@@ -342,7 +328,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				}
 
 				else if (isShorthandPropertyAssignment(property)) {
-					const name = this.nameGetter.getName(property.name);
+					const name = nameGetter.getName(property.name);
 					obj.push(name);
 					obj.push(":");
 					obj.push(new BindingIdentifier(name, property.name));
@@ -366,7 +352,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 
 						} else {
 							// Otherwise, just push the name of it.
-							obj.push(this.nameGetter.getNameOfMember(property.name, true, true));
+							obj.push(nameGetter.getNameOfMember(property.name, true, true));
 							didAddMembers = true;
 						}
 
@@ -463,13 +449,13 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isClassExpression(rawStatement) || isClassDeclaration(rawStatement)) {
-			const name = rawStatement.name == null ? [] : [this.nameGetter.getNameOfMember(rawStatement.name, false, true)];
+			const name = rawStatement.name == null ? [] : [nameGetter.getNameOfMember(rawStatement.name, false, true)];
 
 			// TODO: At this point, we always assume that the extends clause is an atomic reference to something,
 			// TODO: For example: Foo extends Bar. But, an extends clause can be anything, for example: Foo extends Bar.Baz
 			// TODO: Or even Foo extends class Bar {}. We need to be able to take this into account.
 			// TODO: see https://github.com/wessberg/CodeAnalyzer/issues/5 for more info.
-			const heritage = rawStatement.heritageClauses == null ? null : this.heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
+			const heritage = rawStatement.heritageClauses == null ? null : heritageClauseFormatter.format(rawStatement.heritageClauses).extendsClass;
 			const heritageFormatted = heritage == null ? [] : [" ", "extends", " ", new BindingIdentifier(heritage.name, rawStatement)];
 			const members: InitializationValue = ["{"];
 
@@ -489,7 +475,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				nameExpression.push("{");
 				const elements = rawStatement.name.elements;
 				elements.forEach((binding, index) => {
-					nameExpression.push(<string>this.nameGetter.getName(binding));
+					nameExpression.push(<string>nameGetter.getName(binding));
 					if (index !== elements.length - 1) nameExpression.push(",");
 				});
 				nameExpression.push("}");
@@ -500,17 +486,16 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				const elements = rawStatement.name.elements;
 				elements.forEach((binding, index) => {
 					if (isOmittedExpression(binding)) nameExpression.push(",");
-					else nameExpression.push(<string>this.nameGetter.getName(binding));
+					else nameExpression.push(<string>nameGetter.getName(binding));
 					if (index !== elements.length - 1) nameExpression.push(",");
 				});
 				nameExpression.push("]");
 			}
 
 			else {
-				nameExpression.push(<string>this.nameGetter.getNameOfMember(rawStatement.name, false, true));
+				nameExpression.push(<string>nameGetter.getNameOfMember(rawStatement.name, false, true));
 			}
 
-			// const type = rawStatement.type == null ? [] : [":", ...this.typeExpressionGetter.getTypeExpression(rawStatement.type)];
 			const initializer = rawStatement.initializer == null ? [] : ["=", ...this.getValueExpression(rawStatement.initializer)];
 			return [...nameExpression, ...initializer];
 		}
@@ -583,7 +568,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				}
 				if (isGetAccessorDeclaration(rawStatement)) arr.push("get", " ");
 				if (isSetAccessorDeclaration(rawStatement)) arr.push("set", " ");
-				arr.push(this.nameGetter.getNameOfMember(name, false, true));
+				arr.push(nameGetter.getNameOfMember(name, false, true));
 			}
 
 			arr.push("(");
@@ -623,22 +608,22 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isReturnStatement(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...(rawStatement.expression == null ? [] : this.getValueExpression(rawStatement.expression))];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement), " ", ...(rawStatement.expression == null ? [] : this.getValueExpression(rawStatement.expression))];
 		}
 
 		if (isTokenObject(rawStatement)) {
-			return [this.tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
+			return [tokenSerializer.marshalToken(rawStatement.kind, rawStatement)];
 		}
 
 		if (isIdentifierObject(rawStatement)) {
-			const name = this.nameGetter.getName(rawStatement);
-			const value = this.nameGetter.getNameOfMember(rawStatement, true);
+			const name = nameGetter.getName(rawStatement);
+			const value = nameGetter.getNameOfMember(rawStatement, true);
 
 			if (name === GlobalObjectIdentifier || name === "window") return [name];
 			return [value];
 		}
 
-		throw new TypeError(`${this.getValueExpression.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${this.sourceFilePropertiesGetter.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
+		throw new TypeError(`${this.getValueExpression.name} could not extract a value for a statement of kind ${(<Identifier>rawStatement).kind == null ? "unknown" : SyntaxKind[(<Identifier>rawStatement).kind]} around here: ${sourceFilePropertiesGetter.getSourceFileProperties(rawStatement).fileContents.slice((<Identifier>rawStatement).pos, (<Identifier>rawStatement).end)}`);
 	}
 
 	/**
@@ -674,7 +659,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 	 * @returns {string}
 	 */
 	private convertToIndexedLookup (path: ArbitraryValue): string {
-		if (this.tokenPredicator.isOperatorLike(path)) return path == null ? "" : path.toString();
+		if (tokenPredicator.isOperatorLike(path)) return path == null ? "" : path.toString();
 
 		if (typeof path === "string") {
 			if (this.isIndexedLookup(path)) return path;
