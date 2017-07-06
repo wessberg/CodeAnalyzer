@@ -105,6 +105,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.38**:
+
+- Added the possibility of setting excluded files lazily.
+
 **v1.0.37**:
 
 - Added the possibility of adding one or more regular expressions that matches filepaths that should be skipped in the constructor of the CodeAnalyzer.

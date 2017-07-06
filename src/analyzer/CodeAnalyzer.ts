@@ -13,7 +13,11 @@ import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICallExpress
 export class CodeAnalyzer implements ICodeAnalyzer {
 
 	constructor(options?: ICodeAnalyzerConstructorOptions) {
-		if (options != null) filePathUtil.exclude(options.excludeFiles);
+		if (options != null) this.excludeFiles(options.excludeFiles);
+	}
+
+	public excludeFiles (match: RegExp|RegExp[]|Set<RegExp>): void {
+		filePathUtil.exclude(match);
 	}
 
 	public addFile (fileName: string, content: string, version?: number): NodeArray<Statement> {

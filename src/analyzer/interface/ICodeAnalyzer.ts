@@ -6,6 +6,7 @@ export interface ICodeAnalyzerConstructorOptions {
 }
 
 export interface ICodeAnalyzer {
+	excludeFiles (match: RegExp|RegExp[]|Set<RegExp>): void;
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	statementsIncludeKind (statements: (Statement|Expression|Node)[], kind: SyntaxKind, deep?: boolean): boolean;
 	getClassDeclarations(statements: (Statement|Expression|Node)[], deep?: boolean): ClassIndexer;
