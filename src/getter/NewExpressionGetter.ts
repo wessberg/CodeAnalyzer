@@ -1,7 +1,7 @@
 import {INewExpressionGetter} from "./interface/INewExpressionGetter";
 import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {INewExpression} from "../identifier/interface/IIdentifier";
-import {childStatementGetter, languageService, newExpressionFormatter, pathValidatorUtil, statementUtil} from "../services";
+import {childStatementGetter, filePathUtil, languageService, newExpressionFormatter, pathValidatorUtil, statementUtil} from "../services";
 import {isExpressionStatement, isNewExpression} from "../predicate/PredicateFunctions";
 
 export class NewExpressionGetter implements INewExpressionGetter {
@@ -15,7 +15,7 @@ export class NewExpressionGetter implements INewExpressionGetter {
 	 * @returns {INewExpression[]}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): INewExpression[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const statements = languageService.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.constructor.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);

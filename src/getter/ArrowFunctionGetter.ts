@@ -1,7 +1,7 @@
 import {IArrowFunctionGetter} from "./interface/IArrowFunctionGetter";
 import {ArrowFunction, Expression, Node, Statement} from "typescript";
 import {IArrowFunction, IdentifierMapKind} from "../identifier/interface/IIdentifier";
-import {arrowFunctionFormatter, cache, childStatementGetter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {arrowFunctionFormatter, cache, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isArrowFunction} from "../predicate/PredicateFunctions";
 
 export class ArrowFunctionGetter implements IArrowFunctionGetter {
@@ -13,7 +13,7 @@ export class ArrowFunctionGetter implements IArrowFunctionGetter {
 	 * @returns {IArrowFunction[]}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): IArrowFunction[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const cached = cache.getCachedArrowFunctions(fileName);
 		if (cached != null && !cache.cachedArrowFunctionsNeedsUpdate(fileName)) return cached.content;

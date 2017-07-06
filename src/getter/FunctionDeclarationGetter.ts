@@ -1,7 +1,7 @@
 import {IFunctionDeclarationGetter} from "./interface/IFunctionDeclarationGetter";
 import {Expression, FunctionDeclaration, Node, Statement} from "typescript";
 import {FunctionIndexer, IdentifierMapKind, IFunctionDeclaration} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, functionFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {cache, childStatementGetter, filePathUtil, functionFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isFunctionDeclaration} from "../predicate/PredicateFunctions";
 
 export class FunctionDeclarationGetter implements IFunctionDeclarationGetter {
@@ -14,7 +14,7 @@ export class FunctionDeclarationGetter implements IFunctionDeclarationGetter {
 	 * @returns {FunctionIndexer}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): FunctionIndexer {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedFunctionIndexer(fileName);
 		if (cached != null && !cache.cachedFunctionIndexerNeedsUpdate(fileName)) return cached.content;

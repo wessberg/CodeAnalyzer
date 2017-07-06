@@ -1,7 +1,7 @@
 import {IResolvedSerializedIdentifierValueGetter} from "./interface/IResolvedSerializedIdentifierValueGetter";
 import {Expression, Node, Statement} from "typescript";
 import {ArbitraryValue, IdentifierMapKind, ResolvedSerializedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
-import {cache, identifierUtil, languageService, marshaller, pathValidatorUtil, resolvedIdentifierValueGetter, typeDetector} from "../services";
+import {cache, filePathUtil, identifierUtil, languageService, marshaller, pathValidatorUtil, resolvedIdentifierValueGetter, typeDetector} from "../services";
 
 export class ResolvedSerializedIdentifierValueGetter implements IResolvedSerializedIdentifierValueGetter {
 
@@ -12,7 +12,7 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 	 * @returns {ResolvedSerializedIIdentifierValueMap}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP, map: {}};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP, map: {}};
 
 		const cached = cache.getCachedResolvedSerializedIdentifierValueMap(fileName);
 		if (cached != null && !cache.cachedResolvedSerializedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;

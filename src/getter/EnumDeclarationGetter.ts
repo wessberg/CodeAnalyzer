@@ -1,7 +1,7 @@
 import {EnumDeclaration, Expression, Node, Statement} from "typescript";
 import {IEnumDeclarationGetter} from "./interface/IEnumDeclarationGetter";
 import {EnumIndexer, IdentifierMapKind, IEnumDeclaration} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, enumFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {cache, childStatementGetter, enumFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isEnumDeclaration} from "../predicate/PredicateFunctions";
 
 export class EnumDeclarationGetter implements IEnumDeclarationGetter {
@@ -14,7 +14,7 @@ export class EnumDeclarationGetter implements IEnumDeclarationGetter {
 	 * @returns {EnumIndexer}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): EnumIndexer {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedEnumIndexer(fileName);
 		if (cached != null && !cache.cachedEnumIndexerNeedsUpdate(fileName)) return cached.content;

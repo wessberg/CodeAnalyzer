@@ -1,7 +1,7 @@
 import {CallExpression, Expression, ImportDeclaration, ImportEqualsDeclaration, Node, Statement, VariableStatement} from "typescript";
 import {IImportDeclarationGetter} from "./interface/IImportDeclarationGetter";
 import {IdentifierMapKind, IImportDeclaration} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, identifierUtil, importFormatter, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {cache, childStatementGetter, filePathUtil, identifierUtil, importFormatter, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isCallExpression, isExpressionStatement, isImportDeclaration, isImportEqualsDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 
 export class ImportDeclarationGetter implements IImportDeclarationGetter {
@@ -13,7 +13,7 @@ export class ImportDeclarationGetter implements IImportDeclarationGetter {
 	 * @returns {IImportDeclaration[]}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): IImportDeclaration[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const cached = cache.getCachedImportDeclarations(fileName);
 		if (cached != null && !cache.cachedImportDeclarationsNeedsUpdate(fileName)) return cached.content;

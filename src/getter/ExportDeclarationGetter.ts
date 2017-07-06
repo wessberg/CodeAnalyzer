@@ -1,7 +1,7 @@
 import {BinaryExpression, CallExpression, ClassDeclaration, ExportAssignment, ExportDeclaration, Expression, ExpressionStatement, FunctionDeclaration, Node, Statement, VariableStatement} from "typescript";
 import {IExportDeclarationGetter} from "./interface/IExportDeclarationGetter";
 import {IdentifierMapKind, IExportDeclaration} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, exportFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {cache, childStatementGetter, exportFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 
 export class ExportDeclarationGetter implements IExportDeclarationGetter {
@@ -12,7 +12,7 @@ export class ExportDeclarationGetter implements IExportDeclarationGetter {
 	 * @returns {IExportDeclaration[]}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): IExportDeclaration[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const cached = cache.getCachedExportDeclarations(fileName);
 		if (cached != null && !cache.cachedExportDeclarationsNeedsUpdate(fileName)) return cached.content;

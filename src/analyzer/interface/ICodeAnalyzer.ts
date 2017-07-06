@@ -1,6 +1,10 @@
 import {Expression, Node, NodeArray, Statement, SyntaxKind} from "typescript";
 import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICallExpression, IExportDeclaration, IIdentifierMap, IImportDeclaration, IMutationDeclaration, INewExpression, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../../identifier/interface/IIdentifier";
 
+export interface ICodeAnalyzerConstructorOptions {
+	excludeFiles: RegExp|RegExp[]|Set<RegExp>;
+}
+
 export interface ICodeAnalyzer {
 	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
 	statementsIncludeKind (statements: (Statement|Expression|Node)[], kind: SyntaxKind, deep?: boolean): boolean;

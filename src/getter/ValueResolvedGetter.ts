@@ -131,6 +131,7 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				if (index !== traced.arguments.argumentsList.length - 1) expressions.push(",");
 			});
 			expression.push(")");
+			return expression;
 		}
 
 		throw new TypeError(`${this.constructor.name} could not get expressions for an IIdentifier of kind ${IdentifierMapKind[traced.___kind]}`);

@@ -1,7 +1,7 @@
 import {ClassDeclaration, Expression, Node, Statement} from "typescript";
 import {IClassDeclarationGetter} from "./interface/IClassDeclarationGetter";
 import {ClassIndexer, IClassDeclaration, IdentifierMapKind} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, classFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {cache, childStatementGetter, classFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isClassDeclaration} from "../predicate/PredicateFunctions";
 
 export class ClassDeclarationGetter implements IClassDeclarationGetter {
@@ -13,7 +13,7 @@ export class ClassDeclarationGetter implements IClassDeclarationGetter {
 	 * @returns {ClassIndexer}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): ClassIndexer {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedClassIndexer(fileName);
 		if (cached != null && !cache.cachedClassIndexerNeedsUpdate(fileName)) return cached.content;

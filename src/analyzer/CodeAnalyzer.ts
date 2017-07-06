@@ -1,7 +1,7 @@
 import {CallExpression, Expression, Node, NodeArray, Statement, SyntaxKind} from "typescript";
 import {isIdentifierObject} from "../predicate/PredicateFunctions";
-import {allIdentifiersGetter, arrowFunctionGetter, callExpressionGetter, childStatementGetter, classDeclarationGetter, enumDeclarationGetter, exportDeclarationGetter, functionDeclarationGetter, importDeclarationGetter, languageService, mutationGetter, newExpressionGetter, resolvedIdentifierValueGetter, resolvedSerializedIdentifierValueGetter, variableDeclarationGetter} from "../services";
-import {ICodeAnalyzer} from "./interface/ICodeAnalyzer";
+import {allIdentifiersGetter, arrowFunctionGetter, callExpressionGetter, childStatementGetter, classDeclarationGetter, enumDeclarationGetter, exportDeclarationGetter, filePathUtil, functionDeclarationGetter, importDeclarationGetter, languageService, mutationGetter, newExpressionGetter, resolvedIdentifierValueGetter, resolvedSerializedIdentifierValueGetter, variableDeclarationGetter} from "../services";
+import {ICodeAnalyzer, ICodeAnalyzerConstructorOptions} from "./interface/ICodeAnalyzer";
 import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICallExpression, IExportDeclaration, IIdentifierMap, IImportDeclaration, IMutationDeclaration, INewExpression, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../identifier/interface/IIdentifier";
 
 /**
@@ -11,6 +11,10 @@ import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICallExpress
  * @author Frederik Wessberg
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
+
+	constructor(options?: ICodeAnalyzerConstructorOptions) {
+		if (options != null) filePathUtil.exclude(options.excludeFiles);
+	}
 
 	public addFile (fileName: string, content: string, version?: number): NodeArray<Statement> {
 		return languageService.addFile(fileName, content, version);

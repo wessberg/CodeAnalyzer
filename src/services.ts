@@ -77,8 +77,6 @@ import {IStatementUtil} from "./util/interface/IStatementUtil";
 import {StatementUtil} from "./util/StatementUtil";
 import {IChildStatementGetter} from "./getter/interface/IChildStatementGetter";
 import {ChildStatementGetter} from "./getter/ChildStatementGetter";
-import {IPathValidatorUtil} from "./util/interface/IPathValidatorUtil";
-import {PathValidatorUtil} from "./util/PathValidatorUtil";
 import {IExportDeclarationGetter} from "./getter/interface/IExportDeclarationGetter";
 import {ExportDeclarationGetter} from "./getter/ExportDeclarationGetter";
 import {IClassDeclarationGetter} from "./getter/interface/IClassDeclarationGetter";
@@ -105,6 +103,9 @@ import {IResolvedSerializedIdentifierValueGetter} from "./getter/interface/IReso
 import {ResolvedSerializedIdentifierValueGetter} from "./getter/ResolvedSerializedIdentifierValueGetter";
 import {IAllIdentifiersGetter} from "./getter/interface/IAllIdentifiersGetter";
 import {AllIdentifiersGetter} from "./getter/AllIdentifiersGetter";
+import {IPathValidator, PathValidator} from "@wessberg/compiler-common";
+import {IFilePathUtil} from "./util/interface/IFilePathUtil";
+import {FilePathUtil} from "./util/FilePathUtil";
 
 export const languageService: ILanguageService = new LanguageService();
 export const childStatementGetter: IChildStatementGetter = new ChildStatementGetter();
@@ -124,10 +125,11 @@ export const allIdentifiersGetter: IAllIdentifiersGetter = new AllIdentifiersGet
 export const typeDetector: ITypeDetector = new TypeDetector();
 export const marshaller: IMarshaller = new Marshaller(typeDetector);
 export const fileLoader: IFileLoader = new FileLoader();
-export const pathValidatorUtil: IPathValidatorUtil = new PathValidatorUtil();
+export const pathValidatorUtil: IPathValidator = new PathValidator();
 export const statementUtil: IStatementUtil = new StatementUtil();
 export const identifierUtil: IIdentifierUtil = new IdentifierUtil();
 export const typeUtil: ITypeUtil = new TypeUtil();
+export const filePathUtil: IFilePathUtil = new FilePathUtil();
 export const tokenSerializer: ITokenSerializer = new TokenSerializer();
 export const tokenPredicator: ITokenPredicator = new TokenPredicator();
 export const stringUtil: IStringUtil = new StringUtil();

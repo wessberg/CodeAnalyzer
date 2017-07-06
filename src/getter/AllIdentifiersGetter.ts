@@ -1,7 +1,7 @@
 import {IAllIdentifiersGetter} from "./interface/IAllIdentifiersGetter";
 import {Expression, Node, Statement} from "typescript";
 import {IdentifierMapKind, IIdentifierMap} from "../identifier/interface/IIdentifier";
-import {arrowFunctionGetter, cache, callExpressionGetter, classDeclarationGetter, enumDeclarationGetter, exportDeclarationGetter, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, mutationGetter, pathValidatorUtil, variableDeclarationGetter} from "../services";
+import {arrowFunctionGetter, cache, callExpressionGetter, classDeclarationGetter, enumDeclarationGetter, exportDeclarationGetter, filePathUtil, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, mutationGetter, pathValidatorUtil, variableDeclarationGetter} from "../services";
 
 export class AllIdentifiersGetter implements IAllIdentifiersGetter {
 
@@ -13,7 +13,10 @@ export class AllIdentifiersGetter implements IAllIdentifiersGetter {
 	 * @returns {IIdentifierMap}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): IIdentifierMap {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.IDENTIFIER_MAP, enums: {}, classes: {}, variables: {}, functions: {}, callExpressions: [], imports: [], exports: [], mutations: [], arrowFunctions: []};
+
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) {
+			return {___kind: IdentifierMapKind.IDENTIFIER_MAP, enums: {}, classes: {}, variables: {}, functions: {}, callExpressions: [], imports: [], exports: [], mutations: [], arrowFunctions: []};
+		}
 
 		const cached = cache.getCachedIdentifierMap(fileName);
 		if (cached != null && !cache.cachedIdentifierMapNeedsUpdate(fileName)) return cached.content;

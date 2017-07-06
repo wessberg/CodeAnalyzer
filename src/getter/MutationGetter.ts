@@ -1,12 +1,12 @@
 import {BinaryExpression, Expression, ExpressionStatement, Node, Statement} from "typescript";
 import {IMutationGetter} from "./interface/IMutationGetter";
 import {IdentifierMapKind, IMutationDeclaration} from "../identifier/interface/IIdentifier";
-import {childStatementGetter, identifierUtil, languageService, mutationFormatter, pathValidatorUtil, statementUtil} from "../services";
+import {childStatementGetter, filePathUtil, identifierUtil, languageService, mutationFormatter, pathValidatorUtil, statementUtil} from "../services";
 import {isBinaryExpression, isExpressionStatement} from "../predicate/PredicateFunctions";
 
 export class MutationGetter implements IMutationGetter {
 	public getForFile (fileName: string, deep: boolean = false): IMutationDeclaration[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const statements = languageService.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.constructor.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);

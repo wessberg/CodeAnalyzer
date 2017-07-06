@@ -1,7 +1,7 @@
 import {Expression, Node, Statement, SyntaxKind} from "typescript";
 import {ICallExpressionGetter} from "./interface/ICallExpressionGetter";
 import {ICallExpression, IdentifierMapKind} from "../identifier/interface/IIdentifier";
-import {callExpressionFormatter, childStatementGetter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
+import {callExpressionFormatter, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isCallExpression, isExpressionStatement} from "../predicate/PredicateFunctions";
 
 export class CallExpressionGetter implements ICallExpressionGetter {
@@ -48,7 +48,7 @@ export class CallExpressionGetter implements ICallExpressionGetter {
 	 * @returns {ICallExpression[]}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): ICallExpression[] {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return [];
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 
 		const statements = languageService.getFile(fileName);
 		if (statements == null) throw new ReferenceError(`${this.constructor.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);

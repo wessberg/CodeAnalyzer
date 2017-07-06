@@ -1,7 +1,7 @@
 import {IResolvedIdentifierValueGetter} from "./interface/IResolvedIdentifierValueGetter";
 import {Expression, Node, Statement} from "typescript";
 import {IdentifierMapKind, ResolvedIIdentifierValueMap, ResolvedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
-import {cache, classDeclarationGetter, enumDeclarationGetter, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, pathValidatorUtil, variableDeclarationGetter} from "../services";
+import {cache, classDeclarationGetter, enumDeclarationGetter, filePathUtil, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, pathValidatorUtil, variableDeclarationGetter} from "../services";
 import {isIEnumDeclaration, isIExportableIIdentifier, isILiteralValue} from "../predicate/PredicateFunctions";
 
 export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGetter {
@@ -13,7 +13,7 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 	 * @returns {ResolvedIIdentifierValueMap}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): ResolvedIIdentifierValueMap {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP, map: {}};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP, map: {}};
 
 		const cached = cache.getCachedResolvedIdentifierValueMap(fileName);
 		if (cached != null && !cache.cachedResolvedIdentifierValueMapNeedsUpdate(fileName)) return cached.content;

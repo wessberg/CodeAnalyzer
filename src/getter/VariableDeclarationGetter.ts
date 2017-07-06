@@ -1,7 +1,7 @@
 import {Expression, Node, Statement, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
 import {IVariableDeclarationGetter} from "./interface/IVariableDeclarationGetter";
 import {IdentifierMapKind, VariableIndexer} from "../identifier/interface/IIdentifier";
-import {cache, childStatementGetter, identifierUtil, languageService, pathValidatorUtil, statementUtil, variableFormatter} from "../services";
+import {cache, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil, variableFormatter} from "../services";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 
 export class VariableDeclarationGetter implements IVariableDeclarationGetter {
@@ -14,7 +14,7 @@ export class VariableDeclarationGetter implements IVariableDeclarationGetter {
 	 * @returns {VariableIndexer}
 	 */
 	public getForFile (fileName: string, deep: boolean = false): VariableIndexer {
-		if (pathValidatorUtil.isBlacklisted(fileName)) return {};
+		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedVariableIndexer(fileName);
 		if (cached != null && !cache.cachedVariableIndexerNeedsUpdate(fileName)) return cached.content;
