@@ -105,6 +105,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.39**:
+
+- Fixed a bug where TemplateHeads, TemplateMiddles or TemplateTails would be unmarshalled incorrectly.
+
 **v1.0.38**:
 
 - Added the possibility of setting excluded files lazily.

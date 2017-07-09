@@ -81,8 +81,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isTemplateHead(rawStatement) || isTemplateMiddle(rawStatement) || isTemplateTail(rawStatement)) {
-			const marshalled = marshaller.unmarshal(rawStatement.text);
-			return [marshalled];
+			return [rawStatement.text];
 		}
 
 		if (isTypeAssertionExpression(rawStatement)) {
