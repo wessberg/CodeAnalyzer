@@ -1,17 +1,17 @@
 import {ArrowFunction, ClassDeclaration, ConstructorDeclaration, EnumDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, PropertyDeclaration, SetAccessorDeclaration} from "typescript";
 import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {identifierUtil, mapper, nameGetter} from "../services";
-import {DecoratorIndexer, IDecorator, IdentifierMapKind} from "../identifier/interface/IIdentifier";
+import {IDecorator, IDecoratorIndexer, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
 export class DecoratorsFormatter implements IDecoratorsFormatter {
 
 	/**
-	 * Formats the decorators of the given declaration and returns a DecoratorIndexer.
+	 * Formats the decorators of the given declaration and returns a IDecoratorIndexer.
 	 * @param {PropertyDeclaration|ClassDeclaration|MethodDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration} declaration
-	 * @returns {DecoratorIndexer}
+	 * @returns {IDecoratorIndexer}
 	 */
-	public format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration): DecoratorIndexer {
-		const obj: DecoratorIndexer = {};
+	public format (declaration: PropertyDeclaration|ClassDeclaration|MethodDeclaration|ConstructorDeclaration|FunctionDeclaration|EnumDeclaration|ArrowFunction|SetAccessorDeclaration|GetAccessorDeclaration): IDecoratorIndexer {
+		const obj: IDecoratorIndexer = {};
 		if (declaration.decorators == null) return obj;
 
 		declaration.decorators.forEach(decorator => {

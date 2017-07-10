@@ -1,6 +1,6 @@
 import {Expression, Node, Statement, VariableDeclaration, VariableDeclarationList, VariableStatement} from "typescript";
 import {IVariableDeclarationGetter} from "./interface/IVariableDeclarationGetter";
-import {IdentifierMapKind, VariableIndexer} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IVariableIndexer} from "../identifier/interface/IIdentifier";
 import {cache, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil, variableFormatter} from "../services";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 
@@ -8,12 +8,12 @@ export class VariableDeclarationGetter implements IVariableDeclarationGetter {
 
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given file
-	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IVariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {VariableIndexer}
+	 * @returns {IVariableIndexer}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): VariableIndexer {
+	public getForFile (fileName: string, deep: boolean = false): IVariableIndexer {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedVariableIndexer(fileName);
@@ -28,13 +28,13 @@ export class VariableDeclarationGetter implements IVariableDeclarationGetter {
 
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
-	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IVariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {VariableIndexer}
+	 * @returns {IVariableIndexer}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): VariableIndexer {
-		const assignmentMap: VariableIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IVariableIndexer {
+		const assignmentMap: IVariableIndexer = {};
 
 		for (const statement of statements) {
 			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
@@ -61,11 +61,11 @@ export class VariableDeclarationGetter implements IVariableDeclarationGetter {
 	}
 
 	/**
-	 * Returns a formatted VariableIndexer.
+	 * Returns a formatted IVariableIndexer.
 	 * @param {VariableDeclaration|VariableDeclarationList|VariableStatement} statement
-	 * @returns {VariableIndexer}
+	 * @returns {IVariableIndexer}
 	 */
-	public get (statement: VariableDeclaration|VariableDeclarationList|VariableStatement): VariableIndexer {
+	public get (statement: VariableDeclaration|VariableDeclarationList|VariableStatement): IVariableIndexer {
 		return variableFormatter.format(statement);
 	}
 

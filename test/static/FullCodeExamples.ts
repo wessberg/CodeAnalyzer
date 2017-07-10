@@ -1,3 +1,4 @@
+/*tslint:disable*/
 /**
  * All of these code examples are snippets of popular open-source front-end libraries.
  */
@@ -20357,3 +20358,4 @@ return hooks;
 
 })));
 `;
+/*tslint:enable*/

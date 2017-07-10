@@ -1,18 +1,18 @@
 import {ClassDeclaration, Expression, Node, Statement} from "typescript";
 import {IClassDeclarationGetter} from "./interface/IClassDeclarationGetter";
-import {ClassIndexer, IClassDeclaration, IdentifierMapKind} from "../identifier/interface/IIdentifier";
+import {IClassDeclaration, IClassIndexer, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 import {cache, childStatementGetter, classFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isClassDeclaration} from "../predicate/PredicateFunctions";
 
 export class ClassDeclarationGetter implements IClassDeclarationGetter {
 	/**
 	 * Gets all class declarations (if any) that occurs in the given file
-	 * and returns them as a ClassIndexer.
+	 * and returns them as a IClassIndexer.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {ClassIndexer}
+	 * @returns {IClassIndexer}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): ClassIndexer {
+	public getForFile (fileName: string, deep: boolean = false): IClassIndexer {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedClassIndexer(fileName);
@@ -30,13 +30,13 @@ export class ClassDeclarationGetter implements IClassDeclarationGetter {
 
 	/**
 	 * Gets all class declarations (if any) that occurs in the given array of statements
-	 * and returns them as a ClassIndexer.
+	 * and returns them as a IClassIndexer.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {ClassIndexer}
+	 * @returns {IClassIndexer}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): ClassIndexer {
-		const declarations: ClassIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IClassIndexer {
+		const declarations: IClassIndexer = {};
 		for (const statement of statements) {
 			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.
 			if (statementUtil.shouldSkip(statement)) continue;

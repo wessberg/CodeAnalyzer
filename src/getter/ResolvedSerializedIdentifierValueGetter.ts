@@ -1,6 +1,6 @@
 import {IResolvedSerializedIdentifierValueGetter} from "./interface/IResolvedSerializedIdentifierValueGetter";
 import {Expression, Node, Statement} from "typescript";
-import {ArbitraryValue, IdentifierMapKind, ResolvedSerializedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
+import {ArbitraryValue, IdentifierMapKind, IResolvedSerializedIIdentifierValueMap, IResolvedSerializedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
 import {cache, filePathUtil, identifierUtil, languageService, marshaller, pathValidatorUtil, resolvedIdentifierValueGetter, typeDetector} from "../services";
 
 export class ResolvedSerializedIdentifierValueGetter implements IResolvedSerializedIdentifierValueGetter {
@@ -9,9 +9,9 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 	 * Gets a map of all identifiers for the given file and their resolved serialized values.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {ResolvedSerializedIIdentifierValueMap}
+	 * @returns {IResolvedSerializedIIdentifierValueMap}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
+	public getForFile (fileName: string, deep: boolean = false): IResolvedSerializedIIdentifierValueMap {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP, map: {}};
 
 		const cached = cache.getCachedResolvedSerializedIdentifierValueMap(fileName);
@@ -31,10 +31,10 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 	 * Gets a map of all identifiers for the given statements and their resolved serialized values.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {ResolvedSerializedIIdentifierValueMap}
+	 * @returns {IResolvedSerializedIIdentifierValueMap}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): ResolvedSerializedIIdentifierValueMap {
-		const map: ResolvedSerializedIIdentifierValueMapIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IResolvedSerializedIIdentifierValueMap {
+		const map: IResolvedSerializedIIdentifierValueMapIndexer = {};
 		const unserialized = resolvedIdentifierValueGetter.getForStatements(statements, deep);
 
 		Object.keys(unserialized.map).forEach(key => {
@@ -76,7 +76,7 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 			}
 		});
 
-		const resolvedMap: ResolvedSerializedIIdentifierValueMap = {
+		const resolvedMap: IResolvedSerializedIIdentifierValueMap = {
 			___kind: IdentifierMapKind.RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP,
 			map
 		};
@@ -85,11 +85,11 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 	}
 
 	/**
-	 * Gets a ResolvedSerializedIIdentifierValueMap for the given Statement.
+	 * Gets a IResolvedSerializedIIdentifierValueMap for the given Statement.
 	 * @param {Statement|Expression|Node} statement
-	 * @returns {ResolvedSerializedIIdentifierValueMap}
+	 * @returns {IResolvedSerializedIIdentifierValueMap}
 	 */
-	public get (statement: Statement|Expression|Node): ResolvedSerializedIIdentifierValueMap {
+	public get (statement: Statement|Expression|Node): IResolvedSerializedIIdentifierValueMap {
 		return this.getForStatements([statement]);
 	}
 

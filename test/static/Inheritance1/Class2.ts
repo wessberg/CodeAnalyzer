@@ -1,3 +1,4 @@
+/*tslint:disable*/
 import {Class1} from "./Class1";
 
 export class Class2 extends Class1 {
@@ -5,3 +6,4 @@ export class Class2 extends Class1 {
 		return `<div></div>`;
 	}
 }
+/*tslint:enable*/

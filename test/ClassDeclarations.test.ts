@@ -3,6 +3,8 @@ import {parse, service} from "./util/Setup";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {IConstructorDeclaration} from "../src/identifier/interface/IIdentifier";
 
+/*tslint:disable*/
+
 test(`getClassDeclarations() -> Detects all class declarations properly. #1`, t => {
 
 	const code = `
@@ -449,3 +451,5 @@ test(`getClassDeclarations() -> Extends -> Inherits properties and methods prope
 	const prop = classDeclaration.props["foo"];
 	t.true(prop != null);
 });
+
+/*tslint:enable*/

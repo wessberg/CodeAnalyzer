@@ -5,7 +5,7 @@ import "querystring";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {fileLoader, identifierUtil, stringUtil} from "../services";
-import {IdentifierMapKind, IModuleDeclaration, NAMESPACE_NAME, NamespacedModuleMap} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IModuleDeclaration, INamespacedModuleMap, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
@@ -29,8 +29,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
 	}
 
-	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): NamespacedModuleMap {
-		const indexer: NamespacedModuleMap = identifierUtil.setKind({
+	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): INamespacedModuleMap {
+		const indexer: INamespacedModuleMap = identifierUtil.setKind({
 			___kind: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
 			startsAt: Infinity,
 			endsAt: Infinity

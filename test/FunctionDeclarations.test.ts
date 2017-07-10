@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
 test(`getFunctionDeclarations() -> Detects all function declarations properly. #1`, t => {
 
 	const statements = parse(`
@@ -135,3 +136,5 @@ test(`getFunctionDeclarations() -> Detects all enum ordinal values correctly. #2
 	t.true(assignments["Foo"].members["C"] === 0);
 	t.true(assignments["Foo"] != null);
 });
+
+/*tslint:enable*/

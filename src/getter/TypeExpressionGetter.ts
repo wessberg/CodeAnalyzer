@@ -5,6 +5,9 @@ import {BindingIdentifier} from "../model/BindingIdentifier";
 import {nameGetter, sourceFilePropertiesGetter, tokenSerializer, valueExpressionGetter} from "../services";
 import {TypeExpression} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that helps with getting value expressions for type expressions.
+ */
 export class TypeExpressionGetter implements ITypeExpressionGetter {
 
 	/**

@@ -2,17 +2,17 @@ import {ArrayBindingPattern, Identifier, ObjectBindingPattern, VariableDeclarati
 import {isArrayBindingPattern, isIdentifierObject, isObjectBindingPattern, isOmittedExpression, isVariableDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {cache, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
-import {IBaseVariableDeclaration, IdentifierMapKind, IVariableDeclaration, VariableIndexer} from "../identifier/interface/IIdentifier";
+import {IBaseVariableDeclaration, IdentifierMapKind, IVariableDeclaration, IVariableIndexer} from "../identifier/interface/IIdentifier";
 
 export class VariableFormatter implements IVariableFormatter {
 
 	/**
-	 * Formats the given VariableStatement and returns a VariableIndexer.
+	 * Formats the given VariableStatement and returns a IVariableIndexer.
 	 * @param {VariableStatement|VariableDeclarationList|VariableDeclaration} statement
-	 * @returns {VariableIndexer}
+	 * @returns {IVariableIndexer}
 	 */
-	public format (statement: VariableStatement|VariableDeclarationList|VariableDeclaration): VariableIndexer {
-		const assignmentMap: VariableIndexer = {};
+	public format (statement: VariableStatement|VariableDeclarationList|VariableDeclaration): IVariableIndexer {
+		const assignmentMap: IVariableIndexer = {};
 
 		if (isVariableDeclaration(statement)) {
 			const assignments = this.formatVariableDeclaration(statement);

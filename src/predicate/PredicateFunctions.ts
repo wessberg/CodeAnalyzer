@@ -1,8 +1,10 @@
 import {ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ContinueStatement, Declaration, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, GetAccessorDeclaration, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportSpecifier, IndexedAccessTypeNode, IndexSignatureDeclaration, IntersectionTypeNode, KeywordTypeNode, LabeledStatement, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NewExpression, Node, NoSubstitutionTemplateLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, RegularExpressionLiteral, ReturnStatement, SetAccessorDeclaration, ShorthandPropertyAssignment, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeLiteralNode, TypeNode, TypeOfExpression, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement} from "typescript";
-import {ArbitraryValue, IArgument, IArrowFunction, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IExportDeclaration, IFunctionDeclaration, IGetAccessorDeclaration, IIdentifier, IImportDeclaration, IImportExportBinding, ILiteralValue, IMethodDeclaration, IMutationDeclaration, INewExpression, IParameter, ISetAccessorDeclaration, ITypeBinding, IVariableDeclaration, LiteralExpression, NamespacedModuleMap} from "../identifier/interface/IIdentifier";
+import {ArbitraryValue, IArgument, IArrowFunction, ICallExpression, IClassDeclaration, IConstructorDeclaration, IDecorator, IdentifierMapKind, IEnumDeclaration, IExportableIIdentifier, IExportDeclaration, IFunctionDeclaration, IGetAccessorDeclaration, IIdentifier, IImportDeclaration, IImportExportBinding, ILiteralValue, IMethodDeclaration, IMutationDeclaration, INamespacedModuleMap, INewExpression, IParameter, ISetAccessorDeclaration, ITypeBinding, IVariableDeclaration, LiteralExpression} from "../identifier/interface/IIdentifier";
 
 // Typescript doesn't have a FirstNode interface apparently. So this is an extension.
+/*tslint:disable*/
 export interface FirstNode extends Expression, Declaration {
+	/*tslint:enable*/
 	kind: SyntaxKind.FirstNode;
 	left: Expression;
 	right: Expression;
@@ -1126,11 +1128,11 @@ export function isIExportableIIdentifier (statement: IIdentifier|ArbitraryValue)
 }
 
 /**
- * A predicate function that returns true if the given Statement is a NamespacedModuleMap.
+ * A predicate function that returns true if the given Statement is a INamespacedModuleMap.
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isNamespacedModuleMap (statement: IIdentifier|ArbitraryValue): statement is NamespacedModuleMap {
+export function isNamespacedModuleMap (statement: IIdentifier|ArbitraryValue): statement is INamespacedModuleMap {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
 }
 
@@ -1252,11 +1254,11 @@ export function isILiteralValue (statement: IIdentifier|ArbitraryValue): stateme
 }
 
 /**
- * A predicate function that returns true if the given Statement is a NamespacedModuleMap.
+ * A predicate function that returns true if the given Statement is a INamespacedModuleMap.
  * @param {IIdentifier|ArbitraryValue} statement
  * @returns {boolean}
  */
-export function isNamespacedModuleIndexer (statement: IIdentifier|ArbitraryValue): statement is NamespacedModuleMap {
+export function isNamespacedModuleIndexer (statement: IIdentifier|ArbitraryValue): statement is INamespacedModuleMap {
 	return statement != null && (<IIdentifier>statement).___kind === IdentifierMapKind.NAMESPACED_MODULE_INDEXER;
 }
 

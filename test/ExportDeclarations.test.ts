@@ -3,6 +3,7 @@ import {fileName, parse, service} from "./util/Setup";
 import {isILiteralValue} from "../src/predicate/PredicateFunctions";
 import {ImportExportKind, NAMESPACE_NAME} from "../src/identifier/interface/IIdentifier";
 
+/*tslint:disable*/
 test(`getExportDeclarations() -> Detects export declarations correctly. #1`, t => {
 
 	const code = `
@@ -97,3 +98,5 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #8`, t =
 	const exportDeclarations = service.getExportDeclarations(statements);
 	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["default"].kind === ImportExportKind.DEFAULT);
 });
+
+/*tslint:enable*/

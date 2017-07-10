@@ -1,3 +1,4 @@
+/*tslint:disable*/
 const BLACK = `0, 0, 0`;
 const WHITE = `255, 255, 255`;
 const PRIMARY = `76, 175, 80`;
@@ -131,3 +132,4 @@ export const Color: any = {
 	menuLight: WHITE_87_COLOR,
 	buttonLight: WHITE_87_COLOR
 };
+/*tslint:enable*/

@@ -3,7 +3,7 @@ import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssign
 import {IExportFormatter} from "./interface/IExportFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 import {callExpressionFormatter, classFormatter, exportDeclarationGetter, functionFormatter, identifierUtil, mapper, mutationFormatter, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer, valueableFormatter, variableFormatter} from "../services";
-import {IdentifierMapKind, IExportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IExportDeclaration, IImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
@@ -329,8 +329,8 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
-	private formatExportClause (clause: NamedExports|undefined, modulePath: () => string, statement: ExportDeclaration): ImportExportIndexer {
-		const indexer: ImportExportIndexer = {};
+	private formatExportClause (clause: NamedExports|undefined, modulePath: () => string, statement: ExportDeclaration): IImportExportIndexer {
+		const indexer: IImportExportIndexer = {};
 
 		if (clause == null) {
 			const payload = () => {

@@ -7,7 +7,7 @@ export class AllIdentifiersGetter implements IAllIdentifiersGetter {
 
 	/**
 	 * Gets all identifiers (such as variables, functions, classes, enums, imports, exports, etc) (if any) that occurs in the given file
-	 * and returns them in a VariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IVariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
 	 * @returns {IIdentifierMap}

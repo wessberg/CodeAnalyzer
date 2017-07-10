@@ -1,3 +1,4 @@
+/*tslint:disable*/
 declare type IPropObserverConsumer = any;
 declare type IPropWaitersHost = any;
 
@@ -30,3 +31,4 @@ export function prop<T extends PropConsumer> (model: T, prop: string): void {
 		configurable: false
 	});
 }
+/*tslint:enable*/

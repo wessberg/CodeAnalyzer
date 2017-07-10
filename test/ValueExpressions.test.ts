@@ -2,6 +2,7 @@ import {test} from "ava";
 import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
 test(`ValueExpressions -> Detects all valueExpressions correctly. #1`, t => {
 
 	const statements = parse(`
@@ -580,3 +581,5 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #52`, t => {
 	const expression = classes["Foo"].value.expression;
 	t.deepEqual(expression, ["class", " ", "Foo", "{", "static", " ", "set", " ", "bar", "(", "arg", ")", "{", new BindingIdentifier("this", <any>""), '["bar"]', " ", "=", " ", new BindingIdentifier("arg", <any>""), ";", "}", "}"]);
 });
+
+/*tslint:enable*/

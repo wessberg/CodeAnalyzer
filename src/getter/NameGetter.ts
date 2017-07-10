@@ -5,6 +5,9 @@ import {INameGetter} from "./interface/INameGetter";
 import {Config} from "../static/Config";
 import {marshaller, typeDetector} from "../services";
 
+/**
+ * A class that helps with extracting a name for an identifier.
+ */
 export class NameGetter implements INameGetter {
 
 	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string {

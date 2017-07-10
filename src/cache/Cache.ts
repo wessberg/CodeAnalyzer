@@ -1,6 +1,6 @@
 import {ICache} from "./interface/ICache";
 import {languageService} from "../services";
-import {ClassIndexer, EnumIndexer, FunctionIndexer, IArrowFunction, ICachedContent, IClassDeclaration, IEnumDeclaration, IExportDeclaration, IFunctionDeclaration, IIdentifier, IIdentifierMap, IImportDeclaration, IPropDeclaration, IVariableDeclaration, ResolvedIIdentifierValueMap, ResolvedSerializedIIdentifierValueMap, VariableIndexer} from "../identifier/interface/IIdentifier";
+import {IArrowFunction, ICachedContent, IClassDeclaration, IClassIndexer, IEnumDeclaration, IEnumIndexer, IExportDeclaration, IFunctionDeclaration, IFunctionIndexer, IIdentifier, IIdentifierMap, IImportDeclaration, IPropDeclaration, IResolvedIIdentifierValueMap, IResolvedSerializedIIdentifierValueMap, IVariableDeclaration, IVariableIndexer} from "../identifier/interface/IIdentifier";
 
 export class Cache implements ICache {
 	private cache: Map<string, ICachedContent<{}>> = new Map();
@@ -98,8 +98,8 @@ export class Cache implements ICache {
 		return this.getFromCache<IClassDeclaration>(this.getCachedClassName(fileName, className));
 	}
 
-	public getCachedFunctionIndexer (fileName: string): ICachedContent<FunctionIndexer>|null {
-		return this.getFromCache<FunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
+	public getCachedFunctionIndexer (fileName: string): ICachedContent<IFunctionIndexer>|null {
+		return this.getFromCache<IFunctionIndexer>(this.getCachedFunctionIndexerName(fileName));
 	}
 
 	public getCachedImportDeclarations (fileName: string): ICachedContent<IImportDeclaration[]>|null {
@@ -114,28 +114,28 @@ export class Cache implements ICache {
 		return this.getFromCache<IArrowFunction[]>(this.getCachedArrowFunctionsName(fileName));
 	}
 
-	public getCachedClassIndexer (fileName: string): ICachedContent<ClassIndexer>|null {
-		return this.getFromCache<ClassIndexer>(this.getCachedClassIndexerName(fileName));
+	public getCachedClassIndexer (fileName: string): ICachedContent<IClassIndexer>|null {
+		return this.getFromCache<IClassIndexer>(this.getCachedClassIndexerName(fileName));
 	}
 
-	public getCachedEnumIndexer (fileName: string): ICachedContent<EnumIndexer>|null {
-		return this.getFromCache<EnumIndexer>(this.getCachedEnumIndexerName(fileName));
+	public getCachedEnumIndexer (fileName: string): ICachedContent<IEnumIndexer>|null {
+		return this.getFromCache<IEnumIndexer>(this.getCachedEnumIndexerName(fileName));
 	}
 
-	public getCachedVariableIndexer (fileName: string): ICachedContent<VariableIndexer>|null {
-		return this.getFromCache<VariableIndexer>(this.getCachedVariableIndexerName(fileName));
+	public getCachedVariableIndexer (fileName: string): ICachedContent<IVariableIndexer>|null {
+		return this.getFromCache<IVariableIndexer>(this.getCachedVariableIndexerName(fileName));
 	}
 
 	public getCachedIdentifierMap (fileName: string): ICachedContent<IIdentifierMap>|null {
 		return this.getFromCache<IIdentifierMap>(this.getCachedIdentifierMapName(fileName));
 	}
 
-	public getCachedResolvedIdentifierValueMap (fileName: string): ICachedContent<ResolvedIIdentifierValueMap>|null {
-		return this.getFromCache<ResolvedIIdentifierValueMap>(this.getCachedResolvedIdentifierValueMapName(fileName));
+	public getCachedResolvedIdentifierValueMap (fileName: string): ICachedContent<IResolvedIIdentifierValueMap>|null {
+		return this.getFromCache<IResolvedIIdentifierValueMap>(this.getCachedResolvedIdentifierValueMapName(fileName));
 	}
 
-	public getCachedResolvedSerializedIdentifierValueMap (fileName: string): ICachedContent<ResolvedSerializedIIdentifierValueMap>|null {
-		return this.getFromCache<ResolvedSerializedIIdentifierValueMap>(this.getCachedResolvedSerializedIdentifierValueMapName(fileName));
+	public getCachedResolvedSerializedIdentifierValueMap (fileName: string): ICachedContent<IResolvedSerializedIIdentifierValueMap>|null {
+		return this.getFromCache<IResolvedSerializedIIdentifierValueMap>(this.getCachedResolvedSerializedIdentifierValueMapName(fileName));
 	}
 
 	public setCachedVariable (fileName: string, content: IVariableDeclaration): void {
@@ -168,7 +168,7 @@ export class Cache implements ICache {
 		this.cache.set(this.getCachedTracedIdentifierName(fileName, identifier, scope), {version, content});
 	}
 
-	public setCachedClassIndexer (fileName: string, content: ClassIndexer): void {
+	public setCachedClassIndexer (fileName: string, content: IClassIndexer): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedClassIndexerName(fileName), {version, content});
 	}
@@ -178,17 +178,17 @@ export class Cache implements ICache {
 		this.cache.set(this.getCachedIdentifierMapName(fileName), {version, content});
 	}
 
-	public setCachedResolvedIdentifierValueMap (fileName: string, content: ResolvedIIdentifierValueMap): void {
+	public setCachedResolvedIdentifierValueMap (fileName: string, content: IResolvedIIdentifierValueMap): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedResolvedIdentifierValueMapName(fileName), {version, content});
 	}
 
-	public setCachedResolvedSerializedIdentifierValueMap (fileName: string, content: ResolvedSerializedIIdentifierValueMap): void {
+	public setCachedResolvedSerializedIdentifierValueMap (fileName: string, content: IResolvedSerializedIIdentifierValueMap): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedResolvedSerializedIdentifierValueMapName(fileName), {version, content});
 	}
 
-	public setCachedFunctionIndexer (fileName: string, content: FunctionIndexer): void {
+	public setCachedFunctionIndexer (fileName: string, content: IFunctionIndexer): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedFunctionIndexerName(fileName), {version, content});
 	}
@@ -208,12 +208,12 @@ export class Cache implements ICache {
 		this.cache.set(this.getCachedArrowFunctionsName(fileName), {version, content});
 	}
 
-	public setCachedEnumIndexer (fileName: string, content: EnumIndexer): void {
+	public setCachedEnumIndexer (fileName: string, content: IEnumIndexer): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedEnumIndexerName(fileName), {version, content});
 	}
 
-	public setCachedVariableIndexer (fileName: string, content: VariableIndexer): void {
+	public setCachedVariableIndexer (fileName: string, content: IVariableIndexer): void {
 		const version = languageService.getFileVersion(fileName);
 		this.cache.set(this.getCachedVariableIndexerName(fileName), {version, content});
 	}

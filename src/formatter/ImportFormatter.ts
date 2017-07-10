@@ -4,7 +4,7 @@ import {isArrayBindingPattern, isCallExpression, isExternalModuleReference, isId
 import {IImportFormatter} from "./interface/IImportFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 import {exportDeclarationGetter, identifierUtil, mapper, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer} from "../services";
-import {IdentifierMapKind, IImportDeclaration, ImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IImportDeclaration, IImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
 
@@ -152,7 +152,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		if (requireCall == null) return null;
 		const {startsAt, endsAt, relativePath, fullPath, filePath, payload} = requireCall;
 
-		let bindings: ImportExportIndexer = {};
+		let bindings: IImportExportIndexer = {};
 		const name: (string|undefined)[] = [];
 		let kind: ImportExportKind;
 
@@ -218,10 +218,10 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 	 * formats the given ImportClause and returns an ImportIndexer.
 	 * @param {ImportClause} clause
 	 * @param {string} modulePath
-	 * @returns {ImportExportIndexer}
+	 * @returns {IImportExportIndexer}
 	 */
-	private formatImportClause (clause: ImportClause, modulePath: () => string): ImportExportIndexer {
-		const indexer: ImportExportIndexer = {};
+	private formatImportClause (clause: ImportClause, modulePath: () => string): IImportExportIndexer {
+		const indexer: IImportExportIndexer = {};
 
 		const namedBindings = clause.namedBindings;
 		if (namedBindings != null && isNamespaceImport(namedBindings)) {

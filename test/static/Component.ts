@@ -1,3 +1,4 @@
+/*tslint:disable*/
 export abstract class Component extends HTMLElement {
 	private static readonly nonPassiveEvents = ["click", "keydown", "keypress", "keyup", "invalid"];
 	private static readonly nonRAFEvents = ["click", "keydown", "keypress", "keyup", "invalid"];
@@ -183,3 +184,4 @@ export abstract class Component extends HTMLElement {
 		return !Component.nonPassiveEvents.includes(eventName);
 	}
 }
+/*tslint:enable*/

@@ -3,6 +3,9 @@ import {isSourceFile} from "../predicate/PredicateFunctions";
 import {ISourceFilePropertiesGetter} from "./interface/ISourceFilePropertiesGetter";
 import {ISourceFileProperties} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that helps with getting the root source file properties from any expression, statement or node.
+ */
 export class SourceFilePropertiesGetter implements ISourceFilePropertiesGetter {
 	/**
 	 * Walks up the inheritance chain from the given statement until it finds a SourceFile and returns an ISourceFileProperties object.

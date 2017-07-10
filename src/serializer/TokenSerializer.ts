@@ -5,6 +5,9 @@ import {isTypeBinding} from "../predicate/PredicateFunctions";
 import {ITokenSerializer} from "./interface/ITokenSerializer";
 import {ArbitraryValue, TypeExpression} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can serialize tokens and type expressions.
+ */
 export class TokenSerializer implements ITokenSerializer {
 
 	/**

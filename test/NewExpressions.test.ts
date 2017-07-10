@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
 test(`getNewExpressions() -> Detects new-statements correctly. #1`, t => {
 
 	const code = `
@@ -22,3 +23,4 @@ test(`getNewExpressions() -> Detects new-statements correctly. #2`, t => {
 	const newExpressions = service.getNewExpressions(statements);
 	t.true(newExpressions.find(exp => exp.identifier === "HelloWorld") != null);
 });
+/*tslint:enable*/

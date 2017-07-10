@@ -3,6 +3,7 @@ import {join} from "path";
 import {fileName, parse, service} from "./util/Setup";
 import {ImportExportKind} from "../src/identifier/interface/IIdentifier";
 
+/*tslint:disable*/
 test(`getImportDeclarations() -> Detects import declarations correctly. #1`, t => {
 
 	const code = `
@@ -145,3 +146,5 @@ test(`getImportDeclarations() -> Detects import declarations correctly. #12`, t 
 	t.true(importDeclarations[0].bindings["Foo"] !== null && importDeclarations[0].bindings["Foo"].kind === ImportExportKind.NAMESPACE);
 	t.true(importDeclarations.length === 1);
 });
+
+/*tslint:enable*/

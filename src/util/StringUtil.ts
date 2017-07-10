@@ -2,6 +2,9 @@ import {IStringUtil} from "./interface/IStringUtil";
 import {marshaller, typeDetector} from "../services";
 import {ArbitraryValue} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class with a few helper functions for working with strings.
+ */
 export class StringUtil implements IStringUtil {
 
 	/**

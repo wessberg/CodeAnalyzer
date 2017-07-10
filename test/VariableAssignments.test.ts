@@ -3,6 +3,7 @@ import {BindingIdentifier} from "../src/model/BindingIdentifier";
 import {FULL_CODE_EXAMPLE_1, FULL_CODE_EXAMPLE_2, FULL_CODE_EXAMPLE_3, FULL_CODE_EXAMPLE_4, FULL_CODE_EXAMPLE_6} from "./static/FullCodeExamples";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
 test(`getVariableAssignments() -> Detects all variable assignments properly. #1`, t => {
 	const statements = parse(`
 		const foo: number = 0;
@@ -402,3 +403,5 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });
+
+/*tslint:enable*/

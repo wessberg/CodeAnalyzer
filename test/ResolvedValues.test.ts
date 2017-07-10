@@ -2,6 +2,7 @@ import {test} from "ava";
 import {parse, service} from "./util/Setup";
 import {ParameterKind} from "../src/identifier/interface/IIdentifier";
 
+/*tslint:disable*/
 test(`ValueResolver -> Computes all resolved values correctly. #1`, t => {
 
 	const statements = parse(`
@@ -663,3 +664,5 @@ test(`ValueResolver -> Computes all resolved values correctly. #42`, t => {
 	t.true(true);
 });
 */
+
+/*tslint:enable*/

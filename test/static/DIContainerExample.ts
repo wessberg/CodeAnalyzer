@@ -1,3 +1,4 @@
+/*tslint:disable*/
 import {GlobalObject} from "@wessberg/globalobject";
 
 /**
@@ -67,3 +68,5 @@ export class DIServiceContainer {
 
 // Only provide access to a concrete instance of the DIServiceContainer to the outside.
 export const DIContainer = new DIServiceContainer({});
+
+/*tslint:enable*/

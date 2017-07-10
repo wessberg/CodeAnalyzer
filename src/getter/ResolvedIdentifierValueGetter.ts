@@ -1,6 +1,6 @@
 import {IResolvedIdentifierValueGetter} from "./interface/IResolvedIdentifierValueGetter";
 import {Expression, Node, Statement} from "typescript";
-import {IdentifierMapKind, ResolvedIIdentifierValueMap, ResolvedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IResolvedIIdentifierValueMap, IResolvedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
 import {cache, classDeclarationGetter, enumDeclarationGetter, filePathUtil, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, pathValidatorUtil, variableDeclarationGetter} from "../services";
 import {isIEnumDeclaration, isIExportableIIdentifier, isILiteralValue} from "../predicate/PredicateFunctions";
 
@@ -10,9 +10,9 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 	 * Gets a map of all identifiers for the given file and their resolved values.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {ResolvedIIdentifierValueMap}
+	 * @returns {IResolvedIIdentifierValueMap}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): ResolvedIIdentifierValueMap {
+	public getForFile (fileName: string, deep: boolean = false): IResolvedIIdentifierValueMap {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP, map: {}};
 
 		const cached = cache.getCachedResolvedIdentifierValueMap(fileName);
@@ -34,10 +34,10 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 	 * Gets a map of all identifiers for the given statements and their resolved values.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {ResolvedIIdentifierValueMap}
+	 * @returns {IResolvedIIdentifierValueMap}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): ResolvedIIdentifierValueMap {
-		const map: ResolvedIIdentifierValueMapIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IResolvedIIdentifierValueMap {
+		const map: IResolvedIIdentifierValueMapIndexer = {};
 
 		const enums = enumDeclarationGetter.getForStatements(statements, deep);
 		const variables = variableDeclarationGetter.getForStatements(statements, deep);
@@ -64,7 +64,7 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 				}
 			});
 		});
-		const resolvedMap: ResolvedIIdentifierValueMap = {
+		const resolvedMap: IResolvedIIdentifierValueMap = {
 			___kind: IdentifierMapKind.RESOLVED_IDENTIFIER_VALUE_MAP,
 			map
 		};
@@ -73,11 +73,11 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 	}
 
 	/**
-	 * Gets a ResolvedIIdentifierValueMap for the given Statement.
+	 * Gets a IResolvedIIdentifierValueMap for the given Statement.
 	 * @param {Statement|Expression|Node} statement
-	 * @returns {ResolvedIIdentifierValueMap}
+	 * @returns {IResolvedIIdentifierValueMap}
 	 */
-	public get (statement: Statement|Expression|Node): ResolvedIIdentifierValueMap {
+	public get (statement: Statement|Expression|Node): IResolvedIIdentifierValueMap {
 		return this.getForStatements([statement]);
 	}
 

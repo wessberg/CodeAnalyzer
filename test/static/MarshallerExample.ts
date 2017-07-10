@@ -1,3 +1,4 @@
+/*tslint:disable*/
 import {IArbitraryObject, ITypeDetector, TypeOf} from "@wessberg/typedetector";
 import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
 
@@ -2000,3 +2001,4 @@ export class Marshaller {
 	}
 
 }
+/*tslint:enable*/

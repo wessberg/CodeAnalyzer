@@ -1,6 +1,7 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
 test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
 
 	const statements = parse(`
@@ -23,3 +24,4 @@ test(`getAllIdentifiers() -> Detects all identifiers correctly. #1`, t => {
 	t.true(assignments.imports.find(declaration => declaration.bindings["bar"] != null) != null);
 	t.true(assignments.callExpressions.find(exp => exp.identifier != null && exp.identifier.toString() === "doStuff") != null);
 });
+/*tslint:enable*/

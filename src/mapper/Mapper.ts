@@ -2,6 +2,9 @@ import {IIdentifier} from "src";
 import {Expression, Node, Statement} from "typescript";
 import {IMapper} from "./interface/IMapper";
 
+/**
+ * A class that maps IIdentifiers to their Typescript AST counterpart.
+ */
 export class Mapper implements IMapper {
 	private static readonly map: Map<IIdentifier, Statement|Expression|Node> = new Map();
 

@@ -1,6 +1,6 @@
 import {IFunctionDeclarationGetter} from "./interface/IFunctionDeclarationGetter";
 import {Expression, FunctionDeclaration, Node, Statement} from "typescript";
-import {FunctionIndexer, IdentifierMapKind, IFunctionDeclaration} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IFunctionDeclaration, IFunctionIndexer} from "../identifier/interface/IIdentifier";
 import {cache, childStatementGetter, filePathUtil, functionFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isFunctionDeclaration} from "../predicate/PredicateFunctions";
 
@@ -8,12 +8,12 @@ export class FunctionDeclarationGetter implements IFunctionDeclarationGetter {
 
 	/**
 	 * Gets all function declarations (if any) that occurs in the given file
-	 * and returns them in a FunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IFunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {FunctionIndexer}
+	 * @returns {IFunctionIndexer}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): FunctionIndexer {
+	public getForFile (fileName: string, deep: boolean = false): IFunctionIndexer {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedFunctionIndexer(fileName);
@@ -29,13 +29,13 @@ export class FunctionDeclarationGetter implements IFunctionDeclarationGetter {
 
 	/**
 	 * Gets all function declarations (if any) that occurs in the given array of statements
-	 * and returns them in a FunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IFunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {FunctionIndexer}
+	 * @returns {IFunctionIndexer}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): FunctionIndexer {
-		const functionIndexer: FunctionIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IFunctionIndexer {
+		const functionIndexer: IFunctionIndexer = {};
 
 		for (const statement of statements) {
 			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.

@@ -105,6 +105,12 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.40**:
+
+- Fixed some tslint errors.
+- Made Typescript a dependency rather than a devDependency since it actually relies on it.
+- Updated interface signatures to be consistently named.
+
 **v1.0.39**:
 
 - Fixed a bug where TemplateHeads, TemplateMiddles or TemplateTails would be unmarshalled incorrectly.

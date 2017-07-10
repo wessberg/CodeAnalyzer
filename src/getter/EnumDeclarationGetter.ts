@@ -1,6 +1,6 @@
 import {EnumDeclaration, Expression, Node, Statement} from "typescript";
 import {IEnumDeclarationGetter} from "./interface/IEnumDeclarationGetter";
-import {EnumIndexer, IdentifierMapKind, IEnumDeclaration} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IEnumDeclaration, IEnumIndexer} from "../identifier/interface/IIdentifier";
 import {cache, childStatementGetter, enumFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isEnumDeclaration} from "../predicate/PredicateFunctions";
 
@@ -8,12 +8,12 @@ export class EnumDeclarationGetter implements IEnumDeclarationGetter {
 
 	/**
 	 * Gets all enum declarations (if any) that occurs in the given file
-	 * and returns them in a EnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IEnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {string} fileName
 	 * @param {boolean} [deep=false]
-	 * @returns {EnumIndexer}
+	 * @returns {IEnumIndexer}
 	 */
-	public getForFile (fileName: string, deep: boolean = false): EnumIndexer {
+	public getForFile (fileName: string, deep: boolean = false): IEnumIndexer {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return {};
 
 		const cached = cache.getCachedEnumIndexer(fileName);
@@ -29,13 +29,13 @@ export class EnumDeclarationGetter implements IEnumDeclarationGetter {
 
 	/**
 	 * Gets all enum declarations (if any) that occurs in the given array of statements
-	 * and returns them in a EnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
+	 * and returns them in a IEnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
 	 * @param {(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
-	 * @returns {EnumIndexer}
+	 * @returns {IEnumIndexer}
 	 */
-	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): EnumIndexer {
-		const enumIndexer: EnumIndexer = {};
+	public getForStatements (statements: (Statement|Expression|Node)[], deep: boolean = false): IEnumIndexer {
+		const enumIndexer: IEnumIndexer = {};
 
 		for (const statement of statements) {
 			// Skip the kind (and don't traverse its parents) if the statement kind is blacklisted.

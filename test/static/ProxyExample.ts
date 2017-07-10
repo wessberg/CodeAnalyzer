@@ -1,3 +1,4 @@
+/*tslint:disable*/
 import {ITypeDetector} from "@wessberg/typedetector";
 
 interface GenericArrayProxyObserver<T> {
@@ -67,3 +68,4 @@ export class ArrayProxyObserverHandler extends SuperClass {
 	}
 
 }
+/*tslint:enable*/

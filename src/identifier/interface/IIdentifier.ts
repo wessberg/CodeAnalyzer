@@ -17,11 +17,16 @@ export enum ModuleDependencyKind {
 }
 
 export enum IdentifierMapKind {
-	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005, PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011, CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017, NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, IMPORTS = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022, REQUIRE_CALL = 1023, LITERAL = 1024, RESOLVED_IDENTIFIER_VALUE_MAP = 1025, RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP = 1026, ARROW_FUNCTION = 1027, ARROW_FUNCTIONS = 1028, GET_ACCESSOR = 1029, SET_ACCESSOR = 1030, EXPORTS = 1031, CALL_EXPRESSIONS = 1032, MUTATIONS = 1033
+	VARIABLE = 1000, MUTATION = 1001, IMPORT = 1002, EXPORT = 1003, IMPORT_EXPORT_BINDING = 1004, PROP = 1005,
+	PARAMETER = 1006, ARGUMENT = 1007, METHOD = 1008, CONSTRUCTOR = 1009, FUNCTION = 1010, DECORATOR = 1011,
+	CLASS = 1012, ENUM = 1013, CALL_EXPRESSION = 1014, NEW_EXPRESSION = 1015, CLASS_INDEXER = 1016, VARIABLE_INDEXER = 1017,
+	NAMESPACED_MODULE_INDEXER = 1018, ENUM_INDEXER = 1019, IMPORTS = 1020, FUNCTION_INDEXER = 1021, IDENTIFIER_MAP = 1022,
+	REQUIRE_CALL = 1023, LITERAL = 1024, RESOLVED_IDENTIFIER_VALUE_MAP = 1025, RESOLVED_SERIALIZED_IDENTIFIER_VALUE_MAP = 1026,
+	ARROW_FUNCTION = 1027, ARROW_FUNCTIONS = 1028, GET_ACCESSOR = 1029, SET_ACCESSOR = 1030, EXPORTS = 1031, CALL_EXPRESSIONS = 1032, MUTATIONS = 1033
 }
 
 export interface IPayloadable {
-	payload: () => IIdentifier;
+	payload (): IIdentifier;
 }
 
 export interface IImportExportBinding extends IKindable, IPositionable, IPayloadable {
@@ -30,8 +35,8 @@ export interface IImportExportBinding extends IKindable, IPositionable, IPayload
 }
 
 export interface IModulePath {
-	relativePath: () => string;
-	fullPath: () => string;
+	relativePath (): string;
+	fullPath (): string;
 }
 
 export declare type ModuleSource = IBindingIdentifier|IModulePath;
@@ -54,7 +59,7 @@ export interface IImportDeclarationable {
 export interface IModuleDeclaration extends IPositionable, IFilePathable, IKindable {
 	moduleKind: ModuleDependencyKind;
 	source: ModuleSource;
-	bindings: ImportExportIndexer;
+	bindings: IImportExportIndexer;
 }
 
 export interface IModuleDeclarationable {
@@ -155,7 +160,7 @@ export interface IClassNameable {
 	className: string;
 }
 
-export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable, isStaticable {
+export interface IMethodDeclaration extends INameable, IFunctionLike, IFilePathable, IClassNameable, IKindable, IIsStaticable {
 	value: IValueable;
 }
 
@@ -199,8 +204,8 @@ export interface IHeritageable {
 }
 
 export interface IClassDeclaration extends IMemberDeclaration, INameable, IFilePathable, IKindable, IModifiersable {
-	methods: ResolvedMethodMap;
-	props: PropIndexer;
+	methods: IResolvedMethodMap;
+	props: IPropIndexer;
 	constructor: IConstructorDeclaration|null;
 	heritage: IHeritage|null;
 	value: IValueable;
@@ -253,14 +258,14 @@ export interface IDecoratorable {
 }
 
 export interface IDecoratorsable {
-	decorators: DecoratorIndexer;
+	decorators: IDecoratorIndexer;
 }
 
-export interface isStaticable {
+export interface IIsStaticable {
 	isStatic: boolean;
 }
 
-export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, isStaticable, IModifiersable {
+export declare interface IPropDeclaration extends IDecoratorsable, IPositionable, INameable, IFilePathable, IClassNameable, IKindable, IIsStaticable, IModifiersable {
 	type: ITypeable;
 	value: IValueable;
 }
@@ -291,18 +296,18 @@ export interface IUnresolvableValueable {
 
 export interface IValueable extends IUnresolvableValueable {
 	resolving: boolean;
-	resolve: (insideThisScope?: boolean) => ArbitraryValue;
 	resolved: ArbitraryValue;
 	resolvedPrecompute: ArbitraryValue;
-	hasDoneFirstResolve: () => boolean;
+	resolve (insideThisScope?: boolean): ArbitraryValue;
+	hasDoneFirstResolve (): boolean;
 }
 
 export interface INonNullableValueable {
 	resolving: boolean;
-	resolve: () => ArbitraryValue;
 	resolved: ArbitraryValue;
 	resolvedPrecompute: ArbitraryValue;
 	expression: InitializationValue;
+	resolve (): ArbitraryValue;
 }
 
 export interface IVersionable {
@@ -349,11 +354,11 @@ export interface IFileContentsable {
 export interface ISourceFileProperties extends IFilePathable, IFileContentsable {
 }
 
-export declare interface IIdentifierMap extends IKindable {
-	enums: EnumIndexer;
-	classes: ClassIndexer;
-	variables: VariableIndexer;
-	functions: FunctionIndexer;
+export interface IIdentifierMap extends IKindable {
+	enums: IEnumIndexer;
+	classes: IClassIndexer;
+	variables: IVariableIndexer;
+	functions: IFunctionIndexer;
 	callExpressions: ICallExpression[];
 	imports: IImportDeclaration[];
 	exports: IExportDeclaration[];
@@ -361,35 +366,65 @@ export declare interface IIdentifierMap extends IKindable {
 	arrowFunctions: IArrowFunction[];
 }
 
-export declare interface ResolvedIIdentifierValueMap extends IKindable {
-	map: ResolvedIIdentifierValueMapIndexer;
+export interface IResolvedIIdentifierValueMap extends IKindable {
+	map: IResolvedIIdentifierValueMapIndexer;
 }
 
-export declare interface ResolvedSerializedIIdentifierValueMap extends IKindable {
-	map: ResolvedSerializedIIdentifierValueMapIndexer;
+export interface IResolvedSerializedIIdentifierValueMap extends IKindable {
+	map: IResolvedSerializedIIdentifierValueMapIndexer;
 }
 
 export interface ILiteralValue extends IKindable, IPositionable {
-	value: () => ArbitraryValue[];
+	value (): ArbitraryValue[];
 }
 
-export declare interface NamespacedModuleMap extends IKindable, IPositionable {
+export interface INamespacedModuleMap extends IKindable, IPositionable {
 	[key: string]: IIdentifier|IdentifierMapKind;
-};
+}
+
+export interface IEnumIndexer {
+	[key: string]: IEnumDeclaration;
+}
+
+export interface IResolvedIIdentifierValueMapIndexer {
+	[key: string]: IResolvedIIdentifierValueMapIndexer|ArbitraryValue;
+}
+
+export interface IResolvedSerializedIIdentifierValueMapIndexer {
+	[key: string]: IResolvedSerializedIIdentifierValueMapIndexer|string;
+}
+
+export interface IFunctionIndexer {
+	[key: string]: IFunctionDeclaration;
+}
+
+export interface IResolvedMethodMap {
+	[key: string]: IMethodDeclaration;
+}
+
+export interface IImportExportIndexer {
+	[key: string]: IImportExportBinding;
+}
+
+export interface IClassIndexer {
+	[key: string]: IClassDeclaration;
+}
+
+export interface IVariableIndexer {
+	[key: string]: IVariableDeclaration;
+}
+
+export interface IDecoratorIndexer {
+	[key: string]: IDecorator;
+}
+
+export interface IPropIndexer {
+	[key: string]: IPropDeclaration;
+}
 
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|NamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|INamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type IExportableIIdentifier = IArrowFunction|ILiteralValue|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
-export declare type EnumIndexer = { [key: string]: IEnumDeclaration };
-export declare type ResolvedIIdentifierValueMapIndexer = { [key: string]: ResolvedIIdentifierValueMapIndexer|ArbitraryValue };
-export declare type ResolvedSerializedIIdentifierValueMapIndexer = { [key: string]: ResolvedSerializedIIdentifierValueMapIndexer|string };
-export declare type FunctionIndexer = { [key: string]: IFunctionDeclaration };
-export declare type ResolvedMethodMap = { [key: string]: IMethodDeclaration };
-export declare type ImportExportIndexer = { [key: string]: IImportExportBinding };
-export declare type ClassIndexer = { [key: string]: IClassDeclaration };
-export declare type VariableIndexer = { [key: string]: IVariableDeclaration };
-export declare type DecoratorIndexer = { [key: string]: IDecorator };
-export declare type PropIndexer = { [key: string]: IPropDeclaration };
 export declare type NonNullableArbitraryValue = string|boolean|symbol|number|Function|object|IBindingIdentifier|ITypeBinding|{};
 export declare type ArbitraryValue = NonNullableArbitraryValue|null|undefined;
 export declare type ArbitraryValueIndexable = ArbitraryValue|IArbitraryObject<ArbitraryValue>;

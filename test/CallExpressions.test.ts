@@ -1,6 +1,8 @@
 import {test} from "ava";
 import {parse, service} from "./util/Setup";
 
+/*tslint:disable*/
+
 test(`getCallExpressions() -> Detects call expressions correctly. #1`, t => {
 	const code = `
 		service.registerTransient[0].helloWorld<Foo, Bar>("Hello world!");
@@ -165,3 +167,5 @@ test(`getCallExpressions() -> Detects arguments correctly. #2`, t => {
 		.find(exp => exp.arguments.argumentsList.find(arg => arg.value.expression != null && arg.value.expression.includes("`Hello world!`")) != null);
 	t.true(expression != null);
 });
+
+/*tslint:enable*/
