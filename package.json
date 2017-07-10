@@ -32,10 +32,9 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jsdom": "^11.0.1",
-    "@types/node": "^8.0.7",
+    "@types/node": "^8.0.9",
     "@wessberg/typedetector": "^1.0.6",
-    "ava": "^0.20.0",
-    "typescript": "^2.4.1"
+    "ava": "^0.20.0"
   },
   "dependencies": {
     "@wessberg/compiler-common": "^1.0.0",
@@ -43,6 +42,7 @@
     "@wessberg/globalobject": "^1.0.5",
     "@wessberg/marshaller": "^2.0.2",
     "jsdom": "^11.1.0",
-    "tslib": "^1.7.1"
+    "tslib": "^1.7.1",
+    "typescript": "^2.4.1"
   }
 }

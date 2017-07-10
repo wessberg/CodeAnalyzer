@@ -5,3 +5,4 @@ tsconfig.*
 /compiled/
 .idea
 /.vscode/
+package-lock.json
