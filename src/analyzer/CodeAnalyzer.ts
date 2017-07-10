@@ -28,8 +28,9 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		return exportDeclarationGetter.getForFile(fileName, deep);
 	}
 
-	public getExportDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IExportDeclaration[] {
-		return exportDeclarationGetter.getForStatements(statements, deep);
+	public getExportDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IExportDeclaration[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return exportDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -66,12 +67,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * Gets and formats all CallExpressions associated with the given statements.
 	 * These hold information such as the arguments the members are invoked with, generic type
 	 * arguments and such.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {ICallExpression[]}
 	 */
-	public getCallExpressions (statements: (Statement|Expression|Node)[], deep: boolean = false): ICallExpression[] {
-		return callExpressionGetter.getForStatements(statements, deep);
+	public getCallExpressions (statements: string|(Statement|Expression|Node)[], deep: boolean = false): ICallExpression[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return callExpressionGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -90,12 +92,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * Gets and formats all NewExpressions associated with the given statements.
 	 * These hold information such as the arguments the constructor is invoked with, generic type
 	 * arguments and such.
-	 * @param {(Statement | Expression | Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {INewExpression[]}
 	 */
-	public getNewExpressions (statements: (Statement|Expression|Node)[], deep: boolean = false): INewExpression[] {
-		return newExpressionGetter.getForStatements(statements, deep);
+	public getNewExpressions (statements: string|(Statement|Expression|Node)[], deep: boolean = false): INewExpression[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return newExpressionGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -110,12 +113,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	/**
 	 * Gets a map of all identifiers for the given statements and their resolved serialized values.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IResolvedSerializedIIdentifierValueMap}
 	 */
-	public getResolvedSerializedIdentifierValues (statements: (Statement|Expression|Node)[], deep: boolean = false): IResolvedSerializedIIdentifierValueMap {
-		return resolvedSerializedIdentifierValueGetter.getForStatements(statements, deep);
+	public getResolvedSerializedIdentifierValues (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IResolvedSerializedIIdentifierValueMap {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return resolvedSerializedIdentifierValueGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -130,12 +134,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	/**
 	 * Gets a map of all identifiers for the given statements and their resolved values.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IResolvedIIdentifierValueMap}
 	 */
-	public getResolvedIdentifierValues (statements: (Statement|Expression|Node)[], deep: boolean = false): IResolvedIIdentifierValueMap {
-		return resolvedIdentifierValueGetter.getForStatements(statements, deep);
+	public getResolvedIdentifierValues (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IResolvedIIdentifierValueMap {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return resolvedIdentifierValueGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -152,12 +157,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all function declarations (if any) that occurs in the given array of statements
 	 * and returns them in a IFunctionIndexer. If 'deep' is true, it will walk through the Statements recursively.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IFunctionIndexer}
 	 */
-	public getFunctionDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IFunctionIndexer {
-		return functionDeclarationGetter.getForStatements(statements, deep);
+	public getFunctionDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IFunctionIndexer {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return functionDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -174,12 +180,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all enum declarations (if any) that occurs in the given array of statements
 	 * and returns them in a IEnumIndexer. If 'deep' is true, it will walk through the Statements recursively.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IEnumIndexer}
 	 */
-	public getEnumDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IEnumIndexer {
-		return enumDeclarationGetter.getForStatements(statements, deep);
+	public getEnumDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IEnumIndexer {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return enumDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -196,12 +203,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all identifiers (such as variables, functions, classes, enums, imports, exports, etc) (if any) that occurs in the given array of statements
 	 * and returns them in a IIdentifierMap. If 'deep' is true, it will walk through the Statements recursively.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IIdentifierMap}
 	 */
-	public getAllIdentifiers (statements: (Statement|Expression|Node)[], deep: boolean = false): IIdentifierMap {
-		return allIdentifiersGetter.getForStatements(statements, deep);
+	public getAllIdentifiers (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IIdentifierMap {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return allIdentifiersGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -218,12 +226,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all variable assignments (if any) that occurs in the given array of statements
 	 * and returns them in a IVariableIndexer. If 'deep' is true, it will walk through the Statements recursively.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IVariableIndexer}
 	 */
-	public getVariableDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IVariableIndexer {
-		return variableDeclarationGetter.getForStatements(statements, deep);
+	public getVariableDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IVariableIndexer {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return variableDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -240,12 +249,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all class declarations (if any) that occurs in the given array of statements
 	 * and returns them as a IClassIndexer.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IClassIndexer}
 	 */
-	public getClassDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IClassIndexer {
-		return classDeclarationGetter.getForStatements(statements, deep);
+	public getClassDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IClassIndexer {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return classDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -260,12 +270,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	/**
 	 * Gets and returns all ArrowFunctions (if any) that occur in the given array of statements.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IArrowFunction[]}
 	 */
-	public getArrowFunctions (statements: (Statement|Expression|Node)[], deep: boolean = false): IArrowFunction[] {
-		return arrowFunctionGetter.getForStatements(statements, deep);
+	public getArrowFunctions (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IArrowFunction[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return arrowFunctionGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -280,12 +291,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	/**
 	 * Gets and returns all ImportDeclarations (if any) that occur in the given array of statements.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IImportDeclaration[]}
 	 */
-	public getImportDeclarations (statements: (Statement|Expression|Node)[], deep: boolean = false): IImportDeclaration[] {
-		return importDeclarationGetter.getForStatements(statements, deep);
+	public getImportDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IImportDeclaration[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return importDeclarationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**
@@ -300,12 +312,13 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 
 	/**
 	 * Tracks all BinaryExpressions in the given array of statements, checks if they assign new values to identifiers and returns an array of IMutationDeclarations.
-	 * @param {(Statement|Expression|Node)[]} statements
+	 * @param {string|(Statement|Expression|Node)[]} statements
 	 * @param {boolean} [deep=false]
 	 * @returns {IExportDeclaration[]}
 	 */
-	public getMutations (statements: (Statement|Expression|Node)[], deep: boolean = false): IMutationDeclaration[] {
-		return mutationGetter.getForStatements(statements, deep);
+	public getMutations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IMutationDeclaration[] {
+		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
+		return mutationGetter.getForStatements(actualStatements, deep);
 	}
 
 	/**

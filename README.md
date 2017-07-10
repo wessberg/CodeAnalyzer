@@ -69,6 +69,28 @@ interface CodeAnalyzer {
 
 For full documentation, consult [the full interface](src/analyzer/interface/ICodeAnalyzer.ts) or [the implementation](src/analyzer/CodeAnalyzer.ts)
 
+## Usage
+
+The most likely use case will be to add a file and its raw contents to the CodeAnalyzer:
+
+```typescript
+const analyzer = new CodeAnalyzer();
+const fileName = "a_file.ts";
+const contents = readFileSync(fileName).toString();
+analyzer.addFile(fileName, contents);
+```
+
+The file and its dependencies are traversed and cached.
+
+But, you can also just analyze a chunk of code:
+
+```typescript
+const analyzer = new CodeAnalyzer();
+const variables = analyzer.getVariableDeclarations("const var = 2");
+```
+
+Be aware that while this is perfectly fine, the chunk of code won't be cached for later lookups and cannot be used by other chunks of code to understand their context.
+
 ## Differences from [Prepack](https://prepack.io/)
 
 The `CodeAnalyzer` can resolve identifiers **to the value they are initialized to**, but it
@@ -104,6 +126,10 @@ Here, the value of the variable `val` will be `{}` since this is the value it is
 The LanguageService will not track any mutations for already-initialized variables.
 
 ## Changelog:
+
+**v1.0.41**:
+
+- Added the possibility of providing a raw string of code to all *get* methods (such as `getClassDeclarations`) of the API rather than having to provide a fileName and some contents.
 
 **v1.0.40**:
 
