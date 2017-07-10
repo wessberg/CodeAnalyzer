@@ -44,9 +44,7 @@ export class LanguageService implements ILanguageService {
 	 */
 	public toAST (code: string): NodeArray<Statement> {
 		const temporaryName = `${Math.random() * 100000}.ts`;
-		const statements = this.addFile(temporaryName, code);
-		this.removeFile(temporaryName);
-		return statements;
+		return this.addFile(temporaryName, code);
 	}
 
 	/**

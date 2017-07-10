@@ -127,6 +127,10 @@ The LanguageService will not track any mutations for already-initialized variabl
 
 ## Changelog:
 
+**v1.0.42**:
+
+- Auto-generated filenames for chunks of code will no longer be removed from the AST.
+
 **v1.0.41**:
 
 - Added the possibility of providing a raw string of code to all *get* methods (such as `getClassDeclarations`) of the API rather than having to provide a fileName and some contents.
