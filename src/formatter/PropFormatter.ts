@@ -1,8 +1,8 @@
 import {PropertyDeclaration} from "typescript";
 import {isStaticKeyword} from "../predicate/PredicateFunctions";
 import {IPropFormatter} from "./interface/IPropFormatter";
-import {decoratorsFormatter, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, tracer, typeExpressionGetter, typeUtil, valueExpressionGetter, valueResolvedGetter} from "../services";
-import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../identifier/interface/IIdentifier";
+import {decoratorsFormatter, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
+import {IdentifierMapKind, IPropDeclaration} from "../identifier/interface/IIdentifier";
 
 /**
  * A class that can format props for all relevant kinds of statements
@@ -23,9 +23,9 @@ export class PropFormatter implements IPropFormatter {
 		const typeExpression = declaration.type == null ? null : typeExpressionGetter.getTypeExpression(declaration.type);
 		const typeFlattened = typeExpression == null ? null : tokenSerializer.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null ? null : typeUtil.takeTypeBindings(typeExpression);
-		const valueExpression = declaration.initializer == null ? null : valueExpressionGetter.getValueExpression(declaration.initializer);
 		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => isStaticKeyword(modifier)) != null;
-		const scope = tracer.traceThis(declaration);
+
+		const value = valueableFormatter.format(declaration, undefined, declaration.initializer);
 
 		const map: IPropDeclaration = identifierUtil.setKind({
 			___kind: IdentifierMapKind.PROP,
@@ -42,35 +42,7 @@ export class PropFormatter implements IPropFormatter {
 				bindings: typeBindings
 			},
 			decorators: decoratorsFormatter.format(declaration),
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				resolvedPrecompute: undefined,
-
-				/**
-				 * Returns true if a value has been resolved previously.
-				 * @returns {boolean}
-				 */
-				hasDoneFirstResolve () {
-					return map.value.resolved !== undefined;
-				},
-
-				/**
-				 * Resolves/computes a value for the associated value expression.
-				 * @returns {ArbitraryValue}
-				 */
-				resolve () {
-					if (map.value.expression == null) {
-						map.value.resolved = map.value.resolvedPrecompute = null;
-					} else {
-						const [computed, flattened] = valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, declaration, scope);
-						map.value.resolved = computed;
-						map.value.resolvedPrecompute = flattened;
-					}
-					return map.value.resolved;
-				}
-			}
+			value
 		}, IdentifierMapKind.PROP);
 
 		mapper.set(map, declaration);
