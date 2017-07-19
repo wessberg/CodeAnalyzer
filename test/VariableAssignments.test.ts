@@ -404,4 +404,14 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });
 
+test.only(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
+
+	const statements = parse(`
+		const a: "and"|"or" = "and";
+	`);
+
+	const assignments = service.getVariableDeclarations(statements);
+	t.deepEqual(assignments["a"].type.flattened, `"and"|"or"`);
+});
+
 /*tslint:enable*/

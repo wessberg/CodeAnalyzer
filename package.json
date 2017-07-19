@@ -2,23 +2,7 @@
   "name": "@wessberg/codeanalyzer",
   "version": "1.0.42",
   "description": "A service that can analyze your code in great detail ahead of time.",
-  "main": "./dist/cjs/index.js",
-  "repository": "https://github.com/wessberg/codeanalyzer",
-  "module": "./dist/es2015/index.js",
-  "browser": "./dist/es2015/index.js",
-  "types": "./dist/es2015/index.d.ts",
-  "typings": "./dist/es2015/index.d.ts",
   "scripts": {
-    "clean:dist": "rm -r -f dist",
-    "clean:compiled": "rm -r -f compiled",
-    "clean": "npm run clean:dist & npm run clean:compiled",
-    "build:pre": "npm run clean && mkdir -p dist/cjs/interface && mkdir -p dist/es2015/interface",
-    "build:cjs": "tsc --module commonjs --outDir dist/cjs -p tsconfig.dist.json",
-    "build:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
-    "build": "npm run build:pre && npm run build:cjs && npm run build:es2015",
-    "test:pre": "npm run clean:compiled && tsc --module commonjs --target es2017 --sourceMap",
-    "test": "NODE_ENV=TEST npm run test:pre && time ava --fail-fast",
-    "tslint": "tslint -c node_modules/@wessberg/ts-config/tslint/tslint.json -p tsconfig.json"
   },
   "keywords": [
     "ast",
@@ -29,14 +13,12 @@
     "typescript",
     "code quality"
   ],
-  "author": "Frederik Wessberg",
-  "license": "MIT",
   "devDependencies": {
     "@types/jsdom": "^11.0.1",
-    "@types/node": "^8.0.9",
-    "@wessberg/ts-config": "0.0.4",
+    "@types/node": "^8.0.14",
+    "@wessberg/ts-config": "0.0.20",
     "@wessberg/typedetector": "^1.0.6",
-    "ava": "^0.20.0",
+    "ava": "^0.21.0",
     "tslint": "^5.5.0"
   },
   "dependencies": {
