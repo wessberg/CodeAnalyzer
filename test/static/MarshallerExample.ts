@@ -1,6 +1,6 @@
 /*tslint:disable*/
 import {IArbitraryObject, ITypeDetector, TypeOf} from "@wessberg/typedetector";
-import {GlobalObject, GlobalObjectIdentifier} from "@wessberg/globalobject";
+import {globalObject, globalObjectIdentifier} from "@wessberg/globalobject";
 
 /**
  * A class that maps between a variety of data types.
@@ -1659,7 +1659,7 @@ export class Marshaller {
 	 * @returns {string|null}
 	 */
 	private marshalToString<T> (data: T): string|null {
-		if (<{}>data === GlobalObject) return GlobalObjectIdentifier;
+		if (<{}>data === globalObject) return globalObjectIdentifier;
 		if (data === undefined) return this.marshalUndefinedToString(data);
 		if (data === null) return this.marshalNullToString(data);
 		if (this.typeDetector.isString(data)) return (<String>data instanceof String ? <string>data.valueOf() : data);

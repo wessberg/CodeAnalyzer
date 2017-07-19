@@ -1,5 +1,5 @@
 /*tslint:disable*/
-import {GlobalObject} from "@wessberg/globalobject";
+import {globalObject} from "@wessberg/globalobject";
 
 /**
  * A Dependency-Injection container that holds services and can produce instances of them as required.
@@ -61,7 +61,7 @@ export class DIServiceContainer {
 		if (this.hasInstance(identifier) && registrationRecord.kind === 2) {
 			return this.getInstance(identifier);
 		}
-		const instance = new registrationRecord.implementation(...(<any>GlobalObject)[this.config.interfaceConstructorArgumentsMapName][identifier].map((dep: any) => dep === undefined ? undefined : this.constructInstance({identifier: dep})));
+		const instance = new registrationRecord.implementation(...(<any>globalObject)[this.config.interfaceConstructorArgumentsMapName][identifier].map((dep: any) => dep === undefined ? undefined : this.constructInstance({identifier: dep})));
 		return registrationRecord.kind === 3 ? this.setInstance(identifier, instance) : instance;
 	}
 }

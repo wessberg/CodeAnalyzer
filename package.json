@@ -46,7 +46,6 @@
 		"@wessberg/typedetector": "^1.0.6",
 		"ava": "^0.21.0",
 		"tslint": "^5.5.0",
-		"typescript": "latest",
 		"husky": "latest",
 		"conventional-changelog-cli": "latest"
 	},
@@ -54,7 +53,7 @@
 		"@wessberg/compiler-common": "^1.0.0",
 		"@wessberg/environment": "^1.0.1",
 		"@wessberg/fileloader": "^1.0.3",
-		"@wessberg/globalobject": "^1.0.5",
+		"@wessberg/globalobject": "^1.0.7",
 		"@wessberg/marshaller": "^2.0.2",
 		"jsdom": "^11.1.0",
 		"tslib": "^1.7.1",

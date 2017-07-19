@@ -1,4 +1,4 @@
-import {GlobalObjectIdentifier} from "@wessberg/globalobject";
+import {globalObjectIdentifier} from "@wessberg/globalobject";
 import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isFirstNode, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIfStatement, isLabeledStatement, isLastTypeNode, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isTypeQueryNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
@@ -630,7 +630,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			const name = nameGetter.getName(rawStatement);
 			const value = nameGetter.getNameOfMember(rawStatement, true);
 
-			if (name === GlobalObjectIdentifier || name === "window") return [name];
+			if (name === globalObjectIdentifier || name === "window") return [name];
 			return [value];
 		}
 
