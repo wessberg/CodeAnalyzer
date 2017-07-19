@@ -404,7 +404,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });
 
-test.only(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
+test.skip(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
 
 	const statements = parse(`
 		const a: "and"|"or" = "and";
