@@ -1,3 +1,12 @@
+<a name="1.0.46"></a>
+## 1.0.46 (2017-07-19)
+
+* 1.0.46 ([4804a66](https://github.com/wessberg/CodeAnalyzer/commit/4804a66))
+* Bumped version ([5bd6045](https://github.com/wessberg/CodeAnalyzer/commit/5bd6045))
+* Improved commonjs support by better supporting 'module.exports' and 'exports.member' syntax for re-e ([3acf356](https://github.com/wessberg/CodeAnalyzer/commit/3acf356))
+
+
+
 <a name="1.0.45"></a>
 ## 1.0.45 (2017-07-19)
 
