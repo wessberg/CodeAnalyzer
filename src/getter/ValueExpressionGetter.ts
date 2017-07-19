@@ -1,7 +1,7 @@
 import {GlobalObjectIdentifier} from "@wessberg/globalobject";
 import {Expression, Identifier, Node, Statement, SyntaxKind} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
-import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isFirstNode, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIfStatement, isLabeledStatement, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
+import {isArrayBindingPattern, isArrayLiteralExpression, isArrowFunction, isAsyncKeyword, isAwaitExpression, isBinaryExpression, isBlockDeclaration, isBreakStatement, isCallExpression, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isContinueStatement, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isExpressionStatement, isFirstNode, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isIdentifierObject, isIfStatement, isLabeledStatement, isLastTypeNode, isMethodDeclaration, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameterDeclaration, isParenthesizedExpression, isPostfixUnaryExpression, isPrefixUnaryExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isRegularExpressionLiteral, isReturnStatement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStaticKeyword, isStringLiteral, isSwitchStatement, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThrowStatement, isTokenObject, isTryStatement, isTypeAssertionExpression, isTypeOfExpression, isTypeQueryNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement} from "../predicate/PredicateFunctions";
 import {IValueExpressionGetter} from "./interface/IValueExpressionGetter";
 import {heritageClauseFormatter, marshaller, nameGetter, sourceFilePropertiesGetter, stringUtil, tokenPredicator, tokenSerializer} from "../services";
 import {ArbitraryValue, InitializationValue} from "../identifier/interface/IIdentifier";
@@ -119,6 +119,14 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			if (rawStatement.catchClause != null) arr = [...arr, ...this.getValueExpression(rawStatement.catchClause)];
 			if (rawStatement.finallyBlock != null) arr = [...arr, "finally", "{", ...this.getValueExpression(rawStatement.finallyBlock), "}"];
 			return arr;
+		}
+
+		if (isLastTypeNode(rawStatement)) {
+			return [];
+		}
+
+		if (isTypeQueryNode(rawStatement)) {
+			return [];
 		}
 
 		if (isTypeOfExpression(rawStatement)) {

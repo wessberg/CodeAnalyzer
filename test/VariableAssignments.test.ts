@@ -404,7 +404,7 @@ test(`getVariableAssignments() -> Detects all types correctly. #9`, t => {
 	t.deepEqual(assignments["a"].type.flattened, "Foobar");
 });
 
-test.skip(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
+test(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
 
 	const statements = parse(`
 		const a: "and"|"or" = "and";
@@ -412,6 +412,20 @@ test.skip(`getVariableAssignments() -> Detects all types correctly. #10`, t => {
 
 	const assignments = service.getVariableDeclarations(statements);
 	t.deepEqual(assignments["a"].type.flattened, `"and"|"or"`);
+});
+
+test(`getVariableAssignments() -> Detects all types correctly. #11`, t => {
+
+	const statements = parse(`
+		class A {
+			constructor (knex: typeof Knex) {
+			}
+		};
+	`);
+
+	const classes = service.getClassDeclarations(statements, true);
+	const ctor = classes["A"].constructor;
+	t.deepEqual(ctor != null && ctor.parameters.parametersList[0].type.flattened, "typeof Knex");
 });
 
 /*tslint:enable*/

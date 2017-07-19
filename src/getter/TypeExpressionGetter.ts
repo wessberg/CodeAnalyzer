@@ -1,5 +1,5 @@
 import {Declaration, Expression, Node, ParameterDeclaration, Statement, SyntaxKind, TypeAliasDeclaration, TypeNode} from "typescript";
-import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isPropertySignature, isThisTypeNode, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
+import {isArrayTypeNode, isExpressionWithTypeArguments, isIdentifierObject, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isLastTypeNode, isPropertySignature, isThisTypeNode, isTupleTypeNode, isTypeLiteralNode, isTypeNode, isTypeQueryNode, isTypeReference, isTypeReferenceNode, isUnionTypeNode} from "../predicate/PredicateFunctions";
 import {ITypeExpressionGetter} from "./interface/ITypeExpressionGetter";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {nameGetter, sourceFilePropertiesGetter, tokenSerializer, valueExpressionGetter} from "../services";
@@ -88,6 +88,14 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 			return [tokenSerializer.serializeToken(statement.kind, statement)];
 		}
 
+		if (isLastTypeNode(statement)) {
+			return [`"`, statement.literal.text, `"`];
+		}
+
+		if (isTypeQueryNode(statement)) {
+			return ["typeof", " ", nameGetter.getName(statement.exprName)];
+		}
+
 		if (isTypeLiteralNode(statement)) {
 			const exp: TypeExpression = ["{"];
 
@@ -169,7 +177,7 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 		}
 
 		if (statement.type != null) return this.getTypeExpression(statement.type);
-		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
+		throw new TypeError(`${this.constructor.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
 	}
 
 	/**
