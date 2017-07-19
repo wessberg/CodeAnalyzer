@@ -87,6 +87,19 @@ test(`getCallExpressions() -> Detects call expressions correctly. #7`, t => {
 	t.true(callExpressions[0].identifier != null);
 });
 
+test(`getCallExpressions() -> Detects call expressions correctly. #8`, t => {
+
+	const code = `
+		(async () => {
+			DIContainer.foo();
+		})();
+	`;
+
+	const statements = parse(code);
+	const callExpressions = service.getCallExpressions(statements, true);
+	t.true(callExpressions.find(exp => exp.identifier === "foo") != null);
+});
+
 test(`getCallExpressions() -> Detects typeArguments correctly. #1`, t => {
 
 	const code = `
