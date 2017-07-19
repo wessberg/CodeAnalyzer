@@ -1,8 +1,8 @@
 import {ArrowFunction, ConstructorDeclaration, FunctionDeclaration, GetAccessorDeclaration, MethodDeclaration, ParameterDeclaration, SetAccessorDeclaration} from "typescript";
 import {IParametersFormatter} from "./interface/IParametersFormatter";
 import {isArrayBindingPattern, isObjectBindingPattern, isOmittedExpression} from "../predicate/PredicateFunctions";
-import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, tokenSerializer, tracer, typeExpressionGetter, typeUtil, valueExpressionGetter, valueResolvedGetter} from "../services";
-import {IdentifierMapKind, INonNullableValueable, IParameter, ParameterKind} from "../identifier/interface/IIdentifier";
+import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
+import {IdentifierMapKind, IParameter, ParameterKind} from "../identifier/interface/IIdentifier";
 
 /**
  * Formats any kind of relevant Statement into an array of IParameters.
@@ -73,8 +73,8 @@ export class ParametersFormatter implements IParametersFormatter {
 		const typeExpression = parameter.type == null ? null : typeExpressionGetter.getTypeExpression(parameter);
 		const typeFlattened = typeExpression == null ? null : tokenSerializer.serializeTypeExpression(typeExpression);
 		const typeBindings = typeExpression == null ? null : typeUtil.takeTypeBindings(typeExpression);
-		const valueExpression = parameter.initializer != null ? valueExpressionGetter.getValueExpression(parameter.initializer) : null;
-		const scope = tracer.traceThis(parameter);
+
+		const value = valueableFormatter.format(parameter, undefined, parameter.initializer);
 
 		const map: IParameter = identifierUtil.setKind({
 			___kind: IdentifierMapKind.PARAMETER,
@@ -89,35 +89,7 @@ export class ParametersFormatter implements IParametersFormatter {
 				flattened: typeFlattened,
 				bindings: typeBindings
 			},
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				resolvedPrecompute: undefined,
-
-				/**
-				 * Returns true if a value has been resolved previously.
-				 * @returns {boolean}
-				 */
-				hasDoneFirstResolve () {
-					return map.value.resolved !== undefined;
-				},
-
-				/**
-				 * Resolves/computes a value for the associated value expression.
-				 * @returns {ArbitraryValue}
-				 */
-				resolve () {
-					if (map.value.expression == null) {
-						map.value.resolved = map.value.resolvedPrecompute = null;
-					} else {
-						const [computed, flattened] = valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, parameter, scope);
-						map.value.resolved = computed;
-						map.value.resolvedPrecompute = flattened;
-					}
-					return map.value.resolved;
-				}
-			}
+			value
 		}, IdentifierMapKind.PARAMETER);
 
 		mapper.set(map, parameter);
