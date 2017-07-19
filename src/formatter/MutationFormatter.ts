@@ -1,8 +1,8 @@
 import {BinaryExpression, ExpressionStatement, SyntaxKind} from "typescript";
 import {IMutationFormatter} from "./interface/IMutationFormatter";
 import {isBinaryExpression, isElementAccessExpression, isExpressionStatement, isIdentifierObject, isPropertyAccessExpression} from "../predicate/PredicateFunctions";
-import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, valueableFormatter, valueExpressionGetter, valueResolvedGetter} from "../services";
-import {ArbitraryValue, IdentifierMapKind, IMutationDeclaration, INonNullableValueable} from "../identifier/interface/IIdentifier";
+import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
+import {ArbitraryValue, IdentifierMapKind, IMutationDeclaration} from "../identifier/interface/IIdentifier";
 
 /**
  * Formats the any kind of relevant statement into an IMutationDeclaration.
@@ -52,7 +52,6 @@ export class MutationFormatter implements IMutationFormatter {
 		const startsAt = statement.pos;
 		const endsAt = statement.end;
 		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(statement).filePath;
-		const valueExpression = valueExpressionGetter.getValueExpression(statement.right);
 
 		const map: IMutationDeclaration = identifierUtil.setKind({
 			___kind: IdentifierMapKind.MUTATION,
@@ -61,35 +60,7 @@ export class MutationFormatter implements IMutationFormatter {
 			startsAt,
 			endsAt,
 			filePath,
-			value: {
-				expression: valueExpression,
-				resolving: false,
-				resolved: undefined,
-				resolvedPrecompute: undefined,
-
-				/**
-				 * Returns true if a value has been resolved previously.
-				 * @returns {boolean}
-				 */
-				hasDoneFirstResolve () {
-					return map.value.resolved !== undefined;
-				},
-
-				/**
-				 * Resolves/computes a value for the associated value expression.
-				 * @returns {ArbitraryValue}
-				 */
-				resolve () {
-					if (map.value.expression == null) {
-						map.value.resolved = map.value.resolvedPrecompute = null;
-					} else {
-						const [computed, flattened] = valueResolvedGetter.getValueResolved(<INonNullableValueable>map.value, statement);
-						map.value.resolved = computed;
-						map.value.resolvedPrecompute = flattened;
-					}
-					return map.value.resolved;
-				}
-			}
+			value: valueableFormatter.format(statement, undefined, statement.right)
 		}, IdentifierMapKind.MUTATION);
 
 		mapper.set(map, statement);
