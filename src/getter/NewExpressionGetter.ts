@@ -4,6 +4,9 @@ import {INewExpression} from "../identifier/interface/IIdentifier";
 import {childStatementGetter, filePathUtil, languageService, newExpressionFormatter, pathValidatorUtil, statementUtil} from "../services";
 import {isExpressionStatement, isNewExpression} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all INewExpressions for a file, some Statements or a block of code.
+ */
 export class NewExpressionGetter implements INewExpressionGetter {
 
 	/**

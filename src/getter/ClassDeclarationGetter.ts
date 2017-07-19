@@ -4,6 +4,9 @@ import {IClassDeclaration, IClassIndexer, IdentifierMapKind} from "../identifier
 import {cache, childStatementGetter, classFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isClassDeclaration} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get a ClassIndexer for a file, some Statements or a block of code.
+ */
 export class ClassDeclarationGetter implements IClassDeclarationGetter {
 	/**
 	 * Gets all class declarations (if any) that occurs in the given file

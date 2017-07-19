@@ -4,6 +4,9 @@ import {IdentifierMapKind, IImportDeclaration} from "../identifier/interface/IId
 import {cache, childStatementGetter, filePathUtil, identifierUtil, importFormatter, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isCallExpression, isExpressionStatement, isImportDeclaration, isImportEqualsDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all IImportDeclarations for a file, some Statements or a block of code.
+ */
 export class ImportDeclarationGetter implements IImportDeclarationGetter {
 
 	/**

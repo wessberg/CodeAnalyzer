@@ -4,6 +4,9 @@ import {IdentifierMapKind, IFunctionDeclaration, IFunctionIndexer} from "../iden
 import {cache, childStatementGetter, filePathUtil, functionFormatter, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isFunctionDeclaration} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get an IFunctionIndexer for a file, some Statements or a block of code.
+ */
 export class FunctionDeclarationGetter implements IFunctionDeclarationGetter {
 
 	/**

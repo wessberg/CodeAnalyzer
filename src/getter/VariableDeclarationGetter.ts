@@ -4,6 +4,9 @@ import {IdentifierMapKind, IVariableIndexer} from "../identifier/interface/IIden
 import {cache, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil, variableFormatter} from "../services";
 import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get an IVariableIndexer for a file, some Statements or a block of code.
+ */
 export class VariableDeclarationGetter implements IVariableDeclarationGetter {
 
 	/**

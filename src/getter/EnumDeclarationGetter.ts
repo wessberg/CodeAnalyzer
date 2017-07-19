@@ -4,6 +4,9 @@ import {IdentifierMapKind, IEnumDeclaration, IEnumIndexer} from "../identifier/i
 import {cache, childStatementGetter, enumFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isEnumDeclaration} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get an IEnumIndexer for a file, some Statements or a block of code.
+ */
 export class EnumDeclarationGetter implements IEnumDeclarationGetter {
 
 	/**

@@ -4,6 +4,9 @@ import {IdentifierMapKind, IExportDeclaration} from "../identifier/interface/IId
 import {cache, childStatementGetter, exportFormatter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isVariableStatement} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all IExportDeclarations for a file, some Statements or a block of code.
+ */
 export class ExportDeclarationGetter implements IExportDeclarationGetter {
 	/**
 	 * Gets all ExportDeclarations (if any) that occur in the given file and returns an array of IExportDeclarations

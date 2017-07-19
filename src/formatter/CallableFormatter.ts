@@ -5,6 +5,9 @@ import {config} from "../static/Config";
 import {nameGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
 import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../identifier/interface/IIdentifier";
 
+/**
+ * An abstract class that can format any kind of relevant statement into an ICallable
+ */
 export abstract class CallableFormatter implements ICallableFormatter {
 
 	/**
@@ -97,7 +100,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 	 */
 	protected formatTypeArguments (statement: CallExpression|NewExpression): ITypeable {
 		const typeExpressions = statement.typeArguments == null ? null : statement.typeArguments.map(typeArg => typeExpressionGetter.getTypeExpression(typeArg));
-		let typeExpression: TypeExpression = [];
+		const typeExpression: TypeExpression = [];
 		if (typeExpressions != null) {
 			typeExpressions.forEach((typeExp, index) => {
 				typeExp.forEach(part => typeExpression.push(part));

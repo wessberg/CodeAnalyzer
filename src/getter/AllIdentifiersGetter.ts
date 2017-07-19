@@ -3,6 +3,9 @@ import {Expression, Node, Statement} from "typescript";
 import {IdentifierMapKind, IIdentifierMap} from "../identifier/interface/IIdentifier";
 import {arrowFunctionGetter, cache, callExpressionGetter, classDeclarationGetter, enumDeclarationGetter, exportDeclarationGetter, filePathUtil, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, mutationGetter, pathValidatorUtil, variableDeclarationGetter} from "../services";
 
+/**
+ * A class that can get an IIdentifierMap for a file, some Statements or a block of code.
+ */
 export class AllIdentifiersGetter implements IAllIdentifiersGetter {
 
 	/**

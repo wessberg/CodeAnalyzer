@@ -5,6 +5,9 @@ import {isCallExpression, isExternalModuleReference, isICallExpression, isParent
 import {callExpressionFormatter, exportDeclarationGetter, identifierUtil, mapper, sourceFilePropertiesGetter, stringUtil, valueableFormatter} from "../services";
 import {ICallExpression, IdentifierMapKind, IRequire} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IRequire
+ */
 export class RequireFormatter extends ModuleFormatter implements IRequireFormatter {
 
 	/**
@@ -22,6 +25,11 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		return null;
 	}
 
+	/**
+	 * Formats an ExternalModuleReference into an IRequire.
+	 * @param {ExternalModuleReference} statement
+	 * @returns {IRequire}
+	 */
 	private formatExternalModuleReference (statement: ExternalModuleReference): IRequire {
 		const {filePath} = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const {expression} = statement;
@@ -80,6 +88,11 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		}, IdentifierMapKind.REQUIRE_CALL);
 	}
 
+	/**
+	 * Formats a VariableDeclaration into an IRequire (if possible)
+	 * @param {VariableDeclaration} statement
+	 * @returns {IRequire|null}
+	 */
 	private formatVariableDeclaration (statement: VariableDeclaration): IRequire|null {
 		const {initializer} = statement;
 		if (initializer == null) return null;
@@ -91,6 +104,11 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		return null;
 	}
 
+	/**
+	 * Formats the given VariableDeclarationList into an IRequire (if possible)
+	 * @param {VariableDeclarationList} list
+	 * @returns {IRequire|null}
+	 */
 	private formatVariableDeclarationList (list: VariableDeclarationList): IRequire|null {
 		for (const declaration of list.declarations) {
 			const formatted = this.formatVariableDeclaration(declaration);
@@ -99,10 +117,20 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		return null;
 	}
 
+	/**
+	 * Formats the given VariableStatement into an IRequire (if possible)
+	 * @param {VariableStatement} statement
+	 * @returns {IRequire|null}
+	 */
 	private formatVariableStatement (statement: VariableStatement): IRequire|null {
 		return this.formatVariableDeclarationList(statement.declarationList);
 	}
 
+	/**
+	 * Formats the given CallExpression into an IRequire (if possible)
+	 * @param {CallExpression | ICallExpression} statement
+	 * @returns {IRequire|null}
+	 */
 	private formatCallExpression (statement: CallExpression|ICallExpression): IRequire|null {
 		const formatted = isICallExpression(statement) ? statement : callExpressionFormatter.format(statement);
 		if (formatted.identifier !== "require") return null;

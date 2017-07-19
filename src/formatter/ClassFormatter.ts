@@ -5,16 +5,24 @@ import {IClassFormatter} from "./interface/IClassFormatter";
 import {cache, constructorFormatter, decoratorsFormatter, getAccessorFormatter, heritageClauseFormatter, identifierUtil, mapper, methodFormatter, modifiersFormatter, propFormatter, setAccessorFormatter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IClassDeclaration, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IClassFormatter
+ */
 export class ClassFormatter implements IClassFormatter {
 
-	format (statement: ClassDeclaration): IClassDeclaration {
+	/**
+	 * Formats the given ClassDeclaration into an IClassDeclaration.
+	 * @param {ClassDeclaration} statement
+	 * @returns {IClassDeclaration}
+	 */
+	public format (statement: ClassDeclaration): IClassDeclaration {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const fileContents = sourceFileProperties.fileContents;
 		const className = statement.name == null ? config.name.anonymous : statement.name.text;
 
-		const cached = cache.getCachedClass(filePath, className);
-		if (cached != null && !cache.cachedClassNeedsUpdate(cached.content)) return cached.content;
+		const cachedClass = cache.getCachedClass(filePath, className);
+		if (cachedClass != null && !cache.cachedClassNeedsUpdate(cachedClass.content)) return cachedClass.content;
 
 		const classDeclarationStartsAt = statement.pos;
 		const classDeclarationEndsAt = statement.end;
@@ -46,6 +54,10 @@ export class ClassFormatter implements IClassFormatter {
 			},
 			props: {},
 			value,
+
+			/**
+			 * Merges the class with its super class (if it has any or if it hasn't merged already)
+			 */
 			mergeWithParent () {
 				if (hasMerged) return;
 				that.mergeWithParent(this);
@@ -92,6 +104,12 @@ export class ClassFormatter implements IClassFormatter {
 		return declaration;
 	}
 
+	/**
+	 * Merges all relevant properties of the derived class with its super class.
+	 * This means that the derived class will inherit methods, properties and the constructor through
+	 * classical inheritance.
+	 * @param {IClassDeclaration} declaration
+	 */
 	private mergeWithParent (declaration: IClassDeclaration): void {
 		if (declaration.heritage == null || declaration.heritage.extendsClass == null) return;
 

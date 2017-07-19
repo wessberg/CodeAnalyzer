@@ -3,6 +3,9 @@ import {Expression, Node, Statement} from "typescript";
 import {ArbitraryValue, IdentifierMapKind, IResolvedSerializedIIdentifierValueMap, IResolvedSerializedIIdentifierValueMapIndexer} from "../identifier/interface/IIdentifier";
 import {cache, filePathUtil, identifierUtil, languageService, marshaller, pathValidatorUtil, resolvedIdentifierValueGetter, typeDetector} from "../services";
 
+/**
+ * A class that can get an IResolvedSerializedIdentifierValueMap for a file, some Statements or a block of code.
+ */
 export class ResolvedSerializedIdentifierValueGetter implements IResolvedSerializedIdentifierValueGetter {
 
 	/**
@@ -22,9 +25,7 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 
 		const declarations = this.getForStatements(statements, deep);
 		cache.setCachedResolvedSerializedIdentifierValueMap(fileName, declarations);
-
-		// TODO: Why any cast?
-		return <any>declarations;
+		return declarations;
 	}
 
 	/**
@@ -53,9 +54,7 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 					const mappedKeys: { [key: string]: string } = {};
 					staticKeys.forEach(staticKey => {
 						if (staticKey === "length" || staticKey === "prototype") return;
-
-						const value = ctor[staticKey];
-						mappedKeys[staticKey] = marshaller.marshal(value);
+						mappedKeys[staticKey] = marshaller.marshal(ctor[staticKey]);
 					});
 					map[key] = mappedKeys;
 					break;
@@ -66,8 +65,7 @@ export class ResolvedSerializedIdentifierValueGetter implements IResolvedSeriali
 
 					const mappedKeysForClass: { [key: string]: string } = {};
 					staticKeysForClass.forEach(staticKey => {
-						const value = ctorForClass[staticKey];
-						mappedKeysForClass[staticKey] = marshaller.marshal(value);
+						mappedKeysForClass[staticKey] = marshaller.marshal(ctorForClass[staticKey]);
 					});
 					map[key] = mappedKeysForClass;
 					break;

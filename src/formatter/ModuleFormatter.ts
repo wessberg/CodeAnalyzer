@@ -7,11 +7,34 @@ import {isIImportExportBinding, isILiteralValue, isNamespacedModuleMap} from "..
 import {fileLoader, identifierUtil, stringUtil} from "../services";
 import {IdentifierMapKind, IModuleDeclaration, INamespacedModuleMap, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
+/**
+ * An abstract class that helps with formatting and resolving modules.
+ */
 export abstract class ModuleFormatter implements IModuleFormatter {
+	/**
+	 * A Map between paths as they are defined in the source code and actual file paths on disk.
+	 * For example, oftentimes file extensions are implicit and left out of import statements. This map holds the actual full file paths for any of those paths.
+	 * @type {Map<string, string>}
+	 */
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
+
+	/**
+	 * The default (relative) library path in a module (if the main field is left out)
+	 * @type {string}
+	 */
 	private static readonly DEFAULT_MODULE_FILEPATH: string = "index.js";
+
+	/**
+	 * The allowed file extensions when resolving files.
+	 * @type {Set<string>}
+	 */
 	private static readonly ALLOWED_EXTENSIONS: string[] = [...new Set([...config.supportedFileExtensions, ".json"])];
 
+	/**
+	 * Resolves the full file path for the given path. It may need an extension and it may be a relative path.
+	 * @param {string} filePath
+	 * @returns {string}
+	 */
 	public resolvePath (filePath: string): string {
 		const cached = ModuleFormatter.RESOLVED_PATHS.get(filePath);
 		if (cached != null) return cached;
@@ -24,11 +47,21 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return traced;
 	}
 
+	/**
+	 * Either adds an extension to the filepath (if it needs one) or replaces the extension with the default.
+	 * @param {string} filePath
+	 * @returns {string}
+	 */
 	public normalizeExtension (filePath: string): string {
 		const extension = extname(filePath);
 		return extension === "" ? `${filePath}${config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${config.defaultExtension}`;
 	}
 
+	/**
+	 * Returns an INamespacedModuleMap from the given array of IModuleDeclarations
+	 * @param {IModuleDeclaration[]} modules
+	 * @returns {INamespacedModuleMap}
+	 */
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): INamespacedModuleMap {
 		const indexer: INamespacedModuleMap = identifierUtil.setKind({
 			___kind: IdentifierMapKind.NAMESPACED_MODULE_INDEXER,
@@ -62,9 +95,8 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 					if (isILiteralValue(payload)) {
 						const [value] = payload.value();
 						if (isNamespacedModuleMap(value)) {
-							Object.keys(value).forEach(key => indexer[key] = (<any>value)[key]);
+							Object.keys(value).forEach(payloadValueKey => indexer[payloadValueKey] = (</*tslint:disable*/any/*tslint:enable*/>value)[payloadValueKey]);
 						}
-						;
 					}
 				}
 			});
@@ -82,6 +114,12 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return indexer;
 	}
 
+	/**
+	 * Formats a full path from a relative path (local to the filePath given as the first argument).
+	 * @param {string} filePath
+	 * @param {string} relativePath
+	 * @returns {string}
+	 */
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
 		const relativePathStripped = <string>stringUtil.stripQuotesIfNecessary(relativePath);
 		if (config.builtIns.has(relativePathStripped)) {
@@ -92,6 +130,11 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return this.resolvePath(this.stripStartDotFromPath(joined));
 	}
 
+	/**
+	 * Traces a full path from the given path. It may be so already, but it may also be relative to the wrong directory and need to be resolved.
+	 * @param {string} filePath
+	 * @returns {string}
+	 */
 	private traceFullPath (filePath: string): string {
 		if (fileLoader.existsSync(filePath)) return filePath;
 		if (fileLoader.existsSync(join(__dirname, filePath))) return filePath;
@@ -109,15 +152,22 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 			// The import is to a file, not a module.
 			return moduleDirectory;
 		}
-		const libPath = this.takeLibPathFromPackageJSON(packageJSON) || ModuleFormatter.DEFAULT_MODULE_FILEPATH;
+		const packageJSONLibPath = this.takeLibPathFromPackageJSON(packageJSON);
+		const libPath = packageJSONLibPath == null ? join(moduleDirectory, ModuleFormatter.DEFAULT_MODULE_FILEPATH) : packageJSONLibPath;
 
 		// Give up and return the path given as an argument.
 		if (libPath == null) return filePath;
 		return libPath;
 	}
 
+	/**
+	 * Goes "up" the chain of folders and attempts to reach the target file.
+	 * @param {string} target
+	 * @param {string} from
+	 * @returns {string}
+	 */
 	private traceUp (target: string, from: string): string|null {
-		let splitted = target.split("/").filter(part => part.length > 0);
+		const splitted = target.split("/").filter(part => part.length > 0);
 		while (true) {
 			if (splitted.length === 0) return null;
 			const reconstructed = splitted.join("/");
@@ -136,6 +186,12 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		}
 	}
 
+	/**
+	 * Goes "down" the folder tree and attempts to reach the provided target file.
+	 * @param {string} target
+	 * @param {string} current
+	 * @returns {string}
+	 */
 	private traceDown (target: string, current: string = __dirname): string|null {
 		let _current = current;
 		let targetPath: string|null = null;
@@ -149,9 +205,15 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return targetPath;
 	}
 
+	/**
+	 * Takes the most useful main file path from the provided package.json.
+	 * It will always prefer something that uses ES-modules over something that don't.
+	 * @param {string} packageJSONPath
+	 * @returns {string}
+	 */
 	private takeLibPathFromPackageJSON (packageJSONPath: string): string|null {
 		const json = JSON.parse(fileLoader.loadSync(packageJSONPath).toString());
-		const fields: string[] = ["browser", "module", "main"];
+		const fields: string[] = ["es2015", "module", "js:next", "browser", "main"];
 
 		for (const field of fields) {
 			const value = json[field];
@@ -162,6 +224,11 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 		return null;
 	}
 
+	/**
+	 * Removes the '.' in front of a path (if such one exists in the path)
+	 * @param {string} filePath
+	 * @returns {string}
+	 */
 	private stripStartDotFromPath (filePath: string): string {
 		return filePath.startsWith("./")
 			? filePath.slice("./".length)

@@ -4,6 +4,9 @@ import {ICallExpressionFormatter} from "./interface/ICallExpressionFormatter";
 import {argumentsFormatter, identifierUtil, mapper, sourceFilePropertiesGetter} from "../services";
 import {ICallExpression, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an ICallExpression
+ */
 export class CallExpressionFormatter extends CallableFormatter implements ICallExpressionFormatter {
 
 	/**

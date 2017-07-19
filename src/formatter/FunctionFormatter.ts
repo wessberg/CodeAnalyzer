@@ -5,6 +5,9 @@ import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {cache, identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IdentifierMapKind, IFunctionDeclaration} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IFunctionDeclaration
+ */
 export class FunctionFormatter extends FunctionLikeFormatter implements IFunctionFormatter {
 
 	/**

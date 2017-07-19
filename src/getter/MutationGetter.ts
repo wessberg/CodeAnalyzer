@@ -4,7 +4,17 @@ import {IdentifierMapKind, IMutationDeclaration} from "../identifier/interface/I
 import {childStatementGetter, filePathUtil, identifierUtil, languageService, mutationFormatter, pathValidatorUtil, statementUtil} from "../services";
 import {isBinaryExpression, isExpressionStatement} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all IMutationDeclarations for a file, some Statements or a block of code.
+ */
 export class MutationGetter implements IMutationGetter {
+
+	/**
+	 * Gets all IMutationDeclarations for the given file.
+	 * @param {string} fileName
+	 * @param {boolean} deep
+	 * @returns {IMutationDeclaration[]}
+	 */
 	public getForFile (fileName: string, deep: boolean = false): IMutationDeclaration[] {
 		if (filePathUtil.isExcluded(fileName) || pathValidatorUtil.isBlacklisted(fileName)) return [];
 

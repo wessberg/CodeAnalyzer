@@ -6,8 +6,16 @@ import {ModuleFormatter} from "./ModuleFormatter";
 import {exportDeclarationGetter, identifierUtil, mapper, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer} from "../services";
 import {IdentifierMapKind, IImportDeclaration, IImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format IImportDeclarations for all relevant kinds of statements.
+ */
 export class ImportFormatter extends ModuleFormatter implements IImportFormatter {
 
+	/**
+	 * Formats the given statement into an IImportDeclaration (if possible)
+	 * @param {ImportDeclaration | ImportEqualsDeclaration | VariableStatement | CallExpression} statement
+	 * @returns {IImportDeclaration|null}
+	 */
 	public format (statement: ImportDeclaration|ImportEqualsDeclaration|VariableStatement|CallExpression): IImportDeclaration|null {
 		if (isImportDeclaration(statement)) return this.formatImportDeclaration(statement);
 		if (isImportEqualsDeclaration(statement)) return this.formatImportEqualsDeclaration(statement);
@@ -19,6 +27,11 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		throw new TypeError(`${ImportFormatter.constructor.name} could not get an IImportDeclaration for a statement of kind ${SyntaxKind[(<Identifier>statement).kind]}!`);
 	}
 
+	/**
+	 * Formats the given ImportDeclaration into an IImportDeclaration.
+	 * @param {ImportDeclaration} statement
+	 * @returns {IImportDeclaration}
+	 */
 	private formatImportDeclaration (statement: ImportDeclaration): IImportDeclaration {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -53,12 +66,17 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		return map;
 	}
 
+	/**
+	 * Formats the given ImportEqualsDeclaration into an IImportDeclaration
+	 * @param {ImportEqualsDeclaration} statement
+	 * @returns {IImportDeclaration}
+	 */
 	private formatImportEqualsDeclaration (statement: ImportEqualsDeclaration): IImportDeclaration {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 
 		if (isExternalModuleReference(statement.moduleReference)) {
-			const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = <IRequire>requireFormatter.format(statement.moduleReference);
+			const {startsAt, endsAt, fullPath, relativePath, payload} = <IRequire>requireFormatter.format(statement.moduleReference);
 
 			const map: IImportDeclaration = identifierUtil.setKind({
 				___kind: IdentifierMapKind.IMPORT,
@@ -131,10 +149,20 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		}
 	}
 
+	/**
+	 * Formats the given VariableStatement into an IImportDeclaration, if possible.
+	 * @param {VariableStatement} statement
+	 * @returns {IImportDeclaration|null}
+	 */
 	private formatVariableStatement (statement: VariableStatement): IImportDeclaration|null {
 		return this.formatVariableDeclarationList(statement.declarationList);
 	}
 
+	/**
+	 * Formats the given VariableDeclarationList into an IImportDeclaration, if possible.
+	 * @param {VariableDeclarationList} statement
+	 * @returns {IImportDeclaration|null}
+	 */
 	private formatVariableDeclarationList (statement: VariableDeclarationList): IImportDeclaration|null {
 		for (const declaration of statement.declarations) {
 			const formatted = this.formatVariableDeclaration(declaration);
@@ -143,16 +171,26 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 		return null;
 	}
 
+	/**
+	 * Formats the given VariableDeclaration into an IImportDeclaration, if possible.
+	 * @param {VariableDeclaration} statement
+	 * @returns {IImportDeclaration|null}
+	 */
 	private formatVariableDeclaration (statement: VariableDeclaration): IImportDeclaration|null {
 		return this.formatCallExpression(statement);
 	}
 
+	/**
+	 * Formats the given CallExpression into an IImportDeclaration, if possible.
+	 * @param {CallExpression | VariableDeclaration} statement
+	 * @returns {IImportDeclaration|null}
+	 */
 	private formatCallExpression (statement: CallExpression|VariableDeclaration): IImportDeclaration|null {
 		const requireCall = requireFormatter.format(statement);
 		if (requireCall == null) return null;
 		const {startsAt, endsAt, relativePath, fullPath, filePath, payload} = requireCall;
 
-		let bindings: IImportExportIndexer = {};
+		const bindings: IImportExportIndexer = {};
 		const name: (string|undefined)[] = [];
 		let kind: ImportExportKind;
 
@@ -163,7 +201,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 
 			if (isObjectBindingPattern(statement.name)) {
 				statement.name.elements.forEach(binding => {
-					name.push(<string>nameGetter.getName(binding));
+					name.push(nameGetter.getName(binding));
 					kind = ImportExportKind.NAMED;
 				});
 			}
@@ -171,7 +209,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			else if (isArrayBindingPattern(statement.name)) {
 				statement.name.elements.forEach((binding) => {
 					if (isOmittedExpression(binding)) name.push(undefined);
-					name.push(<string>nameGetter.getName(binding));
+					name.push(nameGetter.getName(binding));
 					kind = ImportExportKind.NAMED;
 				});
 			}
@@ -280,9 +318,9 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 			const payload = () => {
 				const path = modulePath();
 				const fileExports = exportDeclarationGetter.getForFile(path, true);
-				const match = fileExports.find(exportDeclaration => exportDeclaration.bindings["default"] != null);
+				const match = fileExports.find(exportDeclaration => exportDeclaration.bindings.default != null);
 				if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
-				return match.bindings["default"].payload();
+				return match.bindings.default.payload();
 			};
 
 			indexer[clause.name.text] = {

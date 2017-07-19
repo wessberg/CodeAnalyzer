@@ -3,6 +3,9 @@ import {IEnumFormatter} from "./interface/IEnumFormatter";
 import {cache, decoratorsFormatter, identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter} from "../services";
 import {IdentifierMapKind, IEnumDeclaration} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IEnumDeclaration
+ */
 export class EnumFormatter implements IEnumFormatter {
 
 	/**

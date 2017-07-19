@@ -4,6 +4,9 @@ import {INewExpressionFormatter} from "./interface/INewExpressionFormatter";
 import {argumentsFormatter, identifierUtil, mapper, sourceFilePropertiesGetter} from "../services";
 import {IdentifierMapKind, INewExpression} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an INewExpression
+ */
 export class NewExpressionFormatter extends CallableFormatter implements INewExpressionFormatter {
 
 	/**

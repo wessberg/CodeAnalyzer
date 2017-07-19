@@ -4,6 +4,9 @@ import {IArrowFunction, IdentifierMapKind} from "../identifier/interface/IIdenti
 import {arrowFunctionFormatter, cache, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isArrowFunction} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all IArrowFunctions for a file, some Statements or a block of code.
+ */
 export class ArrowFunctionGetter implements IArrowFunctionGetter {
 
 	/**

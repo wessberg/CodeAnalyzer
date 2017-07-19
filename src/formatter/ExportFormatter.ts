@@ -5,8 +5,16 @@ import {ModuleFormatter} from "./ModuleFormatter";
 import {callExpressionFormatter, classFormatter, exportDeclarationGetter, functionFormatter, identifierUtil, mapper, mutationFormatter, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer, valueableFormatter, variableFormatter} from "../services";
 import {IdentifierMapKind, IExportDeclaration, IImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format IExportDeclarations for all relevant kinds of statements.
+ */
 export class ExportFormatter extends ModuleFormatter implements IExportFormatter {
 
+	/**
+	 * Formats the given statement into an IExportDeclaration, if possible.
+	 * @param {ExportDeclaration | VariableStatement | ExportAssignment | FunctionDeclaration | ClassDeclaration | ExpressionStatement | BinaryExpression | CallExpression} statement
+	 * @returns {IExportDeclaration|null}
+	 */
 	public format (statement: ExportDeclaration|VariableStatement|ExportAssignment|FunctionDeclaration|ClassDeclaration|ExpressionStatement|BinaryExpression|CallExpression): IExportDeclaration|null {
 
 		if (isExpressionStatement(statement)) {
@@ -33,6 +41,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		throw new TypeError(`${ExportFormatter.constructor.name} could not get an IExportDeclaration for a statement of kind ${SyntaxKind[kind]}!`);
 	}
 
+	/**
+	 * Formats the given CallExpression into an IExportDeclaration, if possible.
+	 * @param {CallExpression} statement
+	 * @returns {IExportDeclaration|null}
+	 */
 	private formatCallExpression (statement: CallExpression): IExportDeclaration|null {
 		const formatted = callExpressionFormatter.format(statement);
 		if (formatted.identifier !== "___export") return null;
@@ -70,6 +83,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
+	/**
+	 * Formats the given ExportAssignment into an IExportDeclaration, if possible.
+	 * @param {ExportAssignment} statement
+	 * @returns {IExportDeclaration}
+	 */
 	private formatExportAssignment (statement: ExportAssignment): IExportDeclaration {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -108,7 +126,9 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			},
 			filePath,
 			bindings: {
+				/*tslint:disable:object-literal-key-quotes*/
 				"default": {
+					/*tslint:enable:object-literal-key-quotes*/
 					startsAt: statement.pos,
 					endsAt: statement.end,
 					name: "default",
@@ -118,12 +138,17 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 				}
 			}
 		}, IdentifierMapKind.EXPORT);
-		mapper.set(map.bindings["default"], statement);
+		mapper.set(map.bindings/*tslint:disable*/["default"]/*tslint:enable*/, statement);
 
 		mapper.set(map, statement);
 		return map;
 	}
 
+	/**
+	 * Formats the given Statement into an IExportDeclaration, if possible.
+	 * @param {ExpressionStatement | BinaryExpression} statement
+	 * @returns {IExportDeclaration}
+	 */
 	private formatBinaryExpression (statement: ExpressionStatement|BinaryExpression): IExportDeclaration|null {
 		const formatted = mutationFormatter.format(statement);
 
@@ -165,7 +190,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
 					name: identifier,
 					payload,
-					kind: identifier ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
+					kind: identifier === "default" ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
 				}
 			}
 		}, IdentifierMapKind.EXPORT);
@@ -175,6 +200,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
+	/**
+	 * Formats the given ClassDeclaration into an IExportDeclaration, if possible.
+	 * @param {ClassDeclaration} statement
+	 * @returns {IExportDeclaration|null}
+	 */
 	private formatClassDeclaration (statement: ClassDeclaration): IExportDeclaration|null {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -215,6 +245,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return null;
 	}
 
+	/**
+	 * Formats the given FunctionDeclaration into an IExportDeclaration, if possible.
+	 * @param {FunctionDeclaration} statement
+	 * @returns {IExportDeclaration|null}
+	 */
 	private formatFunctionDeclaration (statement: FunctionDeclaration): IExportDeclaration|null {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -255,6 +290,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return null;
 	}
 
+	/**
+	 * Formats the given VariableStatement into an IExportDeclaration, if possible.
+	 * @param {VariableStatement} statement
+	 * @returns {IExportDeclaration|null}
+	 */
 	private formatVariableStatement (statement: VariableStatement): IExportDeclaration|null {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -299,6 +339,11 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return null;
 	}
 
+	/**
+	 * Formats the given ExportDeclaration into an IExportDeclaration, if possible.
+	 * @param {ExportDeclaration} statement
+	 * @returns {IExportDeclaration}
+	 */
 	private formatExportDeclaration (statement: ExportDeclaration): IExportDeclaration {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
@@ -329,6 +374,13 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		return map;
 	}
 
+	/**
+	 * Formats the given NamedExports into an IImportExportIndexer
+	 * @param {NamedExports?} clause
+	 * @param {() => string} modulePath
+	 * @param {ExportDeclaration} statement
+	 * @returns {IImportExportIndexer}
+	 */
 	private formatExportClause (clause: NamedExports|undefined, modulePath: () => string, statement: ExportDeclaration): IImportExportIndexer {
 		const indexer: IImportExportIndexer = {};
 

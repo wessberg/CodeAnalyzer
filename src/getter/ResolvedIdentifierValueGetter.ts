@@ -4,6 +4,9 @@ import {IdentifierMapKind, IResolvedIIdentifierValueMap, IResolvedIIdentifierVal
 import {cache, classDeclarationGetter, enumDeclarationGetter, filePathUtil, functionDeclarationGetter, identifierUtil, importDeclarationGetter, languageService, pathValidatorUtil, variableDeclarationGetter} from "../services";
 import {isIEnumDeclaration, isIExportableIIdentifier, isILiteralValue} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get an IResolvedIdentifierValueMap for a file, some Statements or a block of code.
+ */
 export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGetter {
 
 	/**
@@ -22,12 +25,8 @@ export class ResolvedIdentifierValueGetter implements IResolvedIdentifierValueGe
 		if (statements == null) throw new ReferenceError(`${this.constructor.name} could not find any statements associated with the given filename: ${fileName}. Have you added it to the service yet?`);
 
 		const declarations = this.getForStatements(statements, deep);
-
-		// TODO: Why any cast?
-		cache.setCachedResolvedIdentifierValueMap(fileName, <any>declarations);
-
-		// TODO: Why any cast?
-		return <any>declarations;
+		cache.setCachedResolvedIdentifierValueMap(fileName, declarations);
+		return declarations;
 	}
 
 	/**

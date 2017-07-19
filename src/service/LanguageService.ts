@@ -10,7 +10,22 @@ import {ILanguageService} from "./interface/ILanguageService";
  * @author Frederik Wessberg
  */
 export class LanguageService implements ILanguageService {
-	private files: Map<string, { version: number, content: string }> = new Map();
+	/**
+	 * A big integer value that is used when generating random file names for the AST.
+	 * @type {number}
+	 */
+	private static readonly TEMPORARY_FILE_RADIX: number = 100000;
+
+	/**
+	 * A Map between filenames and their current version and content in the AST.
+	 * @type {Map<string, {version: number, content: string}>}
+	 */
+	private files: Map<string, { version: number; content: string }> = new Map();
+
+	/**
+	 * The (Typescript) LanguageService to use under-the-hood.
+	 * @type {LanguageService}
+	 */
 	private languageService: typescript.LanguageService = typescript.createLanguageService(this, typescript.createDocumentRegistry());
 
 	/**
@@ -43,7 +58,7 @@ export class LanguageService implements ILanguageService {
 	 * @returns {NodeArray<Statement>}
 	 */
 	public toAST (code: string): NodeArray<Statement> {
-		const temporaryName = `${Math.random() * 100000}.ts`;
+		const temporaryName = `${Math.random() * LanguageService.TEMPORARY_FILE_RADIX}.ts`;
 		return this.addFile(temporaryName, code);
 	}
 
@@ -55,7 +70,7 @@ export class LanguageService implements ILanguageService {
 	public getFile (fileName: string): NodeArray<Statement>|null {
 		const filePath = importFormatter.resolvePath(fileName);
 		const normalizedPath = importFormatter.normalizeExtension(filePath);
-		let file = this.languageService.getProgram().getSourceFile(normalizedPath);
+		const file = this.languageService.getProgram().getSourceFile(normalizedPath);
 		if (file == null) {
 			if (fileLoader.existsSync(filePath)) {
 				try {
@@ -104,6 +119,11 @@ export class LanguageService implements ILanguageService {
 		return script.version.toString();
 	}
 
+	/**
+	 * Gets the current version of the given filepath in the Typescript AST.
+	 * @param {string} filePath
+	 * @returns {number}
+	 */
 	public getFileVersion (filePath: string): number {
 		const version = this.getScriptVersion(filePath);
 		return parseInt(version);

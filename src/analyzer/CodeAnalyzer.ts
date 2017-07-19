@@ -16,18 +16,41 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 		if (options != null) this.excludeFiles(options.excludeFiles);
 	}
 
+	/**
+	 * Excludes the files that matches the given Regular Expression(s) from being parsed and resolved by the CodeAnalyzer.
+	 * @param {RegExp | RegExp[] | Set<RegExp>} match
+	 */
 	public excludeFiles (match: RegExp|RegExp[]|Set<RegExp>): void {
 		filePathUtil.exclude(match);
 	}
 
+	/**
+	 * Adds a file to the underlying LanguageService.
+	 * @param {string} fileName
+	 * @param {string} content
+	 * @param {number} version
+	 * @returns {NodeArray<Statement>}
+	 */
 	public addFile (fileName: string, content: string, version?: number): NodeArray<Statement> {
 		return languageService.addFile(fileName, content, version);
 	}
 
+	/**
+	 * Gets all IExportDeclarations for the file.
+	 * @param {string} fileName
+	 * @param {boolean} [deep=false]
+	 * @returns {IExportDeclaration[]}
+	 */
 	public getExportDeclarationsForFile (fileName: string, deep: boolean = false): IExportDeclaration[] {
 		return exportDeclarationGetter.getForFile(fileName, deep);
 	}
 
+	/**
+	 * Gets all IExportDeclarations for the given Statements
+	 * @param {string | (Statement | Expression | Node)[]} statements
+	 * @param {boolean} [deep=false]
+	 * @returns {IExportDeclaration[]}
+	 */
 	public getExportDeclarations (statements: string|(Statement|Expression|Node)[], deep: boolean = false): IExportDeclaration[] {
 		const actualStatements = typeof statements === "string" ? languageService.toAST(statements) : statements;
 		return exportDeclarationGetter.getForStatements(actualStatements, deep);

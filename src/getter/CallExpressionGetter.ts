@@ -4,6 +4,9 @@ import {ICallExpression, IdentifierMapKind} from "../identifier/interface/IIdent
 import {callExpressionFormatter, childStatementGetter, filePathUtil, identifierUtil, languageService, pathValidatorUtil, statementUtil} from "../services";
 import {isCallExpression, isExpressionStatement} from "../predicate/PredicateFunctions";
 
+/**
+ * A class that can get all ICallExpressions for a file, some Statements or a block of code.
+ */
 export class CallExpressionGetter implements ICallExpressionGetter {
 	/**
 	 * Gets and formats all CallExpressions associated with the given statements.
