@@ -1,3 +1,16 @@
+<a name="1.0.44"></a>
+## 1.0.44 (2017-07-19)
+
+* 1.0.44 ([8b92dfd](https://github.com/wessberg/CodeAnalyzer/commit/8b92dfd))
+* Added support for handling expressions of kinds TypeQuery and LastTypeNode. Fixes #9. Fixes #21 ([6719e65](https://github.com/wessberg/CodeAnalyzer/commit/6719e65)), closes [#9](https://github.com/wessberg/CodeAnalyzer/issues/9) [#21](https://github.com/wessberg/CodeAnalyzer/issues/21)
+* Bumped version ([d571e0b](https://github.com/wessberg/CodeAnalyzer/commit/d571e0b))
+* Fixed an issue where expression bodies of CallExpressions wouldn't be parsed when 'deep' is true. Fi ([c9f28b0](https://github.com/wessberg/CodeAnalyzer/commit/c9f28b0)), closes [#10](https://github.com/wessberg/CodeAnalyzer/issues/10)
+* Made the MutationFormatter use the IValuableFormatter. Fixes #11 ([6e30987](https://github.com/wessberg/CodeAnalyzer/commit/6e30987)), closes [#11](https://github.com/wessberg/CodeAnalyzer/issues/11)
+* Made the ParametersFormatter use the IValuableFormatter. #11 ([2ccc736](https://github.com/wessberg/CodeAnalyzer/commit/2ccc736))
+* Made the PropFormatter use the IValuableFormatter. #11 ([dbcc74b](https://github.com/wessberg/CodeAnalyzer/commit/dbcc74b))
+
+
+
 <a name="1.0.43"></a>
 ## 1.0.43 (2017-07-19)
 
