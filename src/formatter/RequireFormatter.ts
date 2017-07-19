@@ -135,7 +135,9 @@ export class RequireFormatter extends ModuleFormatter implements IRequireFormatt
 		const formatted = isICallExpression(statement) ? statement : callExpressionFormatter.format(statement);
 		if (formatted.identifier !== "require") return null;
 
-		const firstArgumentValue = formatted.arguments.argumentsList[0].value;
+		const hasFirstArgument = formatted.arguments.argumentsList.length > 0;
+		const firstArgumentValue = hasFirstArgument ? formatted.arguments.argumentsList[0].value : null;
+
 		const relativePath = () => {
 			let relative = stringUtil.stripQuotesIfNecessary(firstArgumentValue == null
 				? ""

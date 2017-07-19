@@ -30,7 +30,13 @@ export class MutationFormatter implements IMutationFormatter {
 		}
 
 		if (isPropertyAccessExpression(statement.left)) {
-			property = nameGetter.getName(statement.left.expression);
+			try {
+				property = nameGetter.getName(statement.left.expression);
+			} catch (ex) {
+				// It is a non-trivial expression. Format it and set it as a property.
+				const formatted = valueableFormatter.format(statement.left.expression);
+				property = formatted.expression;
+			}
 			identifier = nameGetter.getName(statement.left.name);
 		}
 

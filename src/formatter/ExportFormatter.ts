@@ -1,9 +1,9 @@
-import {BinaryExpression, CallExpression, ClassDeclaration, ExportAssignment, ExportDeclaration, ExpressionStatement, FunctionDeclaration, NamedExports, SyntaxKind, VariableStatement} from "typescript";
-import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
+import {BinaryExpression, CallExpression, ClassDeclaration, ExportAssignment, ExportDeclaration, Expression, ExpressionStatement, FunctionDeclaration, NamedExports, SyntaxKind, VariableStatement} from "typescript";
+import {isBinaryExpression, isCallExpression, isClassDeclaration, isExportAssignment, isExportDeclaration, isExpressionStatement, isFunctionDeclaration, isIMutationDeclaration, isIRequire, isLiteralExpression, isVariableStatement} from "../predicate/PredicateFunctions";
 import {IExportFormatter} from "./interface/IExportFormatter";
 import {ModuleFormatter} from "./ModuleFormatter";
 import {callExpressionFormatter, classFormatter, exportDeclarationGetter, functionFormatter, identifierUtil, mapper, mutationFormatter, nameGetter, requireFormatter, sourceFilePropertiesGetter, tracer, valueableFormatter, variableFormatter} from "../services";
-import {IdentifierMapKind, IExportDeclaration, IImportExportIndexer, ImportExportKind, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
+import {IdentifierMapKind, IExportDeclaration, IImportExportIndexer, ImportExportKind, IMutationDeclaration, IRequire, ModuleDependencyKind, NAMESPACE_NAME} from "../identifier/interface/IIdentifier";
 
 /**
  * A class that can format IExportDeclarations for all relevant kinds of statements.
@@ -42,19 +42,44 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 	}
 
 	/**
-	 * Formats the given CallExpression into an IExportDeclaration, if possible.
-	 * @param {CallExpression} statement
-	 * @returns {IExportDeclaration|null}
+	 * Gets a require call from the given statement. If it is a binary expression, it will look on the right-hand side
+	 * for a require() call.
+	 * @param {ts.CallExpression | ts.ExpressionStatement | ts.BinaryExpression | ts.Expression} statement
+	 * @returns {IRequire}
 	 */
-	private formatCallExpression (statement: CallExpression): IExportDeclaration|null {
-		const formatted = callExpressionFormatter.format(statement);
-		if (formatted.identifier !== "___export") return null;
+	private getRequireCallForExpression (statement: CallExpression|ExpressionStatement|BinaryExpression|Expression): IRequire|null {
+		if (isExpressionStatement(statement)) return this.getRequireCallForExpression(statement.expression);
+		if (isBinaryExpression(statement)) return this.getRequireCallForExpression(statement.right);
+		if (!isCallExpression(statement)) return null;
+		return requireFormatter.format(statement);
+	}
 
+	/**
+	 * Walks through all arguments of the given CallExpression and checks if any of them is a Require call.
+	 * @param {CallExpression} statement
+	 * @returns {IRequire}
+	 */
+	private getRequireCallFromArguments (statement: CallExpression|BinaryExpression|ExpressionStatement): IRequire|null {
+		if (!isCallExpression(statement)) return null;
+		for (const argument of statement.arguments) {
+			const requireCall = this.getRequireCallForExpression(argument);
+			if (requireCall != null) return requireCall;
+		}
+		return null;
+	}
+
+	/**
+	 * A method that can convert expressions of kind "__export(require(<string>))" into an IExportDeclaration.
+	 * @param {CallExpression|BinaryExpression|ExpressionStatement} statement
+	 * @param {IRequire|null} [requireCall]
+	 * @param {string} [identifier]
+	 * @returns {IExportDeclaration}
+	 */
+	private formatCompiledTypescriptCommonjsNamespaceExportCallExpression (statement: CallExpression|BinaryExpression|ExpressionStatement, requireCall = this.getRequireCallFromArguments(statement), identifier: string = NAMESPACE_NAME): IExportDeclaration|null {
 		// This is a namespace export in commonjs format.
-		const argument = statement.arguments.find(arg => isCallExpression(arg));
-		if (argument == null) return null;
+		if (requireCall == null) return null;
 
-		const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = <IRequire>requireFormatter.format(<CallExpression>argument);
+		const {startsAt, endsAt, filePath, fullPath, relativePath, payload} = requireCall;
 
 		const map: IExportDeclaration = identifierUtil.setKind({
 			___kind: IdentifierMapKind.EXPORT,
@@ -67,7 +92,7 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 			},
 			filePath,
 			bindings: {
-				[NAMESPACE_NAME]: {
+				[identifier]: {
 					startsAt,
 					endsAt,
 					name: NAMESPACE_NAME,
@@ -81,6 +106,20 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 		mapper.set(map, statement);
 		return map;
+	}
+
+	/**
+	 * Formats the given CallExpression into an IExportDeclaration, if possible.
+	 * It will be if it is a special function such as '__export(require()' which is a helper function
+	 * Typescript uses to export a namespace. For other cases (like module.exports = require()), other
+	 * instance methods of this class will be used.
+	 * @param {CallExpression} statement
+	 * @returns {IExportDeclaration|null}
+	 */
+	private formatCallExpression (statement: CallExpression): IExportDeclaration|null {
+		const formatted = callExpressionFormatter.format(statement);
+		if (formatted.identifier === "___export") return this.formatCompiledTypescriptCommonjsNamespaceExportCallExpression(statement);
+		return null;
 	}
 
 	/**
@@ -146,6 +185,78 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 
 	/**
 	 * Formats the given Statement into an IExportDeclaration, if possible.
+	 * It will be if it is of the kind: 'exports.foo = require(something)'.
+	 * @param {ExpressionStatement | BinaryExpression} statement
+	 * @param {IMutationDeclaration} formatted
+	 * @param {string} [identifier]
+	 * @returns {IExportDeclaration}
+	 */
+	private formatExportsAssignmentToRequireCall (statement: ExpressionStatement|BinaryExpression, formatted: IRequire, identifier?: string): IExportDeclaration|null {
+		return this.formatCompiledTypescriptCommonjsNamespaceExportCallExpression(statement, formatted, identifier);
+	}
+
+	/**
+	 * Formats the given Statement into an IExportDeclaration, if possible.
+	 * It will be if it is of kind 'exports.foo = something'. That something may be a 'require' call on its own.
+	 * @param {ExpressionStatement | BinaryExpression} statement
+	 * @param {IMutationDeclaration} formatted
+	 * @param {string} identifier
+	 * @returns {IExportDeclaration}
+	 */
+	private formatExportsAssignment (statement: ExpressionStatement|BinaryExpression, formatted: IMutationDeclaration|IRequire, identifier: string): IExportDeclaration|null {
+		// If the right-hand side is a require() expression.
+		if (isIRequire(formatted)) return this.formatExportsAssignmentToRequireCall(statement, formatted, identifier);
+
+		else if (isIMutationDeclaration(formatted)) {
+			// Otherwise, it is a literal value.
+
+			const payload = () => {
+				const obj = {
+					___kind: IdentifierMapKind.LITERAL,
+					startsAt: statement.pos,
+					endsAt: statement.end,
+					value: () => formatted.value.expression == null ? [] : formatted.value.expression
+				};
+				mapper.set(obj, statement);
+				return obj;
+			};
+			const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
+			const filePath = sourceFileProperties.filePath;
+
+			const relativePath = () => filePath;
+			const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
+
+			const map: IExportDeclaration = identifierUtil.setKind({
+				___kind: IdentifierMapKind.EXPORT,
+				startsAt: statement.pos,
+				endsAt: statement.end,
+				moduleKind: ModuleDependencyKind.REQUIRE,
+				source: {
+					relativePath,
+					fullPath
+				},
+				filePath,
+				bindings: {
+					[identifier]: {
+						startsAt: statement.pos,
+						endsAt: statement.end,
+						___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
+						name: identifier,
+						payload,
+						kind: identifier === "default" ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
+					}
+				}
+			}, IdentifierMapKind.EXPORT);
+			mapper.set(map.bindings[identifier], statement);
+
+			mapper.set(map, statement);
+			return map;
+		}
+		return null;
+	}
+
+	/**
+	 * Formats the given Statement into an IExportDeclaration, if possible.
 	 * @param {ExpressionStatement | BinaryExpression} statement
 	 * @returns {IExportDeclaration}
 	 */
@@ -153,51 +264,16 @@ export class ExportFormatter extends ModuleFormatter implements IExportFormatter
 		const formatted = mutationFormatter.format(statement);
 
 		if (formatted == null) return null;
-		const isCandidate = formatted.property === "exports" && formatted.identifier !== "undefined" && formatted.identifier !== undefined;
-		if (!isCandidate) return null;
-
-		const payload = () => {
-			const obj = {
-				___kind: IdentifierMapKind.LITERAL,
-				startsAt: statement.pos,
-				endsAt: statement.end,
-				value: () => formatted.value.expression == null ? [] : formatted.value.expression
-			};
-			mapper.set(obj, statement);
-			return obj;
-		};
-		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
-		const filePath = sourceFileProperties.filePath;
-
-		const relativePath = () => filePath;
-		const fullPath = () => this.formatFullPathFromRelative(filePath, relativePath());
-		const identifier = formatted.identifier == null || formatted.identifier === "default" ? "default" : formatted.identifier.toString();
-
-		const map: IExportDeclaration = identifierUtil.setKind({
-			___kind: IdentifierMapKind.EXPORT,
-			startsAt: statement.pos,
-			endsAt: statement.end,
-			moduleKind: ModuleDependencyKind.REQUIRE,
-			source: {
-				relativePath,
-				fullPath
-			},
-			filePath,
-			bindings: {
-				[identifier]: {
-					startsAt: statement.pos,
-					endsAt: statement.end,
-					___kind: IdentifierMapKind.IMPORT_EXPORT_BINDING,
-					name: identifier,
-					payload,
-					kind: identifier === "default" ? ImportExportKind.DEFAULT : ImportExportKind.NAMED
-				}
-			}
-		}, IdentifierMapKind.EXPORT);
-		mapper.set(map.bindings[identifier], statement);
-
-		mapper.set(map, statement);
-		return map;
+		const isExportsAssignment = formatted.property === "exports" && formatted.identifier !== "undefined" && formatted.identifier !== undefined;
+		const isModuleExportsAssignment = formatted.property === "module" && formatted.identifier === "exports";
+		if (isExportsAssignment || isModuleExportsAssignment) {
+			// It might be that a literal value (or something else) is exported, but it may also be a require() call itself on the right-hand side of the expression.
+			const requireCall = this.getRequireCallForExpression(statement);
+			const identifier = formatted.identifier == null || formatted.identifier === "exports" || formatted.identifier === "default" ? "default" : formatted.identifier.toString();
+			if (isExportsAssignment) return this.formatExportsAssignment(statement, requireCall != null ? requireCall : formatted, identifier);
+			if (isModuleExportsAssignment) return this.formatExportsAssignment(statement, requireCall != null ? requireCall : formatted, identifier);
+		}
+		return null;
 	}
 
 	/**

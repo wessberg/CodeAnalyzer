@@ -423,7 +423,7 @@ export interface IPropIndexer {
 }
 
 export declare type LiteralExpression = ArrayLiteralExpression|StringLiteral|NumericLiteral|BooleanLiteral|ObjectLiteralExpression|NoSubstitutionTemplateLiteral|RegularExpressionLiteral;
-export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|INamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
+export declare type IIdentifier = IGetAccessorDeclaration|ISetAccessorDeclaration|IArrowFunction|INamespacedModuleMap|ILiteralValue|IMutationDeclaration|IImportExportBinding|IConstructorDeclaration|IArgument|IDecorator|IImportDeclaration|ICallExpression|INewExpression|IParameter|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration|IRequire;
 export declare type IExportableIIdentifier = IArrowFunction|ILiteralValue|IVariableDeclaration|IClassDeclaration|IEnumDeclaration|IFunctionDeclaration;
 export declare type NonNullableArbitraryValue = string|boolean|symbol|number|Function|object|IBindingIdentifier|ITypeBinding|{};
 export declare type ArbitraryValue = NonNullableArbitraryValue|null|undefined;

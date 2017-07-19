@@ -99,4 +99,48 @@ test(`getExportDeclarations() -> Detects export declarations correctly. #8`, t =
 	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["default"].kind === ImportExportKind.DEFAULT);
 });
 
+test(`getExportDeclarations() -> Detects export declarations correctly. #9`, t => {
+
+	const code = `
+		module.exports = require('./lib/index');
+	`;
+
+	const statements = parse(code);
+	const exportDeclarations = service.getExportDeclarations(statements);
+	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["default"] != null);
+});
+
+test(`getExportDeclarations() -> Detects export declarations correctly. #10`, t => {
+
+	const code = `
+		exports.foo = require('./lib/index');
+	`;
+
+	const statements = parse(code);
+	const exportDeclarations = service.getExportDeclarations(statements);
+	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["foo"] != null);
+});
+
+test(`getExportDeclarations() -> Detects export declarations correctly. #11`, t => {
+
+	const code = `
+		exports.foo = 2;
+	`;
+
+	const statements = parse(code);
+	const exportDeclarations = service.getExportDeclarations(statements);
+	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["foo"] != null);
+});
+
+test(`getExportDeclarations() -> Detects export declarations correctly. #12`, t => {
+
+	const code = `
+		module.exports = 2;
+	`;
+
+	const statements = parse(code);
+	const exportDeclarations = service.getExportDeclarations(statements);
+	t.true(exportDeclarations.length === 1 && exportDeclarations[0].bindings["default"] != null);
+});
+
 /*tslint:enable*/

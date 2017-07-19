@@ -319,7 +319,7 @@ export class ImportFormatter extends ModuleFormatter implements IImportFormatter
 				const path = modulePath();
 				const fileExports = exportDeclarationGetter.getForFile(path, true);
 				const match = fileExports.find(exportDeclaration => exportDeclaration.bindings.default != null);
-				if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${modulePath}! The module doesn't contain a default export.`);
+				if (match == null) throw new ReferenceError(`${this.formatImportClause.name} could not extract a default export from ${path}! The module doesn't contain a default export.`);
 				return match.bindings.default.payload();
 			};
 
