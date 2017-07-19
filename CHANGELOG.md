@@ -1,3 +1,15 @@
+<a name="1.0.43"></a>
+## 1.0.43 (2017-07-19)
+
+* 1.0.43 ([da6dd9d](https://github.com/wessberg/CodeAnalyzer/commit/da6dd9d))
+* Fixed all lint errors ([61133bc](https://github.com/wessberg/CodeAnalyzer/commit/61133bc))
+* Migrated to common tsconfig setup. Added lots of documentation ([5daa8e0](https://github.com/wessberg/CodeAnalyzer/commit/5daa8e0))
+* Removed fields ([1ee8b49](https://github.com/wessberg/CodeAnalyzer/commit/1ee8b49))
+* Skipped a test so that it can be implemented after the following patch ([59df7fd](https://github.com/wessberg/CodeAnalyzer/commit/59df7fd))
+* Update package.json ([75e5bee](https://github.com/wessberg/CodeAnalyzer/commit/75e5bee))
+
+
+
 <a name="1.0.42"></a>
 ## 1.0.42 (2017-07-10)
 
