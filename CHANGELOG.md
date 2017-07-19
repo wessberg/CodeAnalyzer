@@ -1,3 +1,12 @@
+<a name="1.0.45"></a>
+## 1.0.45 (2017-07-19)
+
+* 1.0.45 ([c8dc168](https://github.com/wessberg/CodeAnalyzer/commit/c8dc168))
+* Bumped version ([a16c02a](https://github.com/wessberg/CodeAnalyzer/commit/a16c02a))
+* Migrated to new version of GlobalObject ([b28b7b4](https://github.com/wessberg/CodeAnalyzer/commit/b28b7b4))
+
+
+
 <a name="1.0.44"></a>
 ## 1.0.44 (2017-07-19)
 
