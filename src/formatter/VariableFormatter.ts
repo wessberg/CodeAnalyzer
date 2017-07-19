@@ -4,6 +4,9 @@ import {IVariableFormatter} from "./interface/IVariableFormatter";
 import {cache, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
 import {IBaseVariableDeclaration, IdentifierMapKind, IVariableDeclaration, IVariableIndexer} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format all relevant kinds of Statements into an IVariableIndexer
+ */
 export class VariableFormatter implements IVariableFormatter {
 
 	/**
@@ -27,6 +30,11 @@ export class VariableFormatter implements IVariableFormatter {
 		return assignmentMap;
 	}
 
+	/**
+	 * Formats the given VariableDeclaration into an IBaseVariableDeclaration
+	 * @param {VariableDeclaration} declaration
+	 * @returns {IBaseVariableDeclaration}
+	 */
 	private formatBaseVariableAssignment (declaration: VariableDeclaration): IBaseVariableDeclaration {
 		const startsAt = declaration.pos;
 		const endsAt = declaration.end;
@@ -49,6 +57,11 @@ export class VariableFormatter implements IVariableFormatter {
 		};
 	}
 
+	/**
+	 * Formats a standard variable declaration into an IVariableDeclaration
+	 * @param {VariableDeclaration & {name: Identifier}} declaration
+	 * @returns {IVariableDeclaration}
+	 */
 	private formatStandardVariableDeclaration (declaration: VariableDeclaration&{ name: Identifier }): IVariableDeclaration {
 		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const name = declaration.name.text;
@@ -69,6 +82,11 @@ export class VariableFormatter implements IVariableFormatter {
 		return map;
 	}
 
+	/**
+	 * Formats a VariableDeclaration into an array of IVariableDeclarations
+	 * @param {VariableDeclaration} declaration
+	 * @returns {IVariableDeclaration[]}
+	 */
 	private formatVariableDeclaration (declaration: VariableDeclaration): IVariableDeclaration[] {
 
 		if (!isIdentifierObject(declaration.name)) {
@@ -87,6 +105,11 @@ export class VariableFormatter implements IVariableFormatter {
 		throw new TypeError(`${this.formatVariableDeclaration.name} could not format variable declaration because a name couldn't be determined!`);
 	}
 
+	/**
+	 * Formats an ArrayBindingPatternVariableDeclaration (such as const [foo, bar] = [1, 2]) into an array of IVariableDeclarations.
+	 * @param {VariableDeclaration & {name: ArrayBindingPattern}} declaration
+	 * @returns {IVariableDeclaration[]}
+	 */
 	private formatArrayBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ArrayBindingPattern }): IVariableDeclaration[] {
 		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const assignments: IVariableDeclaration[] = [];
@@ -94,7 +117,7 @@ export class VariableFormatter implements IVariableFormatter {
 		declaration.name.elements.forEach((binding, index) => {
 			if (isOmittedExpression(binding)) return;
 
-			const name = <string>nameGetter.getName(binding);
+			const name = nameGetter.getName(binding);
 			const cached = name == null ? null : cache.getCachedVariable(filePath, name);
 			if (cached != null && !cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {
@@ -114,12 +137,17 @@ export class VariableFormatter implements IVariableFormatter {
 		return assignments;
 	}
 
+	/**
+	 * Formats an Object Binding Pattern variable declaration (such as const {a, b} = {a: 1, b: 2}; ) into an array of IVariableDeclarations.
+	 * @param {VariableDeclaration & {name: ObjectBindingPattern}} declaration
+	 * @returns {IVariableDeclaration[]}
+	 */
 	private formatObjectBindingPatternVariableDeclaration (declaration: VariableDeclaration&{ name: ObjectBindingPattern }): IVariableDeclaration[] {
 		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 		const assignments: IVariableDeclaration[] = [];
 
 		declaration.name.elements.forEach(binding => {
-			const name = <string>nameGetter.getName(binding);
+			const name = nameGetter.getName(binding);
 			const cached = name == null ? null : cache.getCachedVariable(filePath, name);
 			if (cached != null && !cache.cachedVariableNeedsUpdate(cached.content)) assignments.push(cached.content);
 			else {

@@ -5,6 +5,9 @@ import {IMethodFormatter} from "./interface/IMethodFormatter";
 import {identifierUtil, nameGetter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IdentifierMapKind, IMethodDeclaration} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IMethodDeclaration
+ */
 export class MethodFormatter extends FunctionLikeFormatter implements IMethodFormatter {
 
 	/**
@@ -13,7 +16,7 @@ export class MethodFormatter extends FunctionLikeFormatter implements IMethodFor
 	 * @param {string} className
 	 * @returns {IMethodDeclaration}
 	 */
-	format (declaration: MethodDeclaration, className: string): IMethodDeclaration {
+	public format (declaration: MethodDeclaration, className: string): IMethodDeclaration {
 		const name = <string>nameGetter.getNameOfMember(declaration.name, false, true);
 
 		const isStatic = declaration.modifiers == null ? false : declaration.modifiers.find(modifier => isStaticKeyword(modifier)) != null;

@@ -172,6 +172,11 @@ export class TypeExpressionGetter implements ITypeExpressionGetter {
 		throw new TypeError(`${this.getTypeExpression.name} could not retrieve the type information for a statement of kind ${SyntaxKind[statement.kind]} around here: ${sourceFilePropertiesGetter.getSourceFileProperties(statement).fileContents.slice(statement.pos, statement.end)}`);
 	}
 
+	/**
+	 * Gets the flattened name for a type. Takes all the type value expressions and stringifies them.
+	 * @param {Statement | Expression | Declaration | Node} statement
+	 * @returns {string}
+	 */
 	private getFlattenedName (statement: Statement|Expression|Declaration|Node): string {
 		const expression = valueExpressionGetter.getValueExpression(statement);
 		return expression.map(exp => exp instanceof BindingIdentifier ? exp.name : exp).join("");

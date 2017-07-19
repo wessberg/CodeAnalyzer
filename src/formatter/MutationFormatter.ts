@@ -4,6 +4,9 @@ import {isBinaryExpression, isElementAccessExpression, isExpressionStatement, is
 import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, valueableFormatter, valueExpressionGetter, valueResolvedGetter} from "../services";
 import {ArbitraryValue, IdentifierMapKind, IMutationDeclaration, INonNullableValueable} from "../identifier/interface/IIdentifier";
 
+/**
+ * Formats the any kind of relevant statement into an IMutationDeclaration.
+ */
 export class MutationFormatter implements IMutationFormatter {
 
 	/**
@@ -28,7 +31,7 @@ export class MutationFormatter implements IMutationFormatter {
 
 		if (isPropertyAccessExpression(statement.left)) {
 			property = nameGetter.getName(statement.left.expression);
-			identifier = <string>nameGetter.getName(statement.left.name);
+			identifier = nameGetter.getName(statement.left.name);
 		}
 
 		if (isElementAccessExpression(statement.left)) {
@@ -63,9 +66,19 @@ export class MutationFormatter implements IMutationFormatter {
 				resolving: false,
 				resolved: undefined,
 				resolvedPrecompute: undefined,
+
+				/**
+				 * Returns true if a value has been resolved previously.
+				 * @returns {boolean}
+				 */
 				hasDoneFirstResolve () {
 					return map.value.resolved !== undefined;
 				},
+
+				/**
+				 * Resolves/computes a value for the associated value expression.
+				 * @returns {ArbitraryValue}
+				 */
 				resolve () {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;
@@ -83,6 +96,11 @@ export class MutationFormatter implements IMutationFormatter {
 		return map;
 	}
 
+	/**
+	 * Returns true if the given BinaryExpression is an assignment.
+	 * @param {BinaryExpression} statement
+	 * @returns {boolean}
+	 */
 	private isAssignment (statement: BinaryExpression): boolean {
 		return statement.operatorToken.kind === SyntaxKind.EqualsToken;
 	}

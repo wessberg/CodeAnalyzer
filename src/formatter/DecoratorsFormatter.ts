@@ -3,6 +3,9 @@ import {IDecoratorsFormatter} from "./interface/IDecoratorsFormatter";
 import {identifierUtil, mapper, nameGetter} from "../services";
 import {IDecorator, IDecoratorIndexer, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IDecoratorIndexer
+ */
 export class DecoratorsFormatter implements IDecoratorsFormatter {
 
 	/**

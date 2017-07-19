@@ -4,6 +4,9 @@ import {IConstructorFormatter} from "./interface/IConstructorFormatter";
 import {identifierUtil, mapper, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IConstructorDeclaration, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an IConstructorDeclaration
+ */
 export class ConstructorFormatter extends FunctionLikeFormatter implements IConstructorFormatter {
 
 	/**

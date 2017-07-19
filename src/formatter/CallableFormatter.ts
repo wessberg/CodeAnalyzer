@@ -1,7 +1,7 @@
 import {CallExpression, NewExpression, ParenthesizedExpression} from "typescript";
 import {isArrowFunction, isBinaryExpression, isCallExpression, isElementAccessExpression, isFunctionExpression, isIdentifierObject, isLiteralExpression, isNewExpression, isParenthesizedExpression, isPropertyAccessExpression, isSuperExpression} from "../predicate/PredicateFunctions";
 import {ICallableFormatter} from "./interface/ICallableFormatter";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {nameGetter, tokenSerializer, typeExpressionGetter, typeUtil, valueableFormatter} from "../services";
 import {ArbitraryValue, ICallable, ITypeable, TypeExpression} from "../identifier/interface/IIdentifier";
 
@@ -39,7 +39,7 @@ export abstract class CallableFormatter implements ICallableFormatter {
 		}
 
 		if (isArrowFunction(exp)) {
-			identifier = Config.name.anonymous;
+			identifier = config.name.anonymous;
 			const value = valueableFormatter.format(exp);
 			property = value.hasDoneFirstResolve() ? value.resolved : value.resolve();
 		}

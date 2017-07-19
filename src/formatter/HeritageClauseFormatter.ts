@@ -4,6 +4,9 @@ import {IHeritageClauseFormatter} from "./interface/IHeritageClauseFormatter";
 import {tracer, typeExpressionGetter} from "../services";
 import {IClassDeclaration, IdentifierMapKind, IHeritage} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format a classes heritage (e.g. super class)
+ */
 export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 
 	/**
@@ -30,6 +33,10 @@ export class HeritageClauseFormatter implements IHeritageClauseFormatter {
 					obj.extendsClass = {
 						...extendsClass,
 						...{
+							/**
+							 * Resolves the super class for the base class.
+							 * @returns {IClassDeclaration}
+							 */
 							resolve () {
 								return <IClassDeclaration>tracer.traceIdentifier(extendsClass.name, clause, undefined, IdentifierMapKind.CLASS);
 							}

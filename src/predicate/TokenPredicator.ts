@@ -1,6 +1,10 @@
 import {ITokenPredicator} from "./interface/ITokenPredicator";
 import {ArbitraryValue} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that gives relevant meta-information about arbitrary values.
+ * For example, if the item is a keyword, whitespace or an operator.
+ */
 export class TokenPredicator implements ITokenPredicator {
 
 	/**

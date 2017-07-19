@@ -1,5 +1,5 @@
 import {dirname, extname, join} from "path";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {IModuleFormatter} from "./interface/IModuleFormatter";
 import "querystring";
 import {BindingIdentifier} from "../model/BindingIdentifier";
@@ -10,23 +10,23 @@ import {IdentifierMapKind, IModuleDeclaration, INamespacedModuleMap, NAMESPACE_N
 export abstract class ModuleFormatter implements IModuleFormatter {
 	private static readonly RESOLVED_PATHS: Map<string, string> = new Map();
 	private static readonly DEFAULT_MODULE_FILEPATH: string = "index.js";
-	private static readonly ALLOWED_EXTENSIONS: string[] = [...new Set([...Config.supportedFileExtensions, ".json"])];
+	private static readonly ALLOWED_EXTENSIONS: string[] = [...new Set([...config.supportedFileExtensions, ".json"])];
 
 	public resolvePath (filePath: string): string {
 		const cached = ModuleFormatter.RESOLVED_PATHS.get(filePath);
 		if (cached != null) return cached;
 
 		// If the path already ends with an extension, do nothing.
-		if (Config.supportedFileExtensions.some(ext => filePath.endsWith(ext) && !filePath.endsWith(".d.ts"))) return filePath;
-		const [, path] = fileLoader.existsWithFirstMatchedExtensionSync(filePath, Config.supportedFileExtensions);
-		const traced = this.traceFullPath(path == null ? `${filePath}${Config.defaultExtension}` : path);
+		if (config.supportedFileExtensions.some(ext => filePath.endsWith(ext) && !filePath.endsWith(".d.ts"))) return filePath;
+		const [, path] = fileLoader.existsWithFirstMatchedExtensionSync(filePath, config.supportedFileExtensions);
+		const traced = this.traceFullPath(path == null ? `${filePath}${config.defaultExtension}` : path);
 		ModuleFormatter.RESOLVED_PATHS.set(filePath, traced);
 		return traced;
 	}
 
 	public normalizeExtension (filePath: string): string {
 		const extension = extname(filePath);
-		return extension === "" ? `${filePath}${Config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${Config.defaultExtension}`;
+		return extension === "" ? `${filePath}${config.defaultExtension}` : `${filePath.slice(0, filePath.lastIndexOf(extension))}${config.defaultExtension}`;
 	}
 
 	protected moduleToNamespacedObjectLiteral (modules: (IModuleDeclaration)[]): INamespacedModuleMap {
@@ -84,7 +84,7 @@ export abstract class ModuleFormatter implements IModuleFormatter {
 
 	protected formatFullPathFromRelative (filePath: string, relativePath: string): string {
 		const relativePathStripped = <string>stringUtil.stripQuotesIfNecessary(relativePath);
-		if (Config.builtIns.has(relativePathStripped)) {
+		if (config.builtIns.has(relativePathStripped)) {
 			return relativePathStripped;
 		}
 

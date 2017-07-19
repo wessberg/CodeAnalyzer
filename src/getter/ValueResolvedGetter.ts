@@ -3,10 +3,15 @@ import {Expression, Node, Statement} from "typescript";
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isICallExpression, isIClassDeclaration, isIEnumDeclaration, isIFunctionDeclaration, isIIdentifier, isILiteralValue, isIParameter, isIVariableAssignment, isNamespacedModuleMap} from "../predicate/PredicateFunctions";
 import {ITracedExpressionsFormatterOptions, IValueResolvedGetter} from "./interface/IValueResolvedGetter";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {mapper, marshaller, tokenPredicator, tracer} from "../services";
 import {ArbitraryValue, IdentifierMapKind, IIdentifier, INonNullableValueable, NonNullableArbitraryValue} from "../identifier/interface/IIdentifier";
+import {Config} from "@wessberg/environment";
 
+/**
+ * A class that can (or at least attempts to) resolve/compute a value for any kind of ValueExpression.
+ * This is useful for performing partial code evaluation ahead of time.
+ */
 export class ValueResolvedGetter implements IValueResolvedGetter {
 
 	/**
@@ -28,6 +33,16 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		return [takenResult, joined];
 	}
 
+	/**
+	 * Converts the traced identifier to value expressions.
+	 * @param {IIdentifier} traced
+	 * @param {Statement | Expression | Node} from
+	 * @param {BindingIdentifier} identifier
+	 * @param {string} scope
+	 * @param {boolean} isSignature
+	 * @param {ArbitraryValue} [next]
+	 * @returns {ArbitraryValue[]}
+	 */
 	private getExpressionsFromTracedIdentifier ({traced, from, identifier, scope, isSignature, next}: ITracedExpressionsFormatterOptions): ArbitraryValue[] {
 
 		if (isILiteralValue(traced)) {
@@ -38,7 +53,8 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 
 				if (isIIdentifier(part)) {
 					const partNext = index === val.length - 1 ? undefined : val[index + 1];
-					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: mapper.get(traced) || from, identifier, scope, isSignature, next: partNext});
+					const mappedFrom = mapper.get(traced);
+					const value = this.getExpressionsFromTracedIdentifier({traced: part, from: mappedFrom == null ? from : mappedFrom, identifier, scope, isSignature, next: partNext});
 					value.forEach(item => arr.push(item));
 				}
 
@@ -78,13 +94,15 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				return [traced.name];
 			}
 
-			const exp = this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from);
+			const mappedFrom = mapper.get(traced);
+			const exp = this.flattenValueExpressions(traced.value.expression, mappedFrom == null ? from : mappedFrom);
 			return ["(", "(", ")", "=>", "{", "try", "{", traced.name, ";", "return", " ", traced.name, ";", "}", "catch", "(", "e", ")", "{", "return", "(", ...exp, ")", "}", "}", ")", "(", ")"];
 		}
 
 		if (isIParameter(traced)) {
 			if (isSignature) {
-				const initializer = traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from);
+				const mappedFrom = mapper.get(traced);
+				const initializer = traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mappedFrom == null ? from : mappedFrom);
 				const assignment = initializer.length > 0 ? ["="] : [];
 				return [...traced.nameFormatted, ...assignment, ...initializer];
 			} else {
@@ -95,7 +113,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if (isIClassDeclaration(traced)) {
 			const newExpression = (identifier.name === "this" || identifier.name === "super") ? ["new", " "] : [];
 			const newExpressionOutro = (identifier.name === "this" || identifier.name === "super") && next !== "{" && next !== "(" ? ["(", ")"] : [];
-			return traced.value.expression == null ? [] : [...newExpression, ...this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from), ...newExpressionOutro];
+			if (traced.value.expression == null) return [];
+			const mappedFrom = mapper.get(traced);
+			return [...newExpression, ...this.flattenValueExpressions(traced.value.expression, mappedFrom == null ? from : mappedFrom), ...newExpressionOutro];
 		}
 
 		if (isIEnumDeclaration(traced)) {
@@ -111,22 +131,24 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				if (index !== traced.parameters.parametersList.length - 1) parameters.push(",");
 			});
 
-			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mapper.get(traced) || from)), "}"];
+			const mappedFrom = mapper.get(traced);
+			return ["function", " ", traced.name, "(", ...parameters, ")", "{", ...(traced.value.expression == null ? [] : this.flattenValueExpressions(traced.value.expression, mappedFrom == null ? from : mappedFrom)), "}"];
 		}
 
 		if (isICallExpression(traced)) {
 			// TODO: If it is a 'require' expression, we want to trace the module in a different way.
-			let identifier = Array.isArray(traced.identifier) ? this.flattenValueExpressions(traced.identifier, mapper.get(traced) || from) : [traced.identifier];
+			const mappedFrom = mapper.get(traced);
+			const newIdentifier = Array.isArray(traced.identifier) ? this.flattenValueExpressions(traced.identifier, mappedFrom == null ? from : mappedFrom) : [traced.identifier];
 
-			let expression: ArbitraryValue[] = [...identifier];
+			let expression: ArbitraryValue[] = [...newIdentifier];
 			if (traced.property != null) {
-				let property = Array.isArray(traced.property) ? this.flattenValueExpressions(traced.property, mapper.get(traced) || from) : [`"${traced.property}"`];
+				const property = Array.isArray(traced.property) ? this.flattenValueExpressions(traced.property, mappedFrom == null ? from : mappedFrom) : [`"${traced.property}"`];
 				expression = [...expression, "[", ...property, "]"];
 			}
 
 			expression.push("(");
 			traced.arguments.argumentsList.forEach((arg, index) => {
-				const expressions = arg.value.expression == null ? [] : this.flattenValueExpressions(arg.value.expression, mapper.get(traced) || from);
+				const expressions = arg.value.expression == null ? [] : this.flattenValueExpressions(arg.value.expression, mappedFrom == null ? from : mappedFrom);
 				expressions.forEach(exp => expression.push(exp));
 				if (index !== traced.arguments.argumentsList.length - 1) expressions.push(",");
 			});
@@ -137,6 +159,13 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		throw new TypeError(`${this.constructor.name} could not get expressions for an IIdentifier of kind ${IdentifierMapKind[traced.___kind]}`);
 	}
 
+	/**
+	 * Resolves and gets all value expressions recursively for the given identifier.
+	 * @param {BindingIdentifier} identifier
+	 * @param {string} scope
+	 * @param {ArbitraryValue} next
+	 * @returns {ArbitraryValue[]}
+	 */
 	private getExpressionsFromIdentifier (identifier: BindingIdentifier, scope: string, next: ArbitraryValue|undefined): ArbitraryValue[] {
 
 		// If the identifier is the scope itself, return a reference to it.
@@ -146,15 +175,22 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		if ((identifier.name === "this" || identifier.name === "super") && (scope === thisScope)) return [identifier.name];
 
 		// This will sometimes happen if the scope is determined from a built-in class and thus is unknown.
-		if (scope === Config.name.global && thisScope !== Config.name.global) return [identifier.name];
+		if (scope === config.name.global && thisScope !== config.name.global) return [identifier.name];
 
 		const traced = tracer.traceIdentifier(identifier.name, identifier.location);
 		if (isIIdentifier(traced)) return this.getExpressionsFromTracedIdentifier({traced, from: identifier.location, identifier, scope, isSignature: false, next});
 
-		if (process.env.npm_config_debug) console.log(`Assuming that '${identifier.name}' is part of the global environment...`);
+		if (Config.DEBUG) console.log(`Assuming that '${identifier.name}' is part of the global environment...`);
 		return [identifier.name];
 	}
 
+	/**
+	 * Handles an expression by recursively resolving and flattening and it to value expressions.
+	 * @param {ArbitraryValue} expression
+	 * @param {string} scope
+	 * @param {ArbitraryValue} next
+	 * @returns {ArbitraryValue[]}
+	 */
 	private handleValueExpression (expression: ArbitraryValue, scope: string, next: ArbitraryValue|undefined): ArbitraryValue[] {
 		if (expression instanceof BindingIdentifier) {
 			return this.getExpressionsFromIdentifier(expression, scope, next);
@@ -164,6 +200,12 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		}
 	}
 
+	/**
+	 * Flattens all the given value expressions. Those that are BindingIdentifiers will be resolved and flattened to value expressions.
+	 * @param {ArbitraryValue[]} expressions
+	 * @param {Statement | Expression | Node} from
+	 * @returns {ArbitraryValue[]}
+	 */
 	private flattenValueExpressions (expressions: ArbitraryValue[], from: Statement|Expression|Node): ArbitraryValue[] {
 		const merged: ArbitraryValue[] = [];
 		const scope = tracer.traceBlockScopeName(from);
@@ -175,6 +217,11 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 		return merged;
 	}
 
+	/**
+	 * Attempts to compute a value for the given stringified expression.
+	 * @param {string} flattened
+	 * @returns {ArbitraryValue}
+	 */
 	private attemptComputation (flattened: string): ArbitraryValue {
 		return this.computeValueResolved(flattened);
 	}
@@ -192,9 +239,9 @@ export class ValueResolvedGetter implements IValueResolvedGetter {
 				return new Function(`${flattened}`)();
 			} catch (ex) {
 				const reason = `A computation failed for:\n${flattened}. Reason: ${ex.message}`;
-				if (process.env.npm_config_debug) console.error(reason);
+				if (Config.DEBUG) console.error(reason);
 				return null;
-				// if (process.env.npm_config_debug) throw TypeError(reason);
+				// if (Config.DEBUG) throw TypeError(reason);
 				// else return null;
 			}
 		}

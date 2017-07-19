@@ -4,6 +4,9 @@ import {IPropFormatter} from "./interface/IPropFormatter";
 import {decoratorsFormatter, identifierUtil, mapper, modifiersFormatter, nameGetter, sourceFilePropertiesGetter, tokenSerializer, tracer, typeExpressionGetter, typeUtil, valueExpressionGetter, valueResolvedGetter} from "../services";
 import {IdentifierMapKind, INonNullableValueable, IPropDeclaration} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format props for all relevant kinds of statements
+ */
 export class PropFormatter implements IPropFormatter {
 
 	/**
@@ -44,9 +47,19 @@ export class PropFormatter implements IPropFormatter {
 				resolving: false,
 				resolved: undefined,
 				resolvedPrecompute: undefined,
+
+				/**
+				 * Returns true if a value has been resolved previously.
+				 * @returns {boolean}
+				 */
 				hasDoneFirstResolve () {
 					return map.value.resolved !== undefined;
 				},
+
+				/**
+				 * Resolves/computes a value for the associated value expression.
+				 * @returns {ArbitraryValue}
+				 */
 				resolve () {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;

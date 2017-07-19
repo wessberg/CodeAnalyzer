@@ -1,7 +1,7 @@
 import {IConfig} from "./interface/IConfig";
 import {IdentifierIntelligence, PathIntelligence} from "@wessberg/compiler-common";
 
-export const Config: IConfig = {
+export const config: IConfig = {
 	name: {
 		global: "global",
 		anonymous: "__anonymous__"

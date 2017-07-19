@@ -1,10 +1,13 @@
-import {ClassDeclaration, Expression, Node, Statement, SyntaxKind} from "typescript";
+import {ClassDeclaration, Expression, Node, Statement, SyntaxKind, ClassExpression} from "typescript";
 import {isArrowFunction, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExtendsClause, isFunctionDeclaration, isFunctionExpression, isMethodDeclaration, isPropertyDeclaration, isSourceFile, isTypeBinding} from "../predicate/PredicateFunctions";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {ITracer} from "./interface/ITracer";
 import {allIdentifiersGetter, cache, mapper, nameGetter, sourceFilePropertiesGetter, typeExpressionGetter} from "../services";
 import {ICallExpression, IdentifierMapKind, IIdentifier, IIdentifierMap, IImportExportBinding, IParameter} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can trace identifiers and names from any starting point (e.g. Statement)
+ */
 export class Tracer implements ITracer {
 
 	/**
@@ -21,7 +24,8 @@ export class Tracer implements ITracer {
 
 		if (identifier === "super" && (ofKind == null || (ofKind === IdentifierMapKind.CLASS))) {
 			const scope = this.traceThis(from);
-			const classStatement = <ClassDeclaration>this.traceUpToKind(SyntaxKind.ClassDeclaration, from) || this.traceUpToKind(SyntaxKind.ClassExpression, from);
+			const tracedDeclaration = this.traceUpToKind<ClassDeclaration>(SyntaxKind.ClassDeclaration, from);
+			const classStatement = tracedDeclaration != null ? tracedDeclaration : this.traceUpToKind<ClassExpression>(SyntaxKind.ClassExpression, from);
 			if (classStatement == null || classStatement.heritageClauses == null) throw new TypeError(`${this.constructor.name} could not find a parent class of a super() expression.`);
 			let parentName: string|null = null;
 
@@ -45,13 +49,13 @@ export class Tracer implements ITracer {
 		const variableMatch = clojure.variables[identifier];
 		const classMatch = clojure.classes[identifier];
 
-		let parameterMatches: IParameter[] = [];
+		const parameterMatches: IParameter[] = [];
 
 		if (from.kind === SyntaxKind.FunctionExpression || from.kind === SyntaxKind.FunctionDeclaration || this.isChildOfAnyOfKinds([SyntaxKind.FunctionExpression, SyntaxKind.FunctionDeclaration], block, from)) {
 			Object.keys(clojure.functions).forEach(key => {
 				const parameters = clojure.functions[key].parameters.parametersList;
-				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
-				if (parameter != null) parameterMatches.push(parameter);
+				const matchedParameter = parameters.find(functionParameter => functionParameter.name.some(part => part === identifier));
+				if (matchedParameter != null) parameterMatches.push(matchedParameter);
 			});
 		}
 
@@ -60,8 +64,8 @@ export class Tracer implements ITracer {
 				const methods = clojure.classes[key].methods;
 				Object.keys(methods).forEach(methodName => {
 					const parameters = methods[methodName].parameters.parametersList;
-					const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
-					if (parameter != null) parameterMatches.push(parameter);
+					const matchedParameter = parameters.find(methodParameter => methodParameter.name.some(part => part === identifier));
+					if (matchedParameter != null) parameterMatches.push(matchedParameter);
 				});
 			});
 		}
@@ -72,17 +76,17 @@ export class Tracer implements ITracer {
 				if (ctor == null) return;
 
 				const parameters = ctor.parameters.parametersList;
-				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
-				if (parameter != null) parameterMatches.push(parameter);
+				const matchedParameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
+				if (matchedParameter != null) parameterMatches.push(matchedParameter);
 			});
 		}
 
 		if (this.isChildOfKind(SyntaxKind.ArrowFunction, block, from)) {
 			clojure.arrowFunctions.forEach(arrowFunction => {
 				const parameters = arrowFunction.parameters.parametersList;
-				const parameter = parameters.find(parameter => parameter.name.some(part => part === identifier));
-				if (parameter != null) {
-					parameterMatches.push(parameter);
+				const matchedParameter = parameters.find(arrowFunctionParameter => arrowFunctionParameter.name.some(part => part === identifier));
+				if (matchedParameter != null) {
+					parameterMatches.push(matchedParameter);
 				}
 			});
 		}
@@ -135,7 +139,7 @@ export class Tracer implements ITracer {
 			if (mapped != null && mapped === from) {
 				return;
 			}
-			;
+
 			allMatches.push(match);
 		});
 
@@ -147,14 +151,13 @@ export class Tracer implements ITracer {
 
 		const filtered = allMatches.filter(match => ofKind == null ? true : match.___kind === ofKind);
 
-		const closest = filtered.sort((a, b) => {
+		return filtered.sort((a, b) => {
 			const aDistanceFromStart = from.pos - a.startsAt;
 			const bDistanceFromStart = from.pos - b.startsAt;
 			if (aDistanceFromStart < bDistanceFromStart) return -1;
 			if (aDistanceFromStart > bDistanceFromStart) return 1;
 			return 0;
 		})[0];
-		return closest;
 	}
 
 	/**
@@ -175,9 +178,8 @@ export class Tracer implements ITracer {
 		if (cached != null && !cache.cachedTracedIdentifierNeedsUpdate(filePath, identifier, scope)) return cached.content;
 
 		let lookupIdentifier: string = identifier;
+		const clojure = this.traceClojure(from);
 		if (identifier === "super") {
-
-			const clojure = this.traceClojure(from);
 			if (clojure == null) throw new ReferenceError(`${this.constructor.name} could not trace the super class from scope '${scope}'`);
 			const thisScope = this.traceThis(from);
 			const derivedClass = clojure.classes[thisScope];
@@ -185,11 +187,10 @@ export class Tracer implements ITracer {
 			if (derivedClass.heritage == null || derivedClass.heritage.extendsClass == null) throw new ReferenceError(`${this.constructor.name} could not find a super class for the scope '${thisScope}'`);
 			lookupIdentifier = derivedClass.heritage.extendsClass.name;
 
-		} else if (identifier === "this" && scope != null && scope !== Config.name.global) {
+		} else if (identifier === "this" && scope != null && scope !== config.name.global) {
 			lookupIdentifier = scope;
 		}
 
-		const clojure = this.traceClojure(from);
 		const block = this.traceBlockScopeName(from);
 
 		if (clojure == null) {
@@ -215,15 +216,15 @@ export class Tracer implements ITracer {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
-				return Config.name.global;
+				return config.name.global;
 			}
 
 			if (
 				isFunctionExpression(block) ||
 				isFunctionDeclaration(block)
 			) {
-				const name = block.name == null ? block.parent == null ? Config.name.global : this.traceThis(block.parent) : nameGetter.getName(block);
-				return name == null ? Config.name.global : name;
+				const name = block.name == null ? block.parent == null ? config.name.global : this.traceThis(block.parent) : nameGetter.getName(block);
+				return name == null ? config.name.global : name;
 			}
 
 			if (
@@ -231,7 +232,7 @@ export class Tracer implements ITracer {
 				isClassExpression(block)
 			) {
 				const name = nameGetter.getName(block);
-				return name == null ? Config.name.global : name;
+				return name == null ? config.name.global : name;
 			}
 
 			if (
@@ -241,13 +242,13 @@ export class Tracer implements ITracer {
 			) {
 				if (block.parent == null) {
 					const name = nameGetter.getName(block);
-					return name == null ? Config.name.global : name;
+					return name == null ? config.name.global : name;
 				}
 				return this.traceThis(block.parent);
 			}
 
 			if (isArrowFunction(block)) {
-				return block.parent == null ? Config.name.global : this.traceThis(block.parent);
+				return block.parent == null ? config.name.global : this.traceThis(block.parent);
 			}
 
 			throw new TypeError(`${this.traceThis.name} could not trace a 'this' value for a statement of kind ${SyntaxKind[statement.kind]}`);
@@ -262,7 +263,7 @@ export class Tracer implements ITracer {
 	 */
 	public traceClojure (from: Statement|Expression|Node|string): IIdentifierMap|null {
 		const filePath = typeof from === "string" ? from : sourceFilePropertiesGetter.getSourceFileProperties(from).filePath;
-		if (Config.builtIns.has(filePath)) {
+		if (config.builtIns.has(filePath)) {
 			return null;
 		}
 
@@ -279,7 +280,7 @@ export class Tracer implements ITracer {
 		return this.traceBlock(statement, block => {
 
 			if (isSourceFile(block)) {
-				return Config.name.global;
+				return config.name.global;
 			}
 
 			if (
@@ -290,7 +291,7 @@ export class Tracer implements ITracer {
 				isClassExpression(block)
 			) {
 				const name = nameGetter.getName(block);
-				return name == null ? Config.name.global : name;
+				return name == null ? config.name.global : name;
 			}
 
 			if (
@@ -304,13 +305,13 @@ export class Tracer implements ITracer {
 			) {
 				if (block.parent == null) {
 					const name = nameGetter.getName(block);
-					return name == null ? Config.name.global : name;
+					return name == null ? config.name.global : name;
 				}
 				return this.traceBlockScopeName(block.parent);
 			}
 
 			if (isArrowFunction(block)) {
-				return Config.name.anonymous;
+				return config.name.anonymous;
 			}
 
 			throw new TypeError(`${this.traceBlockScopeName.name} could not trace a block scope of a statement of knd ${SyntaxKind[statement.kind]}`);
@@ -343,10 +344,16 @@ export class Tracer implements ITracer {
 		return extractor(current);
 	}
 
-	private traceUpToKind (kind: SyntaxKind, from: Statement|Expression|Node): Statement|Expression|Node|null {
+	/**
+	 * Traces a Statement of the given SyntaxKind from a Statement by going up the AST.
+	 * @param {SyntaxKind} kind
+	 * @param {Statement | Expression | Node} from
+	 * @returns {T|null}
+	 */
+	private traceUpToKind<T extends Statement|Expression|Node> (kind: SyntaxKind, from: Statement|Expression|Node): T|null {
 		let current: Statement|Expression|Node|undefined = from;
 		while (current != null) {
-			if (current.kind === kind) return current;
+			if (current.kind === kind) return <T>current;
 			current = current.parent;
 		}
 		return null;

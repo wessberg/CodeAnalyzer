@@ -78,6 +78,11 @@ export class StringUtil implements IStringUtil {
 		return str;
 	}
 
+	/**
+	 * Returns true if the given content is a quoted string
+	 * @param {ArbitraryValue} content
+	 * @returns {boolean}
+	 */
 	private isQuoted (content: ArbitraryValue): boolean {
 		if (!(typeof content === "string")) return false;
 		const trimmed = content;
@@ -86,6 +91,11 @@ export class StringUtil implements IStringUtil {
 		return this.isQuote(firstChar) && this.isQuote(lastChar);
 	}
 
+	/**
+	 * Returns true if the given content is a stringified value that doesn't actually represent a string.
+	 * @param {ArbitraryValue} content
+	 * @returns {boolean}
+	 */
 	private stringDoesNotRepresentStringLiteral (content: ArbitraryValue): boolean {
 		if (typeof content !== "string") return true;
 		const trimmed = content.trim();

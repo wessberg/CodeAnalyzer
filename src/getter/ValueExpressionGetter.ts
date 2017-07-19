@@ -6,6 +6,9 @@ import {IValueExpressionGetter} from "./interface/IValueExpressionGetter";
 import {heritageClauseFormatter, marshaller, nameGetter, sourceFilePropertiesGetter, stringUtil, tokenPredicator, tokenSerializer} from "../services";
 import {ArbitraryValue, InitializationValue} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can get a full value expression for any kind of expression.
+ */
 export class ValueExpressionGetter implements IValueExpressionGetter {
 
 	/**
@@ -61,7 +64,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 
 			rawStatement.elements.forEach((binding, index) => {
 				if (!isOmittedExpression(binding)) {
-					arr.push(<string>nameGetter.getName(binding));
+					arr.push(nameGetter.getName(binding));
 				}
 				if (index !== rawStatement.elements.length - 1) arr.push(",");
 			});
@@ -73,7 +76,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 			const arr: ArbitraryValue[] = ["{"];
 
 			rawStatement.elements.forEach((binding, index) => {
-				arr.push(<string>nameGetter.getName(binding));
+				arr.push(nameGetter.getName(binding));
 				if (index !== rawStatement.elements.length - 1) arr.push(",");
 			});
 			arr.push("}");
@@ -140,7 +143,8 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isVariableDeclarationList(rawStatement)) {
-			const keyword = tokenSerializer.serializeFlag(rawStatement.flags) || "var";
+			const serialized = tokenSerializer.serializeFlag(rawStatement.flags);
+			const keyword = serialized == null ? "var" : serialized;
 			const values: InitializationValue = [keyword, " "];
 
 			rawStatement.declarations.forEach((declaration, index) => {
@@ -388,7 +392,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 
 		if (isTemplateExpression(rawStatement)) {
 
-			let values: InitializationValue = [...this.getValueExpression(rawStatement.head)];
+			const values: InitializationValue = [...this.getValueExpression(rawStatement.head)];
 
 			rawStatement.templateSpans.forEach(span => {
 				const content = this.getValueExpression(span);
@@ -474,7 +478,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				nameExpression.push("{");
 				const elements = rawStatement.name.elements;
 				elements.forEach((binding, index) => {
-					nameExpression.push(<string>nameGetter.getName(binding));
+					nameExpression.push(nameGetter.getName(binding));
 					if (index !== elements.length - 1) nameExpression.push(",");
 				});
 				nameExpression.push("}");
@@ -485,7 +489,7 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 				const elements = rawStatement.name.elements;
 				elements.forEach((binding, index) => {
 					if (isOmittedExpression(binding)) nameExpression.push(",");
-					else nameExpression.push(<string>nameGetter.getName(binding));
+					else nameExpression.push(nameGetter.getName(binding));
 					if (index !== elements.length - 1) nameExpression.push(",");
 				});
 				nameExpression.push("]");

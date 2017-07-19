@@ -1,6 +1,6 @@
 import {ClassDeclaration, SyntaxKind} from "typescript";
 import {isConstructorDeclaration, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration} from "../predicate/PredicateFunctions";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {IClassFormatter} from "./interface/IClassFormatter";
 import {cache, constructorFormatter, decoratorsFormatter, getAccessorFormatter, heritageClauseFormatter, identifierUtil, mapper, methodFormatter, modifiersFormatter, propFormatter, setAccessorFormatter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IClassDeclaration, IdentifierMapKind} from "../identifier/interface/IIdentifier";
@@ -11,7 +11,7 @@ export class ClassFormatter implements IClassFormatter {
 		const sourceFileProperties = sourceFilePropertiesGetter.getSourceFileProperties(statement);
 		const filePath = sourceFileProperties.filePath;
 		const fileContents = sourceFileProperties.fileContents;
-		const className = statement.name == null ? Config.name.anonymous : statement.name.text;
+		const className = statement.name == null ? config.name.anonymous : statement.name.text;
 
 		const cached = cache.getCachedClass(filePath, className);
 		if (cached != null && !cache.cachedClassNeedsUpdate(cached.content)) return cached.content;

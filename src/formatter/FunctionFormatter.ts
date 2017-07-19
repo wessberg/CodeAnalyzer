@@ -1,5 +1,5 @@
 import {FunctionDeclaration} from "typescript";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {FunctionLikeFormatter} from "./FunctionLikeFormatter";
 import {IFunctionFormatter} from "./interface/IFunctionFormatter";
 import {cache, identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
@@ -13,7 +13,7 @@ export class FunctionFormatter extends FunctionLikeFormatter implements IFunctio
 	 * @returns {IFunctionDeclaration}
 	 */
 	public format (declaration: FunctionDeclaration): IFunctionDeclaration {
-		const name = declaration.name == null ? Config.name.anonymous : <string>nameGetter.getNameOfMember(declaration.name, false, true);
+		const name = declaration.name == null ? config.name.anonymous : <string>nameGetter.getNameOfMember(declaration.name, false, true);
 		const filePath = sourceFilePropertiesGetter.getSourceFileProperties(declaration).filePath;
 
 		const cached = cache.getCachedFunction(filePath, name);

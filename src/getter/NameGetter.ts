@@ -2,7 +2,7 @@ import {DeclarationName, Expression, Identifier, Node, Statement, SyntaxKind, Ty
 import {BindingIdentifier} from "../model/BindingIdentifier";
 import {isArrayLiteralExpression, isArrowFunction, isBindingElement, isCallExpression, isClassDeclaration, isClassExpression, isComputedPropertyName, isConstructorDeclaration, isDecorator, isElementAccessExpression, isEnumDeclaration, isEnumMember, isExportSpecifier, isExpressionWithTypeArguments, isExternalModuleReference, isFirstLiteralToken, isFunctionDeclaration, isFunctionExpression, isIdentifierObject, isImportSpecifier, isMethodDeclaration, isNamespaceImport, isNewExpression, isNumericLiteral, isObjectLiteralExpression, isParameterDeclaration, isParenthesizedExpression, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isRegularExpressionLiteral, isStringLiteral, isSuperExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisKeyword, isTypeAssertionExpression, isTypeReference, isTypeReferenceNode, isVariableDeclaration} from "../predicate/PredicateFunctions";
 import {INameGetter} from "./interface/INameGetter";
-import {Config} from "../static/Config";
+import {config} from "../static/Config";
 import {marshaller, typeDetector} from "../services";
 
 /**
@@ -10,13 +10,18 @@ import {marshaller, typeDetector} from "../services";
  */
 export class NameGetter implements INameGetter {
 
+	/**
+	 * Get the 'name' of a statement. This is usually the string identifier for it.
+	 * @param {Statement | Expression | Node | TypeNode | TypeReferenceNode} statement
+	 * @returns {string}
+	 */
 	public getName (statement: Statement|Expression|Node|TypeNode|TypeReferenceNode): string {
 
 		if (
 			isFunctionDeclaration(statement) ||
 			isFunctionExpression(statement)
 		) {
-			if (statement.name == null) return Config.name.anonymous;
+			if (statement.name == null) return config.name.anonymous;
 			return <string>this.getNameOfMember(statement.name, false, true);
 		}
 
@@ -84,7 +89,7 @@ export class NameGetter implements INameGetter {
 		if (
 			isArrowFunction(statement)
 		) {
-			return Config.name.anonymous;
+			return config.name.anonymous;
 		}
 
 		if (
@@ -180,7 +185,7 @@ export class NameGetter implements INameGetter {
 		}
 
 		if (isFunctionExpression(name)) {
-			return name.name == null ? Config.name.anonymous : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
+			return name.name == null ? config.name.anonymous : this.getNameOfMember(name.name, allowNonStringNames, forceNoBindingIdentifier);
 		}
 
 		if (isElementAccessExpression(name)) {

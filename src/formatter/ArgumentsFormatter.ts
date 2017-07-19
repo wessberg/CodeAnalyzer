@@ -3,6 +3,9 @@ import {IArgumentsFormatter} from "./interface/IArgumentsFormatter";
 import {identifierUtil, mapper, valueableFormatter} from "../services";
 import {IArgument, IdentifierMapKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * A class that can format any kind of relevant statement into an array of IArguments
+ */
 export class ArgumentsFormatter implements IArgumentsFormatter {
 
 	/**

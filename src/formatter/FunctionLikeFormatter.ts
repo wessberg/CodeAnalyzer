@@ -4,6 +4,9 @@ import {IFunctionLikeFormatter} from "./interface/IFunctionLikeFormatter";
 import {decoratorsFormatter, modifiersFormatter, parametersFormatter, sourceFilePropertiesGetter, valueableFormatter} from "../services";
 import {IFunctionLike, IMemberDeclaration, IParametersable, IValueable} from "../identifier/interface/IIdentifier";
 
+/**
+ * An abstract class that can format any kind of relevant expression into an IFunctionLike.
+ */
 export abstract class FunctionLikeFormatter implements IFunctionLikeFormatter {
 
 	/**

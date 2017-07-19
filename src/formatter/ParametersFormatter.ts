@@ -4,6 +4,9 @@ import {isArrayBindingPattern, isObjectBindingPattern, isOmittedExpression} from
 import {identifierUtil, mapper, nameGetter, sourceFilePropertiesGetter, tokenSerializer, tracer, typeExpressionGetter, typeUtil, valueExpressionGetter, valueResolvedGetter} from "../services";
 import {IdentifierMapKind, INonNullableValueable, IParameter, ParameterKind} from "../identifier/interface/IIdentifier";
 
+/**
+ * Formats any kind of relevant Statement into an array of IParameters.
+ */
 export class ParametersFormatter implements IParametersFormatter {
 
 	/**
@@ -37,7 +40,7 @@ export class ParametersFormatter implements IParametersFormatter {
 			const elements = parameter.name.elements;
 			nameFormatted.push("{");
 			elements.forEach((binding, index) => {
-				const named = <string>nameGetter.getName(binding);
+				const named = nameGetter.getName(binding);
 				name.push(named);
 				nameFormatted.push(named);
 				if (index !== elements.length - 1) nameFormatted.push(",");
@@ -53,7 +56,7 @@ export class ParametersFormatter implements IParametersFormatter {
 					name.push(undefined);
 					nameFormatted.push(",");
 				} else {
-					const named = <string>nameGetter.getName(binding);
+					const named = nameGetter.getName(binding);
 					name.push(named);
 					nameFormatted.push(named);
 					if (index !== elements.length - 1) nameFormatted.push(",");
@@ -91,9 +94,19 @@ export class ParametersFormatter implements IParametersFormatter {
 				resolving: false,
 				resolved: undefined,
 				resolvedPrecompute: undefined,
+
+				/**
+				 * Returns true if a value has been resolved previously.
+				 * @returns {boolean}
+				 */
 				hasDoneFirstResolve () {
 					return map.value.resolved !== undefined;
 				},
+
+				/**
+				 * Resolves/computes a value for the associated value expression.
+				 * @returns {ArbitraryValue}
+				 */
 				resolve () {
 					if (map.value.expression == null) {
 						map.value.resolved = map.value.resolvedPrecompute = null;

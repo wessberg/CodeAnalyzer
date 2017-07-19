@@ -3,8 +3,16 @@ import {isVariableDeclaration, isVariableDeclarationList, isVariableStatement} f
 import {IModifiersFormatter} from "./interface/IModifiersFormatter";
 import {tokenSerializer} from "../services";
 
+/**
+ * A class that can format modifiers for all relevant kinds of statements.
+ */
 export class ModifiersFormatter implements IModifiersFormatter {
 
+	/**
+	 * Formats the given statement and returns a Set of modifier names,
+	 * @param {VariableDeclaration | VariableStatement | PropertyDeclaration | MethodDeclaration | FunctionDeclaration | ClassDeclaration | ConstructorDeclaration | ArrowFunction | GetAccessorDeclaration | SetAccessorDeclaration} statement
+	 * @returns {Set<string>}
+	 */
 	public format (statement: VariableDeclaration|VariableStatement|PropertyDeclaration|MethodDeclaration|FunctionDeclaration|ClassDeclaration|ConstructorDeclaration|ArrowFunction|GetAccessorDeclaration|SetAccessorDeclaration): Set<string> {
 		if (isVariableDeclaration(statement) && statement.modifiers == null) {
 			const parent = statement.parent;
