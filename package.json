@@ -41,7 +41,7 @@
 	],
 	"devDependencies": {
 		"@types/jsdom": "^11.0.1",
-		"@types/node": "^8.0.14",
+		"@types/node": "^8.0.17",
 		"@wessberg/ts-config": "0.0.20",
 		"@wessberg/typedetector": "^1.0.6",
 		"ava": "^0.21.0",
@@ -54,10 +54,10 @@
 		"@wessberg/environment": "^1.0.1",
 		"@wessberg/fileloader": "^1.0.3",
 		"@wessberg/globalobject": "^1.0.7",
-		"@wessberg/marshaller": "^2.0.2",
+		"@wessberg/marshaller": "^2.0.4",
 		"jsdom": "^11.1.0",
 		"tslib": "^1.7.1",
-		"typescript": "^2.4.1"
+		"typescript": "^2.4.2"
 	},
 	"main": "./dist/umd/index.js",
 	"module": "./dist/es2015/index.js",

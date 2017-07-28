@@ -51,12 +51,15 @@ export class ValueExpressionGetter implements IValueExpressionGetter {
 		}
 
 		if (isRegularExpressionLiteral(rawStatement)) {
-			return [rawStatement.text];
+			try {
+				return [marshaller.unmarshal(rawStatement.text)];
+			} catch(ex) {
+				return [rawStatement.text];
+			}
 		}
 
 		if (isNoSubstitutionTemplateLiteral(rawStatement)) {
-			const marshalled = marshaller.unmarshal(rawStatement.text);
-			return [stringUtil.quoteIfNecessary(marshalled)];
+			return [stringUtil.quoteIfNecessary(rawStatement.text)];
 		}
 
 		if (isArrayBindingPattern(rawStatement)) {
