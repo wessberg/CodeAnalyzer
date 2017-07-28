@@ -1,3 +1,13 @@
+<a name="1.0.48"></a>
+## 1.0.48 (2017-07-28)
+
+* . ([dd33f4c](https://github.com/wessberg/CodeAnalyzer/commit/dd33f4c))
+* 1.0.48 ([8586038](https://github.com/wessberg/CodeAnalyzer/commit/8586038))
+* Bumped version ([10d9b32](https://github.com/wessberg/CodeAnalyzer/commit/10d9b32))
+* Fixed issues where a regular expression would falsely be reported for normal strings ([8e5f6c7](https://github.com/wessberg/CodeAnalyzer/commit/8e5f6c7))
+
+
+
 <a name="1.0.46"></a>
 ## 1.0.46 (2017-07-19)
 
