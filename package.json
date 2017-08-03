@@ -41,7 +41,7 @@
 	],
 	"devDependencies": {
 		"@types/jsdom": "^11.0.1",
-		"@types/node": "^8.0.17",
+		"@types/node": "^8.0.19",
 		"@wessberg/ts-config": "0.0.20",
 		"@wessberg/typedetector": "^1.0.6",
 		"ava": "^0.21.0",

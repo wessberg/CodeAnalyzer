@@ -606,4 +606,31 @@ test(`ValueExpressions -> Detects all valueExpressions correctly. #54`, t => {
 	t.deepEqual(expression, ["/foo/bar"]);
 });
 
+test(`ValueExpressions() -> Detects all valueExpressions correctly. #55`, t => {
+
+	const code = `
+		async function foo () {
+			const foo = await import("foo");
+		}
+	`;
+
+	const statements = parse(code);
+	const variables = service.getVariableDeclarations(statements, true);
+	const value = variables["foo"].value.expression;
+	t.deepEqual(value, ["await", " ", "import", "(", "`foo`", ")"]);
+});
+
+test(`ValueExpressions() -> Detects all valueExpressions correctly. #56`, t => {
+
+	const code = `
+		const obj = {a: {b: true}};
+		const foo = obj.a!.b;
+	`;
+
+	const statements = parse(code);
+	const variables = service.getVariableDeclarations(statements, true);
+	const value = variables["foo"].value.expression;
+	t.deepEqual(value, [new BindingIdentifier("obj", <any>""), `["a"]`, `["b"]`]);
+});
+
 /*tslint:enable*/
