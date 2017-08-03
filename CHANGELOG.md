@@ -1,3 +1,12 @@
+<a name="1.0.49"></a>
+## 1.0.49 (2017-08-03)
+
+* - Added support for NonNullExpressions. This fixes #12. ([3ef11d6](https://github.com/wessberg/CodeAnalyzer/commit/3ef11d6)), closes [#12](https://github.com/wessberg/CodeAnalyzer/issues/12) [#13](https://github.com/wessberg/CodeAnalyzer/issues/13)
+* 1.0.49 ([0640f36](https://github.com/wessberg/CodeAnalyzer/commit/0640f36))
+* Bumped version ([e0129b4](https://github.com/wessberg/CodeAnalyzer/commit/e0129b4))
+
+
+
 <a name="1.0.48"></a>
 ## 1.0.48 (2017-07-28)
 
