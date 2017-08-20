@@ -9,6 +9,6 @@ export interface IFoo extends IBar<Element> {
 }
 
 export interface IBaz {
-	[key: string]: {foo?: number};
+	[key: string]: {foo?: number, bar: any};
 }
 /*tslint:enable*/

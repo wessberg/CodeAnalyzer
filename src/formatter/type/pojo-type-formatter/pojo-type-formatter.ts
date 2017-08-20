@@ -15,9 +15,8 @@ export class PojoTypeFormatter implements IPojoTypeFormatter {
 	 * @returns {IPojoType}
 	 */
 	public format ({node, interfaceTypeMemberFormatter}: IPojoTypeFormatterFormatOptions): IPojoType {
-		let pojoType: IPojoType;
 
-		pojoType = {
+		const pojoType: IPojoType = {
 			kind: TypeKind.POJO,
 			properties: node.members.map(member => interfaceTypeMemberFormatter.format(<PropertySignature>member))
 		};

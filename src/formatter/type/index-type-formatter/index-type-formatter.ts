@@ -16,9 +16,7 @@ export class IndexTypeFormatter implements IIndexTypeFormatter {
 	 * @returns {IIndexType}
 	 */
 	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IIndexTypeFormatterFormatOptions): IIndexType {
-		let indexType: IIndexType;
-
-		indexType = {
+		const indexType: IIndexType = {
 			kind: TypeKind.INDEX,
 			key: interfaceTypeMemberFormatter.format(node.parameters[0]),
 			value: typeFormatter.format(node.type, interfaceTypeMemberFormatter, parameterTypeFormatter)

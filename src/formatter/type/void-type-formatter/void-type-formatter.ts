@@ -11,9 +11,8 @@ export class VoidTypeFormatter implements IVoidTypeFormatter {
 	 * @returns {IVoidType}
 	 */
 	public format (): IVoidType {
-		let voidType: IVoidType;
 
-		voidType = {
+		const voidType: IVoidType = {
 			kind: TypeKind.VOID
 		};
 

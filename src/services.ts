@@ -29,6 +29,12 @@ import {IPojoTypeFormatter} from "./formatter/type/pojo-type-formatter/i-pojo-ty
 import {PojoTypeFormatter} from "./formatter/type/pojo-type-formatter/pojo-type-formatter";
 import {IVoidTypeFormatter} from "./formatter/type/void-type-formatter/i-void-type-formatter";
 import {VoidTypeFormatter} from "./formatter/type/void-type-formatter/void-type-formatter";
+import {NumberTypeFormatter} from "./formatter/type/number-type-formatter/number-type-formatter";
+import {INumberTypeFormatter} from "./formatter/type/number-type-formatter/i-number-type-formatter";
+import {IAnyTypeFormatter} from "./formatter/type/any-type-formatter/i-any-type-formatter";
+import {AnyTypeFormatter} from "./formatter/type/any-type-formatter/any-type-formatter";
+import {IStringTypeFormatter} from "./formatter/type/string-type-formatter/i-string-type-formatter";
+import {StringTypeFormatter} from "./formatter/type/string-type-formatter/string-type-formatter";
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -38,11 +44,14 @@ const moduleUtil: IModuleUtil = new ModuleUtil(fileLoader, pathUtil);
 
 // Formatters
 const voidTypeFormatter: IVoidTypeFormatter = new VoidTypeFormatter();
+const anyTypeFormatter: IAnyTypeFormatter = new AnyTypeFormatter();
+const numberTypeFormatter: INumberTypeFormatter = new NumberTypeFormatter();
+const stringTypeFormatter: IStringTypeFormatter = new StringTypeFormatter();
 const pojoTypeFormatter: IPojoTypeFormatter = new PojoTypeFormatter();
 const functionTypeFormatter: IFunctionTypeFormatter = new FunctionTypeFormatter();
 const indexTypeFormatter: IIndexTypeFormatter = new IndexTypeFormatter();
 const referenceTypeFormatter: IReferenceTypeFormatter = new ReferenceTypeFormatter(astUtil);
-const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, voidTypeFormatter, pojoTypeFormatter, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
+const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, voidTypeFormatter, anyTypeFormatter, numberTypeFormatter, stringTypeFormatter, pojoTypeFormatter, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
 const objectBindingNameFormatter: IObjectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 const arrayBindingNameFormatter: IArrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 const parameterTypeFormatter: IParameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatter, arrayBindingNameFormatter, typeFormatter);

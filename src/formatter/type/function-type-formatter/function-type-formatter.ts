@@ -16,9 +16,7 @@ export class FunctionTypeFormatter implements IFunctionTypeFormatter {
 	 * @returns {IFunctionType}
 	 */
 	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IFunctionTypeFormatterFormatOptions): IFunctionType {
-		let functionType: IFunctionType;
-
-		functionType = {
+		const functionType: IFunctionType = {
 			kind: TypeKind.FUNCTION,
 			parameters: node.parameters.map(parameter => parameterTypeFormatter.format(parameter, interfaceTypeMemberFormatter)),
 			returns: typeFormatter.format(node.type, interfaceTypeMemberFormatter, parameterTypeFormatter)

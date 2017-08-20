@@ -10,6 +10,9 @@ import {isInterfaceProperty} from "../interface-type-formatter/interface-propert
 import {IIndexTypeFormatter} from "../index-type-formatter/i-index-type-formatter";
 import {IPojoTypeFormatter} from "../pojo-type-formatter/i-pojo-type-formatter";
 import {IVoidTypeFormatter} from "../void-type-formatter/i-void-type-formatter";
+import {INumberTypeFormatter} from "../number-type-formatter/i-number-type-formatter";
+import {IAnyTypeFormatter} from "../any-type-formatter/i-any-type-formatter";
+import {IStringTypeFormatter} from "../string-type-formatter/i-string-type-formatter";
 
 /**
  * A class for formatting Types
@@ -17,6 +20,9 @@ import {IVoidTypeFormatter} from "../void-type-formatter/i-void-type-formatter";
 export class TypeFormatter implements ITypeFormatter {
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private voidTypeFormatter: IVoidTypeFormatter,
+							 private anyTypeFormatter: IAnyTypeFormatter,
+							 private numberTypeFormatter: INumberTypeFormatter,
+							 private stringTypeFormatter: IStringTypeFormatter,
 							 private pojoTypeFormatter: IPojoTypeFormatter,
 							 private functionTypeFormatter: IFunctionTypeFormatter,
 							 private indexTypeFormatter: IIndexTypeFormatter,
@@ -31,7 +37,7 @@ export class TypeFormatter implements ITypeFormatter {
 	 * @returns {Type}
 	 */
 	public format (node: TypeFormatterNode, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): Type {
-		if (node == null) return {kind: TypeKind.VOID};
+		if (node == null) return this.voidTypeFormatter.format();
 
 		if (isMethodSignature(node)) return this.functionTypeFormatter.format({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter: this});
 		else if (isIndexSignatureDeclaration(node)) return this.indexTypeFormatter.format({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter: this});
@@ -41,7 +47,7 @@ export class TypeFormatter implements ITypeFormatter {
 				isInterfaceProperty(node) ||
 				isParameter(node)
 			) ? node.type : node;
-			if (candidateNode == null) return {kind: TypeKind.VOID};
+			if (candidateNode == null) return this.voidTypeFormatter.format();
 			return this.formatType(candidateNode, interfaceTypeMemberFormatter, parameterTypeFormatter);
 		}
 	}
@@ -63,22 +69,13 @@ export class TypeFormatter implements ITypeFormatter {
 				return this.voidTypeFormatter.format();
 
 			case SyntaxKind.AnyKeyword:
-
-				return {
-					kind: TypeKind.ANY
-				};
+				return this.anyTypeFormatter.format();
 
 			case SyntaxKind.StringKeyword:
-
-				return {
-					kind: TypeKind.STRING
-				};
+				return this.stringTypeFormatter.format();
 
 			case SyntaxKind.NumberKeyword:
-
-				return {
-					kind: TypeKind.NUMBER
-				};
+				return this.numberTypeFormatter.format();
 
 			case SyntaxKind.BooleanKeyword:
 
