@@ -25,6 +25,10 @@ import {FunctionTypeFormatter} from "./formatter/type/function-type-formatter/fu
 import {IFunctionTypeFormatter} from "./formatter/type/function-type-formatter/i-function-type-formatter";
 import {IIndexTypeFormatter} from "./formatter/type/index-type-formatter/i-index-type-formatter";
 import {IndexTypeFormatter} from "./formatter/type/index-type-formatter/index-type-formatter";
+import {IPojoTypeFormatter} from "./formatter/type/pojo-type-formatter/i-pojo-type-formatter";
+import {PojoTypeFormatter} from "./formatter/type/pojo-type-formatter/pojo-type-formatter";
+import {IVoidTypeFormatter} from "./formatter/type/void-type-formatter/i-void-type-formatter";
+import {VoidTypeFormatter} from "./formatter/type/void-type-formatter/void-type-formatter";
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -33,10 +37,12 @@ const pathUtil: IPathUtil = new PathUtil(fileLoader);
 const moduleUtil: IModuleUtil = new ModuleUtil(fileLoader, pathUtil);
 
 // Formatters
+const voidTypeFormatter: IVoidTypeFormatter = new VoidTypeFormatter();
+const pojoTypeFormatter: IPojoTypeFormatter = new PojoTypeFormatter();
 const functionTypeFormatter: IFunctionTypeFormatter = new FunctionTypeFormatter();
 const indexTypeFormatter: IIndexTypeFormatter = new IndexTypeFormatter();
 const referenceTypeFormatter: IReferenceTypeFormatter = new ReferenceTypeFormatter(astUtil);
-const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
+const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, voidTypeFormatter, pojoTypeFormatter, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
 const objectBindingNameFormatter: IObjectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 const arrayBindingNameFormatter: IArrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 const parameterTypeFormatter: IParameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatter, arrayBindingNameFormatter, typeFormatter);

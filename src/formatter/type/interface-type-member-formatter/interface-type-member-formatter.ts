@@ -59,15 +59,16 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 	private stringify (interfaceTypeMember: IInterfaceTypeMember): string {
 		let str = "";
 		const isFunction = interfaceTypeMember.type.kind === TypeKind.FUNCTION;
+		const isIndex = interfaceTypeMember.type.kind === TypeKind.INDEX;
 		// Start with the name
 		str += interfaceTypeMember.name.kind === InterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
 		// Add the '?' token after the name if the member is optional
 		if (interfaceTypeMember.optional) str += "?";
 
 		// Add a colon unless the property is a function.
-		if (!isFunction) str += ":";
+		if (!isFunction && !isIndex) str += ":";
 		// Add a single whitespace.
-		str += " ";
+		if (!isIndex) str += " ";
 
 		// Stringify the type
 		str += interfaceTypeMember.type.toString();
