@@ -1,6 +1,6 @@
 import {IReferenceType} from "@wessberg/type";
-import {HeritageClause} from "typescript";
+import {IReferenceTypeFormatterFormatOptions} from "./i-reference-type-formatter-format-options";
 
 export interface IReferenceTypeFormatter {
-	format (heritageClause: HeritageClause): IReferenceType[];
+	format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IReferenceTypeFormatterFormatOptions): IReferenceType;
 }

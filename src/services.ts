@@ -21,6 +21,10 @@ import {ITypescriptLanguageService, TypescriptLanguageService} from "@wessberg/t
 import {IModuleUtil, ModuleUtil} from "@wessberg/moduleutil";
 import {IFileLoader, FileLoader} from "@wessberg/fileloader";
 import {IPathUtil, PathUtil} from "@wessberg/pathutil";
+import {FunctionTypeFormatter} from "./formatter/type/function-type-formatter/function-type-formatter";
+import {IFunctionTypeFormatter} from "./formatter/type/function-type-formatter/i-function-type-formatter";
+import {IIndexTypeFormatter} from "./formatter/type/index-type-formatter/i-index-type-formatter";
+import {IndexTypeFormatter} from "./formatter/type/index-type-formatter/index-type-formatter";
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -29,14 +33,16 @@ const pathUtil: IPathUtil = new PathUtil(fileLoader);
 const moduleUtil: IModuleUtil = new ModuleUtil(fileLoader, pathUtil);
 
 // Formatters
-const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil);
+const functionTypeFormatter: IFunctionTypeFormatter = new FunctionTypeFormatter();
+const indexTypeFormatter: IIndexTypeFormatter = new IndexTypeFormatter();
+const referenceTypeFormatter: IReferenceTypeFormatter = new ReferenceTypeFormatter(astUtil);
+const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
 const objectBindingNameFormatter: IObjectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 const arrayBindingNameFormatter: IArrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 const parameterTypeFormatter: IParameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatter, arrayBindingNameFormatter, typeFormatter);
 const interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astUtil, parameterTypeFormatter, typeFormatter);
-const referenceTypeFormatter: IReferenceTypeFormatter = new ReferenceTypeFormatter(astUtil, typeFormatter, interfaceTypeMemberFormatter, parameterTypeFormatter);
 const typeParameterFormatter: ITypeParameterFormatter = new TypeParameterFormatter(astUtil, typeFormatter, interfaceTypeMemberFormatter,parameterTypeFormatter);
-const interfaceTypeFormatter: IInterfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, referenceTypeFormatter, typeParameterFormatter, interfaceTypeMemberFormatter);
+const interfaceTypeFormatter: IInterfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, typeFormatter, referenceTypeFormatter, typeParameterFormatter, parameterTypeFormatter, interfaceTypeMemberFormatter);
 
 // Services
 const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);

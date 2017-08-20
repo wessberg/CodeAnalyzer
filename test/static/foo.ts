@@ -1,8 +1,14 @@
-export interface IBar {
-	lol: Promise<void>;
+/*tslint:disable*/
+export interface IBar<T extends Node = Node> {
+	lol? (): T;
 }
 
-export interface IFoo {
+export interface IFoo extends IBar<Element> {
 	foo: number;
-	bar ({lol}: IBar): void;
+	bar ({lol}: IBar<Node>): void;
 }
+
+export interface IBaz {
+	[key: string]: boolean;
+}
+/*tslint:enable*/

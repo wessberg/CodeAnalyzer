@@ -1,7 +1,7 @@
 import {IInterfaceTypeMemberFormatter} from "./i-interface-type-member-formatter";
 import {InterfaceProperty} from "../interface-type-formatter/interface-property";
-import {IndexSignatureDeclaration, isComputedPropertyName, PropertySignature} from "typescript";
-import {IInterfaceTypeMember, InterfaceTypeMemberNameKind} from "@wessberg/type";
+import {IndexSignatureDeclaration, isComputedPropertyName, ParameterDeclaration, PropertySignature} from "typescript";
+import {IInterfaceTypeMember, InterfaceTypeMemberNameKind, TypeKind} from "@wessberg/type";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ITypeFormatter} from "../type-formatter/i-type-formatter";
 import {IParameterTypeFormatter} from "../parameter-type-formatter/i-parameter-type-formatter";
@@ -16,19 +16,21 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 
 	/**
 	 * Formats an InterfaceProperty, PropertySignature or IndexSignatureDeclaration into an IInterfaceTypeMember
-	 * @param {InterfaceProperty | PropertySignature | IndexSignatureDeclaration} member
+	 * @param {InterfaceProperty | PropertySignature | IndexSignatureDeclaration | ParameterDeclaration} member
 	 * @returns {IInterfaceTypeMember}
 	 */
-	public format (member: InterfaceProperty|PropertySignature|IndexSignatureDeclaration): IInterfaceTypeMember {
+	public format (member: InterfaceProperty|PropertySignature|IndexSignatureDeclaration|ParameterDeclaration): IInterfaceTypeMember {
 		const name = this.astUtil.takeName(member.name);
 		const property = {
 			optional: member.questionToken != null,
-			type: this.typeFormatter.format(member.type, this, this.parameterTypeFormatter)
+			type: this.typeFormatter.format(member, this, this.parameterTypeFormatter)
 		};
+
+		let interfaceTypeMember: IInterfaceTypeMember;
 
 		// Names of interfaces can only by symbols if they are computed - otherwise they will be static
 		if (member.name != null && isComputedPropertyName(member.name)) {
-			return {
+			interfaceTypeMember = {
 				...property,
 				name: {
 					kind: InterfaceTypeMemberNameKind.BUILT_IN_SYMBOL,
@@ -36,7 +38,7 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 				}
 			};
 		} else {
-			return {
+			interfaceTypeMember = {
 				...property,
 				name: {
 					kind: InterfaceTypeMemberNameKind.STATIC,
@@ -44,5 +46,31 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 				}
 			};
 		}
+		// Override the 'toString()' method
+		interfaceTypeMember.toString = () => this.stringify(interfaceTypeMember);
+		return interfaceTypeMember;
+	}
+
+	/**
+	 * Generates a string representation of the IInterfaceType
+	 * @param {IInterfaceTypeMember} interfaceTypeMember
+	 * @returns {string}
+	 */
+	private stringify (interfaceTypeMember: IInterfaceTypeMember): string {
+		let str = "";
+		const isFunction = interfaceTypeMember.type.kind === TypeKind.FUNCTION;
+		// Start with the name
+		str += interfaceTypeMember.name.kind === InterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
+		// Add the '?' token after the name if the member is optional
+		if (interfaceTypeMember.optional) str += "?";
+
+		// Add a colon unless the property is a function.
+		if (!isFunction) str += ":";
+		// Add a single whitespace.
+		str += " ";
+
+		// Stringify the type
+		str += interfaceTypeMember.type.toString();
+		return str;
 	}
 }

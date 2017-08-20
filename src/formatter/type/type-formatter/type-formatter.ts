@@ -1,76 +1,57 @@
-import {ITypeFormatter} from "./i-type-formatter";
-import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, MethodSignature, ParenthesizedTypeNode, PropertySignature, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeReferenceNode, UnionTypeNode} from "typescript";
+import {ITypeFormatter, TypeFormatterNode} from "./i-type-formatter";
+import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, PropertySignature, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeReferenceNode, UnionTypeNode} from "typescript";
 import {IInterfaceTypeMemberFormatter} from "../interface-type-member-formatter/i-interface-type-member-formatter";
 import {IParameterTypeFormatter} from "../parameter-type-formatter/i-parameter-type-formatter";
-import {TypeKind, Type, IFunctionType, IIndexType} from "@wessberg/type";
+import {Type, TypeKind} from "@wessberg/type";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {IReferenceTypeFormatter} from "../reference-type-formatter/i-reference-type-formatter";
+import {IFunctionTypeFormatter} from "../function-type-formatter/i-function-type-formatter";
+import {isInterfaceProperty} from "../interface-type-formatter/interface-property";
+import {IIndexTypeFormatter} from "../index-type-formatter/i-index-type-formatter";
 
 /**
  * A class for formatting Types
  */
 export class TypeFormatter implements ITypeFormatter {
-	constructor (private astUtil: ITypescriptASTUtil) {}
+	constructor (private astUtil: ITypescriptASTUtil,
+							 private functionTypeFormatter: IFunctionTypeFormatter,
+							 private indexTypeFormatter: IIndexTypeFormatter,
+							 private referenceTypeFormatter: IReferenceTypeFormatter) {
+	}
 
 	/**
 	 * Formats the provided expression into a Type.
-	 * @param {TypeNode | TypeReferenceNode | LeftHandSideExpression} node
+	 * @param {TypeFormatterNode} node
 	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
 	 * @param {IParameterTypeFormatter} parameterTypeFormatter
 	 * @returns {Type}
 	 */
-	public format (node: TypeNode|TypeReferenceNode|LeftHandSideExpression|undefined, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): Type {
-		if (node == null) {
-			return {
-				kind: TypeKind.VOID
-			};
-		}
+	public format (node: TypeFormatterNode, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): Type {
+		if (node == null) return {kind: TypeKind.VOID};
 
-		if (node.parent != null && isMethodSignature(node.parent)) return this.formatMethod(node, node.parent, interfaceTypeMemberFormatter, parameterTypeFormatter);
-		if (node.parent != null && isIndexSignatureDeclaration(node.parent)) return this.formatIndexed(node, node.parent, interfaceTypeMemberFormatter, parameterTypeFormatter);
-		return this.formatProperty(node, interfaceTypeMemberFormatter, parameterTypeFormatter);
+		if (isMethodSignature(node)) return this.functionTypeFormatter.format({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter: this});
+		else if (isIndexSignatureDeclaration(node)) return this.indexTypeFormatter.format({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter: this});
+		else if (
+			isPropertySignature(node) ||
+			isInterfaceProperty(node) ||
+			isParameter(node)
+		) {
+			if (node.type == null) return {kind: TypeKind.VOID};
+			return this.formatProperty(node.type, interfaceTypeMemberFormatter, parameterTypeFormatter);
+		} else {
+			return this.formatProperty(node, interfaceTypeMemberFormatter, parameterTypeFormatter);
+		}
 	}
 
 	/**
 	 * Converts an ordinary (non-method) property to a Type
-	 * @param {ts.TypeNode | ts.TypeReferenceNode | ts.LeftHandSideExpression} node
+	 * @param {TypeNode | TypeReferenceNode | LeftHandSideExpression} node
 	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
 	 * @param {IParameterTypeFormatter} parameterTypeFormatter
 	 * @returns {Type}
 	 */
 	private formatProperty (node: TypeNode|TypeReferenceNode|LeftHandSideExpression, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): Type {
 		return this.formatType(node, interfaceTypeMemberFormatter, parameterTypeFormatter);
-	}
-
-	/**
-	 * Converts a method signature to an IFunctionType
-	 * @param {TypeNode | TypeReferenceNode | LeftHandSideExpression} node
-	 * @param {MethodSignature} method
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @returns {IFunctionType}
-	 */
-	private formatMethod (node: TypeNode|TypeReferenceNode|LeftHandSideExpression, method: MethodSignature, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): IFunctionType {
-		return {
-			kind: TypeKind.FUNCTION,
-			parameters: method.parameters.map(parameter => parameterTypeFormatter.format(parameter, interfaceTypeMemberFormatter)),
-			returns: this.formatType(node, interfaceTypeMemberFormatter, parameterTypeFormatter)
-		};
-	}
-
-	/**
-	 * Converts an IndexSignatureDeclaration into an IIndexType
-	 * @param {TypeNode | TypeReferenceNode | LeftHandSideExpression} node
-	 * @param {IndexSignatureDeclaration} indexSignature
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @returns {IIndexType}
-	 */
-	private formatIndexed (node: TypeNode|TypeReferenceNode|LeftHandSideExpression, indexSignature: IndexSignatureDeclaration, interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter, parameterTypeFormatter: IParameterTypeFormatter): IIndexType {
-		return {
-			kind: TypeKind.INDEX,
-			key: interfaceTypeMemberFormatter.format(indexSignature),
-			value: this.formatType(node, interfaceTypeMemberFormatter, parameterTypeFormatter)
-		};
 	}
 
 	/**
@@ -91,11 +72,6 @@ export class TypeFormatter implements ITypeFormatter {
 					kind: TypeKind.POJO,
 					properties: typeLiteralNode.members.map(member => interfaceTypeMemberFormatter.format(<PropertySignature>member))
 				};
-
-			case SyntaxKind.ExpressionWithTypeArguments:
-
-				const expressionWithTypeArgumentsNode = <ExpressionWithTypeArguments> node;
-				return this.format(expressionWithTypeArgumentsNode.expression, interfaceTypeMemberFormatter, parameterTypeFormatter);
 
 			case SyntaxKind.VoidKeyword:
 
@@ -160,13 +136,7 @@ export class TypeFormatter implements ITypeFormatter {
 				};
 
 			case SyntaxKind.FunctionType:
-				const functionTypeNode = <FunctionTypeNode>node;
-
-				return {
-					kind: TypeKind.FUNCTION,
-					parameters: functionTypeNode.parameters.map(parameter => parameterTypeFormatter.format(parameter, interfaceTypeMemberFormatter)),
-					returns: this.format(functionTypeNode.type, interfaceTypeMemberFormatter, parameterTypeFormatter)
-				};
+				return this.functionTypeFormatter.format({node: <FunctionTypeNode>node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter: this});
 
 			case SyntaxKind.UndefinedKeyword:
 
@@ -234,13 +204,8 @@ export class TypeFormatter implements ITypeFormatter {
 
 			case SyntaxKind.TypeReference:
 			case SyntaxKind.Identifier:
-				const referenceNode = <TypeReferenceNode | Identifier>node;
-
-				return {
-					kind: TypeKind.REFERENCE,
-					name: this.astUtil.takeName(isIdentifier(referenceNode) ? referenceNode : referenceNode.typeName),
-					typeArguments: isIdentifier(referenceNode) ? [] : referenceNode.typeArguments == null ? [] : referenceNode.typeArguments.map(typeArgument => this.format(typeArgument, interfaceTypeMemberFormatter, parameterTypeFormatter))
-				};
+			case SyntaxKind.ExpressionWithTypeArguments:
+				return this.referenceTypeFormatter.format({node: <TypeReferenceNode|Identifier|ExpressionWithTypeArguments>node, typeFormatter: this, interfaceTypeMemberFormatter, parameterTypeFormatter});
 
 			case SyntaxKind.UnionType:
 

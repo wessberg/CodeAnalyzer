@@ -7,6 +7,6 @@ test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
 	const interfaces = codeAnalyzer.getInterfacesForFile("./test/static/foo");
-	console.log(JSON.stringify(interfaces, null, "\t"));
+	interfaces.forEach(item => {console.log(item.toString());});
 	t.true(true);
 });
