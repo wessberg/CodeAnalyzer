@@ -4,9 +4,8 @@
 	"description": "A service that can analyze your code in great detail ahead of time.",
 	"scripts": {
 		"changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
-		"readme:changelog": "node node_modules/@wessberg/ts-config/readme/changelog/helper/add-changelog.js",
 		"readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
-		"readme:refresh": "npm run changelog:generate && npm run readme:changelog && npm run readme:badges",
+		"readme:refresh": "npm run changelog:generate && npm run readme:badges",
 		"commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
 		"clean:dist": "rm -r -f dist",
 		"clean:compiled": "rm -r -f compiled",
@@ -40,24 +39,22 @@
 		"code quality"
 	],
 	"devDependencies": {
-		"@types/jsdom": "^11.0.1",
-		"@types/node": "^8.0.19",
-		"@wessberg/ts-config": "0.0.20",
-		"@wessberg/typedetector": "^1.0.6",
-		"ava": "^0.21.0",
-		"tslint": "^5.5.0",
+		"@wessberg/ts-config": "0.0.23",
+		"ava": "^0.22.0",
+		"tslint": "^5.6.0",
 		"husky": "latest",
 		"conventional-changelog-cli": "latest"
 	},
 	"dependencies": {
-		"@wessberg/compiler-common": "^1.0.0",
-		"@wessberg/environment": "^1.0.1",
-		"@wessberg/fileloader": "^1.0.3",
-		"@wessberg/globalobject": "^1.0.7",
-		"@wessberg/marshaller": "^2.0.4",
-		"jsdom": "^11.1.0",
+		"@types/node": "^8.0.24",
+		"@wessberg/fileloader": "^1.1.4",
+		"@wessberg/moduleutil": "0.0.11",
+		"@wessberg/pathutil": "0.0.5",
+		"@wessberg/type": "0.0.27",
+		"@wessberg/typescript-ast-util": "0.0.6",
+		"@wessberg/typescript-language-service": "0.0.4",
 		"tslib": "^1.7.1",
-		"typescript": "^2.4.2"
+		"typescript": "^2.5.1"
 	},
 	"main": "./dist/umd/index.js",
 	"module": "./dist/es2015/index.js",
