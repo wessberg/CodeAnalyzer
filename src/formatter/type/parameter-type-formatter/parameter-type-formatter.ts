@@ -27,9 +27,10 @@ export class ParameterTypeFormatter implements IParameterTypeFormatter {
 		const isRestSpread = member.dotDotDotToken != null;
 		const optional = member.questionToken != null;
 		const type = this.typeFormatter.format(member.type, interfaceTypeMemberFormatter, this);
+		let parameterType: ParameterType;
 
 		if (isObjectBindingPattern(member.name)) {
-			return {
+			parameterType = {
 				kind: BindingNameKind.OBJECT_BINDING,
 				isRestSpread,
 				optional,
@@ -38,8 +39,8 @@ export class ParameterTypeFormatter implements IParameterTypeFormatter {
 			};
 		}
 
-		if (isArrayBindingPattern(member.name)) {
-			return {
+		else if (isArrayBindingPattern(member.name)) {
+			parameterType = {
 				kind: BindingNameKind.ARRAY_BINDING,
 				isRestSpread,
 				optional,
@@ -48,13 +49,49 @@ export class ParameterTypeFormatter implements IParameterTypeFormatter {
 			};
 		}
 
-		return {
-			kind: BindingNameKind.NORMAL,
-			isRestSpread,
-			optional,
-			type,
-			name: this.astUtil.takeName(member.name)
-		};
+		else {
+			parameterType = {
+				kind: BindingNameKind.NORMAL,
+				isRestSpread,
+				optional,
+				type,
+				name: this.astUtil.takeName(member.name)
+			};
+		}
+
+		// Override the 'toString()' method
+		parameterType.toString = () => this.stringify(parameterType);
+		return parameterType;
+	}
+
+	/**
+	 * Generates a string representation of the ParameterType
+	 * @param {ParameterType} parameterType
+	 * @returns {string}
+	 */
+	private stringify (parameterType: ParameterType): string {
+		let str = "";
+		if (parameterType.isRestSpread) str += "...";
+		switch (parameterType.kind) {
+
+			case BindingNameKind.NORMAL:
+				str += parameterType.name;
+				break;
+
+			case BindingNameKind.ARRAY_BINDING:
+				str += `[${parameterType.bindings.map(binding => binding.toString()).join(", ")}]`;
+				break;
+
+			case BindingNameKind.OBJECT_BINDING:
+				str += `{${parameterType.bindings.map(binding => binding.toString()).join(", ")}}`;
+				break;
+		}
+		// Add a '?' at the end of the parameter if it is optional
+
+		if (parameterType.optional) str += "?";
+		str += ": ";
+		str += parameterType.type.toString();
+		return str;
 	}
 
 }

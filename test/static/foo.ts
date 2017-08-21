@@ -24,7 +24,8 @@ export interface IBar<T extends Node = Node> {
 
 export interface IFoo extends IBar<Element>, Node {
 	foo: number;
-	bar ({lol}: IBar<Node>): void;
+	bar ({...lol}?: IBar<Node>): void;
+	huhu ([, b, , ...c]: number[]): void;
 }
 
 export interface IBaz {
