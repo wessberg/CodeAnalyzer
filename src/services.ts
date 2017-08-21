@@ -19,7 +19,7 @@ import {IInterfaceTypeService} from "./service/interface-type-service/i-interfac
 import {InterfaceTypeService} from "./service/interface-type-service/interface-type-service";
 import {ITypescriptLanguageService, TypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IModuleUtil, ModuleUtil} from "@wessberg/moduleutil";
-import {IFileLoader, FileLoader} from "@wessberg/fileloader";
+import {FileLoader, IFileLoader} from "@wessberg/fileloader";
 import {IPathUtil, PathUtil} from "@wessberg/pathutil";
 import {FunctionTypeFormatter} from "./formatter/type/function-type-formatter/function-type-formatter";
 import {IFunctionTypeFormatter} from "./formatter/type/function-type-formatter/i-function-type-formatter";
@@ -35,6 +35,38 @@ import {IAnyTypeFormatter} from "./formatter/type/any-type-formatter/i-any-type-
 import {AnyTypeFormatter} from "./formatter/type/any-type-formatter/any-type-formatter";
 import {IStringTypeFormatter} from "./formatter/type/string-type-formatter/i-string-type-formatter";
 import {StringTypeFormatter} from "./formatter/type/string-type-formatter/string-type-formatter";
+import {IBooleanTypeFormatter} from "./formatter/type/boolean-type-formatter/i-boolean-type-formatter";
+import {BooleanTypeFormatter} from "./formatter/type/boolean-type-formatter/boolean-type-formatter";
+import {INullTypeFormatter} from "./formatter/type/null-type-formatter/i-null-type-formatter";
+import {NullTypeFormatter} from "./formatter/type/null-type-formatter/null-type-formatter";
+import {ISymbolTypeFormatter} from "./formatter/type/symbol-type-formatter/i-symbol-type-formatter";
+import {SymbolTypeFormatter} from "./formatter/type/symbol-type-formatter/symbol-type-formatter";
+import {IThisTypeFormatter} from "./formatter/type/this-type-formatter/i-this-type-formatter";
+import {ThisTypeFormatter} from "./formatter/type/this-type-formatter/this-type-formatter";
+import {IObjectTypeFormatter} from "./formatter/type/object-type-formatter/i-object-type-formatter";
+import {ObjectTypeFormatter} from "./formatter/type/object-type-formatter/object-type-formatter";
+import {IUndefinedTypeFormatter} from "./formatter/type/undefined-type-formatter/i-undefined-type-formatter";
+import {UndefinedTypeFormatter} from "./formatter/type/undefined-type-formatter/undefined-type-formatter";
+import {IBooleanEnumerationTypeFormatter} from "./formatter/type/boolean-enumeration-type-formatter/i-boolean-enumeration-type-formatter";
+import {BooleanEnumerationTypeFormatter} from "./formatter/type/boolean-enumeration-type-formatter/boolean-enumeration-type-formatter";
+import {IStringEnumerationTypeFormatter} from "./formatter/type/string-enumeration-type-formatter/i-string-enumeration-type-formatter";
+import {StringEnumerationTypeFormatter} from "./formatter/type/string-enumeration-type-formatter/string-enumeration-type-formatter";
+import {INumberEnumerationTypeFormatter} from "./formatter/type/number-enumeration-type-formatter/i-number-enumeration-type-formatter";
+import {NumberEnumerationTypeFormatter} from "./formatter/type/number-enumeration-type-formatter/number-enumeration-type-formatter";
+import {INeverTypeFormatter} from "./formatter/type/never-type-formatter/i-never-type-formatter";
+import {NeverTypeFormatter} from "./formatter/type/never-type-formatter/never-type-formatter";
+import {ITupleTypeFormatter} from "./formatter/type/tuple-type-formatter/i-tuple-type-formatter";
+import {TupleTypeFormatter} from "./formatter/type/tuple-type-formatter/tuple-type-formatter";
+import {IArrayTypeFormatter} from "./formatter/type/array-type-formatter/i-array-type-formatter";
+import {ArrayTypeFormatter} from "./formatter/type/array-type-formatter/array-type-formatter";
+import {IKeyofTypeFormatter} from "./formatter/type/keyof-type-formatter/i-keyof-type-formatter";
+import {KeyofTypeFormatter} from "./formatter/type/keyof-type-formatter/keyof-type-formatter";
+import {IParenthesizedTypeFormatter} from "./formatter/type/parenthesized-type-formatter/i-parenthesized-type-formatter";
+import {ParenthesizedTypeFormatter} from "./formatter/type/parenthesized-type-formatter/parenthesized-type-formatter";
+import {IUnionTypeFormatter} from "./formatter/type/union-type-formatter/i-union-type-formatter";
+import {UnionTypeFormatter} from "./formatter/type/union-type-formatter/union-type-formatter";
+import {IIntersectionTypeFormatter} from "./formatter/type/intersection-type-formatter/i-intersection-type-formatter";
+import {IntersectionTypeFormatter} from "./formatter/type/intersection-type-formatter/intersection-type-formatter";
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -43,20 +75,36 @@ const pathUtil: IPathUtil = new PathUtil(fileLoader);
 const moduleUtil: IModuleUtil = new ModuleUtil(fileLoader, pathUtil);
 
 // Formatters
+const neverTypeFormatter: INeverTypeFormatter = new NeverTypeFormatter();
 const voidTypeFormatter: IVoidTypeFormatter = new VoidTypeFormatter();
 const anyTypeFormatter: IAnyTypeFormatter = new AnyTypeFormatter();
+const undefinedTypeFormatter: IUndefinedTypeFormatter = new UndefinedTypeFormatter();
+const nullTypeFormatter: INullTypeFormatter = new NullTypeFormatter();
 const numberTypeFormatter: INumberTypeFormatter = new NumberTypeFormatter();
+const numberEnumerationTypeFormatter: INumberEnumerationTypeFormatter = new NumberEnumerationTypeFormatter(astUtil);
 const stringTypeFormatter: IStringTypeFormatter = new StringTypeFormatter();
+const stringEnumerationTypeFormatter: IStringEnumerationTypeFormatter = new StringEnumerationTypeFormatter(astUtil);
+const booleanTypeFormatter: IBooleanTypeFormatter = new BooleanTypeFormatter();
+const booleanEnumerationTypeFormatter: IBooleanEnumerationTypeFormatter = new BooleanEnumerationTypeFormatter();
+const symbolTypeFormatter: ISymbolTypeFormatter = new SymbolTypeFormatter();
+const objectTypeFormatter: IObjectTypeFormatter = new ObjectTypeFormatter();
 const pojoTypeFormatter: IPojoTypeFormatter = new PojoTypeFormatter();
+const thisTypeFormatter: IThisTypeFormatter = new ThisTypeFormatter();
+const tupleTypeFormatter: ITupleTypeFormatter = new TupleTypeFormatter();
+const arrayTypeFormatter: IArrayTypeFormatter = new ArrayTypeFormatter();
+const keyofTypeFormatter: IKeyofTypeFormatter = new KeyofTypeFormatter();
+const parenthesizedTypeFormatter: IParenthesizedTypeFormatter = new ParenthesizedTypeFormatter();
+const unionTypeFormatter: IUnionTypeFormatter = new UnionTypeFormatter();
+const intersectionTypeFormatter: IIntersectionTypeFormatter = new IntersectionTypeFormatter();
 const functionTypeFormatter: IFunctionTypeFormatter = new FunctionTypeFormatter();
 const indexTypeFormatter: IIndexTypeFormatter = new IndexTypeFormatter();
 const referenceTypeFormatter: IReferenceTypeFormatter = new ReferenceTypeFormatter(astUtil);
-const typeFormatter: ITypeFormatter = new TypeFormatter(astUtil, voidTypeFormatter, anyTypeFormatter, numberTypeFormatter, stringTypeFormatter, pojoTypeFormatter, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter);
+const typeFormatter: ITypeFormatter = new TypeFormatter(neverTypeFormatter, voidTypeFormatter, anyTypeFormatter, undefinedTypeFormatter, nullTypeFormatter, numberTypeFormatter, numberEnumerationTypeFormatter, stringTypeFormatter, stringEnumerationTypeFormatter, booleanTypeFormatter, booleanEnumerationTypeFormatter, symbolTypeFormatter, objectTypeFormatter, pojoTypeFormatter, thisTypeFormatter, tupleTypeFormatter, arrayTypeFormatter, keyofTypeFormatter, functionTypeFormatter, indexTypeFormatter, referenceTypeFormatter, parenthesizedTypeFormatter, unionTypeFormatter, intersectionTypeFormatter);
 const objectBindingNameFormatter: IObjectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 const arrayBindingNameFormatter: IArrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 const parameterTypeFormatter: IParameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatter, arrayBindingNameFormatter, typeFormatter);
 const interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astUtil, parameterTypeFormatter, typeFormatter);
-const typeParameterFormatter: ITypeParameterFormatter = new TypeParameterFormatter(astUtil, typeFormatter, interfaceTypeMemberFormatter,parameterTypeFormatter);
+const typeParameterFormatter: ITypeParameterFormatter = new TypeParameterFormatter(astUtil, typeFormatter, interfaceTypeMemberFormatter, parameterTypeFormatter);
 const interfaceTypeFormatter: IInterfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, typeFormatter, referenceTypeFormatter, typeParameterFormatter, parameterTypeFormatter, interfaceTypeMemberFormatter);
 
 // Services
