@@ -1,25 +1,24 @@
 import {IUnionType, TypeKind} from "@wessberg/type";
 import {IUnionTypeFormatter} from "./i-union-type-formatter";
 import {IUnionTypeFormatterFormatOptions} from "./i-union-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating IUnionTypes
  */
 export class UnionTypeFormatter implements IUnionTypeFormatter {
+	constructor (private typeFormatter: TypeFormatterGetter) {}
 
 	/**
 	 * Formats the provided Expression into an IUnionType
 	 * @param {UnionTypeNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {IUnionType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IUnionTypeFormatterFormatOptions): IUnionType {
+	public format ({node}: IUnionTypeFormatterFormatOptions): IUnionType {
 
 		const unionType: IUnionType = {
 			kind: TypeKind.UNION,
-			types: node.types.map(type => typeFormatter.format(type, interfaceTypeMemberFormatter, parameterTypeFormatter))
+			types: node.types.map(type => this.typeFormatter().format(type))
 		};
 
 		// Override the 'toString()' method

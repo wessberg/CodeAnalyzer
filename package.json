@@ -20,7 +20,7 @@
 		"tslint": "tslint -c tslint.json -p tsconfig.json",
 		"validate": "npm run tslint && npm run test",
 		"pretest": "npm run clean:compiled && npm run tsc:test",
-		"test": "NODE_ENV=TEST time ava --fail-fast",
+		"test": "NODE_ENV=TEST ava --only --fail-fast",
 		"posttest": "npm run clean:compiled",
 		"prepublishOnly": "npm run validate && npm run build",
 		"precommit": "npm run tslint && exit 0",
@@ -41,12 +41,12 @@
 	"devDependencies": {
 		"@wessberg/ts-config": "0.0.23",
 		"ava": "^0.22.0",
-		"tslint": "^5.6.0",
+		"tslint": "^5.7.0",
 		"husky": "latest",
 		"conventional-changelog-cli": "latest"
 	},
 	"dependencies": {
-		"@types/node": "^8.0.24",
+		"@types/node": "^8.0.25",
 		"@wessberg/fileloader": "^1.1.4",
 		"@wessberg/moduleutil": "0.0.11",
 		"@wessberg/pathutil": "0.0.5",

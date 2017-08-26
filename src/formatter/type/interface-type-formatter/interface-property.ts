@@ -1,12 +1,13 @@
-import {Expression, Statement, TypeElement, TypeNode, Node, isTypeElement, isTypeNode} from "typescript";
+import {isTypeElement, isTypeNode, TypeElement, TypeNode} from "typescript";
+import {AstNode} from "../../../type/ast-node";
 
-export declare type InterfaceProperty = TypeElement & { type: TypeNode };
+export declare type InterfaceProperty = TypeElement&{ type: TypeNode };
 
 /**
  * Returns true if the given item is an InterfaceProperty
- * @param {ts.Statement | ts.Expression | Node} item
+ * @param {AstNode} item
  * @returns {boolean}
  */
-export function isInterfaceProperty (item: Statement|Expression|Node): item is InterfaceProperty {
+export function isInterfaceProperty (item: AstNode): item is InterfaceProperty {
 	return isTypeElement(item) && isTypeNode((<InterfaceProperty>item).type);
 }

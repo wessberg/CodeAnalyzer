@@ -1,25 +1,24 @@
 import {IIntersectionType, TypeKind} from "@wessberg/type";
 import {IIntersectionTypeFormatter} from "./i-intersection-type-formatter";
 import {IIntersectionTypeFormatterFormatOptions} from "./i-intersection-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating IIntersectionTypes
  */
 export class IntersectionTypeFormatter implements IIntersectionTypeFormatter {
+	constructor (private typeFormatter: TypeFormatterGetter) {}
 
 	/**
 	 * Formats the provided Expression into an IIntersectionType
 	 * @param {IntersectionTypeNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {IIntersectionType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IIntersectionTypeFormatterFormatOptions): IIntersectionType {
+	public format ({node}: IIntersectionTypeFormatterFormatOptions): IIntersectionType {
 
 		const intersectionType: IIntersectionType = {
 			kind: TypeKind.INTERSECTION,
-			types: node.types.map(type => typeFormatter.format(type, interfaceTypeMemberFormatter, parameterTypeFormatter))
+			types: node.types.map(type => this.typeFormatter().format(type))
 		};
 
 		// Override the 'toString()' method

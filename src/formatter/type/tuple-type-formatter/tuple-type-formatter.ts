@@ -1,25 +1,24 @@
 import {ITupleType, TypeKind} from "@wessberg/type";
 import {ITupleTypeFormatter} from "./i-tuple-type-formatter";
 import {ITupleTypeFormatterFormatOptions} from "./i-tuple-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating ITupleTypes
  */
 export class TupleTypeFormatter implements ITupleTypeFormatter {
+	constructor (private typeFormatter: TypeFormatterGetter) {}
 
 	/**
 	 * Formats the provided Expression into an ITupleType
 	 * @param {TupleTypeNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {ITupleType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: ITupleTypeFormatterFormatOptions): ITupleType {
+	public format ({node}: ITupleTypeFormatterFormatOptions): ITupleType {
 
 		const tupleType: ITupleType = {
 			kind: TypeKind.TUPLE,
-			members: node.elementTypes.map(elementType => typeFormatter.format(elementType, interfaceTypeMemberFormatter, parameterTypeFormatter))
+			members: node.elementTypes.map(elementType => this.typeFormatter().format(elementType))
 		};
 
 		// Override the 'toString()' method

@@ -3,16 +3,15 @@ import {InterfaceProperty} from "../interface-type-formatter/interface-property"
 import {IndexSignatureDeclaration, isComputedPropertyName, ParameterDeclaration, PropertySignature} from "typescript";
 import {IInterfaceTypeMember, InterfaceTypeMemberNameKind, TypeKind} from "@wessberg/type";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
-import {ITypeFormatter} from "../type-formatter/i-type-formatter";
-import {IParameterTypeFormatter} from "../parameter-type-formatter/i-parameter-type-formatter";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for formatting InterfaceTypeMembers
  */
 export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatter {
 	constructor (private astUtil: ITypescriptASTUtil,
-							 private parameterTypeFormatter: IParameterTypeFormatter,
-							 private typeFormatter: ITypeFormatter) {}
+							 private typeFormatter: TypeFormatterGetter) {
+	}
 
 	/**
 	 * Formats an InterfaceProperty, PropertySignature or IndexSignatureDeclaration into an IInterfaceTypeMember
@@ -23,7 +22,7 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 		const name = this.astUtil.takeName(member.name);
 		const property = {
 			optional: member.questionToken != null,
-			type: this.typeFormatter.format(member, this, this.parameterTypeFormatter)
+			type: this.typeFormatter().format(member)
 		};
 
 		let interfaceTypeMember: IInterfaceTypeMember;

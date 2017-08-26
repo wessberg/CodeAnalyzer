@@ -1,25 +1,24 @@
 import {IKeyofType, TypeKind} from "@wessberg/type";
 import {IKeyofTypeFormatter} from "./i-keyof-type-formatter";
 import {IKeyofTypeFormatterFormatOptions} from "./i-keyof-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating IKeyofTypes
  */
 export class KeyofTypeFormatter implements IKeyofTypeFormatter {
+	constructor (private typeFormatter: TypeFormatterGetter) {}
 
 	/**
 	 * Formats the provided Expression into an IKeyofType
 	 * @param {TypeNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {IKeyofType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IKeyofTypeFormatterFormatOptions): IKeyofType {
+	public format ({node}: IKeyofTypeFormatterFormatOptions): IKeyofType {
 
 		const keyofType: IKeyofType = {
 			kind: TypeKind.KEYOF,
-			type: typeFormatter.format(node, interfaceTypeMemberFormatter, parameterTypeFormatter)
+			type: this.typeFormatter().format(node)
 		};
 
 		// Override the 'toString()' method

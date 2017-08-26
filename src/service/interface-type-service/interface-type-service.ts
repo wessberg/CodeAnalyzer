@@ -2,8 +2,8 @@ import {IInterfaceTypeService} from "./i-interface-type-service";
 import {IInterfaceType} from "@wessberg/type";
 import {createNodeArray, InterfaceDeclaration, NodeArray, Statement, SyntaxKind} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {IInterfaceTypeFormatter} from "../../formatter/type/interface-type-formatter/i-interface-type-formatter";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {InterfaceTypeFormatterGetter} from "../../formatter/type/interface-type-formatter/interface-type-formatter-getter";
 
 /**
  * A class that can generate IInterfaceTypes
@@ -17,7 +17,7 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private languageService: ITypescriptLanguageService,
-							 private interfaceTypeFormatter: IInterfaceTypeFormatter) {
+							 private interfaceTypeFormatter: InterfaceTypeFormatterGetter) {
 	}
 
 	/**
@@ -45,7 +45,7 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 */
 	public getInterfacesForStatements (statements: NodeArray<Statement>): IInterfaceType[] {
 		const filtered = this.astUtil.filterStatements<InterfaceDeclaration>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.interfaceTypeFormatter.format(statement));
+		return filtered.map(statement => this.interfaceTypeFormatter().format(statement));
 	}
 
 }

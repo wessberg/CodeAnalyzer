@@ -3,22 +3,18 @@ import {InterfaceProperty} from "./interface-property";
 import {InterfaceDeclaration} from "typescript";
 import {IInterfaceType} from "@wessberg/type";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
-import {IInterfaceTypeMemberFormatter} from "../interface-type-member-formatter/i-interface-type-member-formatter";
-import {IReferenceTypeFormatter} from "../reference-type-formatter/i-reference-type-formatter";
-import {ITypeParameterFormatter} from "../type-parameter-formatter/i-type-parameter-formatter";
-import {ITypeFormatter} from "../type-formatter/i-type-formatter";
-import {IParameterTypeFormatter} from "../parameter-type-formatter/i-parameter-type-formatter";
+import {ReferenceTypeFormatterGetter} from "../reference-type-formatter/reference-type-formatter-getter";
+import {InterfaceTypeMemberFormatterGetter} from "../interface-type-member-formatter/interface-type-member-formatter-getter";
+import {TypeParameterFormatterGetter} from "../type-parameter-formatter/type-parameter-formatter-getter";
 
 /**
  * A class for formatting IInterfaceTypes
  */
 export class InterfaceTypeFormatter implements IInterfaceTypeFormatter {
 	constructor (private astUtil: ITypescriptASTUtil,
-							 private typeFormatter: ITypeFormatter,
-							 private referenceTypeFormatter: IReferenceTypeFormatter,
-							 private typeParameterFormatter: ITypeParameterFormatter,
-							 private parameterTypeFormatter: IParameterTypeFormatter,
-							 private interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter) {
+							 private referenceTypeFormatter: ReferenceTypeFormatterGetter,
+							 private interfaceTypeMemberFormatter: InterfaceTypeMemberFormatterGetter,
+							 private typeParameterFormatter: TypeParameterFormatterGetter) {
 	}
 
 	/**
@@ -27,14 +23,13 @@ export class InterfaceTypeFormatter implements IInterfaceTypeFormatter {
 	 * @returns {IInterfaceType}
 	 */
 	public format (statement: InterfaceDeclaration): IInterfaceType {
-		const {typeFormatter, interfaceTypeMemberFormatter, parameterTypeFormatter} = this;
 
 		const interfaceType: IInterfaceType = {
 			file: statement.getSourceFile().fileName,
 			name: this.astUtil.takeName(statement.name),
-			extends: statement.heritageClauses == null ? [] : statement.heritageClauses[0].types.map(node => this.referenceTypeFormatter.format({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter})),
-			typeParameters: statement.typeParameters == null ? [] : this.typeParameterFormatter.format(statement.typeParameters),
-			members: statement.members.map(member => this.interfaceTypeMemberFormatter.format(<InterfaceProperty>member))
+			extends: statement.heritageClauses == null ? [] : statement.heritageClauses[0].types.map(node => this.referenceTypeFormatter().format({node})),
+			typeParameters: statement.typeParameters == null ? [] : this.typeParameterFormatter().format(statement.typeParameters),
+			members: statement.members.map(member => this.interfaceTypeMemberFormatter().format(<InterfaceProperty>member))
 		};
 
 		// Override the 'toString()' method

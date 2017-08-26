@@ -1,25 +1,24 @@
 import {IParenthesizedType, TypeKind} from "@wessberg/type";
 import {IParenthesizedTypeFormatter} from "./i-parenthesized-type-formatter";
 import {IParenthesizedTypeFormatterFormatOptions} from "./i-parenthesized-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating IParenthesizedTypes
  */
 export class ParenthesizedTypeFormatter implements IParenthesizedTypeFormatter {
+	constructor (private typeFormatter: TypeFormatterGetter) {}
 
 	/**
 	 * Formats the provided Expression into an IParenthesizedType
 	 * @param {TypeNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {IParenthesizedType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IParenthesizedTypeFormatterFormatOptions): IParenthesizedType {
+	public format ({node}: IParenthesizedTypeFormatterFormatOptions): IParenthesizedType {
 
 		const parenthesizedType: IParenthesizedType = {
 			kind: TypeKind.PARENTHESIZED,
-			type: typeFormatter.format(node, interfaceTypeMemberFormatter, parameterTypeFormatter)
+			type: this.typeFormatter().format(node)
 		};
 
 		// Override the 'toString()' method

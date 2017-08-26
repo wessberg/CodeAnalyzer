@@ -3,30 +3,28 @@ import {IReferenceType, TypeKind} from "@wessberg/type";
 import {isExpressionWithTypeArguments, isIdentifier} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IReferenceTypeFormatterFormatOptions} from "./i-reference-type-formatter-format-options";
+import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 
 /**
  * A class for generating IReferenceTypes
  */
 export class ReferenceTypeFormatter implements IReferenceTypeFormatter {
-	constructor (private astUtil: ITypescriptASTUtil) {
+	constructor (private astUtil: ITypescriptASTUtil, private typeFormatter: TypeFormatterGetter) {
 	}
 
 	/**
 	 * Formats the provided Expression into an IReferenceType
 	 * @param {ExpressionWithTypeArguments | Identifier | TypeReferenceNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @param {IParameterTypeFormatter} parameterTypeFormatter
-	 * @param {ITypeFormatter} typeFormatter
 	 * @returns {IReferenceType}
 	 */
-	public format ({node, interfaceTypeMemberFormatter, parameterTypeFormatter, typeFormatter}: IReferenceTypeFormatterFormatOptions): IReferenceType {
+	public format ({node}: IReferenceTypeFormatterFormatOptions): IReferenceType {
 		let referenceType: IReferenceType;
 
 		if (isExpressionWithTypeArguments(node)) {
 			referenceType = {
 				kind: TypeKind.REFERENCE,
 				name: this.astUtil.takeName(node.expression),
-				typeArguments: node.typeArguments == null ? [] : node.typeArguments.map(typeArgument => typeFormatter.format(typeArgument, interfaceTypeMemberFormatter, parameterTypeFormatter))
+				typeArguments: node.typeArguments == null ? [] : node.typeArguments.map(typeArgument => this.typeFormatter().format(typeArgument))
 			};
 		}
 
@@ -42,7 +40,7 @@ export class ReferenceTypeFormatter implements IReferenceTypeFormatter {
 			referenceType = {
 				kind: TypeKind.REFERENCE,
 				name: this.astUtil.takeName(node.typeName),
-				typeArguments: node.typeArguments == null ? [] : node.typeArguments.map(typeArgument => typeFormatter.format(typeArgument, interfaceTypeMemberFormatter, parameterTypeFormatter))
+				typeArguments: node.typeArguments == null ? [] : node.typeArguments.map(typeArgument => this.typeFormatter().format(typeArgument))
 			};
 		}
 
