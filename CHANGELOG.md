@@ -1,3 +1,12 @@
+<a name="1.0.51"></a>
+## 1.0.51 (2017-08-27)
+
+* 1.0.51 ([8ec279a](https://github.com/wessberg/CodeAnalyzer/commit/8ec279a))
+* Added an import service ([f7ec193](https://github.com/wessberg/CodeAnalyzer/commit/f7ec193))
+* Bumped version ([f5a7728](https://github.com/wessberg/CodeAnalyzer/commit/f5a7728))
+
+
+
 <a name="1.0.50"></a>
 ## 1.0.50 (2017-08-27)
 
