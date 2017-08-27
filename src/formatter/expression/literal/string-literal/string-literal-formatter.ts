@@ -1,15 +1,14 @@
 import {StringLiteral} from "typescript";
 import {IStringLiteralFormatter} from "./i-string-literal-formatter";
-import {CacheServiceGetter} from "../../../../service/cache-service/cache-service-getter";
-import {IFormattedStringLiteral} from "./i-formatted-string-literal";
-import {FormattedExpressionKind} from "../../formatted-expression-kind/formatted-expression-kind";
+import {AstMapperGetter} from "../../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../../formatted-expression/formatted-expression-formatter";
+import {FormattedExpressionKind, IFormattedStringLiteral} from "@wessberg/type";
 
 /**
  * A class that can format String literals
  */
 export class StringLiteralFormatter extends FormattedExpressionFormatter implements IStringLiteralFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
@@ -27,7 +26,7 @@ export class StringLiteralFormatter extends FormattedExpressionFormatter impleme
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

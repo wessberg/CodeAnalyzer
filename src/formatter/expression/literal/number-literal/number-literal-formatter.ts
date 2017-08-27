@@ -1,15 +1,14 @@
 import {NumericLiteral} from "typescript";
 import {INumberLiteralFormatter} from "./i-number-literal-formatter";
-import {CacheServiceGetter} from "../../../../service/cache-service/cache-service-getter";
-import {IFormattedNumberLiteral} from "./i-formatted-number-literal";
-import {FormattedExpressionKind} from "../../formatted-expression-kind/formatted-expression-kind";
+import {AstMapperGetter} from "../../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../../formatted-expression/formatted-expression-formatter";
+import {FormattedExpressionKind, IFormattedNumberLiteral} from "@wessberg/type";
 
 /**
  * A class that can format numeric literals
  */
 export class NumberLiteralFormatter extends FormattedExpressionFormatter implements INumberLiteralFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
@@ -27,7 +26,7 @@ export class NumberLiteralFormatter extends FormattedExpressionFormatter impleme
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

@@ -1,5 +1,5 @@
 import {isTypeElement, isTypeNode, TypeElement, TypeNode} from "typescript";
-import {AstNode} from "../../../type/ast-node";
+import {AstNode} from "../../../type/ast-node/ast-node";
 
 export declare type InterfaceProperty = TypeElement&{ type: TypeNode };
 

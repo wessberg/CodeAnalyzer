@@ -1,15 +1,14 @@
 import {IIdentifierFormatter} from "./i-identifier-formatter";
 import {Identifier} from "typescript";
-import {IFormattedIdentifier} from "./i-formatted-identifier";
-import {FormattedExpressionKind} from "../formatted-expression-kind/formatted-expression-kind";
-import {CacheServiceGetter} from "../../../service/cache-service/cache-service-getter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
+import {FormattedExpressionKind, IFormattedIdentifier} from "@wessberg/type";
 
 /**
  * A class that can format Identifiers
  */
 export class IdentifierFormatter extends FormattedExpressionFormatter implements IIdentifierFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
@@ -27,7 +26,7 @@ export class IdentifierFormatter extends FormattedExpressionFormatter implements
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

@@ -1,6 +1,6 @@
 import {IReferenceTypeFormatter} from "./i-reference-type-formatter";
 import {IReferenceType, TypeKind} from "@wessberg/type";
-import {isExpressionWithTypeArguments, isIdentifier} from "typescript";
+import {isExpressionWithTypeArguments, isIdentifier, isQualifiedName} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IReferenceTypeFormatterFormatOptions} from "./i-reference-type-formatter-format-options";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
@@ -29,6 +29,14 @@ export class ReferenceTypeFormatter implements IReferenceTypeFormatter {
 		}
 
 		else if (isIdentifier(node)) {
+			referenceType = {
+				kind: TypeKind.REFERENCE,
+				name: this.astUtil.takeName(node),
+				typeArguments: []
+			};
+		}
+
+		else if (isQualifiedName(node)) {
 			referenceType = {
 				kind: TypeKind.REFERENCE,
 				name: this.astUtil.takeName(node),

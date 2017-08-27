@@ -1,15 +1,14 @@
 import {BooleanLiteral, SyntaxKind} from "typescript";
 import {IBooleanLiteralFormatter} from "./i-boolean-literal-formatter";
-import {CacheServiceGetter} from "../../../../service/cache-service/cache-service-getter";
-import {IFormattedBooleanLiteral} from "./i-formatted-boolean-literal";
-import {FormattedExpressionKind} from "../../formatted-expression-kind/formatted-expression-kind";
+import {AstMapperGetter} from "../../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../../formatted-expression/formatted-expression-formatter";
+import {FormattedExpressionKind, IFormattedBooleanLiteral} from "@wessberg/type";
 
 /**
  * A class that can format boolean literals
  */
 export class BooleanLiteralFormatter extends FormattedExpressionFormatter implements IBooleanLiteralFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
@@ -27,7 +26,7 @@ export class BooleanLiteralFormatter extends FormattedExpressionFormatter implem
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

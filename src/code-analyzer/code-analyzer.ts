@@ -1,15 +1,41 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {IInterfaceType} from "@wessberg/type";
-import {CallExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {callExpressionService, identifierExpressionService, interfaceTypeService} from "../services";
-import {IFormattedCallExpression} from "../formatter/expression/call-expression/i-formatted-call-expression";
-import {AstNode} from "../type/ast-node";
-import {IFormattedIdentifier} from "../formatter/expression/identifier/i-formatted-identifier";
+import {IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
+import {CallExpression, ClassDeclaration, ClassExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
+import {callExpressionService, classService, identifierExpressionService, interfaceTypeService} from "../services";
+import {AstNode} from "../type/ast-node/ast-node";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
+
+
+	/**
+	 * Gets all IFormattedClasses for the given file
+	 * @param {string} file
+	 * @returns {IFormattedClass[]}
+	 */
+	public getClassesForFile (file: string): IFormattedClass[] {
+		return classService.getClassesForFile(file);
+	}
+
+	/**
+	 * Gets all IFormattedClass for the given statement
+	 * @param {ClassExpression|ClassDeclaration} statement
+	 * @returns {IFormattedClass[]}
+	 */
+	public getClassesForStatement (statement: ClassExpression|ClassDeclaration): IFormattedClass[] {
+		return classService.getClassesForStatement(statement);
+	}
+
+	/**
+	 * Gets all IFormattedClass for the given Statements
+	 * @param {NodeArray<AstNode>} statements
+	 * @returns {IFormattedClass[]}
+	 */
+	public getClassesForStatements (statements: NodeArray<AstNode>): IFormattedClass[] {
+		return classService.getClassesForStatements(statements);
+	}
 	/**
 	 * Gets all IInterfaceTypes for the given file
 	 * @param {string} file

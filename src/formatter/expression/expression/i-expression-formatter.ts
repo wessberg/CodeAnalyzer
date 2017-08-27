@@ -1,6 +1,6 @@
-import {Expression} from "typescript";
-import {FormattedExpression} from "../formatted-expression/i-formatted-expression";
+import {Expression, ExpressionWithTypeArguments} from "typescript";
+import {FormattedExpression} from "@wessberg/type";
 
 export interface IExpressionFormatter {
-	format (expression: Expression): FormattedExpression;
+	format (expression: Expression|ExpressionWithTypeArguments): FormattedExpression;
 }

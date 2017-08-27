@@ -2,9 +2,9 @@ import {createNodeArray, Identifier, NodeArray, SyntaxKind} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IIdentifierExpressionService} from "./i-identifier-expression-service";
-import {AstNode} from "../../type/ast-node";
-import {IFormattedIdentifier} from "../../formatter/expression/identifier/i-formatted-identifier";
+import {AstNode} from "../../type/ast-node/ast-node";
 import {IdentifierFormatterGetter} from "../../formatter/expression/identifier/identifier-formatter-getter";
+import {IFormattedIdentifier} from "@wessberg/type";
 
 /**
  * A class that can generate IFormattedIdentifierExpressions

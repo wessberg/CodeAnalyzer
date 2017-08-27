@@ -73,11 +73,9 @@ import {ICallExpressionService} from "./service/call-expression-service/i-call-e
 import {CallExpressionService} from "./service/call-expression-service/call-expression-service";
 import {IArgumentsFormatter} from "./formatter/expression/arguments/i-arguments-formatter";
 import {ArgumentsFormatter} from "./formatter/expression/arguments/arguments-formatter";
-import {ICacheService} from "./service/cache-service/i-cache-service";
-import {CacheService} from "./service/cache-service/cache-service";
+import {AstMapper} from "./mapper/ast-mapper/ast-mapper";
 import {ArgumentsFormatterGetter} from "./formatter/expression/arguments/arguments-formatter-getter";
 import {CallExpressionFormatterGetter} from "./formatter/expression/call-expression/call-expression-formatter-getter";
-import {CacheServiceGetter} from "./service/cache-service/cache-service-getter";
 import {ArrayBindingNameFormatterGetter} from "./formatter/binding-name/array-binding-name-formatter/array-binding-name-formatter-getter";
 import {ObjectBindingNameFormatterGetter} from "./formatter/binding-name/object-binding-name-formatter/object-binding-name-formatter-getter";
 import {NeverTypeFormatterGetter} from "./formatter/type/never-type-formatter/never-type-formatter-getter";
@@ -135,6 +133,19 @@ import {BooleanLiteralFormatter} from "./formatter/expression/literal/boolean-li
 import {IRegexLiteralFormatter} from "./formatter/expression/literal/regex-literal/i-regex-literal-formatter";
 import {RegexLiteralFormatterGetter} from "./formatter/expression/literal/regex-literal/regex-literal-formatter-getter";
 import {RegexLiteralFormatter} from "./formatter/expression/literal/regex-literal/regex-literal-formatter";
+import {IAstMapper} from "./mapper/ast-mapper/i-ast-mapper";
+import {AstMapperGetter} from "./mapper/ast-mapper/ast-mapper-getter";
+import {IClassFormatter} from "./formatter/expression/class/i-class-formatter";
+import {ClassFormatterGetter} from "./formatter/expression/class/class-formatter-getter";
+import {ClassFormatter} from "./formatter/expression/class/class-formatter";
+import {IClassService} from "./service/class-service/i-class-service";
+import {ClassService} from "./service/class-service/class-service";
+import {IHeritageFormatter} from "./formatter/expression/heritage/i-heritage-formatter";
+import {HeritageFormatterGetter} from "./formatter/expression/heritage/heritage-formatter-getter";
+import {HeritageFormatter} from "./formatter/expression/heritage/heritage-formatter";
+import {ITypeofTypeFormatter} from "./formatter/type/typeof-type-formatter/i-typeof-type-formatter";
+import {TypeofTypeFormatterGetter} from "./formatter/type/typeof-type-formatter/typeof-type-formatter-getter";
+import {TypeofTypeFormatter} from "./formatter/type/typeof-type-formatter/typeof-type-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -159,6 +170,7 @@ let thisTypeFormatter: IThisTypeFormatter|null = null;
 let tupleTypeFormatter: ITupleTypeFormatter|null = null;
 let arrayTypeFormatter: IArrayTypeFormatter|null = null;
 let keyofTypeFormatter: IKeyofTypeFormatter|null = null;
+let typeofTypeFormatter: ITypeofTypeFormatter|null = null;
 let parenthesizedTypeFormatter: IParenthesizedTypeFormatter|null = null;
 let unionTypeFormatter: IUnionTypeFormatter|null = null;
 let intersectionTypeFormatter: IIntersectionTypeFormatter|null = null;
@@ -173,6 +185,8 @@ let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 
 // Expression formatter declarations
 let argumentsFormatter: IArgumentsFormatter|null = null;
+let classFormatter: IClassFormatter|null = null;
+let heritageFormatter: IHeritageFormatter|null = null;
 let callExpressionFormatter: ICallExpressionFormatter|null = null;
 let propertyAccessExpressionFormatter: IPropertyAccessExpressionFormatter|null = null;
 let identifierExpressionFormatter: IIdentifierFormatter|null = null;
@@ -183,8 +197,8 @@ let regexLiteralFormatter: IRegexLiteralFormatter|null = null;
 let expressionFormatter: IExpressionFormatter|null = null;
 let notImplementedFormatter: INotImplementedFormatter|null = null;
 
-// General service declarations
-let cacheService: ICacheService|null = null;
+// AST Mapper
+let astMapper: IAstMapper|null = null;
 
 // General formatter getters
 const arrayBindingNameFormatterGetter: ArrayBindingNameFormatterGetter = () => arrayBindingNameFormatter!;
@@ -209,6 +223,7 @@ const thisTypeFormatterGetter: ThisTypeFormatterGetter = () => thisTypeFormatter
 const tupleTypeFormatterGetter: TupleTypeFormatterGetter = () => tupleTypeFormatter!;
 const arrayTypeFormatterGetter: ArrayTypeFormatterGetter = () => arrayTypeFormatter!;
 const keyofTypeFormatterGetter: KeyofTypeFormatterGetter = () => keyofTypeFormatter!;
+const typeofTypeFormatterGetter: TypeofTypeFormatterGetter = () => typeofTypeFormatter!;
 const parenthesizedTypeFormatterGetter: ParenthesizedTypeFormatterGetter = () => parenthesizedTypeFormatter!;
 const unionTypeFormatterGetter: UnionTypeFormatterGetter = () => unionTypeFormatter!;
 const intersectionTypeFormatterGetter: IntersectionTypeFormatterGetter = () => intersectionTypeFormatter!;
@@ -223,6 +238,8 @@ const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfa
 
 // Expression formatter getters
 const argumentsFormatterGetter: ArgumentsFormatterGetter = () => argumentsFormatter!;
+const classFormatterGetter: ClassFormatterGetter = () => classFormatter!;
+const heritageFormatterGetter: HeritageFormatterGetter = () => heritageFormatter!;
 const callExpressionFormatterGetter: CallExpressionFormatterGetter = () => callExpressionFormatter!;
 const propertyAccessExpressionFormatterGetter: PropertyAccessExpressionFormatterGetter = () => propertyAccessExpressionFormatter!;
 const identifierExpressionFormatterGetter: IdentifierFormatterGetter = () => identifierExpressionFormatter!;
@@ -234,7 +251,7 @@ const expressionFormatterGetter: ExpressionFormatterGetter = () => expressionFor
 const notImplementedFormatterGetter: NotImplementedFormatterGetter = () => notImplementedFormatter!;
 
 // Service getters
-const cacheServiceGetter: CacheServiceGetter = () => cacheService!;
+const astMapperGetter: AstMapperGetter = () => astMapper!;
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -265,6 +282,7 @@ thisTypeFormatter = new ThisTypeFormatter();
 tupleTypeFormatter = new TupleTypeFormatter(typeFormatterGetter);
 arrayTypeFormatter = new ArrayTypeFormatter(typeFormatterGetter);
 keyofTypeFormatter = new KeyofTypeFormatter(typeFormatterGetter);
+typeofTypeFormatter = new TypeofTypeFormatter(referenceTypeFormatterGetter);
 parenthesizedTypeFormatter = new ParenthesizedTypeFormatter(typeFormatterGetter);
 unionTypeFormatter = new UnionTypeFormatter(typeFormatterGetter);
 intersectionTypeFormatter = new IntersectionTypeFormatter(typeFormatterGetter);
@@ -275,19 +293,48 @@ parameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFo
 interfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astUtil, typeFormatterGetter);
 typeParameterFormatter= new TypeParameterFormatter(astUtil, typeFormatterGetter);
 interfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, referenceTypeFormatterGetter, interfaceTypeMemberFormatterGetter, typeParameterFormatterGetter);
-typeFormatter = new TypeFormatter(neverTypeFormatterGetter, voidTypeFormatterGetter, anyTypeFormatterGetter, undefinedTypeFormatterGetter, nullTypeFormatterGetter, numberTypeFormatterGetter, numberEnumerationTypeFormatterGetter, stringTypeFormatterGetter, stringEnumerationTypeFormatterGetter, booleanTypeFormatterGetter, booleanEnumerationTypeFormatterGetter, symbolTypeFormatterGetter, objectTypeFormatterGetter, pojoTypeFormatterGetter, thisTypeFormatterGetter, tupleTypeFormatterGetter, arrayTypeFormatterGetter, keyofTypeFormatterGetter, functionTypeFormatterGetter, indexTypeFormatterGetter, referenceTypeFormatterGetter, parenthesizedTypeFormatterGetter, unionTypeFormatterGetter, intersectionTypeFormatterGetter);
+typeFormatter = new TypeFormatter(
+	neverTypeFormatterGetter,
+	voidTypeFormatterGetter,
+	anyTypeFormatterGetter,
+	undefinedTypeFormatterGetter,
+	nullTypeFormatterGetter,
+	numberTypeFormatterGetter,
+	numberEnumerationTypeFormatterGetter,
+	stringTypeFormatterGetter,
+	stringEnumerationTypeFormatterGetter,
+	booleanTypeFormatterGetter,
+	booleanEnumerationTypeFormatterGetter,
+	symbolTypeFormatterGetter,
+	objectTypeFormatterGetter,
+	pojoTypeFormatterGetter,
+	thisTypeFormatterGetter,
+	tupleTypeFormatterGetter,
+	arrayTypeFormatterGetter,
+	keyofTypeFormatterGetter,
+	typeofTypeFormatterGetter,
+	functionTypeFormatterGetter,
+	indexTypeFormatterGetter,
+	referenceTypeFormatterGetter,
+	parenthesizedTypeFormatterGetter,
+	unionTypeFormatterGetter,
+	intersectionTypeFormatterGetter
+);
 
 // Expression Formatters
-argumentsFormatter = new ArgumentsFormatter(cacheServiceGetter, expressionFormatterGetter);
-callExpressionFormatter = new CallExpressionFormatter(cacheServiceGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
-propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, cacheServiceGetter, expressionFormatterGetter);
-identifierExpressionFormatter = new IdentifierFormatter(cacheServiceGetter);
-stringLiteralFormatter = new StringLiteralFormatter(cacheServiceGetter);
-numberLiteralFormatter = new NumberLiteralFormatter(cacheServiceGetter);
-booleanLiteralFormatter = new BooleanLiteralFormatter(cacheServiceGetter);
-regexLiteralFormatter = new RegexLiteralFormatter(cacheServiceGetter);
-notImplementedFormatter = new NotImplementedFormatter(cacheServiceGetter);
+argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
+classFormatter = new ClassFormatter(astUtil, astMapperGetter, heritageFormatterGetter);
+heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
+callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
+propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
+identifierExpressionFormatter = new IdentifierFormatter(astMapperGetter);
+stringLiteralFormatter = new StringLiteralFormatter(astMapperGetter);
+numberLiteralFormatter = new NumberLiteralFormatter(astMapperGetter);
+booleanLiteralFormatter = new BooleanLiteralFormatter(astMapperGetter);
+regexLiteralFormatter = new RegexLiteralFormatter(astMapperGetter);
+notImplementedFormatter = new NotImplementedFormatter(astMapperGetter);
 expressionFormatter = new ExpressionFormatter(
+	classFormatterGetter,
 	callExpressionFormatterGetter,
 	propertyAccessExpressionFormatterGetter,
 	identifierExpressionFormatterGetter,
@@ -298,11 +345,12 @@ expressionFormatter = new ExpressionFormatter(
 	notImplementedFormatterGetter
 );
 
-// General services
-cacheService = new CacheService();
+// Mappers
+astMapper = new AstMapper();
 
 // AST services
 const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);
 export const interfaceTypeService: IInterfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
+export const classService: IClassService = new ClassService(astUtil, languageService, classFormatterGetter);
 export const callExpressionService: ICallExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
 export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierExpressionFormatterGetter);

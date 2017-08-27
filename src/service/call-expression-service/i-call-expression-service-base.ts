@@ -1,6 +1,6 @@
 import {CallExpression, NodeArray} from "typescript";
-import {IFormattedCallExpression} from "../../formatter/expression/call-expression/i-formatted-call-expression";
-import {AstNode} from "../../type/ast-node";
+import {AstNode} from "../../type/ast-node/ast-node";
+import {IFormattedCallExpression} from "@wessberg/type";
 
 export interface ICallExpressionServiceBase {
 	getCallExpressionsForFile (file: string): IFormattedCallExpression[];

@@ -1,15 +1,14 @@
 import {RegularExpressionLiteral} from "typescript";
 import {IRegexLiteralFormatter} from "./i-regex-literal-formatter";
-import {CacheServiceGetter} from "../../../../service/cache-service/cache-service-getter";
-import {FormattedExpressionKind} from "../../formatted-expression-kind/formatted-expression-kind";
+import {AstMapperGetter} from "../../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../../formatted-expression/formatted-expression-formatter";
-import {IFormattedRegexLiteral} from "./i-formatted-regex-literal";
+import {FormattedExpressionKind, IFormattedRegexLiteral} from "@wessberg/type";
 
 /**
  * A class that can format regular expression literals
  */
 export class RegexLiteralFormatter extends FormattedExpressionFormatter implements IRegexLiteralFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
@@ -27,7 +26,7 @@ export class RegexLiteralFormatter extends FormattedExpressionFormatter implemen
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

@@ -2,9 +2,9 @@ import {CallExpression, createNodeArray, NodeArray, SyntaxKind} from "typescript
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ICallExpressionService} from "./i-call-expression-service";
-import {IFormattedCallExpression} from "../../formatter/expression/call-expression/i-formatted-call-expression";
-import {AstNode} from "../../type/ast-node";
+import {AstNode} from "../../type/ast-node/ast-node";
 import {CallExpressionFormatterGetter} from "../../formatter/expression/call-expression/call-expression-formatter-getter";
+import {IFormattedCallExpression} from "@wessberg/type";
 
 /**
  * A class that can generate IFormattedCallExpressions

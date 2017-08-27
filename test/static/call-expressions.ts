@@ -1,5 +1,24 @@
 /*tslint:disable*/
-class Bar {
+function foo(filter: Object) {
+	return (target: Object) => {
+		console.log(target, filter);
+	}
+}
+
+class Foo {}
+export interface IFoo {
+}
+
+export interface IBar {
+
+}
+
+function doStuff <T> (elem: T): T {
+	return elem;
+}
+
+@foo({when: {foo: "bar"}})
+class Bar extends doStuff<typeof Foo>(Foo) implements IFoo, IBar {
 	foo<T> (t: T): T {
 		return t;
 	}

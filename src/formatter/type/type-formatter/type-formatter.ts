@@ -1,5 +1,5 @@
 import {ITypeFormatter, TypeFormatterNode} from "./i-type-formatter";
-import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeReferenceNode, UnionTypeNode} from "typescript";
+import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
 import {Type} from "@wessberg/type";
 import {isBooleanLiteral} from "@wessberg/typescript-ast-util";
 import {isInterfaceProperty} from "../interface-type-formatter/interface-property";
@@ -27,6 +27,7 @@ import {ReferenceTypeFormatterGetter} from "../reference-type-formatter/referenc
 import {ParenthesizedTypeFormatterGetter} from "../parenthesized-type-formatter/parenthesized-type-formatter-getter";
 import {UnionTypeFormatterGetter} from "../union-type-formatter/union-type-formatter-getter";
 import {IntersectionTypeFormatterGetter} from "../intersection-type-formatter/intersection-type-formatter-getter";
+import {TypeofTypeFormatterGetter} from "../typeof-type-formatter/typeof-type-formatter-getter";
 
 /**
  * A class for formatting Types
@@ -50,6 +51,7 @@ export class TypeFormatter implements ITypeFormatter {
 							 private tupleTypeFormatter: TupleTypeFormatterGetter,
 							 private arrayTypeFormatter: ArrayTypeFormatterGetter,
 							 private keyofTypeFormatter: KeyofTypeFormatterGetter,
+							 private typeofTypeFormatter: TypeofTypeFormatterGetter,
 							 private functionTypeFormatter: FunctionTypeFormatterGetter,
 							 private indexTypeFormatter: IndexTypeFormatterGetter,
 							 private referenceTypeFormatter: ReferenceTypeFormatterGetter,
@@ -80,11 +82,11 @@ export class TypeFormatter implements ITypeFormatter {
 	}
 
 	/**
-	 * Formats the provided TypeNode, TypeReferenceNode or LeftHandSideExpression into a Type
-	 * @param {TypeNode | TypeReferenceNode | LeftHandSideExpression} node
+	 * Formats the provided TypeQueryNode, TypeNode, TypeReferenceNode or LeftHandSideExpression into a Type
+	 * @param {TypeQueryNode |TypeNode | TypeReferenceNode | LeftHandSideExpression} node
 	 * @returns {Type}
 	 */
-	private formatType (node: TypeNode|TypeReferenceNode|LeftHandSideExpression): Type {
+	private formatType (node: TypeQueryNode|TypeNode|TypeReferenceNode|LeftHandSideExpression): Type {
 		switch (node.kind) {
 
 			case SyntaxKind.TypeLiteral:
@@ -146,6 +148,9 @@ export class TypeFormatter implements ITypeFormatter {
 			case SyntaxKind.ArrayType:
 				return this.arrayTypeFormatter().format({node: <ArrayTypeNode>node});
 
+			case SyntaxKind.TypeQuery:
+				return this.typeofTypeFormatter().format({node: <TypeQueryNode>node});
+
 			case SyntaxKind.TypeOperator:
 				const typeOperatorNode = <TypeOperatorNode>node;
 
@@ -173,6 +178,7 @@ export class TypeFormatter implements ITypeFormatter {
 				return this.intersectionTypeFormatter().format({node: <IntersectionTypeNode>node});
 
 			default: {
+				console.log(`${this.constructor.name} could not detect the kind of a type with SyntaxKind: ${SyntaxKind[node.kind]}. Defaulting to 'never'...`);
 				return this.neverTypeFormatter().format();
 			}
 		}

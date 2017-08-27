@@ -1,6 +1,5 @@
 import {IExpressionFormatter} from "./i-expression-formatter";
-import {FormattedExpression} from "../formatted-expression/i-formatted-expression";
-import {BooleanLiteral, CallExpression, Expression, Identifier, NumericLiteral, PropertyAccessExpression, RegularExpressionLiteral, StringLiteral, SyntaxKind} from "typescript";
+import {BooleanLiteral, CallExpression, ClassDeclaration, ClassExpression, Expression, ExpressionWithTypeArguments, Identifier, NumericLiteral, PropertyAccessExpression, RegularExpressionLiteral, StringLiteral, SyntaxKind} from "typescript";
 import {CallExpressionFormatterGetter} from "../call-expression/call-expression-formatter-getter";
 import {StringLiteralFormatterGetter} from "../literal/string-literal/string-literal-formatter-getter";
 import {NotImplementedFormatterGetter} from "../not-implemented/not-implemented-formatter-getter";
@@ -9,12 +8,15 @@ import {PropertyAccessExpressionFormatterGetter} from "../property-access-expres
 import {IdentifierFormatterGetter} from "../identifier/identifier-formatter-getter";
 import {BooleanLiteralFormatterGetter} from "../literal/boolean-literal/boolean-literal-formatter-getter";
 import {RegexLiteralFormatterGetter} from "../literal/regex-literal/regex-literal-formatter-getter";
+import {ClassFormatterGetter} from "../class/class-formatter-getter";
+import {FormattedExpression} from "@wessberg/type";
 
 /**
  * Can format any expression
  */
 export class ExpressionFormatter implements IExpressionFormatter {
-	constructor (private callExpressionFormatter: CallExpressionFormatterGetter,
+	constructor (private classFormatter: ClassFormatterGetter,
+							 private callExpressionFormatter: CallExpressionFormatterGetter,
 							 private propertyAccessExpressionFormatter: PropertyAccessExpressionFormatterGetter,
 							 private identifierExpressionFormatter: IdentifierFormatterGetter,
 							 private stringLiteralFormatter: StringLiteralFormatterGetter,
@@ -26,11 +28,16 @@ export class ExpressionFormatter implements IExpressionFormatter {
 
 	/**
 	 * Formats the given expression into an IFormattedExpression
-	 * @param {Expression} expression
+	 * @param {Expression|ExpressionWithTypeArguments} expression
 	 * @returns {IFormattedExpression}
 	 */
-	public format (expression: Expression): FormattedExpression {
+	public format (expression: Expression|ExpressionWithTypeArguments): FormattedExpression {
 		switch (expression.kind) {
+
+			case SyntaxKind.ClassExpression:
+			case SyntaxKind.ClassDeclaration:
+				return this.classFormatter().format(<ClassExpression|ClassDeclaration>expression);
+
 			case SyntaxKind.CallExpression:
 				return this.callExpressionFormatter().format(<CallExpression>expression);
 
@@ -53,6 +60,9 @@ export class ExpressionFormatter implements IExpressionFormatter {
 
 			case SyntaxKind.RegularExpressionLiteral:
 				return this.regexLiteralFormatter().format(<RegularExpressionLiteral>expression);
+
+			case SyntaxKind.ExpressionWithTypeArguments:
+				return this.format((<ExpressionWithTypeArguments>expression).expression);
 
 			default:
 				return this.notImplementedFormatter().format(expression);

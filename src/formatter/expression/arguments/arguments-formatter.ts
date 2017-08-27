@@ -1,16 +1,15 @@
 import {CallExpression} from "typescript";
 import {IArgumentsFormatter} from "./i-arguments-formatter";
-import {IFormattedArguments} from "./i-formatted-arguments";
-import {FormattedExpressionKind} from "../formatted-expression-kind/formatted-expression-kind";
 import {FormattedExpressionFormatterGetter} from "../formatted-expression/formatted-expression-formatter-getter";
-import {CacheServiceGetter} from "../../../service/cache-service/cache-service-getter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
+import {FormattedExpressionKind, IFormattedArguments} from "@wessberg/type";
 
 /**
  * A class that can format arguments from provided expressions
  */
 export class ArgumentsFormatter extends FormattedExpressionFormatter implements IArgumentsFormatter {
-	constructor (private cacheService: CacheServiceGetter,
+	constructor (private astMapper: AstMapperGetter,
 							 private expressionFormatter: FormattedExpressionFormatterGetter) {
 		super();
 	}
@@ -30,7 +29,7 @@ export class ArgumentsFormatter extends FormattedExpressionFormatter implements 
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression.arguments);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression.arguments);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);

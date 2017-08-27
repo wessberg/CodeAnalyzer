@@ -1,25 +1,24 @@
 import {INotImplementedFormatter} from "./i-not-implemented-formatter";
-import {Expression, SyntaxKind} from "typescript";
-import {IFormattedNotImplemented} from "./i-formatted-not-implemented";
-import {FormattedExpressionKind} from "../formatted-expression-kind/formatted-expression-kind";
-import {CacheServiceGetter} from "../../../service/cache-service/cache-service-getter";
+import {Expression, ExpressionWithTypeArguments, SyntaxKind} from "typescript";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
+import {FormattedExpressionKind, IFormattedNotImplemented} from "@wessberg/type";
 
 /**
  * A class that can format 'NotImplemented' expressions. These are placeholders until expressions of a
  * given SyntaxKind is implemented
  */
 export class NotImplementedFormatter extends FormattedExpressionFormatter implements INotImplementedFormatter {
-	constructor (private cacheService: CacheServiceGetter) {
+	constructor (private astMapper: AstMapperGetter) {
 		super();
 	}
 
 	/**
 	 * Formats the given Expression into an IFormattedNotImplemented
-	 * @param {Expression} expression
+	 * @param {Expression|ExpressionWithTypeArguments} expression
 	 * @returns {IFormattedNotImplemented}
 	 */
-	public format (expression: Expression): IFormattedNotImplemented {
+	public format (expression: Expression|ExpressionWithTypeArguments): IFormattedNotImplemented {
 
 		const result: IFormattedNotImplemented = {
 			...super.format(expression),
@@ -28,7 +27,7 @@ export class NotImplementedFormatter extends FormattedExpressionFormatter implem
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify();

@@ -1,12 +1,12 @@
-import {ICacheService} from "./i-cache-service";
-import {FormattedExpression} from "../../formatter/expression/formatted-expression/i-formatted-expression";
-import {AstNode} from "../../type/ast-node";
+import {IAstMapper} from "./i-ast-mapper";
+import {AstNode} from "../../type/ast-node/ast-node";
 import {NodeArray} from "typescript";
+import {FormattedExpression} from "@wessberg/type";
 
 /**
- * A class that can cache.
+ * A class that can map AstNodes to formatted expressions and vice-versa
  */
-export class CacheService implements ICacheService {
+export class AstMapper implements IAstMapper {
 	/**
 	 * A map between formatted expressions and statements
 	 * @type {WeakMap<FormattedExpression, Set<AstNode|NodeArray<AstNode>>>}
@@ -26,22 +26,22 @@ export class CacheService implements ICacheService {
 	 */
 	public mapFormattedExpressionToStatement (formattedExpression: FormattedExpression, statement: AstNode|NodeArray<AstNode>): void {
 		// Retrieve the existing statements
-		let statementSet = CacheService.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.get(formattedExpression);
+		let statementSet = AstMapper.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.get(formattedExpression);
 		// Initialize to a new set if required
 		if (statementSet == null) statementSet = new Set<AstNode>();
 		// Add the statement to it.
 		statementSet.add(statement);
 		// Store the relation in the map
-		CacheService.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.set(formattedExpression, statementSet);
+		AstMapper.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.set(formattedExpression, statementSet);
 
 		// Retrieve the existing formatted expressions
-		let formattedExpressionSet = CacheService.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.get(statement);
+		let formattedExpressionSet = AstMapper.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.get(statement);
 		// Initialize to a new set if required
 		if (formattedExpressionSet == null) formattedExpressionSet = new Set<FormattedExpression>();
 		// Add the formatted expression to it
 		formattedExpressionSet.add(formattedExpression);
 		// Store the relation in the map
-		CacheService.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.set(statement, formattedExpressionSet);
+		AstMapper.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.set(statement, formattedExpressionSet);
 	}
 
 	/**
@@ -50,7 +50,7 @@ export class CacheService implements ICacheService {
 	 * @returns {Set<AstNode|NodeArray<AstNode>>}
 	 */
 	public getStatementsForFormattedExpression (formattedExpression: FormattedExpression): Set<AstNode|NodeArray<AstNode>> {
-		const result = CacheService.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.get(formattedExpression);
+		const result = AstMapper.FORMATTED_EXPRESSION_TO_STATEMENT_MAP.get(formattedExpression);
 		return result == null ? new Set() : result;
 	}
 
@@ -60,7 +60,7 @@ export class CacheService implements ICacheService {
 	 * @returns {Set<FormattedExpression>}
 	 */
 	public getFormattedExpressionsForStatement (statement: AstNode|NodeArray<AstNode>): Set<FormattedExpression> {
-		const result = CacheService.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.get(statement);
+		const result = AstMapper.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.get(statement);
 		return result == null ? new Set() : result;
 	}
 

@@ -1,18 +1,17 @@
 import {ICallExpressionFormatter} from "./i-call-expression-formatter";
 import {CallExpression} from "typescript";
-import {IFormattedCallExpression} from "./i-formatted-call-expression";
-import {FormattedExpressionKind} from "../formatted-expression-kind/formatted-expression-kind";
-import {CacheServiceGetter} from "../../../service/cache-service/cache-service-getter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {ArgumentsFormatterGetter} from "../arguments/arguments-formatter-getter";
 import {TypeFormatterGetter} from "../../type/type-formatter/type-formatter-getter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {ExpressionFormatterGetter} from "../expression/expression-formatter-getter";
+import {FormattedExpressionKind, IFormattedCallExpression} from "@wessberg/type";
 
 /**
  * A class that can format CallExpressions
  */
 export class CallExpressionFormatter extends FormattedExpressionFormatter implements ICallExpressionFormatter {
-	constructor (private cacheService: CacheServiceGetter,
+	constructor (private astMapper: AstMapperGetter,
 							 private expressionFormatter: ExpressionFormatterGetter,
 							 private argumentsFormatter: ArgumentsFormatterGetter,
 							 private typeFormatter: TypeFormatterGetter) {
@@ -35,7 +34,7 @@ export class CallExpressionFormatter extends FormattedExpressionFormatter implem
 		};
 
 		// Map the formatted expression to the relevant statement
-		this.cacheService().mapFormattedExpressionToStatement(result, expression);
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);
