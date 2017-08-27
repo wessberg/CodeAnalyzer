@@ -67,7 +67,7 @@ export class ParameterTypeFormatter implements IParameterTypeFormatter {
 	 * @param {ParameterType} parameterType
 	 * @returns {string}
 	 */
-	private stringify (parameterType: ParameterType): string {
+	public stringify (parameterType: ParameterType): string {
 		let str = "";
 		if (parameterType.isRestSpread) str += "...";
 		switch (parameterType.kind) {

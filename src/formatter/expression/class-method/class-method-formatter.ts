@@ -6,9 +6,9 @@ import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FunctionLikeFormatterGetter} from "../function-like/function-like-formatter-getter";
 import {PropertyNameFormatterGetter} from "../property-name/property-name-formatter-getter";
 import {DecoratorFormatterGetter} from "../decorator/decorator-formatter-getter";
-import {ParameterTypeFormatterGetter} from "../../type/parameter-type-formatter/parameter-type-formatter-getter";
 import {ClassElementFormatterGetter} from "../class-element/class-element-formatter-getter";
 import {TypeParameterFormatterGetter} from "../../type/type-parameter-formatter/type-parameter-formatter-getter";
+import {ParameterFormatterGetter} from "../parameter/parameter-formatter-getter";
 
 /**
  * A class that can format MethodDeclarations
@@ -19,9 +19,9 @@ export class ClassMethodFormatter extends MethodBaseFormatter implements IClassM
 							 functionLikeFormatter: FunctionLikeFormatterGetter,
 							 propertyNameFormatter: PropertyNameFormatterGetter,
 							 decoratorFormatter: DecoratorFormatterGetter,
-							 parameterTypeFormatter: ParameterTypeFormatterGetter,
+							 parameterFormatter: ParameterFormatterGetter,
 							 typeParameterFormatter: TypeParameterFormatterGetter) {
-		super(astMapper, functionLikeFormatter, propertyNameFormatter, decoratorFormatter, parameterTypeFormatter, typeParameterFormatter);
+		super(astMapper, functionLikeFormatter, propertyNameFormatter, decoratorFormatter, parameterFormatter, typeParameterFormatter);
 	}
 
 	/**

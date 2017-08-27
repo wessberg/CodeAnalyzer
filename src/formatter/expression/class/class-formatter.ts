@@ -1,4 +1,4 @@
-import {ClassDeclaration, ClassElement, ClassExpression, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, SyntaxKind} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, isConstructorDeclaration, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, SyntaxKind} from "typescript";
 import {IClassFormatter} from "./i-class-formatter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
@@ -9,6 +9,7 @@ import {DecoratorFormatterGetter} from "../decorator/decorator-formatter-getter"
 import {ClassAccessorFormatterGetter} from "../class-accessor/class-accessor-formatter-getter";
 import {ClassMethodFormatterGetter} from "../class-method/class-method-formatter-getter";
 import {ClassPropertyFormatterGetter} from "../class-property/class-property-formatter-getter";
+import {ClassConstructorFormatterGetter} from "../class-constructor/class-constructor-formatter-getter";
 
 /**
  * A class that can format class declarations and class expressions
@@ -17,6 +18,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private astMapper: AstMapperGetter,
 							 private classAccessorFormatter: ClassAccessorFormatterGetter,
+							 private classConstructorFormatter: ClassConstructorFormatterGetter,
 							 private classMethodFormatter: ClassMethodFormatterGetter,
 							 private classPropertyFormatter: ClassPropertyFormatterGetter,
 							 private heritageFormatter: HeritageFormatterGetter,
@@ -73,6 +75,10 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 			return this.classPropertyFormatter().format(classElement);
 		}
 
+		else if (isConstructorDeclaration(classElement)) {
+			return this.classConstructorFormatter().format(classElement);
+		}
+
 		else {
 			throw new ReferenceError(`${this.constructor.name} could not format a class element of kind ${SyntaxKind[classElement.kind]}`);
 		}
@@ -86,7 +92,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 	private stringify (formatted: IFormattedClass): string {
 		let str = "";
 		// Add decorators in top
-		str += `${formatted.decorators.map(decorator => decorator.toString()).join("\\n")}\n`;
+		str += `${formatted.decorators.map(decorator => decorator.toString()).join("\n")}\n`;
 
 		// Add the class signature
 		str += "class ";
@@ -98,7 +104,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 		if (formatted.implements != null) str += `${formatted.implements.toString()} `;
 		// Add the opening bracket
 		str += "{";
-		str += `\n${formatted.members.map(member => member.toString()).join("\\n")}\n`;
+		str += `\n${formatted.members.map(member => member.toString()).join("\n")}\n`;
 		// Add the closing bracket
 		str += "}";
 		return str;

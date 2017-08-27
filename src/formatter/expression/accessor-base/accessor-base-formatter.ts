@@ -2,10 +2,10 @@ import {IAccessorBaseFormatter} from "./i-accessor-base-formatter";
 import {GetAccessorDeclaration, isGetAccessorDeclaration, SetAccessorDeclaration} from "typescript";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {FormattedAccessorBase, FormattedAccessorKind} from "@wessberg/type";
-import {ParameterTypeFormatterGetter} from "../../type/parameter-type-formatter/parameter-type-formatter-getter";
 import {PropertyNameFormatterGetter} from "../property-name/property-name-formatter-getter";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FunctionLikeFormatterGetter} from "../function-like/function-like-formatter-getter";
+import {ParameterFormatterGetter} from "../parameter/parameter-formatter-getter";
 
 /**
  * An abstract class that can format GetAccessorDeclarations and SetAccessorDeclarations
@@ -14,7 +14,7 @@ export abstract class AccessorBaseFormatter extends FormattedExpressionFormatter
 	constructor (protected astMapper: AstMapperGetter,
 							 private functionLikeFormatter: FunctionLikeFormatterGetter,
 							 private propertyNameFormatter: PropertyNameFormatterGetter,
-							 private parameterTypeFormatter: ParameterTypeFormatterGetter) {
+							 private parameterFormatter: ParameterFormatterGetter) {
 		super();
 	}
 
@@ -42,7 +42,7 @@ export abstract class AccessorBaseFormatter extends FormattedExpressionFormatter
 			result = {
 				...base,
 				kind: FormattedAccessorKind.SET,
-				parameters: expression.parameters.map(parameter => this.parameterTypeFormatter().format(parameter))
+				parameters: expression.parameters.map(parameter => this.parameterFormatter().format(parameter))
 			};
 		}
 

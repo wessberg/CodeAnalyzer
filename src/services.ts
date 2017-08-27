@@ -182,6 +182,29 @@ import {ObjectLiteralFormatter} from "./formatter/expression/literal/object-lite
 import {IClassPropertyFormatter} from "./formatter/expression/class-property/i-class-property-formatter";
 import {ClassPropertyFormatterGetter} from "./formatter/expression/class-property/class-property-formatter-getter";
 import {ClassPropertyFormatter} from "./formatter/expression/class-property/class-property-formatter";
+import {IFunctionFormatter} from "./formatter/expression/function/i-function-formatter";
+import {FunctionFormatter} from "./formatter/expression/function/function-formatter";
+import {FunctionFormatterGetter} from "./formatter/expression/function/function-formatter-getter";
+import {IFunctionService} from "./service/function-service/i-function-service";
+import {FunctionService} from "./service/function-service/function-service";
+import {IParameterFormatter} from "./formatter/expression/parameter/i-parameter-formatter";
+import {ParameterFormatterGetter} from "./formatter/expression/parameter/parameter-formatter-getter";
+import {ParameterFormatter} from "./formatter/expression/parameter/parameter-formatter";
+import {IClassConstructorFormatter} from "./formatter/expression/class-constructor/i-class-constructor-formatter";
+import {ClassConstructorFormatterGetter} from "./formatter/expression/class-constructor/class-constructor-formatter-getter";
+import {ClassConstructorFormatter} from "./formatter/expression/class-constructor/class-constructor-formatter";
+import {IThisExpressionFormatter} from "./formatter/expression/this-expression/i-this-expression-formatter";
+import {ISuperExpressionFormatter} from "./formatter/expression/super-expression/i-super-expression-formatter";
+import {IYieldExpressionFormatter} from "./formatter/expression/yield-expression/i-yield-expression-formatter";
+import {IAwaitExpressionFormatter} from "./formatter/expression/await-expression/i-await-expression-formatter";
+import {ThisExpressionFormatterGetter} from "./formatter/expression/this-expression/this-expression-formatter-getter";
+import {SuperExpressionFormatterGetter} from "./formatter/expression/super-expression/super-expression-formatter-getter";
+import {AwaitExpressionFormatterGetter} from "./formatter/expression/await-expression/await-expression-formatter-getter";
+import {YieldExpressionFormatterGetter} from "./formatter/expression/yield-expression/yield-expression-formatter-getter";
+import {ThisExpressionFormatter} from "./formatter/expression/this-expression/this-expression-formatter";
+import {SuperExpressionFormatter} from "./formatter/expression/super-expression/super-expression-formatter";
+import {YieldExpressionFormatter} from "./formatter/expression/yield-expression/yield-expression-formatter";
+import {AwaitExpressionFormatter} from "./formatter/expression/await-expression/await-expression-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -220,14 +243,21 @@ let typeParameterFormatter: ITypeParameterFormatter|null = null;
 let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 
 // Expression formatter declarations
+let thisExpressionFormatter: IThisExpressionFormatter|null = null;
+let superExpressionFormatter: ISuperExpressionFormatter|null = null;
+let yieldExpressionFormatter: IYieldExpressionFormatter|null = null;
+let awaitExpressionFormatter: IAwaitExpressionFormatter|null = null;
 let classElementFormatter: IClassElementFormatter|null = null;
 let functionLikeFormatter: IFunctionLikeFormatter|null = null;
+let functionFormatter: IFunctionFormatter|null = null;
+let parameterFormatter: IParameterFormatter|null = null;
 let objectLiteralPropertyFormatter: IObjectLiteralPropertyFormatter|null = null;
 let objectLiteralFormatter: IObjectLiteralFormatter|null = null;
 let blockFormatter: IBlockFormatter|null = null;
 let accessorFormatter: IAccessorFormatter|null = null;
 let classAccessorFormatter: IClassAccessorFormatter|null = null;
 let classMethodFormatter: IClassMethodFormatter|null = null;
+let classConstructorFormatter: IClassConstructorFormatter|null = null;
 let classPropertyFormatter: IClassPropertyFormatter|null = null;
 let methodFormatter: IMethodFormatter|null = null;
 let propertyNameFormatter: IPropertyNameFormatter|null = null;
@@ -285,8 +315,14 @@ const typeParameterFormatterGetter: TypeParameterFormatterGetter = () => typePar
 const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfaceTypeFormatter!;
 
 // Expression formatter getters
+const thisExpressionFormatterGetter: ThisExpressionFormatterGetter = () => thisExpressionFormatter!;
+const superExpressionFormatterGetter: SuperExpressionFormatterGetter = () => superExpressionFormatter!;
+const awaitExpressionFormatterGetter: AwaitExpressionFormatterGetter = () => awaitExpressionFormatter!;
+const yieldExpressionFormatterGetter: YieldExpressionFormatterGetter = () => yieldExpressionFormatter!;
 const classElementFormatterGetter: ClassElementFormatterGetter = () => classElementFormatter!;
 const functionLikeFormatterGetter: FunctionLikeFormatterGetter = () => functionLikeFormatter!;
+const functionFormatterGetter: FunctionFormatterGetter = () => functionFormatter!;
+const parameterFormatterGetter: ParameterFormatterGetter = () => parameterFormatter!;
 const objectLiteralPropertyFormatterGetter: ObjectLiteralPropertyFormatterGetter = () => objectLiteralPropertyFormatter!;
 const objectLiteralFormatterGetter: ObjectLiteralFormatterGetter = () => objectLiteralFormatter!;
 const blockFormatterGetter: BlockFormatterGetter = () => blockFormatter!;
@@ -294,6 +330,7 @@ const accessorFormatterGetter: AccessorFormatterGetter = () => accessorFormatter
 const classAccessorFormatterGetter: ClassAccessorFormatterGetter = () => classAccessorFormatter!;
 const methodFormatterGetter: MethodFormatterGetter = () => methodFormatter!;
 const classMethodFormatterGetter: ClassMethodFormatterGetter = () => classMethodFormatter!;
+const classConstructorFormatterGetter: ClassConstructorFormatterGetter = () => classConstructorFormatter!;
 const classPropertyFormatterGetter: ClassPropertyFormatterGetter = () => classPropertyFormatter!;
 const propertyNameFormatterGetter: PropertyNameFormatterGetter = () => propertyNameFormatter!;
 const argumentsFormatterGetter: ArgumentsFormatterGetter = () => argumentsFormatter!;
@@ -346,7 +383,7 @@ typeofTypeFormatter = new TypeofTypeFormatter(referenceTypeFormatterGetter);
 parenthesizedTypeFormatter = new ParenthesizedTypeFormatter(typeFormatterGetter);
 unionTypeFormatter = new UnionTypeFormatter(typeFormatterGetter);
 intersectionTypeFormatter = new IntersectionTypeFormatter(typeFormatterGetter);
-functionTypeFormatter = new FunctionTypeFormatter(parameterTypeFormatterGetter, typeFormatterGetter);
+functionTypeFormatter = new FunctionTypeFormatter(parameterFormatterGetter, typeFormatterGetter);
 indexTypeFormatter = new IndexTypeFormatter(interfaceTypeMemberFormatterGetter, typeFormatterGetter);
 referenceTypeFormatter = new ReferenceTypeFormatter(astUtil, typeFormatterGetter);
 parameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatterGetter, arrayBindingNameFormatterGetter, typeFormatterGetter);
@@ -382,20 +419,27 @@ typeFormatter = new TypeFormatter(
 );
 
 // Expression Formatters
+thisExpressionFormatter = new ThisExpressionFormatter(astMapperGetter);
+superExpressionFormatter = new SuperExpressionFormatter(astMapperGetter);
+yieldExpressionFormatter = new YieldExpressionFormatter(astMapperGetter, expressionFormatterGetter);
+awaitExpressionFormatter = new AwaitExpressionFormatter(astMapperGetter, expressionFormatterGetter);
 classElementFormatter = new ClassElementFormatter();
 functionLikeFormatter = new FunctionLikeFormatter(typeFormatterGetter, blockFormatterGetter);
+functionFormatter = new FunctionFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterFormatterGetter, typeParameterFormatterGetter);
+parameterFormatter = new ParameterFormatter(astMapperGetter, expressionFormatterGetter, parameterTypeFormatterGetter);
 objectLiteralPropertyFormatter = new ObjectLiteralPropertyFormatter(astUtil, astMapperGetter, accessorFormatterGetter, propertyNameFormatterGetter, methodFormatterGetter, expressionFormatterGetter);
 objectLiteralFormatter = new ObjectLiteralFormatter(astMapperGetter, objectLiteralPropertyFormatterGetter);
 blockFormatter = new BlockFormatter(astMapperGetter, expressionFormatterGetter);
-accessorFormatter = new AccessorFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterTypeFormatterGetter);
-classAccessorFormatter = new ClassAccessorFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterTypeFormatterGetter);
-classMethodFormatter = new ClassMethodFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterTypeFormatterGetter, typeParameterFormatterGetter);
+accessorFormatter = new AccessorFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterFormatterGetter);
+classAccessorFormatter = new ClassAccessorFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterFormatterGetter);
+classMethodFormatter = new ClassMethodFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterFormatterGetter, typeParameterFormatterGetter);
+classConstructorFormatter = new ClassConstructorFormatter(astMapperGetter, blockFormatterGetter, parameterFormatterGetter);
 classPropertyFormatter = new ClassPropertyFormatter(astMapperGetter, classElementFormatterGetter, decoratorFormatterGetter, typeFormatterGetter, propertyNameFormatterGetter, expressionFormatterGetter);
-methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterTypeFormatterGetter, typeParameterFormatterGetter);
+methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterFormatterGetter, typeParameterFormatterGetter);
 propertyNameFormatter = new PropertyNameFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
 argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
 decoratorFormatter = new DecoratorFormatter(astMapperGetter, expressionFormatterGetter);
-classFormatter = new ClassFormatter(astUtil, astMapperGetter, classAccessorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter);
+classFormatter = new ClassFormatter(astUtil, astMapperGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter);
 heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
 propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
@@ -406,6 +450,10 @@ booleanLiteralFormatter = new BooleanLiteralFormatter(astMapperGetter);
 regexLiteralFormatter = new RegexLiteralFormatter(astMapperGetter);
 notImplementedFormatter = new NotImplementedFormatter(astMapperGetter);
 expressionFormatter = new ExpressionFormatter(
+	thisExpressionFormatterGetter,
+	superExpressionFormatterGetter,
+	awaitExpressionFormatterGetter,
+	yieldExpressionFormatterGetter,
 	classFormatterGetter,
 	callExpressionFormatterGetter,
 	propertyAccessExpressionFormatterGetter,
@@ -422,6 +470,9 @@ expressionFormatter = new ExpressionFormatter(
 	methodFormatterGetter,
 	propertyNameFormatterGetter,
 	classPropertyFormatterGetter,
+	classConstructorFormatterGetter,
+	functionFormatterGetter,
+	parameterFormatterGetter,
 	notImplementedFormatterGetter
 );
 
@@ -434,3 +485,4 @@ export const interfaceTypeService: IInterfaceTypeService = new InterfaceTypeServ
 export const classService: IClassService = new ClassService(astUtil, languageService, classFormatterGetter);
 export const callExpressionService: ICallExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
 export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierExpressionFormatterGetter);
+export const functionService: IFunctionService = new FunctionService(astUtil, languageService, functionFormatterGetter);

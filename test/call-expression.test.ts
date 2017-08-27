@@ -8,7 +8,6 @@ test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 test("foo", t => {
 	const expressions = codeAnalyzer.getClassesForFile("./test/static/call-expressions");
 	expressions.forEach(expression => {
-		console.log(JSON.stringify(expression, null, "\t"));
 		console.log(expression.toString());
 	});
 	t.true(true);

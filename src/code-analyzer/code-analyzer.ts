@@ -1,7 +1,7 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
-import {CallExpression, ClassDeclaration, ClassExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {callExpressionService, classService, identifierExpressionService, interfaceTypeService} from "../services";
+import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
+import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
+import {callExpressionService, classService, functionService, identifierExpressionService, interfaceTypeService} from "../services";
 import {AstNode} from "../type/ast-node/ast-node";
 
 /**
@@ -9,6 +9,32 @@ import {AstNode} from "../type/ast-node/ast-node";
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
 
+	/**
+	 * Gets all FormattedFunctions for the given file
+	 * @param {string} file
+	 * @returns {FormattedFunction[]}
+	 */
+	public getFunctionsForFile (file: string): FormattedFunction[] {
+		return functionService.getFunctionsForFile(file);
+	}
+
+	/**
+	 * Gets all FormattedFunctions for the given statement
+	 * @param {FunctionExpression|FunctionDeclaration|ArrowFunction} statement
+	 * @returns {FormattedFunction[]}
+	 */
+	public getFunctionsForStatement (statement: FunctionExpression|FunctionDeclaration|ArrowFunction): FormattedFunction[] {
+		return functionService.getFunctionsForStatement(statement);
+	}
+
+	/**
+	 * Gets all FormattedFunctions for the given Statements
+	 * @param {NodeArray<AstNode>} statements
+	 * @returns {FormattedFunction[]}
+	 */
+	public getFunctionsForStatements (statements: NodeArray<AstNode>): FormattedFunction[] {
+		return functionService.getFunctionsForStatements(statements);
+	}
 
 	/**
 	 * Gets all IFormattedClasses for the given file
@@ -36,6 +62,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public getClassesForStatements (statements: NodeArray<AstNode>): IFormattedClass[] {
 		return classService.getClassesForStatements(statements);
 	}
+
 	/**
 	 * Gets all IInterfaceTypes for the given file
 	 * @param {string} file

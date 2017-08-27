@@ -2,11 +2,11 @@ import {IClassAccessorFormatter} from "./i-class-accessor-formatter";
 import {GetAccessorDeclaration, SetAccessorDeclaration} from "typescript";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedClassAccessor, FormattedExpressionKind} from "@wessberg/type";
-import {ParameterTypeFormatterGetter} from "../../type/parameter-type-formatter/parameter-type-formatter-getter";
 import {AccessorBaseFormatter} from "../accessor-base/accessor-base-formatter";
 import {ClassElementFormatterGetter} from "../class-element/class-element-formatter-getter";
 import {PropertyNameFormatterGetter} from "../property-name/property-name-formatter-getter";
 import {FunctionLikeFormatterGetter} from "../function-like/function-like-formatter-getter";
+import {ParameterFormatterGetter} from "../parameter/parameter-formatter-getter";
 
 /**
  * A class that can format GetAccessorDeclarations and SetAccessorDeclarations
@@ -16,8 +16,8 @@ export class ClassAccessorFormatter extends AccessorBaseFormatter implements ICl
 							 astMapper: AstMapperGetter,
 							 functionLikeFormatter: FunctionLikeFormatterGetter,
 							 propertyNameFormatter: PropertyNameFormatterGetter,
-							 parameterTypeFormatter: ParameterTypeFormatterGetter) {
-		super(astMapper, functionLikeFormatter, propertyNameFormatter, parameterTypeFormatter);
+							 parameterFormatter: ParameterFormatterGetter) {
+		super(astMapper, functionLikeFormatter, propertyNameFormatter, parameterFormatter);
 	}
 
 	/**

@@ -11,7 +11,7 @@ export class AstMapper implements IAstMapper {
 	 * A map between formatted expressions and statements
 	 * @type {WeakMap<FormattedExpression, Set<AstNode|NodeArray<AstNode>>>}
 	 */
-	private static readonly FORMATTED_EXPRESSION_TO_STATEMENT_MAP: WeakMap<FormattedExpression, Set<AstNode|NodeArray<AstNode>>> = new WeakMap();
+	public static readonly FORMATTED_EXPRESSION_TO_STATEMENT_MAP: WeakMap<FormattedExpression, Set<AstNode|NodeArray<AstNode>>> = new WeakMap();
 
 	/**
 	 * A map between statements and formatted expressions
