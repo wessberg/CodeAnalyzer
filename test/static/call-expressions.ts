@@ -5,7 +5,9 @@ function foo(filter: Object) {
 	}
 }
 
-class Foo {}
+class Foo {
+	static Bar = class {}
+}
 export interface IFoo {
 }
 
@@ -18,7 +20,7 @@ function doStuff <T> (elem: T): T {
 }
 
 @foo({when: {foo: "bar"}})
-class Bar extends doStuff<typeof Foo>(Foo) implements IFoo, IBar {
+class Bar extends doStuff<typeof Foo.Bar>(Foo) implements IFoo, IBar {
 	foo<T> (t: T): T {
 		return t;
 	}

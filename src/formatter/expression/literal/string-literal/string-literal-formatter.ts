@@ -1,4 +1,4 @@
-import {StringLiteral} from "typescript";
+import {LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral} from "typescript";
 import {IStringLiteralFormatter} from "./i-string-literal-formatter";
 import {AstMapperGetter} from "../../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionFormatter} from "../../formatted-expression/formatted-expression-formatter";
@@ -17,7 +17,7 @@ export class StringLiteralFormatter extends FormattedExpressionFormatter impleme
 	 * @param {StringLiteral} expression
 	 * @returns {IFormattedStringLiteral}
 	 */
-	public format (expression: StringLiteral): IFormattedStringLiteral {
+	public format (expression: StringLiteral|NoSubstitutionTemplateLiteral|LiteralExpression): IFormattedStringLiteral {
 
 		const result: IFormattedStringLiteral = {
 			...super.format(expression),

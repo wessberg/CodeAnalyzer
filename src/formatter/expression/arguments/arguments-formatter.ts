@@ -1,16 +1,16 @@
 import {CallExpression} from "typescript";
 import {IArgumentsFormatter} from "./i-arguments-formatter";
-import {FormattedExpressionFormatterGetter} from "../formatted-expression/formatted-expression-formatter-getter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {FormattedExpressionKind, IFormattedArguments} from "@wessberg/type";
+import {ExpressionFormatterGetter} from "../expression/expression-formatter-getter";
 
 /**
  * A class that can format arguments from provided expressions
  */
 export class ArgumentsFormatter extends FormattedExpressionFormatter implements IArgumentsFormatter {
 	constructor (private astMapper: AstMapperGetter,
-							 private expressionFormatter: FormattedExpressionFormatterGetter) {
+							 private expressionFormatter: ExpressionFormatterGetter) {
 		super();
 	}
 

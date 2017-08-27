@@ -146,6 +146,42 @@ import {HeritageFormatter} from "./formatter/expression/heritage/heritage-format
 import {ITypeofTypeFormatter} from "./formatter/type/typeof-type-formatter/i-typeof-type-formatter";
 import {TypeofTypeFormatterGetter} from "./formatter/type/typeof-type-formatter/typeof-type-formatter-getter";
 import {TypeofTypeFormatter} from "./formatter/type/typeof-type-formatter/typeof-type-formatter";
+import {IDecoratorFormatter} from "./formatter/expression/decorator/i-decorator-formatter";
+import {DecoratorFormatterGetter} from "./formatter/expression/decorator/decorator-formatter-getter";
+import {DecoratorFormatter} from "./formatter/expression/decorator/decorator-formatter";
+import {IPropertyNameFormatter} from "./formatter/expression/property-name/i-property-name-formatter";
+import {PropertyNameFormatterGetter} from "./formatter/expression/property-name/property-name-formatter-getter";
+import {PropertyNameFormatter} from "./formatter/expression/property-name/property-name-formatter";
+import {IBlockFormatter} from "./formatter/expression/block/i-block-formatter";
+import {BlockFormatterGetter} from "./formatter/expression/block/block-formatter-getter";
+import {BlockFormatter} from "./formatter/expression/block/block-formatter";
+import {IClassElementFormatter} from "./formatter/expression/class-element/i-class-element-formatter";
+import {ClassElementFormatterGetter} from "./formatter/expression/class-element/class-element-formatter-getter";
+import {ClassElementFormatter} from "./formatter/expression/class-element/class-element-formatter";
+import {IAccessorFormatter} from "./formatter/expression/accessor/i-accessor-formatter";
+import {IClassAccessorFormatter} from "./formatter/expression/class-accessor/i-class-accessor-formatter";
+import {ClassAccessorFormatter} from "./formatter/expression/class-accessor/class-accessor-formatter";
+import {ClassAccessorFormatterGetter} from "./formatter/expression/class-accessor/class-accessor-formatter-getter";
+import {AccessorFormatterGetter} from "./formatter/expression/accessor/accessor-formatter-getter";
+import {AccessorFormatter} from "./formatter/expression/accessor/accessor-formatter";
+import {IFunctionLikeFormatter} from "./formatter/expression/function-like/i-function-like-formatter";
+import {FunctionLikeFormatterGetter} from "./formatter/expression/function-like/function-like-formatter-getter";
+import {FunctionLikeFormatter} from "./formatter/expression/function-like/function-like-formatter";
+import {IMethodFormatter} from "./formatter/expression/method/i-method-formatter";
+import {MethodFormatterGetter} from "./formatter/expression/method/method-formatter-getter";
+import {MethodFormatter} from "./formatter/expression/method/method-formatter";
+import {IClassMethodFormatter} from "./formatter/expression/class-method/i-class-method-formatter";
+import {ClassMethodFormatterGetter} from "./formatter/expression/class-method/class-method-formatter-getter";
+import {ClassMethodFormatter} from "./formatter/expression/class-method/class-method-formatter";
+import {IObjectLiteralPropertyFormatter} from "./formatter/expression/literal/object-literal/object-literal-property/i-object-literal-property-formatter";
+import {IObjectLiteralFormatter} from "./formatter/expression/literal/object-literal/object-literal/i-object-literal-formatter";
+import {ObjectLiteralPropertyFormatter} from "./formatter/expression/literal/object-literal/object-literal-property/object-literal-property-formatter";
+import {ObjectLiteralPropertyFormatterGetter} from "./formatter/expression/literal/object-literal/object-literal-property/object-literal-property-formatter-getter";
+import {ObjectLiteralFormatterGetter} from "./formatter/expression/literal/object-literal/object-literal/object-literal-formatter-getter";
+import {ObjectLiteralFormatter} from "./formatter/expression/literal/object-literal/object-literal/object-literal-formatter";
+import {IClassPropertyFormatter} from "./formatter/expression/class-property/i-class-property-formatter";
+import {ClassPropertyFormatterGetter} from "./formatter/expression/class-property/class-property-formatter-getter";
+import {ClassPropertyFormatter} from "./formatter/expression/class-property/class-property-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -184,7 +220,19 @@ let typeParameterFormatter: ITypeParameterFormatter|null = null;
 let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 
 // Expression formatter declarations
+let classElementFormatter: IClassElementFormatter|null = null;
+let functionLikeFormatter: IFunctionLikeFormatter|null = null;
+let objectLiteralPropertyFormatter: IObjectLiteralPropertyFormatter|null = null;
+let objectLiteralFormatter: IObjectLiteralFormatter|null = null;
+let blockFormatter: IBlockFormatter|null = null;
+let accessorFormatter: IAccessorFormatter|null = null;
+let classAccessorFormatter: IClassAccessorFormatter|null = null;
+let classMethodFormatter: IClassMethodFormatter|null = null;
+let classPropertyFormatter: IClassPropertyFormatter|null = null;
+let methodFormatter: IMethodFormatter|null = null;
+let propertyNameFormatter: IPropertyNameFormatter|null = null;
 let argumentsFormatter: IArgumentsFormatter|null = null;
+let decoratorFormatter: IDecoratorFormatter|null = null;
 let classFormatter: IClassFormatter|null = null;
 let heritageFormatter: IHeritageFormatter|null = null;
 let callExpressionFormatter: ICallExpressionFormatter|null = null;
@@ -237,7 +285,19 @@ const typeParameterFormatterGetter: TypeParameterFormatterGetter = () => typePar
 const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfaceTypeFormatter!;
 
 // Expression formatter getters
+const classElementFormatterGetter: ClassElementFormatterGetter = () => classElementFormatter!;
+const functionLikeFormatterGetter: FunctionLikeFormatterGetter = () => functionLikeFormatter!;
+const objectLiteralPropertyFormatterGetter: ObjectLiteralPropertyFormatterGetter = () => objectLiteralPropertyFormatter!;
+const objectLiteralFormatterGetter: ObjectLiteralFormatterGetter = () => objectLiteralFormatter!;
+const blockFormatterGetter: BlockFormatterGetter = () => blockFormatter!;
+const accessorFormatterGetter: AccessorFormatterGetter = () => accessorFormatter!;
+const classAccessorFormatterGetter: ClassAccessorFormatterGetter = () => classAccessorFormatter!;
+const methodFormatterGetter: MethodFormatterGetter = () => methodFormatter!;
+const classMethodFormatterGetter: ClassMethodFormatterGetter = () => classMethodFormatter!;
+const classPropertyFormatterGetter: ClassPropertyFormatterGetter = () => classPropertyFormatter!;
+const propertyNameFormatterGetter: PropertyNameFormatterGetter = () => propertyNameFormatter!;
 const argumentsFormatterGetter: ArgumentsFormatterGetter = () => argumentsFormatter!;
+const decoratorFormatterGetter: DecoratorFormatterGetter = () => decoratorFormatter!;
 const classFormatterGetter: ClassFormatterGetter = () => classFormatter!;
 const heritageFormatterGetter: HeritageFormatterGetter = () => heritageFormatter!;
 const callExpressionFormatterGetter: CallExpressionFormatterGetter = () => callExpressionFormatter!;
@@ -322,8 +382,20 @@ typeFormatter = new TypeFormatter(
 );
 
 // Expression Formatters
+classElementFormatter = new ClassElementFormatter();
+functionLikeFormatter = new FunctionLikeFormatter(typeFormatterGetter, blockFormatterGetter);
+objectLiteralPropertyFormatter = new ObjectLiteralPropertyFormatter(astUtil, astMapperGetter, accessorFormatterGetter, propertyNameFormatterGetter, methodFormatterGetter, expressionFormatterGetter);
+objectLiteralFormatter = new ObjectLiteralFormatter(astMapperGetter, objectLiteralPropertyFormatterGetter);
+blockFormatter = new BlockFormatter(astMapperGetter, expressionFormatterGetter);
+accessorFormatter = new AccessorFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterTypeFormatterGetter);
+classAccessorFormatter = new ClassAccessorFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, parameterTypeFormatterGetter);
+classMethodFormatter = new ClassMethodFormatter(classElementFormatterGetter, astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterTypeFormatterGetter, typeParameterFormatterGetter);
+classPropertyFormatter = new ClassPropertyFormatter(astMapperGetter, classElementFormatterGetter, decoratorFormatterGetter, typeFormatterGetter, propertyNameFormatterGetter, expressionFormatterGetter);
+methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterTypeFormatterGetter, typeParameterFormatterGetter);
+propertyNameFormatter = new PropertyNameFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
 argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
-classFormatter = new ClassFormatter(astUtil, astMapperGetter, heritageFormatterGetter);
+decoratorFormatter = new DecoratorFormatter(astMapperGetter, expressionFormatterGetter);
+classFormatter = new ClassFormatter(astUtil, astMapperGetter, classAccessorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter);
 heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
 propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
@@ -342,6 +414,14 @@ expressionFormatter = new ExpressionFormatter(
 	numberLiteralFormatterGetter,
 	booleanLiteralFormatterGetter,
 	regexLiteralFormatterGetter,
+	objectLiteralFormatterGetter,
+	accessorFormatterGetter,
+	blockFormatterGetter,
+	decoratorFormatterGetter,
+	heritageFormatterGetter,
+	methodFormatterGetter,
+	propertyNameFormatterGetter,
+	classPropertyFormatterGetter,
 	notImplementedFormatterGetter
 );
 
