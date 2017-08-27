@@ -55,7 +55,7 @@ export abstract class MethodBaseFormatter extends FormattedExpressionFormatter i
 		str += `${formatted.decorators.map(decorator => decorator.toString()).join("\\n")}\n`;
 		if (formatted.async) str += "async ";
 		str += `${formatted.name.toString()} `;
-		if (formatted.typeParameters != null) {
+		if (formatted.typeParameters.length > 0) {
 			str += `<${formatted.typeParameters.map(parameter => parameter.toString()).join(", ")}>`;
 		}
 		str += `(${formatted.parameters.map(parameter => parameter.toString()).join(", ")}) `;

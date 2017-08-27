@@ -6,8 +6,9 @@ let codeAnalyzer: ICodeAnalyzer;
 test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
-	const expressions = codeAnalyzer.getClassesForFile("./test/static/call-expressions");
+	const expressions = codeAnalyzer.getClassesForFile("@wessberg/stringutil/dist/es2015/string-util/string-util");
 	expressions.forEach(expression => {
+		console.log(expression);
 		console.log(expression.toString());
 	});
 	t.true(true);
