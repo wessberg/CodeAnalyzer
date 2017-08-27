@@ -27,8 +27,7 @@
 		"prepush": "npm run validate && exit 0",
 		"publish:major": "npm version major && npm run commit:readme && git push && npm publish",
 		"publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
-		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish",
-		"publish:next": "npm version patch && npm run commit:readme && git push && npm publish --tag next"
+		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish"
 	},
 	"keywords": [
 		"ast",
@@ -51,7 +50,7 @@
 		"@wessberg/fileloader": "^1.1.4",
 		"@wessberg/moduleutil": "0.0.11",
 		"@wessberg/pathutil": "0.0.5",
-		"@wessberg/type": "0.0.68",
+		"@wessberg/type": "0.0.69",
 		"@wessberg/typescript-ast-util": "0.0.7",
 		"@wessberg/typescript-language-service": "0.0.4",
 		"tslib": "^1.7.1",

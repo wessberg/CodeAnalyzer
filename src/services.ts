@@ -205,6 +205,8 @@ import {ThisExpressionFormatter} from "./formatter/expression/this-expression/th
 import {SuperExpressionFormatter} from "./formatter/expression/super-expression/super-expression-formatter";
 import {YieldExpressionFormatter} from "./formatter/expression/yield-expression/yield-expression-formatter";
 import {AwaitExpressionFormatter} from "./formatter/expression/await-expression/await-expression-formatter";
+import {IImportService} from "./service/import-service/i-import-service";
+import {ImportService} from "./service/import-service/import-service";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -486,3 +488,4 @@ export const classService: IClassService = new ClassService(astUtil, languageSer
 export const callExpressionService: ICallExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
 export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierExpressionFormatterGetter);
 export const functionService: IFunctionService = new FunctionService(astUtil, languageService, functionFormatterGetter);
+export const importService: IImportService = new ImportService(languageService);

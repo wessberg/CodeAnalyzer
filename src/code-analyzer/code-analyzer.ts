@@ -1,13 +1,31 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
 import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
 import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {callExpressionService, classService, functionService, identifierExpressionService, interfaceTypeService} from "../services";
+import {callExpressionService, classService, functionService, identifierExpressionService, importService, interfaceTypeService} from "../services";
 import {AstNode} from "../type/ast-node/ast-node";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
+
+	/**
+	 * Gets all imported files for the given file
+	 * @param {string} file
+	 * @returns {string[]}
+	 */
+	public getImportedFilesForFile (file: string): string[] {
+		return importService.getImportedFilesForFile(file);
+	}
+
+	/**
+	 * Gets all imported files for the file holding the provided statement
+	 * @param {AstNode} statement
+	 * @returns {string[]}
+	 */
+	public getImportedFilesForStatementFile (statement: AstNode): string[] {
+		return importService.getImportedFilesForStatementFile(statement);
+	}
 
 	/**
 	 * Gets all FormattedFunctions for the given file

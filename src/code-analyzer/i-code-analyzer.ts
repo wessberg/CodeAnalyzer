@@ -3,6 +3,7 @@ import {ICallExpressionServiceBase} from "../service/call-expression-service/i-c
 import {IIdentifierExpressionServiceBase} from "../service/identifier-service/i-identifier-expression-service-base";
 import {IClassServiceBase} from "../service/class-service/i-class-service-base";
 import {IFunctionServiceBase} from "../service/function-service/i-function-service-base";
+import {IImportServiceBase} from "../service/import-service/i-import-service-base";
 
-export interface ICodeAnalyzer extends IInterfaceTypeServiceBase, IClassServiceBase, ICallExpressionServiceBase, IIdentifierExpressionServiceBase, IFunctionServiceBase {
+export interface ICodeAnalyzer extends IInterfaceTypeServiceBase, IClassServiceBase, ICallExpressionServiceBase, IIdentifierExpressionServiceBase, IFunctionServiceBase, IImportServiceBase {
 }
