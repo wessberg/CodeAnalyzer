@@ -1,9 +1,10 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
 import {IInterfaceType} from "@wessberg/type";
-import {CallExpression, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {callExpressionService, interfaceTypeService} from "../services";
+import {CallExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
+import {callExpressionService, identifierExpressionService, interfaceTypeService} from "../services";
 import {IFormattedCallExpression} from "../formatter/expression/call-expression/i-formatted-call-expression";
 import {AstNode} from "../type/ast-node";
+import {IFormattedIdentifier} from "../formatter/expression/identifier/i-formatted-identifier";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
@@ -61,5 +62,32 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 */
 	public getCallExpressionsForStatements (statements: NodeArray<AstNode>): IFormattedCallExpression[] {
 		return callExpressionService.getCallExpressionsForStatements(statements);
+	}
+
+	/**
+	 * Gets all IFormattedIdentifierExpressions for the given file
+	 * @param {string} file
+	 * @returns {IFormattedIdentifier[]}
+	 */
+	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
+		return identifierExpressionService.getIdentifiersForFile(file);
+	}
+
+	/**
+	 * Gets all IFormattedIdentifierExpressions for the given statement
+	 * @param {Identifier} statement
+	 * @returns {IFormattedIdentifier[]}
+	 */
+	public getIdentifiersForStatement (statement: Identifier): IFormattedIdentifier[] {
+		return identifierExpressionService.getIdentifiersForStatement(statement);
+	}
+
+	/**
+	 * Gets all IFormattedIdentifierExpressions for the given Statements
+	 * @param {NodeArray<AstNode>} statements
+	 * @returns {IFormattedIdentifier[]}
+	 */
+	public getIdentifiersForStatements (statements: NodeArray<AstNode>): IFormattedIdentifier[] {
+		return identifierExpressionService.getIdentifiersForStatements(statements);
 	}
 }

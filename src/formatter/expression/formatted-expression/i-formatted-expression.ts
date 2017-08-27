@@ -4,12 +4,14 @@ import {IFormattedArguments} from "../arguments/i-formatted-arguments";
 import {IFormattedStringLiteral} from "../literal/string-literal/i-formatted-string-literal";
 import {IFormattedNumberLiteral} from "../literal/number-literal/i-formatted-number-literal";
 import {IFormattedNotImplemented} from "../not-implemented/i-formatted-not-implemented";
+import {IFormattedPropertyAccessExpression} from "../property-access-expression/i-formatted-property-access-expression";
+import {IFormattedIdentifier} from "../identifier/i-formatted-identifier";
 
 export interface IFormattedExpression {
-	file: string;
+	// file: string;
 	expressionKind: FormattedExpressionKind;
 	startsAt: number;
 	endsAt: number;
 }
 
-export declare type FormattedExpression = IFormattedCallExpression|IFormattedArguments|IFormattedStringLiteral|IFormattedNumberLiteral|IFormattedNotImplemented;
+export declare type FormattedExpression = IFormattedCallExpression|IFormattedArguments|IFormattedStringLiteral|IFormattedNumberLiteral|IFormattedPropertyAccessExpression|IFormattedIdentifier|IFormattedNotImplemented;

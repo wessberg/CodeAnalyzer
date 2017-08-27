@@ -121,6 +121,14 @@ import {NotImplementedFormatter} from "./formatter/expression/not-implemented/no
 import {INumberLiteralFormatter} from "./formatter/expression/literal/number-literal/i-number-literal-formatter";
 import {NumberLiteralFormatterGetter} from "./formatter/expression/literal/number-literal/number-literal-formatter-getter";
 import {NumberLiteralFormatter} from "./formatter/expression/literal/number-literal/number-literal-formatter";
+import {IPropertyAccessExpressionFormatter} from "./formatter/expression/property-access-expression/i-property-access-expression-formatter";
+import {PropertyAccessExpressionFormatterGetter} from "./formatter/expression/property-access-expression/property-access-expression-formatter-getter";
+import {PropertyAccessExpressionFormatter} from "./formatter/expression/property-access-expression/property-access-expression-formatter";
+import {IIdentifierFormatter} from "./formatter/expression/identifier/i-identifier-formatter";
+import {IdentifierFormatterGetter} from "./formatter/expression/identifier/identifier-formatter-getter";
+import {IdentifierFormatter} from "./formatter/expression/identifier/identifier-formatter";
+import {IIdentifierExpressionService} from "./service/identifier-service/i-identifier-expression-service";
+import {IdentifierExpressionService} from "./service/identifier-service/identifier-expression-service";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -160,6 +168,8 @@ let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 // Expression formatter declarations
 let argumentsFormatter: IArgumentsFormatter|null = null;
 let callExpressionFormatter: ICallExpressionFormatter|null = null;
+let propertyAccessExpressionFormatter: IPropertyAccessExpressionFormatter|null = null;
+let identifierExpressionFormatter: IIdentifierFormatter|null = null;
 let stringLiteralFormatter: IStringLiteralFormatter|null = null;
 let numberLiteralFormatter: INumberLiteralFormatter|null = null;
 let expressionFormatter: IExpressionFormatter|null = null;
@@ -206,6 +216,8 @@ const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfa
 // Expression formatter getters
 const argumentsFormatterGetter: ArgumentsFormatterGetter = () => argumentsFormatter!;
 const callExpressionFormatterGetter: CallExpressionFormatterGetter = () => callExpressionFormatter!;
+const propertyAccessExpressionFormatterGetter: PropertyAccessExpressionFormatterGetter = () => propertyAccessExpressionFormatter!;
+const identifierExpressionFormatterGetter: IdentifierFormatterGetter = () => identifierExpressionFormatter!;
 const stringLiteralFormatterGetter: StringLiteralFormatterGetter = () => stringLiteralFormatter!;
 const numberLiteralFormatterGetter: NumberLiteralFormatterGetter = () => numberLiteralFormatter!;
 const expressionFormatterGetter: ExpressionFormatterGetter = () => expressionFormatter!;
@@ -258,10 +270,12 @@ typeFormatter = new TypeFormatter(neverTypeFormatterGetter, voidTypeFormatterGet
 // Expression Formatters
 argumentsFormatter = new ArgumentsFormatter(cacheServiceGetter, expressionFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(cacheServiceGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
+propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, cacheServiceGetter, expressionFormatterGetter);
+identifierExpressionFormatter = new IdentifierFormatter(cacheServiceGetter);
 stringLiteralFormatter = new StringLiteralFormatter(cacheServiceGetter);
 numberLiteralFormatter = new NumberLiteralFormatter(cacheServiceGetter);
 notImplementedFormatter = new NotImplementedFormatter(cacheServiceGetter);
-expressionFormatter = new ExpressionFormatter(callExpressionFormatterGetter, stringLiteralFormatterGetter, numberLiteralFormatterGetter, notImplementedFormatterGetter);
+expressionFormatter = new ExpressionFormatter(callExpressionFormatterGetter, propertyAccessExpressionFormatterGetter, identifierExpressionFormatterGetter, stringLiteralFormatterGetter, numberLiteralFormatterGetter, notImplementedFormatterGetter);
 
 // General services
 cacheService = new CacheService();
@@ -270,3 +284,4 @@ cacheService = new CacheService();
 const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);
 export const interfaceTypeService: IInterfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
 export const callExpressionService: ICallExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
+export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierExpressionFormatterGetter);

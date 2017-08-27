@@ -15,7 +15,7 @@ export abstract class FormattedExpressionFormatter implements IFormattedExpressi
 	 */
 	public format (expression: Expression): IFormattedExpression {
 		return {
-			file: expression.getSourceFile().fileName,
+			// file: expression.getSourceFile().fileName,
 			expressionKind: FormattedExpressionKind.EXPRESSION,
 			startsAt: expression.pos,
 			endsAt: expression.end
