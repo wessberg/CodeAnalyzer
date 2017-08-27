@@ -1,3 +1,24 @@
+<a name="1.0.50"></a>
+## 1.0.50 (2017-08-27)
+
+* 1.0.50 ([e8438b5](https://github.com/wessberg/CodeAnalyzer/commit/e8438b5))
+* Added a few extra methods ([7e52845](https://github.com/wessberg/CodeAnalyzer/commit/7e52845))
+* Added formatters for all types ([ded78be](https://github.com/wessberg/CodeAnalyzer/commit/ded78be))
+* Added more formatters ([697b7e1](https://github.com/wessberg/CodeAnalyzer/commit/697b7e1))
+* Added some of the type formatters ([1568882](https://github.com/wessberg/CodeAnalyzer/commit/1568882))
+* All types can now be correctly 'toString()'ed ([3d71dad](https://github.com/wessberg/CodeAnalyzer/commit/3d71dad))
+* Bumped version ([935206e](https://github.com/wessberg/CodeAnalyzer/commit/935206e))
+* Bunch of work on call expressions ([43e4b40](https://github.com/wessberg/CodeAnalyzer/commit/43e4b40))
+* First work on v2 branch ([8b23b94](https://github.com/wessberg/CodeAnalyzer/commit/8b23b94))
+* Fixed a bug ([e27cbd1](https://github.com/wessberg/CodeAnalyzer/commit/e27cbd1))
+* Lots of work ([31f3325](https://github.com/wessberg/CodeAnalyzer/commit/31f3325))
+* More work ([a7bf11c](https://github.com/wessberg/CodeAnalyzer/commit/a7bf11c))
+* More work on type formatters ([bf70007](https://github.com/wessberg/CodeAnalyzer/commit/bf70007))
+* More work on type formatters ([581ce3d](https://github.com/wessberg/CodeAnalyzer/commit/581ce3d))
+* Refactoring ([42c17ea](https://github.com/wessberg/CodeAnalyzer/commit/42c17ea))
+
+
+
 <a name="1.0.49"></a>
 ## 1.0.49 (2017-08-03)
 
