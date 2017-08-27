@@ -6,7 +6,7 @@ let codeAnalyzer: ICodeAnalyzer;
 test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
-	const expressions = codeAnalyzer.getCallExpressionsForFile("./test/static/call-expressions");
-	console.log(expressions[0], expressions[0].toString());
+	const expressions = codeAnalyzer.findMatchingCallExpressionsForFile("./test/static/call-expressions", "bar.foo");
+	console.log(expressions);
 	t.true(true);
 });

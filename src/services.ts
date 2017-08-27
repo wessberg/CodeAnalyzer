@@ -129,6 +129,12 @@ import {IdentifierFormatterGetter} from "./formatter/expression/identifier/ident
 import {IdentifierFormatter} from "./formatter/expression/identifier/identifier-formatter";
 import {IIdentifierExpressionService} from "./service/identifier-service/i-identifier-expression-service";
 import {IdentifierExpressionService} from "./service/identifier-service/identifier-expression-service";
+import {IBooleanLiteralFormatter} from "./formatter/expression/literal/boolean-literal/i-boolean-literal-formatter";
+import {BooleanLiteralFormatterGetter} from "./formatter/expression/literal/boolean-literal/boolean-literal-formatter-getter";
+import {BooleanLiteralFormatter} from "./formatter/expression/literal/boolean-literal/boolean-literal-formatter";
+import {IRegexLiteralFormatter} from "./formatter/expression/literal/regex-literal/i-regex-literal-formatter";
+import {RegexLiteralFormatterGetter} from "./formatter/expression/literal/regex-literal/regex-literal-formatter-getter";
+import {RegexLiteralFormatter} from "./formatter/expression/literal/regex-literal/regex-literal-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -172,6 +178,8 @@ let propertyAccessExpressionFormatter: IPropertyAccessExpressionFormatter|null =
 let identifierExpressionFormatter: IIdentifierFormatter|null = null;
 let stringLiteralFormatter: IStringLiteralFormatter|null = null;
 let numberLiteralFormatter: INumberLiteralFormatter|null = null;
+let booleanLiteralFormatter: IBooleanLiteralFormatter|null = null;
+let regexLiteralFormatter: IRegexLiteralFormatter|null = null;
 let expressionFormatter: IExpressionFormatter|null = null;
 let notImplementedFormatter: INotImplementedFormatter|null = null;
 
@@ -220,6 +228,8 @@ const propertyAccessExpressionFormatterGetter: PropertyAccessExpressionFormatter
 const identifierExpressionFormatterGetter: IdentifierFormatterGetter = () => identifierExpressionFormatter!;
 const stringLiteralFormatterGetter: StringLiteralFormatterGetter = () => stringLiteralFormatter!;
 const numberLiteralFormatterGetter: NumberLiteralFormatterGetter = () => numberLiteralFormatter!;
+const booleanLiteralFormatterGetter: BooleanLiteralFormatterGetter = () => booleanLiteralFormatter!;
+const regexLiteralFormatterGetter: RegexLiteralFormatterGetter = () => regexLiteralFormatter!;
 const expressionFormatterGetter: ExpressionFormatterGetter = () => expressionFormatter!;
 const notImplementedFormatterGetter: NotImplementedFormatterGetter = () => notImplementedFormatter!;
 
@@ -274,8 +284,19 @@ propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUti
 identifierExpressionFormatter = new IdentifierFormatter(cacheServiceGetter);
 stringLiteralFormatter = new StringLiteralFormatter(cacheServiceGetter);
 numberLiteralFormatter = new NumberLiteralFormatter(cacheServiceGetter);
+booleanLiteralFormatter = new BooleanLiteralFormatter(cacheServiceGetter);
+regexLiteralFormatter = new RegexLiteralFormatter(cacheServiceGetter);
 notImplementedFormatter = new NotImplementedFormatter(cacheServiceGetter);
-expressionFormatter = new ExpressionFormatter(callExpressionFormatterGetter, propertyAccessExpressionFormatterGetter, identifierExpressionFormatterGetter, stringLiteralFormatterGetter, numberLiteralFormatterGetter, notImplementedFormatterGetter);
+expressionFormatter = new ExpressionFormatter(
+	callExpressionFormatterGetter,
+	propertyAccessExpressionFormatterGetter,
+	identifierExpressionFormatterGetter,
+	stringLiteralFormatterGetter,
+	numberLiteralFormatterGetter,
+	booleanLiteralFormatterGetter,
+	regexLiteralFormatterGetter,
+	notImplementedFormatterGetter
+);
 
 // General services
 cacheService = new CacheService();

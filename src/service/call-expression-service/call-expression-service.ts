@@ -22,6 +22,36 @@ export class CallExpressionService implements ICallExpressionService {
 	}
 
 	/**
+	 * Finds all the call expressions in the provided file that matches the provided match which can be a string or a regular expression
+	 * @param {string} file
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp): IFormattedCallExpression[] {
+		return this.filterFormattedCallExpressionsByMatch(this.getCallExpressionsForFile(file), match);
+	}
+
+	/**
+	 * Finds all the call expressions for the provided statement that matches the provided match which can be a string or a regular expression
+	 * @param {ts.CallExpression} statement
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForStatement (statement: CallExpression, match: string|RegExp): IFormattedCallExpression[] {
+		return this.filterFormattedCallExpressionsByMatch(this.getCallExpressionsForStatement(statement), match);
+	}
+
+	/**
+	 * Finds all the call expressions for the provided statements that matches the provided match which can be a string or a regular expression
+	 * @param {ts.NodeArray<AstNode>} statements
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForStatements (statements: NodeArray<AstNode>, match: string|RegExp): IFormattedCallExpression[] {
+		return this.filterFormattedCallExpressionsByMatch(this.getCallExpressionsForStatements(statements), match);
+	}
+
+	/**
 	 * Gets all IFormattedCallExpressions for the given file
 	 * @param {string} file
 	 * @returns {IFormattedCallExpression[]}
@@ -47,6 +77,17 @@ export class CallExpressionService implements ICallExpressionService {
 	public getCallExpressionsForStatements (statements: NodeArray<AstNode>): IFormattedCallExpression[] {
 		const filtered = this.astUtil.filterStatements<CallExpression>(statements, this.supportedKinds, true);
 		return filtered.map(statement => this.callExpressionFormatter().format(statement));
+	}
+
+	/**
+	 * Filters only the expressions that matches the provided 'match' string or Regular Expression.
+	 * If a string is given, it will match if the string representation of the call expression starts with the value of the string
+	 * @param {IFormattedCallExpression[]} formattedExpressions
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	private filterFormattedCallExpressionsByMatch (formattedExpressions: IFormattedCallExpression[], match: string|RegExp): IFormattedCallExpression[] {
+		return formattedExpressions.filter(formattedExpression => match instanceof RegExp ? match.test(formattedExpression.toString()) : formattedExpression.toString().startsWith(match));
 	}
 
 }

@@ -40,7 +40,7 @@ export class StringLiteralFormatter extends FormattedExpressionFormatter impleme
 	 * @returns {string}
 	 */
 	private stringify (formattedStringLiteral: IFormattedStringLiteral): string {
-		return formattedStringLiteral.value;
+		return `\`${formattedStringLiteral.value}\``;
 	}
 
 }

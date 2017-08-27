@@ -5,5 +5,5 @@ class Bar {
 	}
 }
 const bar = new Bar();
-bar.foo<number>(2);
+bar.foo<string>(`hello world!`);
 /*tslint:enable*/

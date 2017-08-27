@@ -65,6 +65,36 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	}
 
 	/**
+	 * Finds all the call expressions in the provided file that matches the provided match which can be a string or a regular expression
+	 * @param {string} file
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp): IFormattedCallExpression[] {
+		return callExpressionService.findMatchingCallExpressionsForFile(file, match);
+	}
+
+	/**
+	 * Finds all the call expressions for the provided statement that matches the provided match which can be a string or a regular expression
+	 * @param {ts.CallExpression} statement
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForStatement (statement: CallExpression, match: string|RegExp): IFormattedCallExpression[] {
+		return callExpressionService.findMatchingCallExpressionsForStatement(statement, match);
+	}
+
+	/**
+	 * Finds all the call expressions for the provided statements that matches the provided match which can be a string or a regular expression
+	 * @param {ts.NodeArray<AstNode>} statements
+	 * @param {string | RegExp} match
+	 * @returns {IFormattedCallExpression[]}
+	 */
+	public findMatchingCallExpressionsForStatements (statements: NodeArray<AstNode>, match: string|RegExp): IFormattedCallExpression[] {
+		return callExpressionService.findMatchingCallExpressionsForStatements(statements, match);
+	}
+
+	/**
 	 * Gets all IFormattedIdentifierExpressions for the given file
 	 * @param {string} file
 	 * @returns {IFormattedIdentifier[]}
