@@ -1,3 +1,12 @@
+<a name="1.0.57"></a>
+## 1.0.57 (2017-08-28)
+
+* 1.0.57 ([98c6656](https://github.com/wessberg/CodeAnalyzer/commit/98c6656))
+* Added the possibility of excluding files ([a7716ca](https://github.com/wessberg/CodeAnalyzer/commit/a7716ca))
+* Bumped version ([53b8d95](https://github.com/wessberg/CodeAnalyzer/commit/53b8d95))
+
+
+
 <a name="1.0.56"></a>
 ## 1.0.56 (2017-08-28)
 
