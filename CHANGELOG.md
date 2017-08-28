@@ -1,3 +1,12 @@
+<a name="1.0.56"></a>
+## 1.0.56 (2017-08-28)
+
+* 1.0.56 ([7e2b563](https://github.com/wessberg/CodeAnalyzer/commit/7e2b563))
+* Bumped deps ([f8cf6da](https://github.com/wessberg/CodeAnalyzer/commit/f8cf6da))
+* Bumped version ([e25fe8b](https://github.com/wessberg/CodeAnalyzer/commit/e25fe8b))
+
+
+
 <a name="1.0.55"></a>
 ## 1.0.55 (2017-08-28)
 
