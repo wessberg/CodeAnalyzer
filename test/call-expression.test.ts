@@ -7,8 +7,8 @@ test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
 	const expressions = codeAnalyzer.getClassesForFile("./test/static/class/b");
-	expressions.forEach(expression => {
-		console.log(expression);
+	expressions.forEach(_expression => {
+		_expression.members.forEach(member => console.log(member));
 	});
 	t.true(true);
 });

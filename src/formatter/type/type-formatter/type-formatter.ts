@@ -1,7 +1,7 @@
 import {ITypeFormatter, TypeFormatterNode} from "./i-type-formatter";
-import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
+import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexedAccessTypeNode, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
 import {Type} from "@wessberg/type";
-import {isBooleanLiteral} from "@wessberg/typescript-ast-util";
+import {isBooleanLiteral, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {isInterfaceProperty} from "../interface-type-formatter/interface-property";
 import {NeverTypeFormatterGetter} from "../never-type-formatter/never-type-formatter-getter";
 import {VoidTypeFormatterGetter} from "../void-type-formatter/void-type-formatter-getter";
@@ -28,12 +28,18 @@ import {ParenthesizedTypeFormatterGetter} from "../parenthesized-type-formatter/
 import {UnionTypeFormatterGetter} from "../union-type-formatter/union-type-formatter-getter";
 import {IntersectionTypeFormatterGetter} from "../intersection-type-formatter/intersection-type-formatter-getter";
 import {TypeofTypeFormatterGetter} from "../typeof-type-formatter/typeof-type-formatter-getter";
+import {PredicateTypeFormatterGetter} from "../predicate-type-formatter/predicate-type-formatter-getter";
+import {FirstTypeNode} from "../../../type/first-type-node/first-type-node";
+import {IndexedAccessTypeFormatterGetter} from "../indexed-access-type-formatter/indexed-access-type-formatter-getter";
 
 /**
  * A class for formatting Types
  */
 export class TypeFormatter implements ITypeFormatter {
-	constructor (private neverTypeFormatter: NeverTypeFormatterGetter,
+	constructor (private astUtil: ITypescriptASTUtil,
+							 private predicateTypeFormatter: PredicateTypeFormatterGetter,
+							 private indexedAccessTypeFormatter: IndexedAccessTypeFormatterGetter,
+							 private neverTypeFormatter: NeverTypeFormatterGetter,
 							 private voidTypeFormatter: VoidTypeFormatterGetter,
 							 private anyTypeFormatter: AnyTypeFormatterGetter,
 							 private undefinedTypeFormatter: UndefinedTypeFormatterGetter,
@@ -119,6 +125,9 @@ export class TypeFormatter implements ITypeFormatter {
 			case SyntaxKind.ObjectKeyword:
 				return this.objectTypeFormatter().format();
 
+			case SyntaxKind.IndexedAccessType:
+				return this.indexedAccessTypeFormatter().format({node: <IndexedAccessTypeNode>node});
+
 			case SyntaxKind.TupleType:
 				return this.tupleTypeFormatter().format({node: <TupleTypeNode>node});
 
@@ -127,6 +136,9 @@ export class TypeFormatter implements ITypeFormatter {
 
 			case SyntaxKind.UndefinedKeyword:
 				return this.undefinedTypeFormatter().format();
+
+			case SyntaxKind.FirstTypeNode:
+				return this.predicateTypeFormatter().format({node: <FirstTypeNode>node});
 
 			case SyntaxKind.LastTypeNode:
 				const lastTypeNode = <LiteralTypeNode>node;
@@ -178,7 +190,8 @@ export class TypeFormatter implements ITypeFormatter {
 				return this.intersectionTypeFormatter().format({node: <IntersectionTypeNode>node});
 
 			default: {
-				console.log(`${this.constructor.name} could not detect the kind of a type with SyntaxKind: ${SyntaxKind[node.kind]}. Defaulting to 'never'...`);
+				console.log(node);
+				console.log(`${this.constructor.name} could not detect the kind of a type with SyntaxKind: ${SyntaxKind[node.kind]} around here: ${this.astUtil.getRawText(node)}. Defaulting to 'never'...`);
 				return this.neverTypeFormatter().format();
 			}
 		}

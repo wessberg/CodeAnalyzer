@@ -216,12 +216,20 @@ import {CallExpressionServiceGetter} from "./service/call-expression-service/cal
 import {IdentifierExpressionServiceGetter} from "./service/identifier-service/identifier-expression-service-getter";
 import {FunctionServiceGetter} from "./service/function-service/function-service-getter";
 import {ImportServiceGetter} from "./service/import-service/import-service-getter";
+import {IPredicateTypeFormatter} from "./formatter/type/predicate-type-formatter/i-predicate-type-formatter";
+import {PredicateTypeFormatterGetter} from "./formatter/type/predicate-type-formatter/predicate-type-formatter-getter";
+import {PredicateTypeFormatter} from "./formatter/type/predicate-type-formatter/predicate-type-formatter";
+import {IIndexedAccessTypeFormatter} from "./formatter/type/indexed-access-type-formatter/i-indexed-access-type-formatter";
+import {IndexedAccessTypeFormatterGetter} from "./formatter/type/indexed-access-type-formatter/indexed-access-type-formatter-getter";
+import {IndexedAccessTypeFormatter} from "./formatter/type/indexed-access-type-formatter/indexed-access-type-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
 let objectBindingNameFormatter: IObjectBindingNameFormatter|null = null;
 
 // Type formatter declarations
+let predicateTypeFormatter: IPredicateTypeFormatter|null = null;
+let indexedAccessTypeFormatter: IIndexedAccessTypeFormatter|null = null;
 let neverTypeFormatter: INeverTypeFormatter|null = null;
 let voidTypeFormatter: IVoidTypeFormatter|null = null;
 let anyTypeFormatter: IAnyTypeFormatter|null = null;
@@ -305,6 +313,8 @@ const arrayBindingNameFormatterGetter: ArrayBindingNameFormatterGetter = () => a
 const objectBindingNameFormatterGetter: ObjectBindingNameFormatterGetter = () => objectBindingNameFormatter!;
 
 // Type formatter getters
+const predicateTypeFormatterGetter: PredicateTypeFormatterGetter = () => predicateTypeFormatter!;
+const indexedAccessTypeFormatterGetter: IndexedAccessTypeFormatterGetter = () => indexedAccessTypeFormatter!;
 const neverTypeFormatterGetter: NeverTypeFormatterGetter = () => neverTypeFormatter!;
 const voidTypeFormatterGetter: VoidTypeFormatterGetter = () => voidTypeFormatter!;
 const anyTypeFormatterGetter: AnyTypeFormatterGetter = () => anyTypeFormatter!;
@@ -394,6 +404,8 @@ objectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 arrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 
 // Type Formatters
+predicateTypeFormatter = new PredicateTypeFormatter(astUtil, typeFormatterGetter);
+indexedAccessTypeFormatter = new IndexedAccessTypeFormatter(typeFormatterGetter);
 neverTypeFormatter = new NeverTypeFormatter();
 voidTypeFormatter = new VoidTypeFormatter();
 anyTypeFormatter = new AnyTypeFormatter();
@@ -424,6 +436,9 @@ interfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astUtil, typeFor
 typeParameterFormatter= new TypeParameterFormatter(astUtil, typeFormatterGetter);
 interfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, referenceTypeFormatterGetter, interfaceTypeMemberFormatterGetter, typeParameterFormatterGetter);
 typeFormatter = new TypeFormatter(
+	astUtil,
+	predicateTypeFormatterGetter,
+	indexedAccessTypeFormatterGetter,
 	neverTypeFormatterGetter,
 	voidTypeFormatterGetter,
 	anyTypeFormatterGetter,
