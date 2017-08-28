@@ -190,7 +190,6 @@ export class TypeFormatter implements ITypeFormatter {
 				return this.intersectionTypeFormatter().format({node: <IntersectionTypeNode>node});
 
 			default: {
-				console.log(node);
 				console.log(`${this.constructor.name} could not detect the kind of a type with SyntaxKind: ${SyntaxKind[node.kind]} around here: ${this.astUtil.getRawText(node)}. Defaulting to 'never'...`);
 				return this.neverTypeFormatter().format();
 			}

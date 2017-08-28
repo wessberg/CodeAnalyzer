@@ -2,13 +2,13 @@ import {IFunctionType, TypeKind} from "@wessberg/type";
 import {IFunctionTypeFormatter} from "./i-function-type-formatter";
 import {IFunctionTypeFormatterFormatOptions} from "./i-function-type-formatter-format-options";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
-import {ParameterFormatterGetter} from "../../expression/parameter/parameter-formatter-getter";
+import {ParameterTypeFormatterGetter} from "../parameter-type-formatter/parameter-type-formatter-getter";
 
 /**
  * A class for generating IFunctionTypes
  */
 export class FunctionTypeFormatter implements IFunctionTypeFormatter {
-	constructor (private parameterFormatter: ParameterFormatterGetter,
+	constructor (private parameterTypeFormatter: ParameterTypeFormatterGetter,
 							 private typeFormatter: TypeFormatterGetter) {
 	}
 
@@ -20,7 +20,7 @@ export class FunctionTypeFormatter implements IFunctionTypeFormatter {
 	public format ({node}: IFunctionTypeFormatterFormatOptions): IFunctionType {
 		const functionType: IFunctionType = {
 			kind: TypeKind.FUNCTION,
-			parameters: node.parameters.map(parameter => this.parameterFormatter().format(parameter)),
+			parameters: node.parameters.map(parameter => this.parameterTypeFormatter().format(parameter)),
 			returns: this.typeFormatter().format(node.type)
 		};
 
