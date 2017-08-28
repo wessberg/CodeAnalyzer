@@ -5,7 +5,6 @@ import {FormattedExpressionKind, FormattedObjectLiteralProperty, FormattedObject
 import {IObjectLiteralPropertyFormatter} from "./i-object-literal-property-formatter";
 import {ExpressionFormatterGetter} from "../../../expression/expression-formatter-getter";
 import {PropertyNameFormatterGetter} from "../../../property-name/property-name-formatter-getter";
-import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {AccessorFormatterGetter} from "../../../accessor/accessor-formatter-getter";
 import {MethodFormatterGetter} from "../../../method/method-formatter-getter";
 
@@ -13,8 +12,7 @@ import {MethodFormatterGetter} from "../../../method/method-formatter-getter";
  * A class that can format object literal properties
  */
 export class ObjectLiteralPropertyFormatter extends FormattedExpressionFormatter implements IObjectLiteralPropertyFormatter {
-	constructor (private astUtil: ITypescriptASTUtil,
-							 private astMapper: AstMapperGetter,
+	constructor (private astMapper: AstMapperGetter,
 							 private accessorFormatter: AccessorFormatterGetter,
 							 private propertyNameFormatter: PropertyNameFormatterGetter,
 							 private methodFormatter: MethodFormatterGetter,
@@ -42,16 +40,12 @@ export class ObjectLiteralPropertyFormatter extends FormattedExpressionFormatter
 				...super.format(expression)
 			};
 
-			// Make sure that it has a name
-			if (expression.name == null) throw new Error(`${this.constructor.name} could not format an ObjectLiteral property: It had no name. Raw: \n${this.astUtil.getRawText(expression)}`);
-			const name = this.propertyNameFormatter().format(expression.name);
-
 			let result: IFormattedObjectLiteralShortHandAssignmentProperty|IFormattedObjectLiteralPropertyAssignmentProperty|IFormattedObjectLiteralSpreadAssignmentProperty;
 
 			if (isPropertyAssignment(expression)) {
 				result = {
 					...base,
-					name,
+					name: this.propertyNameFormatter().format(expression.name),
 					expressionKind: FormattedExpressionKind.OBJECT_LITERAL_PROPERTY,
 					kind: FormattedObjectLiteralPropertyKind.PROPERTY_ASSIGNMENT,
 					value: this.expressionFormatter().format(expression.initializer)
@@ -61,7 +55,7 @@ export class ObjectLiteralPropertyFormatter extends FormattedExpressionFormatter
 			else if (isShorthandPropertyAssignment(expression)) {
 				result = {
 					...base,
-					name,
+					name: this.propertyNameFormatter().format(expression.name),
 					expressionKind: FormattedExpressionKind.OBJECT_LITERAL_PROPERTY,
 					kind: FormattedObjectLiteralPropertyKind.SHORTHAND_ASSIGNMENT
 				};
@@ -70,7 +64,6 @@ export class ObjectLiteralPropertyFormatter extends FormattedExpressionFormatter
 			else {
 				result = {
 					...base,
-					name,
 					expressionKind: FormattedExpressionKind.OBJECT_LITERAL_PROPERTY,
 					kind: FormattedObjectLiteralPropertyKind.SPREAD_ASSIGNMENT,
 					expression: this.expressionFormatter().format(expression.expression)

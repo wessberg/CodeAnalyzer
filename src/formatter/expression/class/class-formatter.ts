@@ -154,7 +154,9 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 		// Resolve the class
 		const [parent] = formatted.members;
 		const resolvedParent = <IFormattedClass|null> this.identifierResolver().resolve(parent);
-		if (resolvedParent == null) throw new ReferenceError(`${this.constructor.name} could not resolve the parent class for a class`);
+
+		// If a parent could not be resolved, assume that the parent is a built-in (such as Error)
+		if (resolvedParent == null) return null;
 		return resolvedParent;
 	}
 
