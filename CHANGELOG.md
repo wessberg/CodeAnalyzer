@@ -1,3 +1,12 @@
+<a name="1.0.55"></a>
+## 1.0.55 (2017-08-28)
+
+* 1.0.55 ([f4676c5](https://github.com/wessberg/CodeAnalyzer/commit/f4676c5))
+* Bumped version ([25ae4e2](https://github.com/wessberg/CodeAnalyzer/commit/25ae4e2))
+* Fixed a bug ([92f98a0](https://github.com/wessberg/CodeAnalyzer/commit/92f98a0))
+
+
+
 <a name="1.0.54"></a>
 ## 1.0.54 (2017-08-28)
 
