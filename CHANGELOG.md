@@ -1,3 +1,14 @@
+<a name="1.0.58"></a>
+## 1.0.58 (2017-08-28)
+
+* 1.0.58 ([f9cbee3](https://github.com/wessberg/CodeAnalyzer/commit/f9cbee3))
+* Added handling for predicate types and indexed access types ([2723751](https://github.com/wessberg/CodeAnalyzer/commit/2723751))
+* Bumped deps ([9c44457](https://github.com/wessberg/CodeAnalyzer/commit/9c44457))
+* Bumped version ([ddddaf1](https://github.com/wessberg/CodeAnalyzer/commit/ddddaf1))
+* Fixed deps ([c2de0fa](https://github.com/wessberg/CodeAnalyzer/commit/c2de0fa))
+
+
+
 <a name="1.0.57"></a>
 ## 1.0.57 (2017-08-28)
 
