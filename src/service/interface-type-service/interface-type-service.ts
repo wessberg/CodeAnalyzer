@@ -26,7 +26,7 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IInterfaceType[] {
-		return this.getInterfacesForStatements(this.languageService.addFile({path: file, addImportedFiles: true}));
+		return this.getInterfacesForStatements(this.languageService.addFile({path: file}));
 	}
 
 	/**

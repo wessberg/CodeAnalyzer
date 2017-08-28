@@ -57,7 +57,7 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		return this.getCallExpressionsForStatements(this.languageService.addFile({path: file, addImportedFiles: true}));
+		return this.getCallExpressionsForStatements(this.languageService.addFile({path: file}));
 	}
 
 	/**

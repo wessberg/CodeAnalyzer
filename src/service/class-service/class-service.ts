@@ -27,7 +27,7 @@ export class ClassService implements IClassService {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForFile (file: string): IFormattedClass[] {
-		return this.getClassesForStatements(this.languageService.addFile({path: file, addImportedFiles: true}));
+		return this.getClassesForStatements(this.languageService.addFile({path: file}));
 	}
 
 	/**

@@ -27,7 +27,7 @@ export class FunctionService implements IFunctionService {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForFile (file: string): FormattedFunction[] {
-		return this.getFunctionsForStatements(this.languageService.addFile({path: file, addImportedFiles: true}));
+		return this.getFunctionsForStatements(this.languageService.addFile({path: file}));
 	}
 
 	/**

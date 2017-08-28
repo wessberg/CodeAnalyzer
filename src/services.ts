@@ -487,7 +487,7 @@ methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGett
 propertyNameFormatter = new PropertyNameFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
 argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
 decoratorFormatter = new DecoratorFormatter(astMapperGetter, expressionFormatterGetter);
-classFormatter = new ClassFormatter(astMapperGetter, importServiceGetter, classServiceGetter, identifierFormatterGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter, identifierResolverGetter);
+classFormatter = new ClassFormatter(astMapperGetter, identifierFormatterGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter, identifierResolverGetter);
 heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
 propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
@@ -537,6 +537,6 @@ functionService = new FunctionService(astUtil, languageService, functionFormatte
 importService = new ImportService(languageService);
 
 // Resolvers
-identifierResolver = new IdentifierResolver(astMapperGetter, languageService);
+identifierResolver = new IdentifierResolver(astMapperGetter, importServiceGetter, languageService, classServiceGetter, functionServiceGetter);
 
 export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter};

@@ -11,16 +11,12 @@ import {ClassPropertyFormatterGetter} from "../class-property/class-property-for
 import {ClassConstructorFormatterGetter} from "../class-constructor/class-constructor-formatter-getter";
 import {IdentifierResolverGetter} from "../../../resolver/identifier-resolver/identifier-resolver-getter";
 import {IdentifierFormatterGetter} from "../identifier/identifier-formatter-getter";
-import {ImportServiceGetter} from "../../../service/import-service/import-service-getter";
-import {ClassServiceGetter} from "../../../service/class-service/class-service-getter";
 
 /**
  * A class that can format class declarations and class expressions
  */
 export class ClassFormatter extends FormattedExpressionFormatter implements IClassFormatter {
 	constructor (private astMapper: AstMapperGetter,
-							 private importService: ImportServiceGetter,
-							 private classService: ClassServiceGetter,
 							 private identifierFormatter: IdentifierFormatterGetter,
 							 private classAccessorFormatter: ClassAccessorFormatterGetter,
 							 private classConstructorFormatter: ClassConstructorFormatterGetter,
@@ -147,16 +143,14 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 		// Return an empty object if the formatted class doesn't exist
 		if (formatted == null) return null;
 
-		// Make sure that all of the classes declared in the imports has been resolved before proceeding
-		const imports = this.importService().getImportedFilesForFile(formatted.file);
-		imports.forEach(importedFile => this.classService().getClassesForFile(importedFile));
-
 		// Resolve the class
 		const [parent] = formatted.members;
 		const resolvedParent = <IFormattedClass|null> this.identifierResolver().resolve(parent);
 
 		// If a parent could not be resolved, assume that the parent is a built-in (such as Error)
-		if (resolvedParent == null) return null;
+		if (resolvedParent == null) {
+			return null;
+		}
 		return resolvedParent;
 	}
 
