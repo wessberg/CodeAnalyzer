@@ -27,7 +27,7 @@ export class IdentifierExpressionService implements IIdentifierExpressionService
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		return this.getIdentifiersForStatements(this.languageService.addFile({path: file}));
+		return this.getIdentifiersForStatements(this.languageService.addFile({path: file, addImportedFiles: true}));
 	}
 
 	/**

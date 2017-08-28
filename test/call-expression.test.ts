@@ -6,7 +6,7 @@ let codeAnalyzer: ICodeAnalyzer;
 test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
-	const expressions = codeAnalyzer.getClassesForFile("./test/static/call-expressions");
+	const expressions = codeAnalyzer.getClassesForFile("./test/static/class/b");
 	expressions.forEach(expression => {
 		console.log(expression);
 	});

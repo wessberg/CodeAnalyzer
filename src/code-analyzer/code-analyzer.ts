@@ -1,8 +1,8 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
 import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
 import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {callExpressionService, classService, functionService, identifierExpressionService, importService, interfaceTypeService} from "../services";
 import {AstNode} from "../type/ast-node/ast-node";
+import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter} from "../services";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
@@ -15,7 +15,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {string[]}
 	 */
 	public getImportedFilesForFile (file: string): string[] {
-		return importService.getImportedFilesForFile(file);
+		return importServiceGetter().getImportedFilesForFile(file);
 	}
 
 	/**
@@ -24,7 +24,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {string[]}
 	 */
 	public getImportedFilesForStatementFile (statement: AstNode): string[] {
-		return importService.getImportedFilesForStatementFile(statement);
+		return importServiceGetter().getImportedFilesForStatementFile(statement);
 	}
 
 	/**
@@ -33,7 +33,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForFile (file: string): FormattedFunction[] {
-		return functionService.getFunctionsForFile(file);
+		return functionServiceGetter().getFunctionsForFile(file);
 	}
 
 	/**
@@ -42,7 +42,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForStatement (statement: FunctionExpression|FunctionDeclaration|ArrowFunction): FormattedFunction[] {
-		return functionService.getFunctionsForStatement(statement);
+		return functionServiceGetter().getFunctionsForStatement(statement);
 	}
 
 	/**
@@ -51,7 +51,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForStatements (statements: NodeArray<AstNode>): FormattedFunction[] {
-		return functionService.getFunctionsForStatements(statements);
+		return functionServiceGetter().getFunctionsForStatements(statements);
 	}
 
 	/**
@@ -60,7 +60,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForFile (file: string): IFormattedClass[] {
-		return classService.getClassesForFile(file);
+		return classServiceGetter().getClassesForFile(file);
 	}
 
 	/**
@@ -69,7 +69,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForStatement (statement: ClassExpression|ClassDeclaration): IFormattedClass[] {
-		return classService.getClassesForStatement(statement);
+		return classServiceGetter().getClassesForStatement(statement);
 	}
 
 	/**
@@ -78,7 +78,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForStatements (statements: NodeArray<AstNode>): IFormattedClass[] {
-		return classService.getClassesForStatements(statements);
+		return classServiceGetter().getClassesForStatements(statements);
 	}
 
 	/**
@@ -87,7 +87,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IInterfaceType[] {
-		return interfaceTypeService.getInterfacesForFile(file);
+		return interfaceTypeServiceGetter().getInterfacesForFile(file);
 	}
 
 	/**
@@ -96,7 +96,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IInterfaceType[]}
 	 */
 	public getInterfacesForStatement (statement: InterfaceDeclaration): IInterfaceType[] {
-		return interfaceTypeService.getInterfacesForStatement(statement);
+		return interfaceTypeServiceGetter().getInterfacesForStatement(statement);
 	}
 
 	/**
@@ -105,7 +105,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IInterfaceType[]}
 	 */
 	public getInterfacesForStatements (statements: NodeArray<Statement>): IInterfaceType[] {
-		return interfaceTypeService.getInterfacesForStatements(statements);
+		return interfaceTypeServiceGetter().getInterfacesForStatements(statements);
 	}
 
 	/**
@@ -114,7 +114,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		return callExpressionService.getCallExpressionsForFile(file);
+		return callExpressionServiceGetter().getCallExpressionsForFile(file);
 	}
 
 	/**
@@ -123,7 +123,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForStatement (statement: CallExpression): IFormattedCallExpression[] {
-		return callExpressionService.getCallExpressionsForStatement(statement);
+		return callExpressionServiceGetter().getCallExpressionsForStatement(statement);
 	}
 
 	/**
@@ -132,7 +132,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForStatements (statements: NodeArray<AstNode>): IFormattedCallExpression[] {
-		return callExpressionService.getCallExpressionsForStatements(statements);
+		return callExpressionServiceGetter().getCallExpressionsForStatements(statements);
 	}
 
 	/**
@@ -142,7 +142,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionService.findMatchingCallExpressionsForFile(file, match);
+		return callExpressionServiceGetter().findMatchingCallExpressionsForFile(file, match);
 	}
 
 	/**
@@ -152,7 +152,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public findMatchingCallExpressionsForStatement (statement: CallExpression, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionService.findMatchingCallExpressionsForStatement(statement, match);
+		return callExpressionServiceGetter().findMatchingCallExpressionsForStatement(statement, match);
 	}
 
 	/**
@@ -162,7 +162,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public findMatchingCallExpressionsForStatements (statements: NodeArray<AstNode>, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionService.findMatchingCallExpressionsForStatements(statements, match);
+		return callExpressionServiceGetter().findMatchingCallExpressionsForStatements(statements, match);
 	}
 
 	/**
@@ -171,7 +171,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		return identifierExpressionService.getIdentifiersForFile(file);
+		return identifierExpressionServiceGetter().getIdentifiersForFile(file);
 	}
 
 	/**
@@ -180,7 +180,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForStatement (statement: Identifier): IFormattedIdentifier[] {
-		return identifierExpressionService.getIdentifiersForStatement(statement);
+		return identifierExpressionServiceGetter().getIdentifiersForStatement(statement);
 	}
 
 	/**
@@ -189,6 +189,6 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForStatements (statements: NodeArray<AstNode>): IFormattedIdentifier[] {
-		return identifierExpressionService.getIdentifiersForStatements(statements);
+		return identifierExpressionServiceGetter().getIdentifiersForStatements(statements);
 	}
 }
