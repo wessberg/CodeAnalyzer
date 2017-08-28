@@ -1,15 +1,17 @@
-import {Block, FunctionLikeDeclaration} from "typescript";
+import {FunctionLikeDeclaration, isBlock} from "typescript";
 import {IFunctionLikeFormatter} from "./i-function-like-formatter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {IFormattedFunctionLike} from "@wessberg/type";
 import {TypeFormatterGetter} from "../../type/type-formatter/type-formatter-getter";
 import {BlockFormatterGetter} from "../block/block-formatter-getter";
+import {ExpressionFormatterGetter} from "../expression/expression-formatter-getter";
 
 /**
  * A class that can format the provided FunctionLike
  */
 export class FunctionLikeFormatter extends FormattedExpressionFormatter implements IFunctionLikeFormatter {
 	constructor (private typeFormatter: TypeFormatterGetter,
+							 private expressionFormatter: ExpressionFormatterGetter,
 							 private blockFormatter: BlockFormatterGetter) {
 		super();
 	}
@@ -23,7 +25,7 @@ export class FunctionLikeFormatter extends FormattedExpressionFormatter implemen
 		return {
 			...super.format(expression),
 			type: this.typeFormatter().format(expression.type),
-			body: expression.body == null ? null : this.blockFormatter().format(<Block>expression.body)
+			body: expression.body == null ? null : isBlock(expression.body) ? this.blockFormatter().format(expression.body) : this.expressionFormatter().format(expression.body)
 		};
 	}
 }
