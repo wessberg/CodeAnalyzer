@@ -2,12 +2,27 @@ import {ICodeAnalyzer} from "./i-code-analyzer";
 import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
 import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
 import {AstNode} from "../type/ast-node/ast-node";
-import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter} from "../services";
+import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService} from "../services";
+import {ICodeAnalyzerOptions} from "./i-code-analyzer-options";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
+
+	constructor (options?: Partial<ICodeAnalyzerOptions>) {
+		if (options != null && options.excludedFiles != null) {
+			this.excludeFiles(options.excludedFiles);
+		}
+	}
+
+	/**
+	 * Excludes files from the CodeAnalyzer that matches the provided Regular Expression(s)
+	 * @param {RegExp | Iterable<RegExp>} match
+	 */
+	public excludeFiles (match: RegExp|Iterable<RegExp>): void {
+		languageService.excludeFiles(match);
+	}
 
 	/**
 	 * Gets all imported files for the given file

@@ -513,7 +513,7 @@ expressionFormatter = new ExpressionFormatter(
 astMapper = new AstMapper();
 
 // AST services
-const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);
+export const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);
 interfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
 classService = new ClassService(astUtil, languageService, classFormatterGetter);
 callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);

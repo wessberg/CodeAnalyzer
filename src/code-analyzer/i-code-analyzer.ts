@@ -6,4 +6,5 @@ import {IFunctionServiceBase} from "../service/function-service/i-function-servi
 import {IImportServiceBase} from "../service/import-service/i-import-service-base";
 
 export interface ICodeAnalyzer extends IInterfaceTypeServiceBase, IClassServiceBase, ICallExpressionServiceBase, IIdentifierExpressionServiceBase, IFunctionServiceBase, IImportServiceBase {
+	excludeFiles (match: RegExp|Iterable<RegExp>): void;
 }
