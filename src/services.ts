@@ -207,6 +207,9 @@ import {YieldExpressionFormatter} from "./formatter/expression/yield-expression/
 import {AwaitExpressionFormatter} from "./formatter/expression/await-expression/await-expression-formatter";
 import {IImportService} from "./service/import-service/i-import-service";
 import {ImportService} from "./service/import-service/import-service";
+import {IIdentifierResolver} from "./resolver/identifier-resolver/i-identifier-resolver";
+import {IdentifierResolverGetter} from "./resolver/identifier-resolver/identifier-resolver-getter";
+import {IdentifierResolver} from "./resolver/identifier-resolver/identifier-resolver";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -269,7 +272,7 @@ let classFormatter: IClassFormatter|null = null;
 let heritageFormatter: IHeritageFormatter|null = null;
 let callExpressionFormatter: ICallExpressionFormatter|null = null;
 let propertyAccessExpressionFormatter: IPropertyAccessExpressionFormatter|null = null;
-let identifierExpressionFormatter: IIdentifierFormatter|null = null;
+let identifierFormatter: IIdentifierFormatter|null = null;
 let stringLiteralFormatter: IStringLiteralFormatter|null = null;
 let numberLiteralFormatter: INumberLiteralFormatter|null = null;
 let booleanLiteralFormatter: IBooleanLiteralFormatter|null = null;
@@ -279,6 +282,9 @@ let notImplementedFormatter: INotImplementedFormatter|null = null;
 
 // AST Mapper
 let astMapper: IAstMapper|null = null;
+
+// Identifier Resolver
+let identifierResolver: IIdentifierResolver|null = null;
 
 // General formatter getters
 const arrayBindingNameFormatterGetter: ArrayBindingNameFormatterGetter = () => arrayBindingNameFormatter!;
@@ -341,7 +347,7 @@ const classFormatterGetter: ClassFormatterGetter = () => classFormatter!;
 const heritageFormatterGetter: HeritageFormatterGetter = () => heritageFormatter!;
 const callExpressionFormatterGetter: CallExpressionFormatterGetter = () => callExpressionFormatter!;
 const propertyAccessExpressionFormatterGetter: PropertyAccessExpressionFormatterGetter = () => propertyAccessExpressionFormatter!;
-const identifierExpressionFormatterGetter: IdentifierFormatterGetter = () => identifierExpressionFormatter!;
+const identifierFormatterGetter: IdentifierFormatterGetter = () => identifierFormatter!;
 const stringLiteralFormatterGetter: StringLiteralFormatterGetter = () => stringLiteralFormatter!;
 const numberLiteralFormatterGetter: NumberLiteralFormatterGetter = () => numberLiteralFormatter!;
 const booleanLiteralFormatterGetter: BooleanLiteralFormatterGetter = () => booleanLiteralFormatter!;
@@ -349,8 +355,11 @@ const regexLiteralFormatterGetter: RegexLiteralFormatterGetter = () => regexLite
 const expressionFormatterGetter: ExpressionFormatterGetter = () => expressionFormatter!;
 const notImplementedFormatterGetter: NotImplementedFormatterGetter = () => notImplementedFormatter!;
 
-// Service getters
+// Mapper getters
 const astMapperGetter: AstMapperGetter = () => astMapper!;
+
+// Resolver getters
+const identifierResolverGetter: IdentifierResolverGetter = () => identifierResolver!;
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -441,11 +450,11 @@ methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGett
 propertyNameFormatter = new PropertyNameFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
 argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
 decoratorFormatter = new DecoratorFormatter(astMapperGetter, expressionFormatterGetter);
-classFormatter = new ClassFormatter(astUtil, astMapperGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter);
+classFormatter = new ClassFormatter(astMapperGetter, identifierFormatterGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter, identifierResolverGetter);
 heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
 propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
-identifierExpressionFormatter = new IdentifierFormatter(astMapperGetter);
+identifierFormatter = new IdentifierFormatter(astMapperGetter);
 stringLiteralFormatter = new StringLiteralFormatter(astMapperGetter);
 numberLiteralFormatter = new NumberLiteralFormatter(astMapperGetter);
 booleanLiteralFormatter = new BooleanLiteralFormatter(astMapperGetter);
@@ -459,7 +468,7 @@ expressionFormatter = new ExpressionFormatter(
 	classFormatterGetter,
 	callExpressionFormatterGetter,
 	propertyAccessExpressionFormatterGetter,
-	identifierExpressionFormatterGetter,
+	identifierFormatterGetter,
 	stringLiteralFormatterGetter,
 	numberLiteralFormatterGetter,
 	booleanLiteralFormatterGetter,
@@ -486,6 +495,9 @@ const languageService: ITypescriptLanguageService = new TypescriptLanguageServic
 export const interfaceTypeService: IInterfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
 export const classService: IClassService = new ClassService(astUtil, languageService, classFormatterGetter);
 export const callExpressionService: ICallExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
-export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierExpressionFormatterGetter);
+export const identifierExpressionService: IIdentifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierFormatterGetter);
 export const functionService: IFunctionService = new FunctionService(astUtil, languageService, functionFormatterGetter);
 export const importService: IImportService = new ImportService(languageService);
+
+// Resolvers
+identifierResolver = new IdentifierResolver(astMapperGetter, languageService);

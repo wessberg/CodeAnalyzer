@@ -50,9 +50,9 @@
 		"@wessberg/fileloader": "^1.1.4",
 		"@wessberg/moduleutil": "0.0.11",
 		"@wessberg/pathutil": "0.0.5",
-		"@wessberg/type": "0.0.69",
+		"@wessberg/type": "0.0.76",
 		"@wessberg/typescript-ast-util": "0.0.7",
-		"@wessberg/typescript-language-service": "0.0.4",
+		"@wessberg/typescript-language-service": "0.0.5",
 		"tslib": "^1.7.1",
 		"typescript": "^2.5.1"
 	},
