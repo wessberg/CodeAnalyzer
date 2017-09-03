@@ -1,6 +1,7 @@
-import {IKeyofType} from "@wessberg/type";
-import {IKeyofTypeFormatterFormatOptions} from "./i-keyof-type-formatter-format-options";
+import {IFormattedKeyofType} from "@wessberg/type";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
+import {TypeNode} from "typescript";
 
-export interface IKeyofTypeFormatter {
-	format ({node}: IKeyofTypeFormatterFormatOptions): IKeyofType;
+export interface IKeyofTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: TypeNode): IFormattedKeyofType;
 }

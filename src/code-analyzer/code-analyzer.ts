@@ -1,8 +1,8 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IInterfaceType} from "@wessberg/type";
+import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedInterfaceType} from "@wessberg/type";
 import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
 import {AstNode} from "../type/ast-node/ast-node";
-import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService} from "../services";
+import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
 import {ICodeAnalyzerOptions} from "./i-code-analyzer-options";
 
 /**
@@ -70,6 +70,15 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	}
 
 	/**
+	 * Resolves an expression from another one.
+	 * @param {FormattedExpression} expression
+	 * @returns {FormattedExpression}
+	 */
+	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|null {
+		return resolverServiceGetter().getDefinitionMatchingExpression(expression);
+	}
+
+	/**
 	 * Gets all IFormattedClasses for the given file
 	 * @param {string} file
 	 * @returns {IFormattedClass[]}
@@ -99,27 +108,27 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IInterfaceTypes for the given file
 	 * @param {string} file
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForFile (file: string): IInterfaceType[] {
+	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
 		return interfaceTypeServiceGetter().getInterfacesForFile(file);
 	}
 
 	/**
 	 * Gets all IInterfaceTypes for the given statement
 	 * @param {InterfaceDeclaration} statement
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForStatement (statement: InterfaceDeclaration): IInterfaceType[] {
+	public getInterfacesForStatement (statement: InterfaceDeclaration): IFormattedInterfaceType[] {
 		return interfaceTypeServiceGetter().getInterfacesForStatement(statement);
 	}
 
 	/**
 	 * Gets all IInterfaceTypes for the given Statements
 	 * @param {NodeArray<Statement>} statements
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForStatements (statements: NodeArray<Statement>): IInterfaceType[] {
+	public getInterfacesForStatements (statements: NodeArray<Statement>): IFormattedInterfaceType[] {
 		return interfaceTypeServiceGetter().getInterfacesForStatements(statements);
 	}
 

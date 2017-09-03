@@ -1,6 +1,7 @@
-import {ITypeofType} from "@wessberg/type";
-import {ITypeofTypeFormatterFormatOptions} from "./i-typeof-type-formatter-format-options";
+import {IFormattedTypeofType} from "@wessberg/type";
+import {TypeQueryNode} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface ITypeofTypeFormatter {
-	format ({node}: ITypeofTypeFormatterFormatOptions): ITypeofType;
+export interface ITypeofTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: TypeQueryNode): IFormattedTypeofType;
 }

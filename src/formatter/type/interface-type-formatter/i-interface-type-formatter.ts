@@ -1,6 +1,7 @@
-import {IInterfaceType} from "@wessberg/type";
+import {IFormattedInterfaceType} from "@wessberg/type";
 import {InterfaceDeclaration} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IInterfaceTypeFormatter {
-	format (statement: InterfaceDeclaration): IInterfaceType;
+export interface IInterfaceTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: InterfaceDeclaration): IFormattedInterfaceType;
 }

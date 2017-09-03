@@ -1,5 +1,5 @@
 import {IInterfaceTypeService} from "./i-interface-type-service";
-import {IInterfaceType} from "@wessberg/type";
+import {IFormattedInterfaceType} from "@wessberg/type";
 import {createNodeArray, InterfaceDeclaration, NodeArray, Statement, SyntaxKind} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
@@ -23,27 +23,27 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	/**
 	 * Gets all IInterfaceTypes for the given file
 	 * @param {string} file
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForFile (file: string): IInterfaceType[] {
+	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
 		return this.getInterfacesForStatements(this.languageService.addFile({path: file}));
 	}
 
 	/**
 	 * Gets all IInterfaceTypes for the given statement
 	 * @param {InterfaceDeclaration} statement
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForStatement (statement: InterfaceDeclaration): IInterfaceType[] {
+	public getInterfacesForStatement (statement: InterfaceDeclaration): IFormattedInterfaceType[] {
 		return this.getInterfacesForStatements(createNodeArray([statement]));
 	}
 
 	/**
 	 * Gets all IInterfaceTypes for the given Statements
 	 * @param {NodeArray<Statement>} statements
-	 * @returns {IInterfaceType[]}
+	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForStatements (statements: NodeArray<Statement>): IInterfaceType[] {
+	public getInterfacesForStatements (statements: NodeArray<Statement>): IFormattedInterfaceType[] {
 		const filtered = this.astUtil.filterStatements<InterfaceDeclaration>(statements, this.supportedKinds, true);
 		return filtered.map(statement => this.interfaceTypeFormatter().format(statement));
 	}

@@ -1,29 +1,38 @@
-import {IPredicateType, TypeKind} from "@wessberg/type";
+import {IFormattedPredicateType, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
 import {IPredicateTypeFormatter} from "./i-predicate-type-formatter";
-import {IPredicateTypeFormatterOptions} from "./i-predicate-type-formatter-options";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {FirstTypeNode} from "../../../type/first-type-node/first-type-node";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
- * A class for generating IPredicateTypes
+ * A class for generating IFormattedPredicateType
  */
-export class PredicateTypeFormatter implements IPredicateTypeFormatter {
-	constructor (private astUtil: ITypescriptASTUtil,
+export class PredicateTypeFormatter extends FormattedExpressionFormatter implements IPredicateTypeFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private astUtil: ITypescriptASTUtil,
 							 private typeFormatter: TypeFormatterGetter) {
+		super();
 	}
 
 	/**
 	 * Formats the provided Expression into an IBooleanType
-	 * @param {node} FirstTypeNode
-	 * @returns {IBooleanType}
+	 * @param {FirstTypeNode} expression
+	 * @returns {IFormattedPredicateType}
 	 */
-	public format ({node}: IPredicateTypeFormatterOptions): IPredicateType {
+	public format (expression: FirstTypeNode): IFormattedPredicateType {
 
-		const result: IPredicateType = {
-			kind: TypeKind.PREDICATE,
-			name: this.astUtil.takeName(node.parameterName),
-			type: this.typeFormatter().format(node.type)
+		const result: IFormattedPredicateType = {
+			...super.format(expression),
+			kind: FormattedTypeKind.PREDICATE,
+			name: this.astUtil.takeName(expression.parameterName),
+			type: this.typeFormatter().format(expression.type),
+			expressionKind: FormattedExpressionKind.TYPE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(result, expression);
 
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);
@@ -31,11 +40,11 @@ export class PredicateTypeFormatter implements IPredicateTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the IPredicateType
-	 * @param {IPredicateType} formatted
+	 * Generates a string representation of the IFormattedPredicateType
+	 * @param {IFormattedPredicateType} formatted
 	 * @returns {string}
 	 */
-	private stringify (formatted: IPredicateType): string {
+	private stringify (formatted: IFormattedPredicateType): string {
 		return `${formatted.name} is ${formatted.type.toString()}`;
 	}
 

@@ -1,25 +1,35 @@
-import {IUnionType, TypeKind} from "@wessberg/type";
+import {IFormattedUnionType, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
 import {IUnionTypeFormatter} from "./i-union-type-formatter";
-import {IUnionTypeFormatterFormatOptions} from "./i-union-type-formatter-format-options";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {UnionTypeNode} from "typescript";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
  * A class for generating IUnionTypes
  */
-export class UnionTypeFormatter implements IUnionTypeFormatter {
-	constructor (private typeFormatter: TypeFormatterGetter) {}
+export class UnionTypeFormatter extends FormattedExpressionFormatter implements IUnionTypeFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private typeFormatter: TypeFormatterGetter) {
+		super();
+	}
 
 	/**
-	 * Formats the provided Expression into an IUnionType
-	 * @param {UnionTypeNode} node
-	 * @returns {IUnionType}
+	 * Formats the provided Expression into an IFormattedUnionType
+	 * @param {UnionTypeNode} expression
+	 * @returns {IFormattedUnionType}
 	 */
-	public format ({node}: IUnionTypeFormatterFormatOptions): IUnionType {
+	public format (expression: UnionTypeNode): IFormattedUnionType {
 
-		const unionType: IUnionType = {
-			kind: TypeKind.UNION,
-			types: node.types.map(type => this.typeFormatter().format(type))
+		const unionType: IFormattedUnionType = {
+			...super.format(expression),
+			kind: FormattedTypeKind.UNION,
+			types: expression.types.map(type => this.typeFormatter().format(type)),
+			expressionKind: FormattedExpressionKind.TYPE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(unionType, expression);
 
 		// Override the 'toString()' method
 		unionType.toString = () => this.stringify(unionType);
@@ -27,11 +37,11 @@ export class UnionTypeFormatter implements IUnionTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the IUnionType
-	 * @param {IParenthesizedType} unionType
+	 * Generates a string representation of the IFormattedUnionType
+	 * @param {IFormattedUnionType} unionType
 	 * @returns {string}
 	 */
-	private stringify (unionType: IUnionType): string {
+	private stringify (unionType: IFormattedUnionType): string {
 		return `${unionType.types.map(type => type.toString()).join(" | ")}`;
 	}
 

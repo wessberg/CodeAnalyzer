@@ -1,6 +1,6 @@
 import {ITypeFormatter, TypeFormatterNode} from "./i-type-formatter";
-import {ArrayTypeNode, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexedAccessTypeNode, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
-import {Type} from "@wessberg/type";
+import {ArrayTypeNode, createToken, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexedAccessTypeNode, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, Token, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
+import {FormattedType} from "@wessberg/type";
 import {isBooleanLiteral, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {isInterfaceProperty} from "../interface-type-formatter/interface-property";
 import {NeverTypeFormatterGetter} from "../never-type-formatter/never-type-formatter-getter";
@@ -69,20 +69,20 @@ export class TypeFormatter implements ITypeFormatter {
 	/**
 	 * Formats the provided expression into a Type.
 	 * @param {TypeFormatterNode} node
-	 * @returns {Type}
+	 * @returns {FormattedType}
 	 */
-	public format (node: TypeFormatterNode): Type {
-		if (node == null) return this.voidTypeFormatter().format();
+	public format (node: TypeFormatterNode): FormattedType {
+		if (node == null) return this.voidTypeFormatter().format(createToken(SyntaxKind.VoidKeyword));
 
-		if (isMethodSignature(node)) return this.functionTypeFormatter().format({node});
-		else if (isIndexSignatureDeclaration(node)) return this.indexTypeFormatter().format({node});
+		if (isMethodSignature(node)) return this.functionTypeFormatter().format(node);
+		else if (isIndexSignatureDeclaration(node)) return this.indexTypeFormatter().format(node);
 		else {
 			const candidateNode = (
 				isPropertySignature(node) ||
 				isInterfaceProperty(node) ||
 				isParameter(node)
 			) ? node.type : node;
-			if (candidateNode == null) return this.voidTypeFormatter().format();
+			if (candidateNode == null) return this.voidTypeFormatter().format(createToken(SyntaxKind.VoidKeyword));
 			return this.formatType(candidateNode);
 		}
 	}
@@ -90,78 +90,78 @@ export class TypeFormatter implements ITypeFormatter {
 	/**
 	 * Formats the provided TypeQueryNode, TypeNode, TypeReferenceNode or LeftHandSideExpression into a Type
 	 * @param {TypeQueryNode |TypeNode | TypeReferenceNode | LeftHandSideExpression} node
-	 * @returns {Type}
+	 * @returns {FormattedType}
 	 */
-	private formatType (node: TypeQueryNode|TypeNode|TypeReferenceNode|LeftHandSideExpression): Type {
+	private formatType (node: TypeQueryNode|TypeNode|TypeReferenceNode|LeftHandSideExpression): FormattedType {
 		switch (node.kind) {
 
 			case SyntaxKind.TypeLiteral:
-				return this.pojoTypeFormatter().format({node: <TypeLiteralNode>node});
+				return this.pojoTypeFormatter().format(<TypeLiteralNode>node);
 
 			case SyntaxKind.VoidKeyword:
-				return this.voidTypeFormatter().format();
+				return this.voidTypeFormatter().format(<Token<SyntaxKind.VoidKeyword>>node);
 
 			case SyntaxKind.AnyKeyword:
-				return this.anyTypeFormatter().format();
+				return this.anyTypeFormatter().format(<Token<SyntaxKind.AnyKeyword>>node);
 
 			case SyntaxKind.StringKeyword:
-				return this.stringTypeFormatter().format();
+				return this.stringTypeFormatter().format(<Token<SyntaxKind.StringKeyword>>node);
 
 			case SyntaxKind.NumberKeyword:
-				return this.numberTypeFormatter().format();
+				return this.numberTypeFormatter().format(<Token<SyntaxKind.NumberKeyword>>node);
 
 			case SyntaxKind.BooleanKeyword:
-				return this.booleanTypeFormatter().format();
+				return this.booleanTypeFormatter().format(<Token<SyntaxKind.BooleanKeyword>>node);
 
 			case SyntaxKind.NullKeyword:
-				return this.nullTypeFormatter().format();
+				return this.nullTypeFormatter().format(<Token<SyntaxKind.NullKeyword>>node);
 
 			case SyntaxKind.SymbolKeyword:
-				return this.symbolTypeFormatter().format();
+				return this.symbolTypeFormatter().format(<Token<SyntaxKind.SymbolKeyword>>node);
 
 			case SyntaxKind.ThisType:
-				return this.thisTypeFormatter().format();
+				return this.thisTypeFormatter().format(<Token<SyntaxKind.ThisKeyword>>node);
 
 			case SyntaxKind.ObjectKeyword:
-				return this.objectTypeFormatter().format();
+				return this.objectTypeFormatter().format(<Token<SyntaxKind.ObjectKeyword>>node);
 
 			case SyntaxKind.IndexedAccessType:
-				return this.indexedAccessTypeFormatter().format({node: <IndexedAccessTypeNode>node});
+				return this.indexedAccessTypeFormatter().format(<IndexedAccessTypeNode>node);
 
 			case SyntaxKind.TupleType:
-				return this.tupleTypeFormatter().format({node: <TupleTypeNode>node});
+				return this.tupleTypeFormatter().format(<TupleTypeNode>node);
 
 			case SyntaxKind.FunctionType:
-				return this.functionTypeFormatter().format({node: <FunctionTypeNode>node});
+				return this.functionTypeFormatter().format(<FunctionTypeNode>node);
 
 			case SyntaxKind.UndefinedKeyword:
-				return this.undefinedTypeFormatter().format();
+				return this.undefinedTypeFormatter().format(<Token<SyntaxKind.UndefinedKeyword>>node);
 
 			case SyntaxKind.FirstTypeNode:
-				return this.predicateTypeFormatter().format({node: <FirstTypeNode>node});
+				return this.predicateTypeFormatter().format(<FirstTypeNode>node);
 
 			case SyntaxKind.LastTypeNode:
 				const lastTypeNode = <LiteralTypeNode>node;
 
 				if (isStringLiteral(lastTypeNode.literal)) {
-					return this.stringEnumerationTypeFormatter().format({node: lastTypeNode.literal});
+					return this.stringEnumerationTypeFormatter().format(lastTypeNode.literal);
 				}
 
 				else if (isNumericLiteral(lastTypeNode.literal)) {
-					return this.numberEnumerationTypeFormatter().format({node: lastTypeNode.literal});
+					return this.numberEnumerationTypeFormatter().format(lastTypeNode.literal);
 				}
 
 				else if (isBooleanLiteral(lastTypeNode.literal)) {
-					return this.booleanEnumerationTypeFormatter().format({node: lastTypeNode.literal});
+					return this.booleanEnumerationTypeFormatter().format(lastTypeNode.literal);
 				}
 
 				throw new TypeError(`${this.constructor.name} could not format a type of kind ${SyntaxKind[lastTypeNode.kind]} of literal kind: ${SyntaxKind[lastTypeNode.literal.kind]}`);
 
 			case SyntaxKind.ArrayType:
-				return this.arrayTypeFormatter().format({node: <ArrayTypeNode>node});
+				return this.arrayTypeFormatter().format(<ArrayTypeNode>node);
 
 			case SyntaxKind.TypeQuery:
-				return this.typeofTypeFormatter().format({node: <TypeQueryNode>node});
+				return this.typeofTypeFormatter().format(<TypeQueryNode>node);
 
 			case SyntaxKind.TypeOperator:
 				const typeOperatorNode = <TypeOperatorNode>node;
@@ -169,29 +169,29 @@ export class TypeFormatter implements ITypeFormatter {
 				// Switch through all the possible type operators
 				switch (typeOperatorNode.operator) {
 					case SyntaxKind.KeyOfKeyword:
-						return this.keyofTypeFormatter().format({node: typeOperatorNode.type});
+						return this.keyofTypeFormatter().format(typeOperatorNode.type);
 					default: {
-						return this.neverTypeFormatter().format();
+						return this.neverTypeFormatter().format(<Token<SyntaxKind.NeverKeyword>>node);
 					}
 				}
 
 			case SyntaxKind.ParenthesizedType:
-				return this.parenthesizedTypeFormatter().format({node: (<ParenthesizedTypeNode>node).type});
+				return this.parenthesizedTypeFormatter().format(<ParenthesizedTypeNode>node);
 
 			case SyntaxKind.TypeReference:
 			case SyntaxKind.Identifier:
 			case SyntaxKind.ExpressionWithTypeArguments:
-				return this.referenceTypeFormatter().format({node: <TypeReferenceNode|Identifier|ExpressionWithTypeArguments>node});
+				return this.referenceTypeFormatter().format(<TypeReferenceNode|Identifier|ExpressionWithTypeArguments>node);
 
 			case SyntaxKind.UnionType:
-				return this.unionTypeFormatter().format({node: <UnionTypeNode>node});
+				return this.unionTypeFormatter().format(<UnionTypeNode>node);
 
 			case SyntaxKind.IntersectionType:
-				return this.intersectionTypeFormatter().format({node: <IntersectionTypeNode>node});
+				return this.intersectionTypeFormatter().format(<IntersectionTypeNode>node);
 
 			default: {
 				console.log(`${this.constructor.name} could not detect the kind of a type with SyntaxKind: ${SyntaxKind[node.kind]} around here: ${this.astUtil.getRawText(node)}. Defaulting to 'never'...`);
-				return this.neverTypeFormatter().format();
+				return this.neverTypeFormatter().format(<Token<SyntaxKind.NeverKeyword>>node);
 			}
 		}
 	}

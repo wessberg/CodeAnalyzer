@@ -1,6 +1,7 @@
-import {IStringEnumerationType} from "@wessberg/type";
-import {IStringEnumerationTypeFormatterFormatOptions} from "./i-string-enumeration-type-formatter-format-options";
+import {IFormattedStringEnumerationType} from "@wessberg/type";
+import {StringLiteral} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IStringEnumerationTypeFormatter {
-	format ({node}: IStringEnumerationTypeFormatterFormatOptions): IStringEnumerationType;
+export interface IStringEnumerationTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: StringLiteral): IFormattedStringEnumerationType;
 }

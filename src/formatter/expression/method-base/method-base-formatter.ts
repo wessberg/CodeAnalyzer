@@ -35,7 +35,7 @@ export abstract class MethodBaseFormatter extends FormattedExpressionFormatter i
 			parameters: expression.parameters.map(parameter => this.parameterFormatter().format(parameter)),
 			decorators: expression.decorators == null ? [] : expression.decorators.map(decorator => this.decoratorFormatter().format(decorator)),
 			async: expression.modifiers == null ? false : expression.modifiers.find(modifier => modifier.kind === SyntaxKind.AsyncKeyword) != null,
-			typeParameters: expression.typeParameters == null ? [] : this.typeParameterFormatter().format(expression.typeParameters),
+			typeParameters: expression.typeParameters == null ? [] : expression.typeParameters.map(typeParameter => this.typeParameterFormatter().format(typeParameter)),
 			expressionKind: FormattedExpressionKind.METHOD
 		};
 

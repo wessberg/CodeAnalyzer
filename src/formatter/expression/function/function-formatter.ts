@@ -52,7 +52,7 @@ export class FunctionFormatter extends FormattedExpressionFormatter implements I
 				kind: FormattedFunctionKind.FUNCTION,
 				expressionKind: FormattedExpressionKind.FUNCTION,
 				name: expression.name == null ? null : this.propertyNameFormatter().format(expression.name),
-				typeParameters: expression.typeParameters == null ? [] : this.typeParameterFormatter().format(expression.typeParameters)
+				typeParameters: expression.typeParameters == null ? [] : expression.typeParameters.map(typeParameter => this.typeParameterFormatter().format(typeParameter))
 			};
 		}
 

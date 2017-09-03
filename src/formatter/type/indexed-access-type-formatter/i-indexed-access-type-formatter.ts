@@ -1,6 +1,7 @@
-import {IIndexedAccessType} from "@wessberg/type";
-import {IIndexedAccessTypeFormatterOptions} from "./i-indexed-access-type-formatter-options";
+import {IFormattedIndexedAccessType} from "@wessberg/type";
+import {IndexedAccessTypeNode} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IIndexedAccessTypeFormatter {
-	format ({node}: IIndexedAccessTypeFormatterOptions): IIndexedAccessType;
+export interface IIndexedAccessTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: IndexedAccessTypeNode): IFormattedIndexedAccessType;
 }

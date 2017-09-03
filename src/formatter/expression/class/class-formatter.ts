@@ -9,8 +9,8 @@ import {ClassAccessorFormatterGetter} from "../class-accessor/class-accessor-for
 import {ClassMethodFormatterGetter} from "../class-method/class-method-formatter-getter";
 import {ClassPropertyFormatterGetter} from "../class-property/class-property-formatter-getter";
 import {ClassConstructorFormatterGetter} from "../class-constructor/class-constructor-formatter-getter";
-import {IdentifierResolverGetter} from "../../../resolver/identifier-resolver/identifier-resolver-getter";
 import {IdentifierFormatterGetter} from "../identifier/identifier-formatter-getter";
+import {ResolverServiceGetter} from "../../../service/resolver-service/resolver-service-getter";
 
 /**
  * A class that can format class declarations and class expressions
@@ -24,7 +24,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 							 private classPropertyFormatter: ClassPropertyFormatterGetter,
 							 private heritageFormatter: HeritageFormatterGetter,
 							 private decoratorFormatter: DecoratorFormatterGetter,
-							 private identifierResolver: IdentifierResolverGetter) {
+							 private resolverService: ResolverServiceGetter) {
 		super();
 	}
 
@@ -145,7 +145,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 
 		// Resolve the class
 		const [parent] = formatted.members;
-		const resolvedParent = <IFormattedClass|null> this.identifierResolver().resolve(parent);
+		const resolvedParent = <IFormattedClass|null> this.resolverService().getDefinitionMatchingExpression(parent);
 
 		// If a parent could not be resolved, assume that the parent is a built-in (such as Error)
 		if (resolvedParent == null) {

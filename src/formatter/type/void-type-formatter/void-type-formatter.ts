@@ -1,20 +1,31 @@
-import {IVoidType, TypeKind} from "@wessberg/type";
+import {IFormattedVoidType, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
 import {IVoidTypeFormatter} from "./i-void-type-formatter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {SyntaxKind, Token} from "typescript";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
- * A class for generating IVoidTypes
+ * A class for generating IFormattedVoidTypes
  */
-export class VoidTypeFormatter implements IVoidTypeFormatter {
+export class VoidTypeFormatter extends FormattedExpressionFormatter implements IVoidTypeFormatter {
+	constructor (private astMapper: AstMapperGetter) {
+		super();
+	}
 
 	/**
-	 * Formats the provided Expression into an IVoidType
-	 * @returns {IVoidType}
+	 * Formats the provided Expression into an IFormattedVoidType
+	 * @returns {IFormattedVoidType}
 	 */
-	public format (): IVoidType {
+	public format (expression: Token<SyntaxKind.VoidKeyword>): IFormattedVoidType {
 
-		const voidType: IVoidType = {
-			kind: TypeKind.VOID
+		const voidType: IFormattedVoidType = {
+			...super.format(expression),
+			kind: FormattedTypeKind.VOID,
+			expressionKind: FormattedExpressionKind.TYPE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(voidType, expression);
 
 		// Override the 'toString()' method
 		voidType.toString = () => this.stringify();
@@ -22,7 +33,7 @@ export class VoidTypeFormatter implements IVoidTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the IVoidType
+	 * Generates a string representation of the IFormattedVoidType
 	 * @returns {string}
 	 */
 	private stringify (): string {

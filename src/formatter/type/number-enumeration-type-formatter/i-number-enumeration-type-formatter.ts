@@ -1,6 +1,7 @@
-import {INumberEnumerationType} from "@wessberg/type";
-import {INumberEnumerationTypeFormatterFormatOptions} from "./i-number-enumeration-type-formatter-format-options";
+import {IFormattedNumberEnumerationType} from "@wessberg/type";
+import {NumericLiteral} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface INumberEnumerationTypeFormatter {
-	format ({node}: INumberEnumerationTypeFormatterFormatOptions): INumberEnumerationType;
+export interface INumberEnumerationTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: NumericLiteral): IFormattedNumberEnumerationType;
 }

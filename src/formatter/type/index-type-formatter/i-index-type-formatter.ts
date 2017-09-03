@@ -1,6 +1,7 @@
-import {IIndexType} from "@wessberg/type";
-import {IIndexTypeFormatterFormatOptions} from "./i-index-type-formatter-format-options";
+import {IFormattedIndexType} from "@wessberg/type";
+import {IndexSignatureDeclaration} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IIndexTypeFormatter {
-	format ({node}: IIndexTypeFormatterFormatOptions): IIndexType;
+export interface IIndexTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: IndexSignatureDeclaration): IFormattedIndexType;
 }

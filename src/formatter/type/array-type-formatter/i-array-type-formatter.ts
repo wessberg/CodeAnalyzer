@@ -1,6 +1,7 @@
-import {IArrayType} from "@wessberg/type";
-import {IArrayTypeFormatterFormatOptions} from "./i-array-type-formatter-format-options";
+import {IFormattedArrayType} from "@wessberg/type";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
+import {ArrayTypeNode} from "typescript";
 
-export interface IArrayTypeFormatter {
-	format ({node}: IArrayTypeFormatterFormatOptions): IArrayType;
+export interface IArrayTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: ArrayTypeNode): IFormattedArrayType;
 }

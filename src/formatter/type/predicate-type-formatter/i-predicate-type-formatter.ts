@@ -1,6 +1,7 @@
-import {IPredicateType} from "@wessberg/type";
-import {IPredicateTypeFormatterOptions} from "./i-predicate-type-formatter-options";
+import {IFormattedPredicateType} from "@wessberg/type";
+import {FirstTypeNode} from "../../../type/first-type-node/first-type-node";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IPredicateTypeFormatter {
-	format ({node}: IPredicateTypeFormatterOptions): IPredicateType;
+export interface IPredicateTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: FirstTypeNode): IFormattedPredicateType;
 }

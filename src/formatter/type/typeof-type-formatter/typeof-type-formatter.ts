@@ -1,26 +1,35 @@
-import {ITypeofType, TypeKind} from "@wessberg/type";
+import {IFormattedTypeofType, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
 import {ITypeofTypeFormatter} from "./i-typeof-type-formatter";
-import {ITypeofTypeFormatterFormatOptions} from "./i-typeof-type-formatter-format-options";
 import {ReferenceTypeFormatterGetter} from "../reference-type-formatter/reference-type-formatter-getter";
+import {TypeQueryNode} from "typescript";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
- * A class for generating ITypeofTypes
+ * A class for generating IFormattedTypeofTypes
  */
-export class TypeofTypeFormatter implements ITypeofTypeFormatter {
-	constructor (private referenceTypeFormatter: ReferenceTypeFormatterGetter) {
+export class TypeofTypeFormatter extends FormattedExpressionFormatter implements ITypeofTypeFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private referenceTypeFormatter: ReferenceTypeFormatterGetter) {
+		super();
 	}
 
 	/**
-	 * Formats the provided Expression into an ITypeofType
-	 * @param {TypeNode} node
-	 * @returns {ITypeofType}
+	 * Formats the provided Expression into an IFormattedTypeofType
+	 * @param {TypeQueryNode} expression
+	 * @returns {IFormattedTypeofType}
 	 */
-	public format ({node}: ITypeofTypeFormatterFormatOptions): ITypeofType {
+	public format (expression: TypeQueryNode): IFormattedTypeofType {
 
-		const typeofType: ITypeofType = {
-			kind: TypeKind.TYPEOF,
-			of: this.referenceTypeFormatter().format({node: node.exprName})
+		const typeofType: IFormattedTypeofType = {
+			...super.format(expression),
+			kind: FormattedTypeKind.TYPEOF,
+			of: this.referenceTypeFormatter().format(expression.exprName),
+			expressionKind: FormattedExpressionKind.TYPE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(typeofType, expression);
 
 		// Override the 'toString()' method
 		typeofType.toString = () => this.stringify(typeofType);
@@ -28,11 +37,11 @@ export class TypeofTypeFormatter implements ITypeofTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the ITypeofType
-	 * @param {ITypeofType} typeofType
+	 * Generates a string representation of the IFormattedTypeofType
+	 * @param {IFormattedTypeofType} typeofType
 	 * @returns {string}
 	 */
-	private stringify (typeofType: ITypeofType): string {
+	private stringify (typeofType: IFormattedTypeofType): string {
 		return `typeof ${typeofType.of.toString()}`;
 	}
 

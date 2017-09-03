@@ -1,5 +1,7 @@
-import {IUndefinedType} from "@wessberg/type";
+import {IFormattedUndefinedType} from "@wessberg/type";
+import {SyntaxKind, Token} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IUndefinedTypeFormatter {
-	format (): IUndefinedType;
+export interface IUndefinedTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: Token<SyntaxKind.UndefinedKeyword>): IFormattedUndefinedType;
 }

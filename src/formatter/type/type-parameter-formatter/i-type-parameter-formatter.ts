@@ -1,6 +1,7 @@
-import {ITypeParameter} from "@wessberg/type";
-import {NodeArray, TypeParameterDeclaration} from "typescript";
+import {IFormattedTypeParameter} from "@wessberg/type";
+import {TypeParameterDeclaration} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface ITypeParameterFormatter {
-	format (statements: NodeArray<TypeParameterDeclaration>): ITypeParameter[];
+export interface ITypeParameterFormatter extends IFormattedExpressionFormatter {
+	format (expression: TypeParameterDeclaration): IFormattedTypeParameter;
 }

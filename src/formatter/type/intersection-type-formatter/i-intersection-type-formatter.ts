@@ -1,6 +1,7 @@
-import {IIntersectionType} from "@wessberg/type";
-import {IIntersectionTypeFormatterFormatOptions} from "./i-intersection-type-formatter-format-options";
+import {IFormattedIntersectionType} from "@wessberg/type";
+import {IntersectionTypeNode} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IIntersectionTypeFormatter {
-	format ({node}: IIntersectionTypeFormatterFormatOptions): IIntersectionType;
+export interface IIntersectionTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: IntersectionTypeNode): IFormattedIntersectionType;
 }

@@ -1,6 +1,7 @@
-import {IPojoType} from "@wessberg/type";
-import {IPojoTypeFormatterFormatOptions} from "./i-pojo-type-formatter-format-options";
+import {IFormattedPojoType} from "@wessberg/type";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
+import {TypeLiteralNode} from "typescript";
 
-export interface IPojoTypeFormatter {
-	format ({node}: IPojoTypeFormatterFormatOptions): IPojoType;
+export interface IPojoTypeFormatter extends IFormattedExpressionFormatter {
+	format (node: TypeLiteralNode): IFormattedPojoType;
 }

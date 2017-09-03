@@ -28,7 +28,7 @@ export class HeritageFormatter extends FormattedExpressionFormatter implements I
 
 		const result: FormattedHeritage = expression.token === SyntaxKind.ExtendsKeyword
 			? {...base, expressionKind: FormattedExpressionKind.EXTENDS, members: expression.types.map(node => this.expressionFormatter().format(node))}
-			: {...base, expressionKind: FormattedExpressionKind.IMPLEMENTS, members: expression.types.map(node => this.referenceTypeFormatter().format({node}))};
+			: {...base, expressionKind: FormattedExpressionKind.IMPLEMENTS, members: expression.types.map(node => this.referenceTypeFormatter().format(node))};
 
 		// Map the formatted expression to the relevant statement
 		this.astMapper().mapFormattedExpressionToStatement(result, expression);

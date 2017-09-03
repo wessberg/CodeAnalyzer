@@ -1,50 +1,65 @@
 import {IInterfaceTypeMemberFormatter} from "./i-interface-type-member-formatter";
 import {InterfaceProperty} from "../interface-type-formatter/interface-property";
 import {IndexSignatureDeclaration, isComputedPropertyName, ParameterDeclaration, PropertySignature} from "typescript";
-import {IInterfaceTypeMember, InterfaceTypeMemberNameKind, TypeKind} from "@wessberg/type";
+import {IFormattedInterfaceTypeMember, FormattedInterfaceTypeMemberNameKind, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
  * A class for formatting InterfaceTypeMembers
  */
-export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatter {
-	constructor (private astUtil: ITypescriptASTUtil,
+export class InterfaceTypeMemberFormatter extends FormattedExpressionFormatter implements IInterfaceTypeMemberFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private astUtil: ITypescriptASTUtil,
 							 private typeFormatter: TypeFormatterGetter) {
+		super();
 	}
 
 	/**
 	 * Formats an InterfaceProperty, PropertySignature or IndexSignatureDeclaration into an IInterfaceTypeMember
-	 * @param {InterfaceProperty | PropertySignature | IndexSignatureDeclaration | ParameterDeclaration} member
-	 * @returns {IInterfaceTypeMember}
+	 * @param {InterfaceProperty | PropertySignature | IndexSignatureDeclaration | ParameterDeclaration} expression
+	 * @returns {IFormattedInterfaceTypeMember}
 	 */
-	public format (member: InterfaceProperty|PropertySignature|IndexSignatureDeclaration|ParameterDeclaration): IInterfaceTypeMember {
-		const name = this.astUtil.takeName(member.name);
+	public format (expression: InterfaceProperty|PropertySignature|IndexSignatureDeclaration|ParameterDeclaration): IFormattedInterfaceTypeMember {
+		const name = this.astUtil.takeName(expression.name);
 		const property = {
-			optional: member.questionToken != null,
-			type: this.typeFormatter().format(member)
+			...super.format(expression),
+			optional: expression.questionToken != null,
+			type: this.typeFormatter().format(expression)
 		};
 
-		let interfaceTypeMember: IInterfaceTypeMember;
+		let interfaceTypeMember: IFormattedInterfaceTypeMember;
 
 		// Names of interfaces can only by symbols if they are computed - otherwise they will be static
-		if (member.name != null && isComputedPropertyName(member.name)) {
+		if (expression.name != null && isComputedPropertyName(expression.name)) {
 			interfaceTypeMember = {
 				...property,
 				name: {
-					kind: InterfaceTypeMemberNameKind.BUILT_IN_SYMBOL,
-					name
-				}
+					...super.format(expression.name),
+					kind: FormattedInterfaceTypeMemberNameKind.BUILT_IN_SYMBOL,
+					name,
+					expressionKind: FormattedExpressionKind.TYPE_MEMBER_NAME
+				},
+				expressionKind: FormattedExpressionKind.INTERFACE_MEMBER
 			};
 		} else {
 			interfaceTypeMember = {
 				...property,
 				name: {
-					kind: InterfaceTypeMemberNameKind.STATIC,
-					name
-				}
+					...super.format(expression.name!),
+					kind: FormattedInterfaceTypeMemberNameKind.STATIC,
+					name,
+					expressionKind: FormattedExpressionKind.TYPE_MEMBER_NAME
+				},
+				expressionKind: FormattedExpressionKind.INTERFACE_MEMBER
 			};
 		}
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(interfaceTypeMember, expression);
+
 		// Override the 'toString()' method
 		interfaceTypeMember.toString = () => this.stringify(interfaceTypeMember);
 		return interfaceTypeMember;
@@ -52,15 +67,15 @@ export class InterfaceTypeMemberFormatter implements IInterfaceTypeMemberFormatt
 
 	/**
 	 * Generates a string representation of the IInterfaceType
-	 * @param {IInterfaceTypeMember} interfaceTypeMember
+	 * @param {IFormattedInterfaceTypeMember} interfaceTypeMember
 	 * @returns {string}
 	 */
-	private stringify (interfaceTypeMember: IInterfaceTypeMember): string {
+	private stringify (interfaceTypeMember: IFormattedInterfaceTypeMember): string {
 		let str = "";
-		const isFunction = interfaceTypeMember.type.kind === TypeKind.FUNCTION;
-		const isIndex = interfaceTypeMember.type.kind === TypeKind.INDEX;
+		const isFunction = interfaceTypeMember.type.kind === FormattedTypeKind.FUNCTION;
+		const isIndex = interfaceTypeMember.type.kind === FormattedTypeKind.INDEX;
 		// Start with the name
-		str += interfaceTypeMember.name.kind === InterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
+		str += interfaceTypeMember.name.kind === FormattedInterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
 		// Add the '?' token after the name if the member is optional
 		if (interfaceTypeMember.optional) str += "?";
 

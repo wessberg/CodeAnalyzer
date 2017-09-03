@@ -1,6 +1,7 @@
-import {ITupleType} from "@wessberg/type";
-import {ITupleTypeFormatterFormatOptions} from "./i-tuple-type-formatter-format-options";
+import {IFormattedTupleType} from "@wessberg/type";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
+import {TupleTypeNode} from "typescript";
 
-export interface ITupleTypeFormatter {
-	format ({node}: ITupleTypeFormatterFormatOptions): ITupleType;
+export interface ITupleTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: TupleTypeNode): IFormattedTupleType;
 }

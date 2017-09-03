@@ -5,8 +5,6 @@ import {ITypeParameterFormatter} from "./formatter/type/type-parameter-formatter
 import {TypeParameterFormatter} from "./formatter/type/type-parameter-formatter/type-parameter-formatter";
 import {IInterfaceTypeMemberFormatter} from "./formatter/type/interface-type-member-formatter/i-interface-type-member-formatter";
 import {InterfaceTypeMemberFormatter} from "./formatter/type/interface-type-member-formatter/interface-type-member-formatter";
-import {IParameterTypeFormatter} from "./formatter/type/parameter-type-formatter/i-parameter-type-formatter";
-import {ParameterTypeFormatter} from "./formatter/type/parameter-type-formatter/parameter-type-formatter";
 import {IObjectBindingNameFormatter} from "./formatter/binding-name/object-binding-name-formatter/i-object-binding-name-formatter";
 import {ObjectBindingNameFormatter} from "./formatter/binding-name/object-binding-name-formatter/object-binding-name-formatter";
 import {IArrayBindingNameFormatter} from "./formatter/binding-name/array-binding-name-formatter/i-array-binding-name-formatter";
@@ -104,7 +102,6 @@ import {IndexTypeFormatterGetter} from "./formatter/type/index-type-formatter/in
 import {ReferenceTypeFormatterGetter} from "./formatter/type/reference-type-formatter/reference-type-formatter-getter";
 import {TypeFormatterGetter} from "./formatter/type/type-formatter/type-formatter-getter";
 import {InterfaceTypeMemberFormatterGetter} from "./formatter/type/interface-type-member-formatter/interface-type-member-formatter-getter";
-import {ParameterTypeFormatterGetter} from "./formatter/type/parameter-type-formatter/parameter-type-formatter-getter";
 import {TypeParameterFormatterGetter} from "./formatter/type/type-parameter-formatter/type-parameter-formatter-getter";
 import {InterfaceTypeFormatterGetter} from "./formatter/type/interface-type-formatter/interface-type-formatter-getter";
 import {IStringLiteralFormatter} from "./formatter/expression/literal/string-literal/i-string-literal-formatter";
@@ -222,6 +219,10 @@ import {PredicateTypeFormatter} from "./formatter/type/predicate-type-formatter/
 import {IIndexedAccessTypeFormatter} from "./formatter/type/indexed-access-type-formatter/i-indexed-access-type-formatter";
 import {IndexedAccessTypeFormatterGetter} from "./formatter/type/indexed-access-type-formatter/indexed-access-type-formatter-getter";
 import {IndexedAccessTypeFormatter} from "./formatter/type/indexed-access-type-formatter/indexed-access-type-formatter";
+import {ITypescriptPackageReassembler, TypescriptPackageReassembler} from "@wessberg/typescript-package-reassembler";
+import {IResolverService} from "./service/resolver-service/i-resolver-service";
+import {ResolverServiceGetter} from "./service/resolver-service/resolver-service-getter";
+import {ResolverService} from "./service/resolver-service/resolver-service";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -257,7 +258,6 @@ let indexTypeFormatter: IIndexTypeFormatter|null = null;
 let referenceTypeFormatter: IReferenceTypeFormatter|null = null;
 let typeFormatter: ITypeFormatter|null = null;
 let interfaceTypeMemberFormatter: IInterfaceTypeMemberFormatter|null = null;
-let parameterTypeFormatter: IParameterTypeFormatter|null = null;
 let typeParameterFormatter: ITypeParameterFormatter|null = null;
 let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 
@@ -301,6 +301,7 @@ let astMapper: IAstMapper|null = null;
 let identifierResolver: IIdentifierResolver|null = null;
 
 // AST Services
+let resolverService: IResolverService|null = null;
 let classService: IClassService|null = null;
 let interfaceTypeService: IInterfaceTypeService|null = null;
 let callExpressionService: ICallExpressionService|null = null;
@@ -342,7 +343,6 @@ const indexTypeFormatterGetter: IndexTypeFormatterGetter = () => indexTypeFormat
 const referenceTypeFormatterGetter: ReferenceTypeFormatterGetter = () => referenceTypeFormatter!;
 const typeFormatterGetter: TypeFormatterGetter = () => typeFormatter!;
 const interfaceTypeMemberFormatterGetter: InterfaceTypeMemberFormatterGetter = () => interfaceTypeMemberFormatter!;
-const parameterTypeFormatterGetter: ParameterTypeFormatterGetter = () => parameterTypeFormatter!;
 const typeParameterFormatterGetter: TypeParameterFormatterGetter = () => typeParameterFormatter!;
 const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfaceTypeFormatter!;
 
@@ -386,6 +386,7 @@ const astMapperGetter: AstMapperGetter = () => astMapper!;
 const identifierResolverGetter: IdentifierResolverGetter = () => identifierResolver!;
 
 // AST Service getters
+const resolverServiceGetter: ResolverServiceGetter = () => resolverService!;
 const classServiceGetter: ClassServiceGetter = () => classService!;
 const interfaceTypeServiceGetter: InterfaceTypeServiceGetter = () => interfaceTypeService!;
 const callExpressionServiceGetter: CallExpressionServiceGetter = () => callExpressionService!;
@@ -398,43 +399,43 @@ const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
 const fileLoader: IFileLoader = new FileLoader();
 const pathUtil: IPathUtil = new PathUtil(fileLoader);
 const moduleUtil: IModuleUtil = new ModuleUtil(fileLoader, pathUtil);
+const reassembler: ITypescriptPackageReassembler = new TypescriptPackageReassembler();
 
 // General formatters
 objectBindingNameFormatter = new ObjectBindingNameFormatter(astUtil);
 arrayBindingNameFormatter = new ArrayBindingNameFormatter(astUtil);
 
 // Type Formatters
-predicateTypeFormatter = new PredicateTypeFormatter(astUtil, typeFormatterGetter);
-indexedAccessTypeFormatter = new IndexedAccessTypeFormatter(typeFormatterGetter);
-neverTypeFormatter = new NeverTypeFormatter();
-voidTypeFormatter = new VoidTypeFormatter();
-anyTypeFormatter = new AnyTypeFormatter();
-undefinedTypeFormatter = new UndefinedTypeFormatter();
-nullTypeFormatter = new NullTypeFormatter();
-numberTypeFormatter = new NumberTypeFormatter();
-numberEnumerationTypeFormatter = new NumberEnumerationTypeFormatter(astUtil);
-stringTypeFormatter = new StringTypeFormatter();
-stringEnumerationTypeFormatter = new StringEnumerationTypeFormatter(astUtil);
-booleanTypeFormatter = new BooleanTypeFormatter();
-booleanEnumerationTypeFormatter = new BooleanEnumerationTypeFormatter();
-symbolTypeFormatter = new SymbolTypeFormatter();
-objectTypeFormatter = new ObjectTypeFormatter();
-pojoTypeFormatter = new PojoTypeFormatter(interfaceTypeMemberFormatterGetter);
-thisTypeFormatter = new ThisTypeFormatter();
-tupleTypeFormatter = new TupleTypeFormatter(typeFormatterGetter);
-arrayTypeFormatter = new ArrayTypeFormatter(typeFormatterGetter);
-keyofTypeFormatter = new KeyofTypeFormatter(typeFormatterGetter);
-typeofTypeFormatter = new TypeofTypeFormatter(referenceTypeFormatterGetter);
-parenthesizedTypeFormatter = new ParenthesizedTypeFormatter(typeFormatterGetter);
-unionTypeFormatter = new UnionTypeFormatter(typeFormatterGetter);
-intersectionTypeFormatter = new IntersectionTypeFormatter(typeFormatterGetter);
-functionTypeFormatter = new FunctionTypeFormatter(parameterTypeFormatterGetter, typeFormatterGetter);
-indexTypeFormatter = new IndexTypeFormatter(interfaceTypeMemberFormatterGetter, typeFormatterGetter);
-referenceTypeFormatter = new ReferenceTypeFormatter(astUtil, typeFormatterGetter);
-parameterTypeFormatter = new ParameterTypeFormatter(astUtil, objectBindingNameFormatterGetter, arrayBindingNameFormatterGetter, typeFormatterGetter);
-interfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astUtil, typeFormatterGetter);
-typeParameterFormatter= new TypeParameterFormatter(astUtil, typeFormatterGetter);
-interfaceTypeFormatter = new InterfaceTypeFormatter(astUtil, referenceTypeFormatterGetter, interfaceTypeMemberFormatterGetter, typeParameterFormatterGetter);
+predicateTypeFormatter = new PredicateTypeFormatter(astMapperGetter, astUtil, typeFormatterGetter);
+indexedAccessTypeFormatter = new IndexedAccessTypeFormatter(astMapperGetter, typeFormatterGetter);
+neverTypeFormatter = new NeverTypeFormatter(astMapperGetter);
+voidTypeFormatter = new VoidTypeFormatter(astMapperGetter);
+anyTypeFormatter = new AnyTypeFormatter(astMapperGetter);
+undefinedTypeFormatter = new UndefinedTypeFormatter(astMapperGetter);
+nullTypeFormatter = new NullTypeFormatter(astMapperGetter);
+numberTypeFormatter = new NumberTypeFormatter(astMapperGetter);
+numberEnumerationTypeFormatter = new NumberEnumerationTypeFormatter(astMapperGetter, astUtil);
+stringTypeFormatter = new StringTypeFormatter(astMapperGetter);
+stringEnumerationTypeFormatter = new StringEnumerationTypeFormatter(astMapperGetter, astUtil);
+booleanTypeFormatter = new BooleanTypeFormatter(astMapperGetter);
+booleanEnumerationTypeFormatter = new BooleanEnumerationTypeFormatter(astMapperGetter);
+symbolTypeFormatter = new SymbolTypeFormatter(astMapperGetter);
+objectTypeFormatter = new ObjectTypeFormatter(astMapperGetter);
+pojoTypeFormatter = new PojoTypeFormatter(astMapperGetter, interfaceTypeMemberFormatterGetter);
+thisTypeFormatter = new ThisTypeFormatter(astMapperGetter);
+tupleTypeFormatter = new TupleTypeFormatter(astMapperGetter, typeFormatterGetter);
+arrayTypeFormatter = new ArrayTypeFormatter(astMapperGetter, typeFormatterGetter);
+keyofTypeFormatter = new KeyofTypeFormatter(astMapperGetter, typeFormatterGetter);
+typeofTypeFormatter = new TypeofTypeFormatter(astMapperGetter, referenceTypeFormatterGetter);
+parenthesizedTypeFormatter = new ParenthesizedTypeFormatter(astMapperGetter, typeFormatterGetter);
+unionTypeFormatter = new UnionTypeFormatter(astMapperGetter, typeFormatterGetter);
+intersectionTypeFormatter = new IntersectionTypeFormatter(astMapperGetter, typeFormatterGetter);
+functionTypeFormatter = new FunctionTypeFormatter(astMapperGetter, parameterFormatterGetter, typeFormatterGetter);
+indexTypeFormatter = new IndexTypeFormatter(astMapperGetter, interfaceTypeMemberFormatterGetter, typeFormatterGetter);
+referenceTypeFormatter = new ReferenceTypeFormatter(astMapperGetter, astUtil, typeFormatterGetter);
+interfaceTypeMemberFormatter = new InterfaceTypeMemberFormatter(astMapperGetter, astUtil, typeFormatterGetter);
+typeParameterFormatter= new TypeParameterFormatter(astMapperGetter, astUtil, typeFormatterGetter);
+interfaceTypeFormatter = new InterfaceTypeFormatter(astMapperGetter, identifierFormatterGetter, referenceTypeFormatterGetter, interfaceTypeMemberFormatterGetter, typeParameterFormatterGetter);
 typeFormatter = new TypeFormatter(
 	astUtil,
 	predicateTypeFormatterGetter,
@@ -474,7 +475,7 @@ awaitExpressionFormatter = new AwaitExpressionFormatter(astMapperGetter, express
 classElementFormatter = new ClassElementFormatter();
 functionLikeFormatter = new FunctionLikeFormatter(typeFormatterGetter, expressionFormatterGetter, blockFormatterGetter);
 functionFormatter = new FunctionFormatter(astMapperGetter, functionLikeFormatterGetter, propertyNameFormatterGetter, decoratorFormatterGetter, parameterFormatterGetter, typeParameterFormatterGetter);
-parameterFormatter = new ParameterFormatter(astMapperGetter, expressionFormatterGetter, parameterTypeFormatterGetter);
+parameterFormatter = new ParameterFormatter(astMapperGetter, astUtil, objectBindingNameFormatterGetter, arrayBindingNameFormatterGetter, typeFormatterGetter, expressionFormatterGetter);
 objectLiteralPropertyFormatter = new ObjectLiteralPropertyFormatter(astMapperGetter, accessorFormatterGetter, propertyNameFormatterGetter, methodFormatterGetter, expressionFormatterGetter);
 objectLiteralFormatter = new ObjectLiteralFormatter(astMapperGetter, objectLiteralPropertyFormatterGetter);
 blockFormatter = new BlockFormatter(astMapperGetter, expressionFormatterGetter);
@@ -487,7 +488,7 @@ methodFormatter = new MethodFormatter(astMapperGetter, functionLikeFormatterGett
 propertyNameFormatter = new PropertyNameFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
 argumentsFormatter = new ArgumentsFormatter(astMapperGetter, expressionFormatterGetter);
 decoratorFormatter = new DecoratorFormatter(astMapperGetter, expressionFormatterGetter);
-classFormatter = new ClassFormatter(astMapperGetter, identifierFormatterGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter, identifierResolverGetter);
+classFormatter = new ClassFormatter(astMapperGetter, identifierFormatterGetter, classAccessorFormatterGetter, classConstructorFormatterGetter, classMethodFormatterGetter, classPropertyFormatterGetter, heritageFormatterGetter, decoratorFormatterGetter, resolverServiceGetter);
 heritageFormatter = new HeritageFormatter(astMapperGetter, expressionFormatterGetter, referenceTypeFormatterGetter);
 callExpressionFormatter = new CallExpressionFormatter(astMapperGetter, expressionFormatterGetter, argumentsFormatterGetter, typeFormatterGetter);
 propertyAccessExpressionFormatter = new PropertyAccessExpressionFormatter(astUtil, astMapperGetter, expressionFormatterGetter);
@@ -528,8 +529,9 @@ expressionFormatter = new ExpressionFormatter(
 astMapper = new AstMapper();
 
 // AST services
-export const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader);
+export const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader, reassembler);
 interfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
+resolverService = new ResolverService(identifierResolverGetter);
 classService = new ClassService(astUtil, languageService, classFormatterGetter);
 callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
 identifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierFormatterGetter);
@@ -539,4 +541,4 @@ importService = new ImportService(languageService);
 // Resolvers
 identifierResolver = new IdentifierResolver(astMapperGetter, importServiceGetter, languageService, classServiceGetter, functionServiceGetter);
 
-export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter};
+export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter, resolverServiceGetter};

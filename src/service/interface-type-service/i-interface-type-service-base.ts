@@ -1,8 +1,8 @@
-import {IInterfaceType} from "@wessberg/type";
+import {IFormattedInterfaceType} from "@wessberg/type";
 import {InterfaceDeclaration, NodeArray, Statement} from "typescript";
 
 export interface IInterfaceTypeServiceBase {
-	getInterfacesForFile (file: string): IInterfaceType[];
-	getInterfacesForStatement (statement: InterfaceDeclaration): IInterfaceType[];
-	getInterfacesForStatements (statements: NodeArray<Statement>): IInterfaceType[];
+	getInterfacesForFile (file: string): IFormattedInterfaceType[];
+	getInterfacesForStatement (statement: InterfaceDeclaration): IFormattedInterfaceType[];
+	getInterfacesForStatements (statements: NodeArray<Statement>): IFormattedInterfaceType[];
 }

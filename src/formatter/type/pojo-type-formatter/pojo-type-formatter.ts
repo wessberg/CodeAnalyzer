@@ -1,27 +1,35 @@
-import {IPojoType, TypeKind} from "@wessberg/type";
-import {PropertySignature} from "typescript";
+import {IFormattedPojoType, FormattedTypeKind, FormattedExpressionKind} from "@wessberg/type";
+import {PropertySignature, TypeLiteralNode} from "typescript";
 import {IPojoTypeFormatter} from "./i-pojo-type-formatter";
-import {IPojoTypeFormatterFormatOptions} from "./i-pojo-type-formatter-format-options";
 import {InterfaceTypeMemberFormatterGetter} from "../interface-type-member-formatter/interface-type-member-formatter-getter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
- * A class for generating IPojoTypes
+ * A class for generating IFormattedPojoTypes
  */
-export class PojoTypeFormatter implements IPojoTypeFormatter {
-	constructor (private interfaceTypeMemberFormatter: InterfaceTypeMemberFormatterGetter) {}
+export class PojoTypeFormatter extends FormattedExpressionFormatter implements IPojoTypeFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private interfaceTypeMemberFormatter: InterfaceTypeMemberFormatterGetter) {
+		super();
+	}
 
 	/**
 	 * Formats the provided Expression into an IPojoType
-	 * @param {TypeLiteralNode} node
-	 * @param {IInterfaceTypeMemberFormatter} interfaceTypeMemberFormatter
-	 * @returns {IPojoType}
+	 * @param {TypeLiteralNode} expression
+	 * @returns {IFormattedPojoType}
 	 */
-	public format ({node}: IPojoTypeFormatterFormatOptions): IPojoType {
+	public format (expression: TypeLiteralNode): IFormattedPojoType {
 
-		const pojoType: IPojoType = {
-			kind: TypeKind.POJO,
-			properties: node.members.map(member => this.interfaceTypeMemberFormatter().format(<PropertySignature>member))
+		const pojoType: IFormattedPojoType = {
+			...super.format(expression),
+			kind: FormattedTypeKind.POJO,
+			properties: expression.members.map(member => this.interfaceTypeMemberFormatter().format(<PropertySignature>member)),
+			expressionKind: FormattedExpressionKind.TYPE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(pojoType, expression);
 
 		// Override the 'toString()' method
 		pojoType.toString = () => this.stringify(pojoType);
@@ -29,11 +37,11 @@ export class PojoTypeFormatter implements IPojoTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the IPojoType
-	 * @param {IPojoType} pojoType
+	 * Generates a string representation of the IFormattedPojoType
+	 * @param {IFormattedPojoType} pojoType
 	 * @returns {string}
 	 */
-	private stringify (pojoType: IPojoType): string {
+	private stringify (pojoType: IFormattedPojoType): string {
 		return `{${pojoType.properties.map(property => property.toString()).join(", ")}}`;
 	}
 

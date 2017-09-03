@@ -1,36 +1,45 @@
 import {IInterfaceTypeFormatter} from "./i-interface-type-formatter";
 import {InterfaceProperty} from "./interface-property";
 import {InterfaceDeclaration} from "typescript";
-import {IInterfaceType} from "@wessberg/type";
-import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {FormattedExpressionKind, IFormattedInterfaceType} from "@wessberg/type";
 import {ReferenceTypeFormatterGetter} from "../reference-type-formatter/reference-type-formatter-getter";
 import {InterfaceTypeMemberFormatterGetter} from "../interface-type-member-formatter/interface-type-member-formatter-getter";
 import {TypeParameterFormatterGetter} from "../type-parameter-formatter/type-parameter-formatter-getter";
+import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
+import {IdentifierFormatterGetter} from "../../expression/identifier/identifier-formatter-getter";
+import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 
 /**
- * A class for formatting IInterfaceTypes
+ * A class for formatting IFormattedInterfaceType
  */
-export class InterfaceTypeFormatter implements IInterfaceTypeFormatter {
-	constructor (private astUtil: ITypescriptASTUtil,
+export class InterfaceTypeFormatter extends FormattedExpressionFormatter implements IInterfaceTypeFormatter {
+	constructor (private astMapper: AstMapperGetter,
+							 private identifierFormatter: IdentifierFormatterGetter,
 							 private referenceTypeFormatter: ReferenceTypeFormatterGetter,
 							 private interfaceTypeMemberFormatter: InterfaceTypeMemberFormatterGetter,
 							 private typeParameterFormatter: TypeParameterFormatterGetter) {
+		super();
 	}
 
 	/**
-	 * Formats an InterfaceDeclaration into an IInterfaceType
-	 * @param {InterfaceDeclaration} statement
-	 * @returns {IInterfaceType}
+	 * Formats an InterfaceDeclaration into an IFormattedInterfaceType
+	 * @param {InterfaceDeclaration} expression
+	 * @returns {IFormattedInterfaceType}
 	 */
-	public format (statement: InterfaceDeclaration): IInterfaceType {
+	public format (expression: InterfaceDeclaration): IFormattedInterfaceType {
 
-		const interfaceType: IInterfaceType = {
-			file: statement.getSourceFile().fileName,
-			name: this.astUtil.takeName(statement.name),
-			extends: statement.heritageClauses == null ? [] : statement.heritageClauses[0].types.map(node => this.referenceTypeFormatter().format({node})),
-			typeParameters: statement.typeParameters == null ? [] : this.typeParameterFormatter().format(statement.typeParameters),
-			members: statement.members.map(member => this.interfaceTypeMemberFormatter().format(<InterfaceProperty>member))
+		const interfaceType: IFormattedInterfaceType = {
+			...super.format(expression),
+			file: expression.getSourceFile().fileName,
+			name: this.identifierFormatter().format(expression.name),
+			extends: expression.heritageClauses == null ? [] : expression.heritageClauses[0].types.map(node => this.referenceTypeFormatter().format(node)),
+			typeParameters: expression.typeParameters == null ? [] : expression.typeParameters.map(typeParameter => this.typeParameterFormatter().format(typeParameter)),
+			members: expression.members.map(member => this.interfaceTypeMemberFormatter().format(<InterfaceProperty>member)),
+			expressionKind: FormattedExpressionKind.INTERFACE
 		};
+
+		// Map the formatted expression to the relevant statement
+		this.astMapper().mapFormattedExpressionToStatement(interfaceType, expression);
 
 		// Override the 'toString()' method
 		interfaceType.toString = () => this.stringify(interfaceType);
@@ -38,12 +47,12 @@ export class InterfaceTypeFormatter implements IInterfaceTypeFormatter {
 	}
 
 	/**
-	 * Generates a string representation of the IInterfaceType
-	 * @param {IInterfaceType} interfaceType
+	 * Generates a string representation of the IFormattedInterfaceType
+	 * @param {IFormattedInterfaceType} interfaceType
 	 * @returns {string}
 	 */
-	private stringify (interfaceType: IInterfaceType): string {
-		let str = `interface ${interfaceType.name}`;
+	private stringify (interfaceType: IFormattedInterfaceType): string {
+		let str = `interface ${interfaceType.name.name}`;
 		// Add the type parameters to it
 		if (interfaceType.typeParameters.length > 0) {
 			str += `<${interfaceType.typeParameters.map(typeParameter => typeParameter.toString()).join(", ")}>`;

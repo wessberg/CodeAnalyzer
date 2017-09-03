@@ -1,7 +1,8 @@
 import {InterfaceProperty} from "../interface-type-formatter/interface-property";
 import {IndexSignatureDeclaration, ParameterDeclaration, PropertySignature} from "typescript";
-import {IInterfaceTypeMember} from "@wessberg/type";
+import {IFormattedInterfaceTypeMember} from "@wessberg/type";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IInterfaceTypeMemberFormatter {
-	format (member: InterfaceProperty|PropertySignature|IndexSignatureDeclaration|ParameterDeclaration): IInterfaceTypeMember;
+export interface IInterfaceTypeMemberFormatter extends IFormattedExpressionFormatter {
+	format (member: InterfaceProperty|PropertySignature|IndexSignatureDeclaration|ParameterDeclaration): IFormattedInterfaceTypeMember;
 }

@@ -1,6 +1,7 @@
-import {IUnionType} from "@wessberg/type";
-import {IUnionTypeFormatterFormatOptions} from "./i-union-type-formatter-format-options";
+import {IFormattedUnionType} from "@wessberg/type";
+import {UnionTypeNode} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IUnionTypeFormatter {
-	format ({node}: IUnionTypeFormatterFormatOptions): IUnionType;
+export interface IUnionTypeFormatter extends IFormattedExpressionFormatter {
+	format (expression: UnionTypeNode): IFormattedUnionType;
 }

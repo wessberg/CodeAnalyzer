@@ -1,6 +1,7 @@
-import {IReferenceType} from "@wessberg/type";
-import {IReferenceTypeFormatterFormatOptions} from "./i-reference-type-formatter-format-options";
+import {IFormattedReferenceType} from "@wessberg/type";
+import {EntityName, ExpressionWithTypeArguments, Identifier, TypeReferenceNode} from "typescript";
+import {IFormattedExpressionFormatter} from "../../expression/formatted-expression/i-formatted-expression-formatter";
 
-export interface IReferenceTypeFormatter {
-	format ({node}: IReferenceTypeFormatterFormatOptions): IReferenceType;
+export interface IReferenceTypeFormatter extends IFormattedExpressionFormatter {
+	format (node: ExpressionWithTypeArguments|Identifier|TypeReferenceNode|EntityName): IFormattedReferenceType;
 }

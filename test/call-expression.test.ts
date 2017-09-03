@@ -6,8 +6,9 @@ let codeAnalyzer: ICodeAnalyzer;
 test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
 test("foo", t => {
-	const expressions = codeAnalyzer.getClassesForFile("./test/static/class/b");
+	const expressions = codeAnalyzer.getCallExpressionsForFile("./test/static/call-expression/a");
 	expressions.forEach(_expression => {
+		codeAnalyzer.getDefinitionMatchingExpression(_expression.typeArguments[0]);
 	});
 	t.true(true);
 });
