@@ -1,3 +1,12 @@
+<a name="1.0.64"></a>
+## 1.0.64 (2017-09-03)
+
+* 1.0.64 ([ce1c0f9](https://github.com/wessberg/CodeAnalyzer/commit/ce1c0f9))
+* Added caching and loop-detection ([46eaa4d](https://github.com/wessberg/CodeAnalyzer/commit/46eaa4d))
+* Bumped version ([b02d5b0](https://github.com/wessberg/CodeAnalyzer/commit/b02d5b0))
+
+
+
 <a name="1.0.63"></a>
 ## 1.0.63 (2017-09-03)
 
