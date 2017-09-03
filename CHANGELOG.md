@@ -1,3 +1,12 @@
+<a name="1.0.63"></a>
+## 1.0.63 (2017-09-03)
+
+* 1.0.63 ([511dbde](https://github.com/wessberg/CodeAnalyzer/commit/511dbde))
+* Bumped version ([e8e61f0](https://github.com/wessberg/CodeAnalyzer/commit/e8e61f0))
+* Fixed a bug ([87cae06](https://github.com/wessberg/CodeAnalyzer/commit/87cae06))
+
+
+
 <a name="1.0.62"></a>
 ## 1.0.62 (2017-09-03)
 
