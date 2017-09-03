@@ -122,8 +122,8 @@ import {PropertyAccessExpressionFormatter} from "./formatter/expression/property
 import {IIdentifierFormatter} from "./formatter/expression/identifier/i-identifier-formatter";
 import {IdentifierFormatterGetter} from "./formatter/expression/identifier/identifier-formatter-getter";
 import {IdentifierFormatter} from "./formatter/expression/identifier/identifier-formatter";
-import {IIdentifierExpressionService} from "./service/identifier-service/i-identifier-expression-service";
-import {IdentifierExpressionService} from "./service/identifier-service/identifier-expression-service";
+import {IIdentifierService} from "./service/identifier-service/i-identifier-service";
+import {IdentifierService} from "./service/identifier-service/identifier-service";
 import {IBooleanLiteralFormatter} from "./formatter/expression/literal/boolean-literal/i-boolean-literal-formatter";
 import {BooleanLiteralFormatterGetter} from "./formatter/expression/literal/boolean-literal/boolean-literal-formatter-getter";
 import {BooleanLiteralFormatter} from "./formatter/expression/literal/boolean-literal/boolean-literal-formatter";
@@ -210,7 +210,7 @@ import {IdentifierResolver} from "./resolver/identifier-resolver/identifier-reso
 import {ClassServiceGetter} from "./service/class-service/class-service-getter";
 import {InterfaceTypeServiceGetter} from "./service/interface-type-service/interface-type-service-getter";
 import {CallExpressionServiceGetter} from "./service/call-expression-service/call-expression-service-getter";
-import {IdentifierExpressionServiceGetter} from "./service/identifier-service/identifier-expression-service-getter";
+import {IdentifierServiceGetter} from "./service/identifier-service/identifier-service-getter";
 import {FunctionServiceGetter} from "./service/function-service/function-service-getter";
 import {ImportServiceGetter} from "./service/import-service/import-service-getter";
 import {IPredicateTypeFormatter} from "./formatter/type/predicate-type-formatter/i-predicate-type-formatter";
@@ -223,6 +223,9 @@ import {ITypescriptPackageReassembler, TypescriptPackageReassembler} from "@wess
 import {IResolverService} from "./service/resolver-service/i-resolver-service";
 import {ResolverServiceGetter} from "./service/resolver-service/resolver-service-getter";
 import {ResolverService} from "./service/resolver-service/resolver-service";
+import {ICacheService} from "./service/cache-service/i-cache-service";
+import {CacheServiceGetter} from "./service/cache-service/cache-service-getter";
+import {CacheService} from "./service/cache-service/cache-service";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -301,11 +304,12 @@ let astMapper: IAstMapper|null = null;
 let identifierResolver: IIdentifierResolver|null = null;
 
 // AST Services
+let cacheService: ICacheService|null = null;
 let resolverService: IResolverService|null = null;
 let classService: IClassService|null = null;
 let interfaceTypeService: IInterfaceTypeService|null = null;
 let callExpressionService: ICallExpressionService|null = null;
-let identifierExpressionService: IIdentifierExpressionService|null = null;
+let identifierExpressionService: IIdentifierService|null = null;
 let functionService: IFunctionService|null = null;
 let importService: IImportService|null = null;
 
@@ -386,11 +390,12 @@ const astMapperGetter: AstMapperGetter = () => astMapper!;
 const identifierResolverGetter: IdentifierResolverGetter = () => identifierResolver!;
 
 // AST Service getters
+const cacheServiceGetter: CacheServiceGetter = () => cacheService!;
 const resolverServiceGetter: ResolverServiceGetter = () => resolverService!;
 const classServiceGetter: ClassServiceGetter = () => classService!;
 const interfaceTypeServiceGetter: InterfaceTypeServiceGetter = () => interfaceTypeService!;
 const callExpressionServiceGetter: CallExpressionServiceGetter = () => callExpressionService!;
-const identifierExpressionServiceGetter: IdentifierExpressionServiceGetter = () => identifierExpressionService!;
+const identifierExpressionServiceGetter: IdentifierServiceGetter = () => identifierExpressionService!;
 const functionServiceGetter: FunctionServiceGetter = () => functionService!;
 const importServiceGetter: ImportServiceGetter = () => importService!;
 
@@ -530,13 +535,14 @@ astMapper = new AstMapper();
 
 // AST services
 export const languageService: ITypescriptLanguageService = new TypescriptLanguageService(moduleUtil, pathUtil, fileLoader, reassembler);
-interfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter);
+interfaceTypeService = new InterfaceTypeService(astUtil, languageService, interfaceTypeFormatterGetter, cacheServiceGetter);
+cacheService = new CacheService(languageService);
 resolverService = new ResolverService(identifierResolverGetter);
-classService = new ClassService(astUtil, languageService, classFormatterGetter);
-callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter);
-identifierExpressionService = new IdentifierExpressionService(astUtil, languageService, identifierFormatterGetter);
-functionService = new FunctionService(astUtil, languageService, functionFormatterGetter);
-importService = new ImportService(languageService);
+classService = new ClassService(astUtil, languageService, classFormatterGetter, cacheServiceGetter);
+callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter, cacheServiceGetter);
+identifierExpressionService = new IdentifierService(astUtil, languageService, identifierFormatterGetter, cacheServiceGetter);
+functionService = new FunctionService(astUtil, languageService, functionFormatterGetter, cacheServiceGetter);
+importService = new ImportService(languageService, cacheServiceGetter);
 
 // Resolvers
 identifierResolver = new IdentifierResolver(astMapperGetter, importServiceGetter, languageService, classServiceGetter, functionServiceGetter);

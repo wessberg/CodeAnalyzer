@@ -48,20 +48,22 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * @param {DefinitionInfo} definition
 	 */
 	private checkDependencies (identifier: FormattedExpression, paths: string[], definition: DefinitionInfo): void {
-		// If the identifier resides in the same file as the identifier, don't do anything
-		if (definition.fileName === identifier.file) return;
 
-		paths.forEach(path => {
+		new Set([...paths, identifier.file]).forEach(path => {
 			switch (definition.kind) {
 
 				case ScriptElementKind.classElement:
-					// Check the file for classes
-					this.classService().getClassesForFile(path);
+					// Check the file for classes unless it is already being checked
+					if (!this.classService().isGettingClassesForFile(path)) {
+						this.classService().getClassesForFile(path);
+					}
 					break;
 
 				case ScriptElementKind.functionElement:
-					// Check the file for functions
-					this.functionService().getFunctionsForFile(path);
+					// Check the file for functions unless it is already being checked
+					if (!this.functionService().isGettingFunctionsForFile(path)) {
+						this.functionService().getFunctionsForFile(path);
+					}
 					break;
 			}
 		});

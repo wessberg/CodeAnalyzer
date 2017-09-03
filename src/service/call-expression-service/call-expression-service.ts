@@ -5,6 +5,7 @@ import {ICallExpressionService} from "./i-call-expression-service";
 import {AstNode} from "../../type/ast-node/ast-node";
 import {CallExpressionFormatterGetter} from "../../formatter/expression/call-expression/call-expression-formatter-getter";
 import {IFormattedCallExpression} from "@wessberg/type";
+import {CacheServiceGetter} from "../cache-service/cache-service-getter";
 
 /**
  * A class that can generate IFormattedCallExpressions
@@ -16,9 +17,25 @@ export class CallExpressionService implements ICallExpressionService {
 	 */
 	public readonly supportedKinds: Set<SyntaxKind> = new Set([SyntaxKind.CallExpression]);
 
+	/**
+	 * A Set of all files that is currently being checked for call expressions
+	 * @type {Set<string>}
+	 */
+	private readonly filesBeingAnalyzedForCallExpressions: Set<string> = new Set();
+
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private languageService: ITypescriptLanguageService,
-							 private callExpressionFormatter: CallExpressionFormatterGetter) {
+							 private callExpressionFormatter: CallExpressionFormatterGetter,
+							 private cacheService: CacheServiceGetter) {
+	}
+
+	/**
+	 * Returns true if the given file is currently being analyzed for call expressions
+	 * @param {string} file
+	 * @returns {boolean}
+	 */
+	public isGettingCallExpressionsForFile (file: string): boolean {
+		return this.filesBeingAnalyzedForCallExpressions.has(file);
 	}
 
 	/**
@@ -57,7 +74,24 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		return this.getCallExpressionsForStatements(this.languageService.addFile({path: file}));
+		// Refresh the call expressions if required
+		if (this.cacheService().cachedCallExpressionsNeedsUpdate(file)) {
+			// Mark the file as being analyzed
+			this.filesBeingAnalyzedForCallExpressions.add(file);
+
+			// Get the call expressions
+			const callExpressions = this.getCallExpressionsForStatements(this.languageService.addFile({path: file}));
+
+			// Un-mark the file from being analyzed
+			this.filesBeingAnalyzedForCallExpressions.delete(file);
+
+			// Cache and return the call expressions
+			return this.cacheService().setCachedCallExpressionsForFile(file, callExpressions);
+		}
+		// Otherwise, return the cached call expressions
+		else {
+			return this.cacheService().getCachedCallExpressionsForFile(file)!;
+		}
 	}
 
 	/**

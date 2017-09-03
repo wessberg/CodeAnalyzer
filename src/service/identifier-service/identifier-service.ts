@@ -1,24 +1,41 @@
 import {createNodeArray, Identifier, NodeArray, SyntaxKind} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
-import {IIdentifierExpressionService} from "./i-identifier-expression-service";
+import {IIdentifierService} from "./i-identifier-service";
 import {AstNode} from "../../type/ast-node/ast-node";
 import {IdentifierFormatterGetter} from "../../formatter/expression/identifier/identifier-formatter-getter";
 import {IFormattedIdentifier} from "@wessberg/type";
+import {CacheServiceGetter} from "../cache-service/cache-service-getter";
 
 /**
- * A class that can generate IFormattedIdentifierExpressions
+ * A class that can generate IFormattedIdentifiers
  */
-export class IdentifierExpressionService implements IIdentifierExpressionService {
+export class IdentifierService implements IIdentifierService {
 	/**
 	 * The Set of supported SyntaxKinds
 	 * @type {Set<SyntaxKind>}
 	 */
 	public readonly supportedKinds: Set<SyntaxKind> = new Set([SyntaxKind.Identifier]);
 
+	/**
+	 * A Set of all files that is currently being checked for identifiers
+	 * @type {Set<string>}
+	 */
+	private readonly filesBeingAnalyzedForIdentifiers: Set<string> = new Set();
+
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private languageService: ITypescriptLanguageService,
-							 private identifierExpressionFormatter: IdentifierFormatterGetter) {
+							 private identifierExpressionFormatter: IdentifierFormatterGetter,
+							 private cacheService: CacheServiceGetter) {
+	}
+
+	/**
+	 * Returns true if the given file is currently being analyzed for identifiers
+	 * @param {string} file
+	 * @returns {boolean}
+	 */
+	public isGettingIdentifiersForFile (file: string): boolean {
+		return this.filesBeingAnalyzedForIdentifiers.has(file);
 	}
 
 	/**
@@ -27,7 +44,24 @@ export class IdentifierExpressionService implements IIdentifierExpressionService
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		return this.getIdentifiersForStatements(this.languageService.addFile({path: file}));
+		// Refresh the identifiers if required
+		if (this.cacheService().cachedIdentifiersNeedsUpdate(file)) {
+			// Mark the file as being analyzed
+			this.filesBeingAnalyzedForIdentifiers.add(file);
+
+			// Get the identifiers
+			const identifiers = this.getIdentifiersForStatements(this.languageService.addFile({path: file}));
+
+			// Un-mark the file from being analyzed
+			this.filesBeingAnalyzedForIdentifiers.delete(file);
+
+			// Cache and return the identifiers
+			return this.cacheService().setCachedIdentifiersForFile(file, identifiers);
+		}
+		// Otherwise, return the cached identifiers
+		else {
+			return this.cacheService().getCachedIdentifiersForFile(file)!;
+		}
 	}
 
 	/**

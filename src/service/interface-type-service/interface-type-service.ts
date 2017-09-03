@@ -4,6 +4,7 @@ import {createNodeArray, InterfaceDeclaration, NodeArray, Statement, SyntaxKind}
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {InterfaceTypeFormatterGetter} from "../../formatter/type/interface-type-formatter/interface-type-formatter-getter";
+import {CacheServiceGetter} from "../cache-service/cache-service-getter";
 
 /**
  * A class that can generate IInterfaceTypes
@@ -15,9 +16,25 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 */
 	public readonly supportedKinds: Set<SyntaxKind> = new Set([SyntaxKind.InterfaceDeclaration]);
 
+	/**
+	 * A Set of all files that is currently being checked for interfaces
+	 * @type {Set<string>}
+	 */
+	private readonly filesBeingAnalyzedForInterfaces: Set<string> = new Set();
+
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private languageService: ITypescriptLanguageService,
-							 private interfaceTypeFormatter: InterfaceTypeFormatterGetter) {
+							 private interfaceTypeFormatter: InterfaceTypeFormatterGetter,
+							 private cacheService: CacheServiceGetter) {
+	}
+
+	/**
+	 * Returns true if the given file is currently being analyzed for interfaces
+	 * @param {string} file
+	 * @returns {boolean}
+	 */
+	public isGettingInterfacesForFile (file: string): boolean {
+		return this.filesBeingAnalyzedForInterfaces.has(file);
 	}
 
 	/**
@@ -26,7 +43,24 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IFormattedInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
-		return this.getInterfacesForStatements(this.languageService.addFile({path: file}));
+		// Refresh the functions if required
+		if (this.cacheService().cachedInterfacesNeedsUpdate(file)) {
+			// Mark the file as being analyzed
+			this.filesBeingAnalyzedForInterfaces.add(file);
+
+			// Get the functions
+			const interfaces = this.getInterfacesForStatements(this.languageService.addFile({path: file}));
+
+			// Un-mark the file from being analyzed
+			this.filesBeingAnalyzedForInterfaces.delete(file);
+
+			// Cache and return the functions
+			return this.cacheService().setCachedInterfacesForFile(file, interfaces);
+		}
+		// Otherwise, return the cached functions
+		else {
+			return this.cacheService().getCachedInterfacesForFile(file)!;
+		}
 	}
 
 	/**
