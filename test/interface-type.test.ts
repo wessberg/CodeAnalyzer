@@ -1,0 +1,12 @@
+import {test} from "ava";
+import {ICodeAnalyzer} from "../src/code-analyzer/i-code-analyzer";
+import {CodeAnalyzer} from "../src/code-analyzer/code-analyzer";
+
+let codeAnalyzer: ICodeAnalyzer;
+test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
+
+test.skip("foo", t => {
+	const interfaces = codeAnalyzer.getInterfacesForFile("./test/static/foo");
+	interfaces.forEach(item => {console.log(JSON.stringify(item, null, "\t"));});
+	t.true(true);
+});

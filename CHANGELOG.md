@@ -1,3 +1,153 @@
+<a name="1.0.64"></a>
+## 1.0.64 (2017-09-03)
+
+* 1.0.64 ([ce1c0f9](https://github.com/wessberg/CodeAnalyzer/commit/ce1c0f9))
+* Added caching and loop-detection ([46eaa4d](https://github.com/wessberg/CodeAnalyzer/commit/46eaa4d))
+* Bumped version ([b02d5b0](https://github.com/wessberg/CodeAnalyzer/commit/b02d5b0))
+
+
+
+<a name="1.0.63"></a>
+## 1.0.63 (2017-09-03)
+
+* 1.0.63 ([511dbde](https://github.com/wessberg/CodeAnalyzer/commit/511dbde))
+* Bumped version ([e8e61f0](https://github.com/wessberg/CodeAnalyzer/commit/e8e61f0))
+* Fixed a bug ([87cae06](https://github.com/wessberg/CodeAnalyzer/commit/87cae06))
+
+
+
+<a name="1.0.62"></a>
+## 1.0.62 (2017-09-03)
+
+* 1.0.62 ([968a935](https://github.com/wessberg/CodeAnalyzer/commit/968a935))
+* Bumped version ([0e59ba9](https://github.com/wessberg/CodeAnalyzer/commit/0e59ba9))
+* Updated types to be formatted expressions ([44b217d](https://github.com/wessberg/CodeAnalyzer/commit/44b217d))
+
+
+
+<a name="1.0.61"></a>
+## 1.0.61 (2017-08-28)
+
+* 1.0.61 ([66c0153](https://github.com/wessberg/CodeAnalyzer/commit/66c0153))
+* Bumped version ([3642226](https://github.com/wessberg/CodeAnalyzer/commit/3642226))
+* Made performance improvements ([fc133a3](https://github.com/wessberg/CodeAnalyzer/commit/fc133a3))
+
+
+
+<a name="1.0.60"></a>
+## 1.0.60 (2017-08-28)
+
+* 1.0.60 ([d790d6a](https://github.com/wessberg/CodeAnalyzer/commit/d790d6a))
+* Bumped deps ([f016490](https://github.com/wessberg/CodeAnalyzer/commit/f016490))
+* Bumped deps ([3c77624](https://github.com/wessberg/CodeAnalyzer/commit/3c77624))
+* Bumped version ([2942054](https://github.com/wessberg/CodeAnalyzer/commit/2942054))
+
+
+
+<a name="1.0.59"></a>
+## 1.0.59 (2017-08-28)
+
+* 1.0.59 ([1f8d781](https://github.com/wessberg/CodeAnalyzer/commit/1f8d781))
+* Bumped version ([4b339ab](https://github.com/wessberg/CodeAnalyzer/commit/4b339ab))
+* Fixed a bug ([a99087c](https://github.com/wessberg/CodeAnalyzer/commit/a99087c))
+
+
+
+<a name="1.0.58"></a>
+## 1.0.58 (2017-08-28)
+
+* 1.0.58 ([f9cbee3](https://github.com/wessberg/CodeAnalyzer/commit/f9cbee3))
+* Added handling for predicate types and indexed access types ([2723751](https://github.com/wessberg/CodeAnalyzer/commit/2723751))
+* Bumped deps ([9c44457](https://github.com/wessberg/CodeAnalyzer/commit/9c44457))
+* Bumped version ([ddddaf1](https://github.com/wessberg/CodeAnalyzer/commit/ddddaf1))
+* Fixed deps ([c2de0fa](https://github.com/wessberg/CodeAnalyzer/commit/c2de0fa))
+
+
+
+<a name="1.0.57"></a>
+## 1.0.57 (2017-08-28)
+
+* 1.0.57 ([98c6656](https://github.com/wessberg/CodeAnalyzer/commit/98c6656))
+* Added the possibility of excluding files ([a7716ca](https://github.com/wessberg/CodeAnalyzer/commit/a7716ca))
+* Bumped version ([53b8d95](https://github.com/wessberg/CodeAnalyzer/commit/53b8d95))
+
+
+
+<a name="1.0.56"></a>
+## 1.0.56 (2017-08-28)
+
+* 1.0.56 ([7e2b563](https://github.com/wessberg/CodeAnalyzer/commit/7e2b563))
+* Bumped deps ([f8cf6da](https://github.com/wessberg/CodeAnalyzer/commit/f8cf6da))
+* Bumped version ([e25fe8b](https://github.com/wessberg/CodeAnalyzer/commit/e25fe8b))
+
+
+
+<a name="1.0.55"></a>
+## 1.0.55 (2017-08-28)
+
+* 1.0.55 ([f4676c5](https://github.com/wessberg/CodeAnalyzer/commit/f4676c5))
+* Bumped version ([25ae4e2](https://github.com/wessberg/CodeAnalyzer/commit/25ae4e2))
+* Fixed a bug ([92f98a0](https://github.com/wessberg/CodeAnalyzer/commit/92f98a0))
+
+
+
+<a name="1.0.54"></a>
+## 1.0.54 (2017-08-28)
+
+* 1.0.54 ([b3b9788](https://github.com/wessberg/CodeAnalyzer/commit/b3b9788))
+* Bumped version ([bb401da](https://github.com/wessberg/CodeAnalyzer/commit/bb401da))
+* Fixed a bug ([ab7fa27](https://github.com/wessberg/CodeAnalyzer/commit/ab7fa27))
+
+
+
+<a name="1.0.53"></a>
+## 1.0.53 (2017-08-28)
+
+* 1.0.53 ([b48a510](https://github.com/wessberg/CodeAnalyzer/commit/b48a510))
+* Bumped version ([86bc0bd](https://github.com/wessberg/CodeAnalyzer/commit/86bc0bd))
+* Fixed a bug ([3aa5b2d](https://github.com/wessberg/CodeAnalyzer/commit/3aa5b2d))
+
+
+
+<a name="1.0.52"></a>
+## 1.0.52 (2017-08-28)
+
+* 1.0.52 ([86b92df](https://github.com/wessberg/CodeAnalyzer/commit/86b92df))
+* Bumped version ([9b70b34](https://github.com/wessberg/CodeAnalyzer/commit/9b70b34))
+* More work ([95d345d](https://github.com/wessberg/CodeAnalyzer/commit/95d345d))
+
+
+
+<a name="1.0.51"></a>
+## 1.0.51 (2017-08-27)
+
+* 1.0.51 ([8ec279a](https://github.com/wessberg/CodeAnalyzer/commit/8ec279a))
+* Added an import service ([f7ec193](https://github.com/wessberg/CodeAnalyzer/commit/f7ec193))
+* Bumped version ([f5a7728](https://github.com/wessberg/CodeAnalyzer/commit/f5a7728))
+
+
+
+<a name="1.0.50"></a>
+## 1.0.50 (2017-08-27)
+
+* 1.0.50 ([e8438b5](https://github.com/wessberg/CodeAnalyzer/commit/e8438b5))
+* Added a few extra methods ([7e52845](https://github.com/wessberg/CodeAnalyzer/commit/7e52845))
+* Added formatters for all types ([ded78be](https://github.com/wessberg/CodeAnalyzer/commit/ded78be))
+* Added more formatters ([697b7e1](https://github.com/wessberg/CodeAnalyzer/commit/697b7e1))
+* Added some of the type formatters ([1568882](https://github.com/wessberg/CodeAnalyzer/commit/1568882))
+* All types can now be correctly 'toString()'ed ([3d71dad](https://github.com/wessberg/CodeAnalyzer/commit/3d71dad))
+* Bumped version ([935206e](https://github.com/wessberg/CodeAnalyzer/commit/935206e))
+* Bunch of work on call expressions ([43e4b40](https://github.com/wessberg/CodeAnalyzer/commit/43e4b40))
+* First work on v2 branch ([8b23b94](https://github.com/wessberg/CodeAnalyzer/commit/8b23b94))
+* Fixed a bug ([e27cbd1](https://github.com/wessberg/CodeAnalyzer/commit/e27cbd1))
+* Lots of work ([31f3325](https://github.com/wessberg/CodeAnalyzer/commit/31f3325))
+* More work ([a7bf11c](https://github.com/wessberg/CodeAnalyzer/commit/a7bf11c))
+* More work on type formatters ([bf70007](https://github.com/wessberg/CodeAnalyzer/commit/bf70007))
+* More work on type formatters ([581ce3d](https://github.com/wessberg/CodeAnalyzer/commit/581ce3d))
+* Refactoring ([42c17ea](https://github.com/wessberg/CodeAnalyzer/commit/42c17ea))
+
+
+
 <a name="1.0.49"></a>
 ## 1.0.49 (2017-08-03)
 
