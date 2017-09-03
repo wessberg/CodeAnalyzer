@@ -13,10 +13,11 @@ export abstract class FormattedExpressionFormatter implements IFormattedExpressi
 	 * @returns {IFormattedExpression}
 	 */
 	public format (expression: AstNode): IFormattedExpression {
+		const sourceFile = expression.getSourceFile();
 		return {
-			file: expression.getSourceFile().fileName,
+			file: sourceFile == null ? "" : sourceFile.fileName,
 			expressionKind: FormattedExpressionKind.EXPRESSION,
-			startsAt: expression.pos + this.getRemainingStartShift(expression),
+			startsAt: expression.pos === -1 ? -1 : expression.pos + this.getRemainingStartShift(expression),
 			endsAt: expression.end
 		};
 	}
