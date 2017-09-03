@@ -47,8 +47,8 @@ export class InterfaceTypeMemberFormatter extends FormattedExpressionFormatter i
 		} else {
 			interfaceTypeMember = {
 				...property,
-				name: {
-					...super.format(expression.name!),
+				name: expression.name == null ? null : {
+					...super.format(expression.name),
 					kind: FormattedInterfaceTypeMemberNameKind.STATIC,
 					name,
 					expressionKind: FormattedExpressionKind.TYPE_MEMBER_NAME
@@ -75,7 +75,9 @@ export class InterfaceTypeMemberFormatter extends FormattedExpressionFormatter i
 		const isFunction = interfaceTypeMember.type.kind === FormattedTypeKind.FUNCTION;
 		const isIndex = interfaceTypeMember.type.kind === FormattedTypeKind.INDEX;
 		// Start with the name
-		str += interfaceTypeMember.name.kind === FormattedInterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
+		if (interfaceTypeMember.name != null) {
+			str += interfaceTypeMember.name.kind === FormattedInterfaceTypeMemberNameKind.BUILT_IN_SYMBOL ? `[${interfaceTypeMember.name.name}]` : interfaceTypeMember.name.name;
+		}
 		// Add the '?' token after the name if the member is optional
 		if (interfaceTypeMember.optional) str += "?";
 

@@ -5,8 +5,8 @@ import {CodeAnalyzer} from "../src/code-analyzer/code-analyzer";
 let codeAnalyzer: ICodeAnalyzer;
 test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 
-test.skip("foo", t => {
+test("foo", t => {
 	const interfaces = codeAnalyzer.getInterfacesForFile("./test/static/foo");
-	interfaces.forEach(item => {console.log(JSON.stringify(item, null, "\t"));});
+	interfaces.forEach(item => console.log(item.toString()));
 	t.true(true);
 });

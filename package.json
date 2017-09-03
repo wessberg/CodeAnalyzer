@@ -50,7 +50,7 @@
 		"@wessberg/fileloader": "^1.1.4",
 		"@wessberg/moduleutil": "^0.0.15",
 		"@wessberg/pathutil": "^0.0.7",
-		"@wessberg/type": "0.0.87",
+		"@wessberg/type": "0.0.88",
 		"@wessberg/typescript-ast-util": "^0.0.7",
 		"@wessberg/typescript-language-service": "^0.0.9",
 		"@wessberg/typescript-package-reassembler": "^0.0.5",
