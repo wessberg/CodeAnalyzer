@@ -1,3 +1,12 @@
+<a name="1.0.65"></a>
+## 1.0.65 (2017-09-03)
+
+* 1.0.65 ([fcc2eff](https://github.com/wessberg/CodeAnalyzer/commit/fcc2eff))
+* Bumped version ([b8eed2d](https://github.com/wessberg/CodeAnalyzer/commit/b8eed2d))
+* Corrected a the type of interface members ([30e6c4d](https://github.com/wessberg/CodeAnalyzer/commit/30e6c4d))
+
+
+
 <a name="1.0.64"></a>
 ## 1.0.64 (2017-09-03)
 
