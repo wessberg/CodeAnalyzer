@@ -1,3 +1,12 @@
+<a name="1.0.68"></a>
+## 1.0.68 (2017-09-04)
+
+* 1.0.68 ([4959307](https://github.com/wessberg/CodeAnalyzer/commit/4959307))
+* Added type formatting to expression formatter ([7e16c47](https://github.com/wessberg/CodeAnalyzer/commit/7e16c47))
+* Bumped version ([15fa1ff](https://github.com/wessberg/CodeAnalyzer/commit/15fa1ff))
+
+
+
 <a name="1.0.67"></a>
 ## 1.0.67 (2017-09-04)
 
