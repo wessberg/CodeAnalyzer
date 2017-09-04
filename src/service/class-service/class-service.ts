@@ -44,23 +44,28 @@ export class ClassService implements IClassService {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForFile (file: string): IFormattedClass[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If classes are currently being analyzed for the file, return an empty array
+		if (this.isGettingClassesForFile(normalizedPath)) return [];
+
 		// Refresh the classes if required
-		if (this.cacheService().cachedClassesNeedsUpdate(file)) {
+		if (this.cacheService().cachedClassesNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForClasses.add(file);
+			this.filesBeingAnalyzedForClasses.add(normalizedPath);
 
 			// Get the classes
 			const classes = this.getClassesForStatements(this.languageService.addFile({path: file}));
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForClasses.delete(file);
+			this.filesBeingAnalyzedForClasses.delete(normalizedPath);
 
 			// Cache and return the classes
-			return this.cacheService().setCachedClassesForFile(file, classes);
+			return this.cacheService().setCachedClassesForFile(normalizedPath, classes);
 		}
 		// Otherwise, return the cached classes
 		else {
-			return this.cacheService().getCachedClassesForFile(file)!;
+			return this.cacheService().getCachedClassesForFile(normalizedPath)!;
 		}
 	}
 

@@ -74,23 +74,28 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If call expressions are currently being analyzed for the file, return an empty array
+		if (this.isGettingCallExpressionsForFile(normalizedPath)) return [];
+
 		// Refresh the call expressions if required
-		if (this.cacheService().cachedCallExpressionsNeedsUpdate(file)) {
+		if (this.cacheService().cachedCallExpressionsNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForCallExpressions.add(file);
+			this.filesBeingAnalyzedForCallExpressions.add(normalizedPath);
 
 			// Get the call expressions
 			const callExpressions = this.getCallExpressionsForStatements(this.languageService.addFile({path: file}));
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForCallExpressions.delete(file);
+			this.filesBeingAnalyzedForCallExpressions.delete(normalizedPath);
 
 			// Cache and return the call expressions
-			return this.cacheService().setCachedCallExpressionsForFile(file, callExpressions);
+			return this.cacheService().setCachedCallExpressionsForFile(normalizedPath, callExpressions);
 		}
 		// Otherwise, return the cached call expressions
 		else {
-			return this.cacheService().getCachedCallExpressionsForFile(file)!;
+			return this.cacheService().getCachedCallExpressionsForFile(normalizedPath)!;
 		}
 	}
 

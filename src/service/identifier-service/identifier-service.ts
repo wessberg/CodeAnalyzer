@@ -44,23 +44,27 @@ export class IdentifierService implements IIdentifierService {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If classes are currently being analyzed for the file, return an empty array
+		if (this.isGettingIdentifiersForFile(normalizedPath)) return [];
 		// Refresh the identifiers if required
-		if (this.cacheService().cachedIdentifiersNeedsUpdate(file)) {
+		if (this.cacheService().cachedIdentifiersNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForIdentifiers.add(file);
+			this.filesBeingAnalyzedForIdentifiers.add(normalizedPath);
 
 			// Get the identifiers
 			const identifiers = this.getIdentifiersForStatements(this.languageService.addFile({path: file}));
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForIdentifiers.delete(file);
+			this.filesBeingAnalyzedForIdentifiers.delete(normalizedPath);
 
 			// Cache and return the identifiers
-			return this.cacheService().setCachedIdentifiersForFile(file, identifiers);
+			return this.cacheService().setCachedIdentifiersForFile(normalizedPath, identifiers);
 		}
 		// Otherwise, return the cached identifiers
 		else {
-			return this.cacheService().getCachedIdentifiersForFile(file)!;
+			return this.cacheService().getCachedIdentifiersForFile(normalizedPath)!;
 		}
 	}
 

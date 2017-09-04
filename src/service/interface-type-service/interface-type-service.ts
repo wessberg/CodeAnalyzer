@@ -43,23 +43,28 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IFormattedInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If interfaces are currently being analyzed for the file, return an empty array
+		if (this.isGettingInterfacesForFile(normalizedPath)) return [];
+
 		// Refresh the functions if required
-		if (this.cacheService().cachedInterfacesNeedsUpdate(file)) {
+		if (this.cacheService().cachedInterfacesNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForInterfaces.add(file);
+			this.filesBeingAnalyzedForInterfaces.add(normalizedPath);
 
 			// Get the functions
 			const interfaces = this.getInterfacesForStatements(this.languageService.addFile({path: file}));
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForInterfaces.delete(file);
+			this.filesBeingAnalyzedForInterfaces.delete(normalizedPath);
 
 			// Cache and return the functions
-			return this.cacheService().setCachedInterfacesForFile(file, interfaces);
+			return this.cacheService().setCachedInterfacesForFile(normalizedPath, interfaces);
 		}
 		// Otherwise, return the cached functions
 		else {
-			return this.cacheService().getCachedInterfacesForFile(file)!;
+			return this.cacheService().getCachedInterfacesForFile(normalizedPath)!;
 		}
 	}
 

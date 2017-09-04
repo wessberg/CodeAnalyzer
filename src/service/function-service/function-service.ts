@@ -44,23 +44,27 @@ export class FunctionService implements IFunctionService {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForFile (file: string): FormattedFunction[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If classes are currently being analyzed for the file, return an empty array
+		if (this.isGettingFunctionsForFile(normalizedPath)) return [];
 		// Refresh the functions if required
-		if (this.cacheService().cachedFunctionsNeedsUpdate(file)) {
+		if (this.cacheService().cachedFunctionsNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForFunctions.add(file);
+			this.filesBeingAnalyzedForFunctions.add(normalizedPath);
 
 			// Get the functions
 			const functions = this.getFunctionsForStatements(this.languageService.addFile({path: file}));
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForFunctions.delete(file);
+			this.filesBeingAnalyzedForFunctions.delete(normalizedPath);
 
 			// Cache and return the functions
-			return this.cacheService().setCachedFunctionsForFile(file, functions);
+			return this.cacheService().setCachedFunctionsForFile(normalizedPath, functions);
 		}
 		// Otherwise, return the cached functions
 		else {
-			return this.cacheService().getCachedFunctionsForFile(file)!;
+			return this.cacheService().getCachedFunctionsForFile(normalizedPath)!;
 		}
 	}
 

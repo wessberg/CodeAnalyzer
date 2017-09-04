@@ -33,23 +33,28 @@ export class ImportService implements IImportService {
 	 * @returns {string[]}
 	 */
 	public getImportedFilesForFile (file: string): string[] {
+		const {normalizedPath} = this.languageService.getAddPath(file);
+
+		// If imports are currently being analyzed for the file, return an empty array
+		if (this.isGettingImportsForFile(normalizedPath)) return [];
+
 		// Refresh the imports if required
-		if (this.cacheService().cachedImportsNeedsUpdate(file)) {
+		if (this.cacheService().cachedImportsNeedsUpdate(normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForImports.add(file);
+			this.filesBeingAnalyzedForImports.add(normalizedPath);
 
 			// Get the imports
 			const imports = this.languageService.getImportedFilesForFile(file);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForImports.delete(file);
+			this.filesBeingAnalyzedForImports.delete(normalizedPath);
 
 			// Cache and return the imports
-			return this.cacheService().setCachedImportsForFile(file, imports);
+			return this.cacheService().setCachedImportsForFile(normalizedPath, imports);
 		}
 		// Otherwise, return the cached imports
 		else {
-			return this.cacheService().getCachedImportsForFile(file)!;
+			return this.cacheService().getCachedImportsForFile(normalizedPath)!;
 		}
 	}
 

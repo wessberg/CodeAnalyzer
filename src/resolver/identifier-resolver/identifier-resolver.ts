@@ -32,7 +32,7 @@ export class IdentifierResolver implements IIdentifierResolver {
 		if (definition == null) return null;
 
 		// Check the dependencies first
-		this.checkDependencies(identifier, imports, definition);
+		this.checkDependencies(imports, definition);
 
 		// Get the matching formatted expression
 		return this.astMapper().getFormattedExpressionForFileAtPosition(definition.fileName, definition.textSpan.start);
@@ -43,27 +43,22 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * For example, if Typescript informs that an identifier is a class
 	 * we want to make sure that the class has been parsed by the CodeAnalyzer
 	 * so that it can be properly resolved
-	 * @param {FormattedExpression} identifier
 	 * @param {string[]} paths
 	 * @param {DefinitionInfo} definition
 	 */
-	private checkDependencies (identifier: FormattedExpression, paths: string[], definition: DefinitionInfo): void {
+	private checkDependencies (paths: string[], definition: DefinitionInfo): void {
 
-		new Set([...paths, identifier.file]).forEach(path => {
+		new Set([...paths, definition.fileName]).forEach(path => {
 			switch (definition.kind) {
 
 				case ScriptElementKind.classElement:
 					// Check the file for classes unless it is already being checked
-					if (!this.classService().isGettingClassesForFile(path)) {
-						this.classService().getClassesForFile(path);
-					}
+					this.classService().getClassesForFile(path);
 					break;
 
 				case ScriptElementKind.functionElement:
 					// Check the file for functions unless it is already being checked
-					if (!this.functionService().isGettingFunctionsForFile(path)) {
-						this.functionService().getFunctionsForFile(path);
-					}
+					this.functionService().getFunctionsForFile(path);
 					break;
 			}
 		});
@@ -76,8 +71,17 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 */
 	private addDependencies (identifier: FormattedExpression): string[] {
 		const imports = this.importService().getImportedFilesForFile(identifier.file);
-		imports.forEach(path => this.languageService.addFile({path}));
-		return imports;
+
+		// Return the normalized file paths
+		return imports.filter(path => {
+			const pathInfo = this.languageService.getPathInfo(path);
+
+			// Only add the file if it needs an update
+			if (pathInfo.needsUpdate) this.languageService.addFile(pathInfo);
+
+			// Include the file if it needs an update
+			return pathInfo.needsUpdate;
+		});
 	}
 
 	/**
