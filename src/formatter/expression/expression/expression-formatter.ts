@@ -1,5 +1,5 @@
 import {IExpressionFormatter} from "./i-expression-formatter";
-import {Expression, ExpressionWithTypeArguments, isArrowFunction, isAwaitExpression, isBlock, isCallExpression, isClassDeclaration, isClassExpression, isConstructorDeclaration, isDecorator, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isMethodDeclaration, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameter, isPropertyAccessExpression, isPropertyDeclaration, isPropertyName, isRegularExpressionLiteral, isSetAccessorDeclaration, isStringLiteral, isYieldExpression, Statement, SuperExpression, SyntaxKind, ThisExpression} from "typescript";
+import {Expression, ExpressionWithTypeArguments, isArrowFunction, isAwaitExpression, isBlock, isCallExpression, isClassDeclaration, isClassExpression, isConstructorDeclaration, isDecorator, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isMethodDeclaration, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameter, isPropertyAccessExpression, isPropertyDeclaration, isPropertyName, isRegularExpressionLiteral, isSetAccessorDeclaration, isStringLiteral, isTypeNode, isYieldExpression, Statement, SuperExpression, SyntaxKind, ThisExpression} from "typescript";
 import {CallExpressionFormatterGetter} from "../call-expression/call-expression-formatter-getter";
 import {StringLiteralFormatterGetter} from "../literal/string-literal/string-literal-formatter-getter";
 import {NotImplementedFormatterGetter} from "../not-implemented/not-implemented-formatter-getter";
@@ -26,6 +26,7 @@ import {ThisExpressionFormatterGetter} from "../this-expression/this-expression-
 import {SuperExpressionFormatterGetter} from "../super-expression/super-expression-formatter-getter";
 import {AwaitExpressionFormatterGetter} from "../await-expression/await-expression-formatter-getter";
 import {YieldExpressionFormatterGetter} from "../yield-expression/yield-expression-formatter-getter";
+import {TypeFormatterGetter} from "../../type/type-formatter/type-formatter-getter";
 
 /**
  * Can format any expression
@@ -54,7 +55,8 @@ export class ExpressionFormatter implements IExpressionFormatter {
 							 private classConstructorFormatter: ClassConstructorFormatterGetter,
 							 private functionFormatter: FunctionFormatterGetter,
 							 private parameterFormatter: ParameterFormatterGetter,
-							 private notImplementedFormatter: NotImplementedFormatterGetter) {
+							 private notImplementedFormatter: NotImplementedFormatterGetter,
+							 private typeFormatter: TypeFormatterGetter) {
 	}
 
 	/**
@@ -158,6 +160,10 @@ export class ExpressionFormatter implements IExpressionFormatter {
 
 		else if (isExpressionWithTypeArguments(expression) || isExpressionStatement(expression)) {
 			return this.format(expression.expression);
+		}
+
+		else if (isTypeNode(expression)) {
+			return this.typeFormatter().format(expression);
 		}
 
 		else {

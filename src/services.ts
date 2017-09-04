@@ -527,7 +527,8 @@ expressionFormatter = new ExpressionFormatter(
 	classConstructorFormatterGetter,
 	functionFormatterGetter,
 	parameterFormatterGetter,
-	notImplementedFormatterGetter
+	notImplementedFormatterGetter,
+	typeFormatterGetter
 );
 
 // Mappers
