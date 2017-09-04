@@ -44,28 +44,29 @@ export class ClassService implements IClassService {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForFile (file: string): IFormattedClass[] {
-		const {normalizedPath} = this.languageService.getAddPath(file);
+		const pathInfo = this.languageService.getPathInfo(file);
+		const statements = this.languageService.addFile(pathInfo);
 
 		// If classes are currently being analyzed for the file, return an empty array
-		if (this.isGettingClassesForFile(normalizedPath)) return [];
+		if (this.isGettingClassesForFile(pathInfo.normalizedPath)) return [];
 
 		// Refresh the classes if required
-		if (this.cacheService().cachedClassesNeedsUpdate(normalizedPath)) {
+		if (this.cacheService().cachedClassesNeedsUpdate(pathInfo.normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForClasses.add(normalizedPath);
+			this.filesBeingAnalyzedForClasses.add(pathInfo.normalizedPath);
 
 			// Get the classes
-			const classes = this.getClassesForStatements(this.languageService.addFile({path: file}));
+			const classes = this.getClassesForStatements(statements);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForClasses.delete(normalizedPath);
+			this.filesBeingAnalyzedForClasses.delete(pathInfo.normalizedPath);
 
 			// Cache and return the classes
-			return this.cacheService().setCachedClassesForFile(normalizedPath, classes);
+			return this.cacheService().setCachedClassesForFile(pathInfo.normalizedPath, classes);
 		}
 		// Otherwise, return the cached classes
 		else {
-			return this.cacheService().getCachedClassesForFile(normalizedPath)!;
+			return this.cacheService().getCachedClassesForFile(pathInfo.normalizedPath)!;
 		}
 	}
 
@@ -84,7 +85,9 @@ export class ClassService implements IClassService {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForStatements (statements: NodeArray<AstNode>): IFormattedClass[] {
-		const filtered = this.astUtil.filterStatements<ClassDeclaration|ClassExpression>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.classFormatter().format(statement));
+		const expressions: IFormattedClass[] = [];
+		const formatter = this.classFormatter();
+		this.astUtil.filterStatements<ClassDeclaration|ClassExpression>(expression => expressions.push(formatter.format(expression)), statements, this.supportedKinds, true);
+		return expressions;
 	}
 }

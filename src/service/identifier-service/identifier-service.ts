@@ -25,7 +25,7 @@ export class IdentifierService implements IIdentifierService {
 
 	constructor (private astUtil: ITypescriptASTUtil,
 							 private languageService: ITypescriptLanguageService,
-							 private identifierExpressionFormatter: IdentifierFormatterGetter,
+							 private identifierFormatter: IdentifierFormatterGetter,
 							 private cacheService: CacheServiceGetter) {
 	}
 
@@ -44,27 +44,28 @@ export class IdentifierService implements IIdentifierService {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		const {normalizedPath} = this.languageService.getAddPath(file);
+		const pathInfo = this.languageService.getPathInfo(file);
+		const statements = this.languageService.addFile(pathInfo);
 
 		// If classes are currently being analyzed for the file, return an empty array
-		if (this.isGettingIdentifiersForFile(normalizedPath)) return [];
+		if (this.isGettingIdentifiersForFile(pathInfo.normalizedPath)) return [];
 		// Refresh the identifiers if required
-		if (this.cacheService().cachedIdentifiersNeedsUpdate(normalizedPath)) {
+		if (this.cacheService().cachedIdentifiersNeedsUpdate(pathInfo.normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForIdentifiers.add(normalizedPath);
+			this.filesBeingAnalyzedForIdentifiers.add(pathInfo.normalizedPath);
 
 			// Get the identifiers
-			const identifiers = this.getIdentifiersForStatements(this.languageService.addFile({path: file}));
+			const identifiers = this.getIdentifiersForStatements(statements);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForIdentifiers.delete(normalizedPath);
+			this.filesBeingAnalyzedForIdentifiers.delete(pathInfo.normalizedPath);
 
 			// Cache and return the identifiers
-			return this.cacheService().setCachedIdentifiersForFile(normalizedPath, identifiers);
+			return this.cacheService().setCachedIdentifiersForFile(pathInfo.normalizedPath, identifiers);
 		}
 		// Otherwise, return the cached identifiers
 		else {
-			return this.cacheService().getCachedIdentifiersForFile(normalizedPath)!;
+			return this.cacheService().getCachedIdentifiersForFile(pathInfo.normalizedPath)!;
 		}
 	}
 
@@ -83,8 +84,10 @@ export class IdentifierService implements IIdentifierService {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForStatements (statements: NodeArray<AstNode>): IFormattedIdentifier[] {
-		const filtered = this.astUtil.filterStatements<Identifier>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.identifierExpressionFormatter().format(statement));
+		const expressions: IFormattedIdentifier[] = [];
+		const formatter = this.identifierFormatter();
+		this.astUtil.filterStatements<Identifier>(expression => expressions.push(formatter.format(expression)), statements, this.supportedKinds, true);
+		return expressions;
 	}
 
 }

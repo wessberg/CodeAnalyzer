@@ -542,7 +542,7 @@ classService = new ClassService(astUtil, languageService, classFormatterGetter, 
 callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter, cacheServiceGetter);
 identifierExpressionService = new IdentifierService(astUtil, languageService, identifierFormatterGetter, cacheServiceGetter);
 functionService = new FunctionService(astUtil, languageService, functionFormatterGetter, cacheServiceGetter);
-importService = new ImportService(languageService, cacheServiceGetter);
+importService = new ImportService(languageService);
 
 // Resolvers
 identifierResolver = new IdentifierResolver(astMapperGetter, importServiceGetter, languageService, classServiceGetter, functionServiceGetter);

@@ -43,28 +43,29 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IFormattedInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
-		const {normalizedPath} = this.languageService.getAddPath(file);
+		const pathInfo = this.languageService.getPathInfo(file);
+		const statements = this.languageService.addFile(pathInfo);
 
 		// If interfaces are currently being analyzed for the file, return an empty array
-		if (this.isGettingInterfacesForFile(normalizedPath)) return [];
+		if (this.isGettingInterfacesForFile(pathInfo.normalizedPath)) return [];
 
 		// Refresh the functions if required
-		if (this.cacheService().cachedInterfacesNeedsUpdate(normalizedPath)) {
+		if (this.cacheService().cachedInterfacesNeedsUpdate(pathInfo.normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForInterfaces.add(normalizedPath);
+			this.filesBeingAnalyzedForInterfaces.add(pathInfo.normalizedPath);
 
 			// Get the functions
-			const interfaces = this.getInterfacesForStatements(this.languageService.addFile({path: file}));
+			const interfaces = this.getInterfacesForStatements(statements);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForInterfaces.delete(normalizedPath);
+			this.filesBeingAnalyzedForInterfaces.delete(pathInfo.normalizedPath);
 
 			// Cache and return the functions
-			return this.cacheService().setCachedInterfacesForFile(normalizedPath, interfaces);
+			return this.cacheService().setCachedInterfacesForFile(pathInfo.normalizedPath, interfaces);
 		}
 		// Otherwise, return the cached functions
 		else {
-			return this.cacheService().getCachedInterfacesForFile(normalizedPath)!;
+			return this.cacheService().getCachedInterfacesForFile(pathInfo.normalizedPath)!;
 		}
 	}
 
@@ -83,8 +84,10 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IFormattedInterfaceType[]}
 	 */
 	public getInterfacesForStatements (statements: NodeArray<Statement>): IFormattedInterfaceType[] {
-		const filtered = this.astUtil.filterStatements<InterfaceDeclaration>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.interfaceTypeFormatter().format(statement));
+		const expressions: IFormattedInterfaceType[] = [];
+		const formatter = this.interfaceTypeFormatter();
+		this.astUtil.filterStatements<InterfaceDeclaration>(expression => expressions.push(formatter.format(expression)), statements, this.supportedKinds, true);
+		return expressions;
 	}
 
 }

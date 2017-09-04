@@ -74,28 +74,29 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		const {normalizedPath} = this.languageService.getAddPath(file);
+		const pathInfo = this.languageService.getPathInfo(file);
+		const statements = this.languageService.addFile(pathInfo);
 
 		// If call expressions are currently being analyzed for the file, return an empty array
-		if (this.isGettingCallExpressionsForFile(normalizedPath)) return [];
+		if (this.isGettingCallExpressionsForFile(pathInfo.normalizedPath)) return [];
 
 		// Refresh the call expressions if required
-		if (this.cacheService().cachedCallExpressionsNeedsUpdate(normalizedPath)) {
+		if (this.cacheService().cachedCallExpressionsNeedsUpdate(pathInfo.normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForCallExpressions.add(normalizedPath);
+			this.filesBeingAnalyzedForCallExpressions.add(pathInfo.normalizedPath);
 
 			// Get the call expressions
-			const callExpressions = this.getCallExpressionsForStatements(this.languageService.addFile({path: file}));
+			const callExpressions = this.getCallExpressionsForStatements(statements);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForCallExpressions.delete(normalizedPath);
+			this.filesBeingAnalyzedForCallExpressions.delete(pathInfo.normalizedPath);
 
 			// Cache and return the call expressions
-			return this.cacheService().setCachedCallExpressionsForFile(normalizedPath, callExpressions);
+			return this.cacheService().setCachedCallExpressionsForFile(pathInfo.normalizedPath, callExpressions);
 		}
 		// Otherwise, return the cached call expressions
 		else {
-			return this.cacheService().getCachedCallExpressionsForFile(normalizedPath)!;
+			return this.cacheService().getCachedCallExpressionsForFile(pathInfo.normalizedPath)!;
 		}
 	}
 
@@ -114,8 +115,10 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForStatements (statements: NodeArray<AstNode>): IFormattedCallExpression[] {
-		const filtered = this.astUtil.filterStatements<CallExpression>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.callExpressionFormatter().format(statement));
+		const expressions: IFormattedCallExpression[] = [];
+		const formatter = this.callExpressionFormatter();
+		this.astUtil.filterStatements<CallExpression>(expression => expressions.push(formatter.format(expression)), statements, this.supportedKinds, true);
+		return expressions;
 	}
 
 	/**

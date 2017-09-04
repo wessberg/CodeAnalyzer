@@ -44,27 +44,28 @@ export class FunctionService implements IFunctionService {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForFile (file: string): FormattedFunction[] {
-		const {normalizedPath} = this.languageService.getAddPath(file);
+		const pathInfo = this.languageService.getPathInfo(file);
+		const statements = this.languageService.addFile(pathInfo);
 
 		// If classes are currently being analyzed for the file, return an empty array
-		if (this.isGettingFunctionsForFile(normalizedPath)) return [];
+		if (this.isGettingFunctionsForFile(pathInfo.normalizedPath)) return [];
 		// Refresh the functions if required
-		if (this.cacheService().cachedFunctionsNeedsUpdate(normalizedPath)) {
+		if (this.cacheService().cachedFunctionsNeedsUpdate(pathInfo.normalizedPath)) {
 			// Mark the file as being analyzed
-			this.filesBeingAnalyzedForFunctions.add(normalizedPath);
+			this.filesBeingAnalyzedForFunctions.add(pathInfo.normalizedPath);
 
 			// Get the functions
-			const functions = this.getFunctionsForStatements(this.languageService.addFile({path: file}));
+			const functions = this.getFunctionsForStatements(statements);
 
 			// Un-mark the file from being analyzed
-			this.filesBeingAnalyzedForFunctions.delete(normalizedPath);
+			this.filesBeingAnalyzedForFunctions.delete(pathInfo.normalizedPath);
 
 			// Cache and return the functions
-			return this.cacheService().setCachedFunctionsForFile(normalizedPath, functions);
+			return this.cacheService().setCachedFunctionsForFile(pathInfo.normalizedPath, functions);
 		}
 		// Otherwise, return the cached functions
 		else {
-			return this.cacheService().getCachedFunctionsForFile(normalizedPath)!;
+			return this.cacheService().getCachedFunctionsForFile(pathInfo.normalizedPath)!;
 		}
 	}
 
@@ -83,7 +84,9 @@ export class FunctionService implements IFunctionService {
 	 * @returns {FormattedFunction[]}
 	 */
 	public getFunctionsForStatements (statements: NodeArray<AstNode>): FormattedFunction[] {
-		const filtered = this.astUtil.filterStatements<FunctionExpression|FunctionDeclaration|ArrowFunction>(statements, this.supportedKinds, true);
-		return filtered.map(statement => this.functionFormatter().format(statement));
+		const expressions: FormattedFunction[] = [];
+		const formatter = this.functionFormatter();
+		this.astUtil.filterStatements<FunctionDeclaration|FunctionExpression|ArrowFunction>(expression => expressions.push(formatter.format(expression)), statements, this.supportedKinds, true);
+		return expressions;
 	}
 }
