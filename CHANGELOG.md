@@ -1,3 +1,12 @@
+<a name="1.0.72"></a>
+## 1.0.72 (2017-09-10)
+
+* 1.0.72 ([3afeb26](https://github.com/wessberg/CodeAnalyzer/commit/3afeb26))
+* Bumped version ([503a752](https://github.com/wessberg/CodeAnalyzer/commit/503a752))
+* Removed constructor options from the CodeAnalyzer ([fd42bf5](https://github.com/wessberg/CodeAnalyzer/commit/fd42bf5))
+
+
+
 <a name="1.0.71"></a>
 ## 1.0.71 (2017-09-10)
 
