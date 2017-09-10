@@ -41,10 +41,11 @@ export class ExportService implements IExportService {
 	/**
 	 * Gets all IFormattedExports for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedExport[]}
 	 */
-	public getExportsForFile (file: string): IFormattedExport[] {
-		const pathInfo = this.languageService.getPathInfo({path: file});
+	public getExportsForFile (file: string, content?: string): IFormattedExport[] {
+		const pathInfo = this.languageService.getPathInfo({path: file, content});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If Exports are currently being analyzed for the file, return an empty array

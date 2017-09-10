@@ -42,10 +42,11 @@ export class CallExpressionService implements ICallExpressionService {
 	 * Finds all the call expressions in the provided file that matches the provided match which can be a string or a regular expression
 	 * @param {string} file
 	 * @param {string | RegExp} match
+	 * @param {string} [content]
 	 * @returns {IFormattedCallExpression[]}
 	 */
-	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp): IFormattedCallExpression[] {
-		return this.filterFormattedCallExpressionsByMatch(this.getCallExpressionsForFile(file), match);
+	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp, content?: string): IFormattedCallExpression[] {
+		return this.filterFormattedCallExpressionsByMatch(this.getCallExpressionsForFile(file, content), match);
 	}
 
 	/**
@@ -71,10 +72,11 @@ export class CallExpressionService implements ICallExpressionService {
 	/**
 	 * Gets all IFormattedCallExpressions for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedCallExpression[]}
 	 */
-	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		const pathInfo = this.languageService.getPathInfo({path: file});
+	public getCallExpressionsForFile (file: string, content?: string): IFormattedCallExpression[] {
+		const pathInfo = this.languageService.getPathInfo({path: file, content});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If call expressions are currently being analyzed for the file, return an empty array

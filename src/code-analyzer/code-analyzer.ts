@@ -12,10 +12,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IFormattedImports for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedImport[]}
 	 */
-	public getImportsForFile (file: string): IFormattedImport[] {
-		return importServiceGetter().getImportsForFile(file);
+	public getImportsForFile (file: string, content?: string): IFormattedImport[] {
+		return importServiceGetter().getImportsForFile(file, content);
 	}
 
 	/**
@@ -39,10 +40,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IFormattedExports for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedExport[]}
 	 */
-	public getExportsForFile (file: string): IFormattedExport[] {
-		return exportServiceGetter().getExportsForFile(file);
+	public getExportsForFile (file: string, content?: string): IFormattedExport[] {
+		return exportServiceGetter().getExportsForFile(file, content);
 	}
 
 	/**
@@ -74,10 +76,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all FormattedFunctions for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {FormattedFunction[]}
 	 */
-	public getFunctionsForFile (file: string): FormattedFunction[] {
-		return functionServiceGetter().getFunctionsForFile(file);
+	public getFunctionsForFile (file: string, content?: string): FormattedFunction[] {
+		return functionServiceGetter().getFunctionsForFile(file, content);
 	}
 
 	/**
@@ -110,10 +113,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IFormattedClasses for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedClass[]}
 	 */
-	public getClassesForFile (file: string): IFormattedClass[] {
-		return classServiceGetter().getClassesForFile(file);
+	public getClassesForFile (file: string, content?: string): IFormattedClass[] {
+		return classServiceGetter().getClassesForFile(file, content);
 	}
 
 	/**
@@ -137,10 +141,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IInterfaceTypes for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedInterfaceType[]}
 	 */
-	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
-		return interfaceTypeServiceGetter().getInterfacesForFile(file);
+	public getInterfacesForFile (file: string, content?: string): IFormattedInterfaceType[] {
+		return interfaceTypeServiceGetter().getInterfacesForFile(file, content);
 	}
 
 	/**
@@ -164,10 +169,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IFormattedCallExpressions for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedCallExpression[]}
 	 */
-	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().getCallExpressionsForFile(file);
+	public getCallExpressionsForFile (file: string, content?: string): IFormattedCallExpression[] {
+		return callExpressionServiceGetter().getCallExpressionsForFile(file, content);
 	}
 
 	/**
@@ -192,10 +198,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * Finds all the call expressions in the provided file that matches the provided match which can be a string or a regular expression
 	 * @param {string} file
 	 * @param {string | RegExp} match
+	 * @param {string} [content]
 	 * @returns {IFormattedCallExpression[]}
 	 */
-	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().findMatchingCallExpressionsForFile(file, match);
+	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp, content?: string): IFormattedCallExpression[] {
+		return callExpressionServiceGetter().findMatchingCallExpressionsForFile(file, match, content);
 	}
 
 	/**
@@ -221,10 +228,11 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	/**
 	 * Gets all IFormattedIdentifierExpressions for the given file
 	 * @param {string} file
+	 * @param {string} [content]
 	 * @returns {IFormattedIdentifier[]}
 	 */
-	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		return identifierExpressionServiceGetter().getIdentifiersForFile(file);
+	public getIdentifiersForFile (file: string, content?: string): IFormattedIdentifier[] {
+		return identifierExpressionServiceGetter().getIdentifiersForFile(file, content);
 	}
 
 	/**
