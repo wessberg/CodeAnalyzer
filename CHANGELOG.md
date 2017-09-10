@@ -1,3 +1,12 @@
+<a name="1.0.75"></a>
+## 1.0.75 (2017-09-10)
+
+* 1.0.75 ([e7ea0c2](https://github.com/wessberg/CodeAnalyzer/commit/e7ea0c2))
+* Bumped version ([1172f25](https://github.com/wessberg/CodeAnalyzer/commit/1172f25))
+* formatted classes no longer merge-in their parent classes ([d682486](https://github.com/wessberg/CodeAnalyzer/commit/d682486))
+
+
+
 <a name="1.0.74"></a>
 ## 1.0.74 (2017-09-10)
 
