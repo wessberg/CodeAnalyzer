@@ -1,3 +1,12 @@
+<a name="1.0.73"></a>
+## 1.0.73 (2017-09-10)
+
+* 1.0.73 ([6ae8721](https://github.com/wessberg/CodeAnalyzer/commit/6ae8721))
+* Bumped version ([685599e](https://github.com/wessberg/CodeAnalyzer/commit/685599e))
+* Made it possible to supply the content for a file for each method ([08aeb69](https://github.com/wessberg/CodeAnalyzer/commit/08aeb69))
+
+
+
 <a name="1.0.72"></a>
 ## 1.0.72 (2017-09-10)
 
