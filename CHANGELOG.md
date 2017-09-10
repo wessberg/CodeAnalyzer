@@ -1,3 +1,12 @@
+<a name="1.0.71"></a>
+## 1.0.71 (2017-09-10)
+
+* 1.0.71 ([33dedcb](https://github.com/wessberg/CodeAnalyzer/commit/33dedcb))
+* Bumped version ([2b12a72](https://github.com/wessberg/CodeAnalyzer/commit/2b12a72))
+* Changes to identifier resolving to allow for resolving node_modules directly ([7518f19](https://github.com/wessberg/CodeAnalyzer/commit/7518f19))
+
+
+
 <a name="1.0.70"></a>
 ## 1.0.70 (2017-09-10)
 
