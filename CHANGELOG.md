@@ -1,3 +1,12 @@
+<a name="1.0.74"></a>
+## 1.0.74 (2017-09-10)
+
+* . ([040e108](https://github.com/wessberg/CodeAnalyzer/commit/040e108))
+* 1.0.74 ([8853abb](https://github.com/wessberg/CodeAnalyzer/commit/8853abb))
+* Bumped version ([2249cdc](https://github.com/wessberg/CodeAnalyzer/commit/2249cdc))
+
+
+
 <a name="1.0.73"></a>
 ## 1.0.73 (2017-09-10)
 
