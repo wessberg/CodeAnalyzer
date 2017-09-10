@@ -1,3 +1,13 @@
+<a name="1.0.70"></a>
+## 1.0.70 (2017-09-10)
+
+* 1.0.70 ([91a4715](https://github.com/wessberg/CodeAnalyzer/commit/91a4715))
+* Bumped version ([5d0d1f8](https://github.com/wessberg/CodeAnalyzer/commit/5d0d1f8))
+* More efficient resolving of modules when resolving identifiers ([8eb0f24](https://github.com/wessberg/CodeAnalyzer/commit/8eb0f24))
+* Only resolve imports that actually refer to an identifier ([b6bd964](https://github.com/wessberg/CodeAnalyzer/commit/b6bd964))
+
+
+
 <a name="1.0.69"></a>
 ## 1.0.69 (2017-09-04)
 
