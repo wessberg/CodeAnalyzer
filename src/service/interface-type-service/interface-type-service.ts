@@ -43,7 +43,7 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 	 * @returns {IFormattedInterfaceType[]}
 	 */
 	public getInterfacesForFile (file: string): IFormattedInterfaceType[] {
-		const pathInfo = this.languageService.getPathInfo(file);
+		const pathInfo = this.languageService.getPathInfo({path: file});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If interfaces are currently being analyzed for the file, return an empty array

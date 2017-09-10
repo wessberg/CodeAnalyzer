@@ -44,7 +44,7 @@ export class ImportService implements IImportService {
 	 * @returns {IFormattedImport[]}
 	 */
 	public getImportsForFile (file: string): IFormattedImport[] {
-		const pathInfo = this.languageService.getPathInfo(file);
+		const pathInfo = this.languageService.getPathInfo({path: file});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If imports are currently being analyzed for the file, return an empty array

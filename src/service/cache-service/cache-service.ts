@@ -1,5 +1,5 @@
 import {ICacheService} from "./i-cache-service";
-import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
+import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType, IFormattedExport} from "@wessberg/type";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
@@ -28,9 +28,14 @@ export class CacheService implements ICacheService {
 	private cachedIdentifiersMap: Map<string, IFormattedIdentifier[]> = new Map();
 	/**
 	 * A class between file names and cached import paths
-	 * @type {Map<string, string[]>}
+	 * @type {Map<string, IFormattedImport[]>}
 	 */
 	private cachedImportsMap: Map<string, IFormattedImport[]> = new Map();
+	/**
+	 * A class between file names and cached import paths
+	 * @type {Map<string, IFormattedExport[]>}
+	 */
+	private cachedExportsMap: Map<string, IFormattedExport[]> = new Map();
 	/**
 	 * A class between file names and cached formatted interfaces
 	 * @type {Map<string, IFormattedInterfaceType[]>}
@@ -61,6 +66,11 @@ export class CacheService implements ICacheService {
 	 * @type {Map<string, number>}
 	 */
 	private cachedImportVersions: Map<string, number> = new Map();
+	/**
+	 * A Map between file names and the cached versions of their exports
+	 * @type {Map<string, number>}
+	 */
+	private cachedExportVersions: Map<string, number> = new Map();
 	/**
 	 * A Map between file names and the cached versions of their interfaces
 	 * @type {Map<string, number>}
@@ -113,6 +123,15 @@ export class CacheService implements ICacheService {
 	 */
 	public cachedImportsNeedsUpdate (file: string): boolean {
 		return this.cacheNeedsUpdate(file, this.cachedImportVersions.get(file));
+	}
+
+	/**
+	 * Returns true if export paths for the given file needs an update
+	 * @param {string} file
+	 * @returns {boolean}
+	 */
+	public cachedExportsNeedsUpdate (file: string): boolean {
+		return this.cacheNeedsUpdate(file, this.cachedExportVersions.get(file));
 	}
 
 	/**
@@ -200,6 +219,21 @@ export class CacheService implements ICacheService {
 	}
 
 	/**
+	 * Sets the provided cached exports for the provided file
+	 * @param {string} file
+	 * @param {IFormattedExport[]} exports
+	 * @returns {IFormattedExport[]}
+	 */
+	public setCachedExportsForFile (file: string, exports: IFormattedExport[]): IFormattedExport[] {
+		// Update the cached import map with the new items
+		this.cachedExportsMap.set(file, exports);
+
+		// Update the cached version
+		this.cachedExportVersions.set(file, this.languageService.getFileVersion(file));
+		return exports;
+	}
+
+	/**
 	 * Sets the provided IFormattedInterfaceTypes for the provided file
 	 * @param {string} file
 	 * @param {IFormattedInterfaceType[]} interfaces
@@ -257,6 +291,15 @@ export class CacheService implements ICacheService {
 	 */
 	public getCachedImportsForFile (file: string): IFormattedImport[]|undefined {
 		return this.cachedImportsMap.get(file);
+	}
+
+	/**
+	 * Gets all cached import paths for the given file
+	 * @param {string} file
+	 * @returns {IFormattedExport[]}
+	 */
+	public getCachedExportsForFile (file: string): IFormattedExport[]|undefined {
+		return this.cachedExportsMap.get(file);
 	}
 
 	/**

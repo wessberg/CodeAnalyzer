@@ -1,5 +1,5 @@
 import {ITypeFormatter, TypeFormatterNode} from "./i-type-formatter";
-import {ArrayTypeNode, createToken, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexedAccessTypeNode, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, Token, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
+import {ArrayTypeNode, createToken, ExpressionWithTypeArguments, FunctionTypeNode, Identifier, IndexedAccessTypeNode, IntersectionTypeNode, isIndexSignatureDeclaration, isMethodSignature, isNumericLiteral, isParameter, isPropertySignature, isStringLiteral, LeftHandSideExpression, LiteralTypeNode, ParenthesizedTypeNode, SyntaxKind, Token, TupleTypeNode, TypeLiteralNode, TypeNode, TypeOperatorNode, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode} from "typescript";
 import {FormattedType} from "@wessberg/type";
 import {isBooleanLiteral, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {isInterfaceProperty} from "../interface-type-formatter/interface-property";
@@ -29,7 +29,6 @@ import {UnionTypeFormatterGetter} from "../union-type-formatter/union-type-forma
 import {IntersectionTypeFormatterGetter} from "../intersection-type-formatter/intersection-type-formatter-getter";
 import {TypeofTypeFormatterGetter} from "../typeof-type-formatter/typeof-type-formatter-getter";
 import {PredicateTypeFormatterGetter} from "../predicate-type-formatter/predicate-type-formatter-getter";
-import {FirstTypeNode} from "../../../type/first-type-node/first-type-node";
 import {IndexedAccessTypeFormatterGetter} from "../indexed-access-type-formatter/indexed-access-type-formatter-getter";
 
 /**
@@ -138,7 +137,8 @@ export class TypeFormatter implements ITypeFormatter {
 				return this.undefinedTypeFormatter().format(<Token<SyntaxKind.UndefinedKeyword>>node);
 
 			case SyntaxKind.FirstTypeNode:
-				return this.predicateTypeFormatter().format(<FirstTypeNode>node);
+			case SyntaxKind.TypePredicate:
+				return this.predicateTypeFormatter().format(<TypePredicateNode>node);
 
 			case SyntaxKind.LastTypeNode:
 				const lastTypeNode = <LiteralTypeNode>node;

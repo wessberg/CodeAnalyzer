@@ -48,12 +48,12 @@
 	"dependencies": {
 		"@types/node": "^8.0.28",
 		"@wessberg/fileloader": "^1.1.4",
-		"@wessberg/moduleutil": "0.0.17",
+		"@wessberg/moduleutil": "0.0.18",
 		"@wessberg/pathutil": "^0.0.7",
 		"@wessberg/type": "0.0.91",
 		"@wessberg/typescript-ast-util": "0.0.8",
-		"@wessberg/typescript-language-service": "0.0.22",
-		"@wessberg/typescript-package-reassembler": "^0.0.5",
+		"@wessberg/typescript-language-service": "0.0.24",
+		"@wessberg/typescript-package-reassembler": "0.0.6",
 		"tslib": "^1.7.1",
 		"typescript": "^2.5.2"
 	},

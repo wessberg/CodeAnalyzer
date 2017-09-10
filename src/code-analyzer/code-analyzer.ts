@@ -1,8 +1,8 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
-import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, ImportDeclaration, InterfaceDeclaration, NodeArray, Statement} from "typescript";
+import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedExport, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
+import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, ExportDeclaration, FunctionDeclaration, FunctionExpression, Identifier, ImportDeclaration, InterfaceDeclaration, NodeArray, Statement} from "typescript";
 import {AstNode} from "../type/ast-node/ast-node";
-import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
+import {callExpressionServiceGetter, classServiceGetter, exportServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
 import {ICodeAnalyzerOptions} from "./i-code-analyzer-options";
 
 /**
@@ -41,6 +41,33 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 */
 	public getImportsForStatements (statements: NodeArray<AstNode>): IFormattedImport[] {
 		return importServiceGetter().getImportsForStatements(statements);
+	}
+
+	/**
+	 * Gets all IFormattedExports for the given file
+	 * @param {string} file
+	 * @returns {IFormattedExport[]}
+	 */
+	public getExportsForFile (file: string): IFormattedExport[] {
+		return exportServiceGetter().getExportsForFile(file);
+	}
+
+	/**
+	 * Gets all IFormattedExports for the given statement
+	 * @param {ExportDeclaration} statement
+	 * @returns {IFormattedExport[]}
+	 */
+	public getExportsForStatement (statement: ExportDeclaration): IFormattedExport[] {
+		return exportServiceGetter().getExportsForStatement(statement);
+	}
+
+	/**
+	 * Gets all IFormattedExports for the given Statements
+	 * @param {NodeArray<AstNode>} statements
+	 * @returns {IFormattedExport[]}
+	 */
+	public getExportsForStatements (statements: NodeArray<AstNode>): IFormattedExport[] {
+		return exportServiceGetter().getExportsForStatements(statements);
 	}
 
 	/**

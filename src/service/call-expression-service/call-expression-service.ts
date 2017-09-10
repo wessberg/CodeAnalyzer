@@ -74,7 +74,7 @@ export class CallExpressionService implements ICallExpressionService {
 	 * @returns {IFormattedCallExpression[]}
 	 */
 	public getCallExpressionsForFile (file: string): IFormattedCallExpression[] {
-		const pathInfo = this.languageService.getPathInfo(file);
+		const pathInfo = this.languageService.getPathInfo({path: file});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If call expressions are currently being analyzed for the file, return an empty array

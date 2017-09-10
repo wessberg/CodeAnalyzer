@@ -235,6 +235,9 @@ import {ImportFormatterGetter} from "./formatter/expression/import-formatter/imp
 import {ExportFormatterGetter} from "./formatter/expression/export-formatter/export-formatter-getter";
 import {ImportFormatter} from "./formatter/expression/import-formatter/import-formatter";
 import {ExportFormatter} from "./formatter/expression/export-formatter/export-formatter";
+import {IExportService} from "./service/export-service/i-export-service";
+import {ExportServiceGetter} from "./service/export-service/export-service-getter";
+import {ExportService} from "./service/export-service/export-service";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -324,6 +327,7 @@ let callExpressionService: ICallExpressionService|null = null;
 let identifierExpressionService: IIdentifierService|null = null;
 let functionService: IFunctionService|null = null;
 let importService: IImportService|null = null;
+let exportService: IExportService|null = null;
 
 // General formatter getters
 const arrayBindingNameFormatterGetter: ArrayBindingNameFormatterGetter = () => arrayBindingNameFormatter!;
@@ -413,6 +417,7 @@ const callExpressionServiceGetter: CallExpressionServiceGetter = () => callExpre
 const identifierExpressionServiceGetter: IdentifierServiceGetter = () => identifierExpressionService!;
 const functionServiceGetter: FunctionServiceGetter = () => functionService!;
 const importServiceGetter: ImportServiceGetter = () => importService!;
+const exportServiceGetter: ExportServiceGetter = () => exportService!;
 
 // Utils
 const astUtil: ITypescriptASTUtil = new TypescriptASTUtil();
@@ -565,8 +570,9 @@ callExpressionService = new CallExpressionService(astUtil, languageService, call
 identifierExpressionService = new IdentifierService(astUtil, languageService, identifierFormatterGetter, cacheServiceGetter);
 functionService = new FunctionService(astUtil, languageService, functionFormatterGetter, cacheServiceGetter);
 importService = new ImportService(astUtil, languageService, cacheServiceGetter, importFormatterGetter);
+exportService = new ExportService(astUtil, languageService, cacheServiceGetter, exportFormatterGetter);
 
 // Resolvers
-identifierResolver = new IdentifierResolver(astMapperGetter, languageService, importServiceGetter, classServiceGetter, functionServiceGetter);
+identifierResolver = new IdentifierResolver(astMapperGetter, languageService, importServiceGetter, exportServiceGetter, classServiceGetter, functionServiceGetter);
 
-export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter, resolverServiceGetter};
+export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter, exportServiceGetter, resolverServiceGetter};

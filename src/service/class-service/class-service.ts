@@ -44,7 +44,7 @@ export class ClassService implements IClassService {
 	 * @returns {IFormattedClass[]}
 	 */
 	public getClassesForFile (file: string): IFormattedClass[] {
-		const pathInfo = this.languageService.getPathInfo(file);
+		const pathInfo = this.languageService.getPathInfo({path: file});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If classes are currently being analyzed for the file, return an empty array

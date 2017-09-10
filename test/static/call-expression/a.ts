@@ -1,4 +1,4 @@
-import {A} from "../class/a";
+import {A} from "../class/re-export-b";
 
 /**
  * Foo bar

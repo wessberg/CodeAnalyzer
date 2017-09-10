@@ -3,8 +3,8 @@ import {IPredicateTypeFormatter} from "./i-predicate-type-formatter";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {TypeFormatterGetter} from "../type-formatter/type-formatter-getter";
 import {FormattedExpressionFormatter} from "../../expression/formatted-expression/formatted-expression-formatter";
-import {FirstTypeNode} from "../../../type/first-type-node/first-type-node";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
+import {TypePredicateNode} from "typescript";
 
 /**
  * A class for generating IFormattedPredicateType
@@ -21,7 +21,7 @@ export class PredicateTypeFormatter extends FormattedExpressionFormatter impleme
 	 * @param {FirstTypeNode} expression
 	 * @returns {IFormattedPredicateType}
 	 */
-	public format (expression: FirstTypeNode): IFormattedPredicateType {
+	public format (expression: TypePredicateNode): IFormattedPredicateType {
 
 		const result: IFormattedPredicateType = {
 			...super.format(expression),

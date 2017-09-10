@@ -44,7 +44,7 @@ export class IdentifierService implements IIdentifierService {
 	 * @returns {IFormattedIdentifier[]}
 	 */
 	public getIdentifiersForFile (file: string): IFormattedIdentifier[] {
-		const pathInfo = this.languageService.getPathInfo(file);
+		const pathInfo = this.languageService.getPathInfo({path: file});
 		const statements = this.languageService.addFile(pathInfo);
 
 		// If classes are currently being analyzed for the file, return an empty array
