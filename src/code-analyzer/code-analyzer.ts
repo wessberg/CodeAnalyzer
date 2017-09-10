@@ -3,18 +3,11 @@ import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IForma
 import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, ExportDeclaration, FunctionDeclaration, FunctionExpression, Identifier, ImportDeclaration, InterfaceDeclaration, NodeArray, Statement} from "typescript";
 import {AstNode} from "../type/ast-node/ast-node";
 import {callExpressionServiceGetter, classServiceGetter, exportServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
-import {ICodeAnalyzerOptions} from "./i-code-analyzer-options";
 
 /**
  * A service that can analyze your code in great detail ahead of time.
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
-
-	constructor (options?: Partial<ICodeAnalyzerOptions>) {
-		if (options != null && options.excludedFiles != null) {
-			this.excludeFiles(options.excludedFiles);
-		}
-	}
 
 	/**
 	 * Gets all IFormattedImports for the given file
