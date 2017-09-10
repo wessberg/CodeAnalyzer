@@ -3,14 +3,13 @@ import {IClassFormatter} from "./i-class-formatter";
 import {FormattedExpressionFormatter} from "../formatted-expression/formatted-expression-formatter";
 import {AstMapperGetter} from "../../../mapper/ast-mapper/ast-mapper-getter";
 import {HeritageFormatterGetter} from "../heritage/heritage-formatter-getter";
-import {FormattedClassMember, FormattedExpressionKind, IFormattedClass, IFormattedClassConstructor, IFormattedDecorator, IFormattedExtendsHeritage, IFormattedImplementsHeritage} from "@wessberg/type";
+import {FormattedClassMember, FormattedExpressionKind, IFormattedClass, IFormattedClassConstructor, IFormattedExtendsHeritage, IFormattedImplementsHeritage} from "@wessberg/type";
 import {DecoratorFormatterGetter} from "../decorator/decorator-formatter-getter";
 import {ClassAccessorFormatterGetter} from "../class-accessor/class-accessor-formatter-getter";
 import {ClassMethodFormatterGetter} from "../class-method/class-method-formatter-getter";
 import {ClassPropertyFormatterGetter} from "../class-property/class-property-formatter-getter";
 import {ClassConstructorFormatterGetter} from "../class-constructor/class-constructor-formatter-getter";
 import {IdentifierFormatterGetter} from "../identifier/identifier-formatter-getter";
-import {ResolverServiceGetter} from "../../../service/resolver-service/resolver-service-getter";
 
 /**
  * A class that can format class declarations and class expressions
@@ -23,8 +22,7 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 							 private classMethodFormatter: ClassMethodFormatterGetter,
 							 private classPropertyFormatter: ClassPropertyFormatterGetter,
 							 private heritageFormatter: HeritageFormatterGetter,
-							 private decoratorFormatter: DecoratorFormatterGetter,
-							 private resolverService: ResolverServiceGetter) {
+							 private decoratorFormatter: DecoratorFormatterGetter) {
 		super();
 	}
 
@@ -56,18 +54,15 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 		// Format the name. Class expressions may not have a name (for example, 'export default class {...}')
 		const name = expression.name == null ? null : this.identifierFormatter().format(expression.name);
 
-		// Inherit from the parent
-		const inherited = this.inherit(extendsFormatted);
-
 		const result: IFormattedClass = {
 			...super.format(expression),
 			expressionKind: FormattedExpressionKind.CLASS,
 			name,
 			extends: extendsFormatted,
-			implements: this.mergeImplements(implementsFormatted, inherited),
-			decorators: this.mergeDecorators(decorators, inherited),
-			members: this.mergeMembers(members, inherited),
-			constructor: this.mergeConstructor(constructor, inherited)
+			implements: implementsFormatted,
+			decorators: decorators,
+			members: members,
+			constructor: constructor
 		};
 
 		// Map the formatted expression to the relevant statement
@@ -76,82 +71,6 @@ export class ClassFormatter extends FormattedExpressionFormatter implements ICla
 		// Override the 'toString()' method
 		result.toString = () => this.stringify(result);
 		return result;
-	}
-
-	/**
-	 * Merges the IFormattedImplementsHeritage with the parent
-	 * @param {IFormattedImplementsHeritage|null} own
-	 * @param {IFormattedClass|null} inherited
-	 * @returns {IFormattedImplementsHeritage|null}
-	 */
-	private mergeImplements (own: IFormattedImplementsHeritage|null, inherited: IFormattedClass|null): IFormattedImplementsHeritage|null {
-		if (inherited == null || inherited.implements == null) return own;
-
-		return own == null ? inherited.implements : {
-			...own,
-			members: [...own.members, ...inherited.implements.members]
-		};
-	}
-
-	/**
-	 * Merges the IFormattedDecorators with the parent
-	 * @param {IFormattedDecorator[]} own
-	 * @param {IFormattedClass} inherited
-	 * @returns {IFormattedDecorator[]}
-	 */
-	private mergeDecorators (own: IFormattedDecorator[], inherited: IFormattedClass|null): IFormattedDecorator[] {
-		if (inherited == null || inherited.decorators.length === 0) return own;
-		return [...inherited.decorators, ...own];
-	}
-
-	/**
-	 * Merges the class members with the parent
-	 * @param {FormattedClassMember[]} own
-	 * @param {IFormattedClass} inherited
-	 * @returns {FormattedClassMember[]}
-	 */
-	private mergeMembers (own: FormattedClassMember[], inherited: IFormattedClass|null): FormattedClassMember[] {
-		if (inherited == null || inherited.members.length === 0) return own;
-		const members: FormattedClassMember[] = [...own];
-
-		inherited.members.forEach(member => {
-			const hasAlready = own.find(ownMember => ownMember.name === member.name) != null;
-			if (!hasAlready) members.push(member);
-		});
-		return members;
-	}
-
-	/**
-	 * Merges the constructor with an inherited one
-	 * @param {IFormattedClassConstructor} own
-	 * @param {IFormattedClass} inherited
-	 * @returns {IFormattedClassConstructor}
-	 */
-	private mergeConstructor (own: IFormattedClassConstructor|null, inherited: IFormattedClass|null): IFormattedClassConstructor|null {
-		if (inherited == null || inherited.constructor == null) return own;
-		if (own == null) return inherited.constructor;
-		return own.constructor != null ? own : inherited.constructor;
-	}
-
-	/**
-	 * Returns inherited properties of an IFormattedClass
-	 * @param {IFormattedExtendsHeritage} formatted
-	 * @returns {IFormattedClass|null}
-	 */
-	private inherit (formatted: IFormattedExtendsHeritage|null): IFormattedClass|null {
-
-		// Return an empty object if the formatted class doesn't exist
-		if (formatted == null) return null;
-
-		// Resolve the class
-		const [parent] = formatted.members;
-		const resolvedParent = <IFormattedClass|null> this.resolverService().getDefinitionMatchingExpression(parent);
-
-		// If a parent could not be resolved, assume that the parent is a built-in (such as Error)
-		if (resolvedParent == null) {
-			return null;
-		}
-		return resolvedParent;
 	}
 
 	/**
