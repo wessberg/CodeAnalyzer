@@ -1,5 +1,5 @@
 import {AstNode} from "../../type/ast-node/ast-node";
-import {NodeArray} from "typescript";
+import {NodeArray, SourceFile} from "typescript";
 import {FormattedExpression} from "@wessberg/type";
 
 export interface IAstMapper {
@@ -7,4 +7,5 @@ export interface IAstMapper {
 	getStatementsForFormattedExpression (formattedExpression: FormattedExpression): Set<AstNode|NodeArray<AstNode>>;
 	getFormattedExpressionForFileAtPosition (file: string, position: number): FormattedExpression|null;
 	getFormattedExpressionsForStatement (statement: AstNode|NodeArray<AstNode>): Set<FormattedExpression>;
+	getSourceFileForFormattedExpression (expression: FormattedExpression): SourceFile|undefined;
 }

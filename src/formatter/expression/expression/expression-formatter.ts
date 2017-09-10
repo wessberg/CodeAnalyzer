@@ -1,5 +1,5 @@
 import {IExpressionFormatter} from "./i-expression-formatter";
-import {Expression, ExpressionWithTypeArguments, isArrowFunction, isAwaitExpression, isBlock, isCallExpression, isClassDeclaration, isClassExpression, isConstructorDeclaration, isDecorator, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isMethodDeclaration, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameter, isPropertyAccessExpression, isPropertyDeclaration, isPropertyName, isRegularExpressionLiteral, isSetAccessorDeclaration, isStringLiteral, isTypeNode, isYieldExpression, Statement, SuperExpression, SyntaxKind, ThisExpression} from "typescript";
+import {Expression, ExpressionWithTypeArguments, isArrowFunction, isAwaitExpression, isBlock, isCallExpression, isClassDeclaration, isClassExpression, isConstructorDeclaration, isDecorator, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionExpression, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isImportDeclaration, isImportSpecifier, isMethodDeclaration, isNamespaceExportDeclaration, isNamespaceImport, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectLiteralExpression, isParameter, isPropertyAccessExpression, isPropertyDeclaration, isPropertyName, isRegularExpressionLiteral, isSetAccessorDeclaration, isStringLiteral, isTypeNode, isYieldExpression, Statement, SuperExpression, SyntaxKind, ThisExpression} from "typescript";
 import {CallExpressionFormatterGetter} from "../call-expression/call-expression-formatter-getter";
 import {StringLiteralFormatterGetter} from "../literal/string-literal/string-literal-formatter-getter";
 import {NotImplementedFormatterGetter} from "../not-implemented/not-implemented-formatter-getter";
@@ -27,12 +27,18 @@ import {SuperExpressionFormatterGetter} from "../super-expression/super-expressi
 import {AwaitExpressionFormatterGetter} from "../await-expression/await-expression-formatter-getter";
 import {YieldExpressionFormatterGetter} from "../yield-expression/yield-expression-formatter-getter";
 import {TypeFormatterGetter} from "../../type/type-formatter/type-formatter-getter";
+import {ModuleBindingFormatterGetter} from "../module-binding/module-binding-formatter-getter";
+import {ImportFormatterGetter} from "../import-formatter/import-formatter-getter";
+import {ExportFormatterGetter} from "../export-formatter/export-formatter-getter";
 
 /**
  * Can format any expression
  */
 export class ExpressionFormatter implements IExpressionFormatter {
-	constructor (private thisExpressionFormatter: ThisExpressionFormatterGetter,
+	constructor (private moduleBindingFormatter: ModuleBindingFormatterGetter,
+							 private importFormatter: ImportFormatterGetter,
+							 private exportFormatter: ExportFormatterGetter,
+							 private thisExpressionFormatter: ThisExpressionFormatterGetter,
 							 private superExpressionFormatter: SuperExpressionFormatterGetter,
 							 private awaitExpressionFormatter: AwaitExpressionFormatterGetter,
 							 private yieldExpressionFormatter: YieldExpressionFormatterGetter,
@@ -84,6 +90,14 @@ export class ExpressionFormatter implements IExpressionFormatter {
 
 		else if (isPropertyDeclaration(expression)) {
 			return this.classPropertyFormatter().format(expression);
+		}
+
+		else if (isImportDeclaration(expression)) {
+			return this.importFormatter().format(expression);
+		}
+
+		else if (isExportDeclaration(expression)) {
+			return this.exportFormatter().format(expression);
 		}
 
 		else if (isCallExpression(expression)) {
@@ -164,6 +178,10 @@ export class ExpressionFormatter implements IExpressionFormatter {
 
 		else if (isTypeNode(expression)) {
 			return this.typeFormatter().format(expression);
+		}
+
+		else if (isNamespaceImport(expression) || isNamespaceExportDeclaration(expression) || isImportSpecifier(expression) || isExportSpecifier(expression)) {
+			return this.moduleBindingFormatter().format(expression);
 		}
 
 		else {

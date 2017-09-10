@@ -226,6 +226,15 @@ import {ResolverService} from "./service/resolver-service/resolver-service";
 import {ICacheService} from "./service/cache-service/i-cache-service";
 import {CacheServiceGetter} from "./service/cache-service/cache-service-getter";
 import {CacheService} from "./service/cache-service/cache-service";
+import {IModuleBindingFormatter} from "./formatter/expression/module-binding/i-module-binding-formatter";
+import {ModuleBindingFormatterGetter} from "./formatter/expression/module-binding/module-binding-formatter-getter";
+import {ModuleBindingFormatter} from "./formatter/expression/module-binding/module-binding-formatter";
+import {IImportFormatter} from "./formatter/expression/import-formatter/i-import-formatter";
+import {IExportFormatter} from "./formatter/expression/export-formatter/i-export-formatter";
+import {ImportFormatterGetter} from "./formatter/expression/import-formatter/import-formatter-getter";
+import {ExportFormatterGetter} from "./formatter/expression/export-formatter/export-formatter-getter";
+import {ImportFormatter} from "./formatter/expression/import-formatter/import-formatter";
+import {ExportFormatter} from "./formatter/expression/export-formatter/export-formatter";
 
 // General formatter declarations
 let arrayBindingNameFormatter: IArrayBindingNameFormatter|null = null;
@@ -265,6 +274,9 @@ let typeParameterFormatter: ITypeParameterFormatter|null = null;
 let interfaceTypeFormatter: IInterfaceTypeFormatter|null = null;
 
 // Expression formatter declarations
+let moduleBindingFormatter: IModuleBindingFormatter|null = null;
+let importFormatter: IImportFormatter|null = null;
+let exportFormatter: IExportFormatter|null = null;
 let thisExpressionFormatter: IThisExpressionFormatter|null = null;
 let superExpressionFormatter: ISuperExpressionFormatter|null = null;
 let yieldExpressionFormatter: IYieldExpressionFormatter|null = null;
@@ -351,6 +363,9 @@ const typeParameterFormatterGetter: TypeParameterFormatterGetter = () => typePar
 const interfaceTypeFormatterGetter: InterfaceTypeFormatterGetter = () => interfaceTypeFormatter!;
 
 // Expression formatter getters
+const moduleBindingFormatterGetter: ModuleBindingFormatterGetter = () => moduleBindingFormatter!;
+const importFormatterGetter: ImportFormatterGetter = () => importFormatter!;
+const exportFormatterGetter: ExportFormatterGetter = () => exportFormatter!;
 const thisExpressionFormatterGetter: ThisExpressionFormatterGetter = () => thisExpressionFormatter!;
 const superExpressionFormatterGetter: SuperExpressionFormatterGetter = () => superExpressionFormatter!;
 const awaitExpressionFormatterGetter: AwaitExpressionFormatterGetter = () => awaitExpressionFormatter!;
@@ -473,6 +488,9 @@ typeFormatter = new TypeFormatter(
 );
 
 // Expression Formatters
+moduleBindingFormatter = new ModuleBindingFormatter(astUtil, astMapperGetter);
+importFormatter = new ImportFormatter(astUtil, astMapperGetter, moduleBindingFormatterGetter);
+exportFormatter = new ExportFormatter(astUtil, astMapperGetter, moduleBindingFormatterGetter);
 thisExpressionFormatter = new ThisExpressionFormatter(astMapperGetter);
 superExpressionFormatter = new SuperExpressionFormatter(astMapperGetter);
 yieldExpressionFormatter = new YieldExpressionFormatter(astMapperGetter, expressionFormatterGetter);
@@ -504,6 +522,9 @@ booleanLiteralFormatter = new BooleanLiteralFormatter(astMapperGetter);
 regexLiteralFormatter = new RegexLiteralFormatter(astMapperGetter);
 notImplementedFormatter = new NotImplementedFormatter(astMapperGetter);
 expressionFormatter = new ExpressionFormatter(
+	moduleBindingFormatterGetter,
+	importFormatterGetter,
+	exportFormatterGetter,
 	thisExpressionFormatterGetter,
 	superExpressionFormatterGetter,
 	awaitExpressionFormatterGetter,
@@ -543,9 +564,9 @@ classService = new ClassService(astUtil, languageService, classFormatterGetter, 
 callExpressionService = new CallExpressionService(astUtil, languageService, callExpressionFormatterGetter, cacheServiceGetter);
 identifierExpressionService = new IdentifierService(astUtil, languageService, identifierFormatterGetter, cacheServiceGetter);
 functionService = new FunctionService(astUtil, languageService, functionFormatterGetter, cacheServiceGetter);
-importService = new ImportService(languageService);
+importService = new ImportService(astUtil, languageService, cacheServiceGetter, importFormatterGetter);
 
 // Resolvers
-identifierResolver = new IdentifierResolver(astMapperGetter, importServiceGetter, languageService, classServiceGetter, functionServiceGetter);
+identifierResolver = new IdentifierResolver(astMapperGetter, languageService, importServiceGetter, classServiceGetter, functionServiceGetter);
 
 export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter, resolverServiceGetter};

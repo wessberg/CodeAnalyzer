@@ -1,7 +1,8 @@
 import {IAstMapper} from "./i-ast-mapper";
 import {AstNode} from "../../type/ast-node/ast-node";
-import {NodeArray} from "typescript";
+import {NodeArray, SourceFile} from "typescript";
 import {FormattedExpression, isFormattedClass, isFormattedMethod, isFormattedNormalFunction} from "@wessberg/type";
+import {isNodeArray} from "tslint/lib/rules/typedefRule";
 
 /**
  * A class that can map AstNodes to formatted expressions and vice-versa
@@ -101,6 +102,21 @@ export class AstMapper implements IAstMapper {
 	public getFormattedExpressionsForStatement (statement: AstNode|NodeArray<AstNode>): Set<FormattedExpression> {
 		const result = AstMapper.STATEMENT_TO_FORMATTED_EXPRESSIONS_MAP.get(statement);
 		return result == null ? new Set() : result;
+	}
+
+	/**
+	 * Gets the associated SourceFile for a FormattedExpression
+	 * @param {FormattedExpression} expression
+	 * @returns {ts.SourceFile}
+	 */
+	public getSourceFileForFormattedExpression (expression: FormattedExpression): SourceFile|undefined {
+		const match = this.getStatementsForFormattedExpression(expression);
+		for (const statement of match) {
+			if (!isNodeArray(statement)) {
+				return statement.getSourceFile();
+			}
+		}
+		return undefined;
 	}
 
 }

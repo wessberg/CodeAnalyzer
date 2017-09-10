@@ -1,5 +1,5 @@
 import {ICacheService} from "./i-cache-service";
-import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedInterfaceType} from "@wessberg/type";
+import {FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
@@ -30,7 +30,7 @@ export class CacheService implements ICacheService {
 	 * A class between file names and cached import paths
 	 * @type {Map<string, string[]>}
 	 */
-	private cachedImportsMap: Map<string, string[]> = new Map();
+	private cachedImportsMap: Map<string, IFormattedImport[]> = new Map();
 	/**
 	 * A class between file names and cached formatted interfaces
 	 * @type {Map<string, IFormattedInterfaceType[]>}
@@ -187,10 +187,10 @@ export class CacheService implements ICacheService {
 	/**
 	 * Sets the provided cached imports for the provided file
 	 * @param {string} file
-	 * @param {string[]} imports
-	 * @returns {string[]}
+	 * @param {IFormattedImport[]} imports
+	 * @returns {IFormattedImport[]}
 	 */
-	public setCachedImportsForFile (file: string, imports: string[]): string[] {
+	public setCachedImportsForFile (file: string, imports: IFormattedImport[]): IFormattedImport[] {
 		// Update the cached import map with the new items
 		this.cachedImportsMap.set(file, imports);
 
@@ -253,9 +253,9 @@ export class CacheService implements ICacheService {
 	/**
 	 * Gets all cached import paths for the given file
 	 * @param {string} file
-	 * @returns {string[]}
+	 * @returns {IFormattedImport[]}
 	 */
-	public getCachedImportsForFile (file: string): string[]|undefined {
+	public getCachedImportsForFile (file: string): IFormattedImport[]|undefined {
 		return this.cachedImportsMap.get(file);
 	}
 

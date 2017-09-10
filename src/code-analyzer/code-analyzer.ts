@@ -1,6 +1,6 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedInterfaceType} from "@wessberg/type";
-import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, InterfaceDeclaration, NodeArray, Statement} from "typescript";
+import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
+import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, FunctionDeclaration, FunctionExpression, Identifier, ImportDeclaration, InterfaceDeclaration, NodeArray, Statement} from "typescript";
 import {AstNode} from "../type/ast-node/ast-node";
 import {callExpressionServiceGetter, classServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
 import {ICodeAnalyzerOptions} from "./i-code-analyzer-options";
@@ -17,29 +17,38 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	}
 
 	/**
+	 * Gets all IFormattedImports for the given file
+	 * @param {string} file
+	 * @returns {IFormattedImport[]}
+	 */
+	public getImportsForFile (file: string): IFormattedImport[] {
+		return importServiceGetter().getImportsForFile(file);
+	}
+
+	/**
+	 * Gets all IFormattedImports for the given statement
+	 * @param {ImportDeclaration} statement
+	 * @returns {IFormattedImport[]}
+	 */
+	public getImportsForStatement (statement: ImportDeclaration): IFormattedImport[] {
+		return importServiceGetter().getImportsForStatement(statement);
+	}
+
+	/**
+	 * Gets all IFormattedImports for the given Statements
+	 * @param {NodeArray<AstNode>} statements
+	 * @returns {IFormattedImport[]}
+	 */
+	public getImportsForStatements (statements: NodeArray<AstNode>): IFormattedImport[] {
+		return importServiceGetter().getImportsForStatements(statements);
+	}
+
+	/**
 	 * Excludes files from the CodeAnalyzer that matches the provided Regular Expression(s)
 	 * @param {RegExp | Iterable<RegExp>} match
 	 */
 	public excludeFiles (match: RegExp|Iterable<RegExp>): void {
 		languageService.excludeFiles(match);
-	}
-
-	/**
-	 * Gets all imported files for the given file
-	 * @param {string} file
-	 * @returns {string[]}
-	 */
-	public getImportedFilesForFile (file: string): string[] {
-		return importServiceGetter().getImportedFilesForFile(file);
-	}
-
-	/**
-	 * Gets all imported files for the file holding the provided statement
-	 * @param {AstNode} statement
-	 * @returns {string[]}
-	 */
-	public getImportedFilesForStatementFile (statement: AstNode): string[] {
-		return importServiceGetter().getImportedFilesForStatementFile(statement);
 	}
 
 	/**

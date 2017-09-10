@@ -8,7 +8,7 @@ test.beforeEach(() => codeAnalyzer = new CodeAnalyzer());
 test("foo", t => {
 	const expressions = codeAnalyzer.getCallExpressionsForFile("./test/static/call-expression/a");
 	expressions.forEach(_expression => {
-		console.log(codeAnalyzer.getDefinitionMatchingExpression(_expression.typeArguments[0]));
+		codeAnalyzer.getDefinitionMatchingExpression(_expression.typeArguments[0]);
 	});
 	t.true(true);
 });

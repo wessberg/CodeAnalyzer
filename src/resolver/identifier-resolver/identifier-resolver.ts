@@ -1,19 +1,19 @@
 import {IIdentifierResolver} from "./i-identifier-resolver";
-import {FormattedExpression} from "@wessberg/type";
+import {FormattedExpression, isFormattedDefaultModuleBinding, isFormattedNamedModuleBinding} from "@wessberg/type";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {AstMapperGetter} from "../../mapper/ast-mapper/ast-mapper-getter";
-import {ImportServiceGetter} from "../../service/import-service/import-service-getter";
 import {DefinitionInfo, ScriptElementKind} from "typescript";
 import {ClassServiceGetter} from "../../service/class-service/class-service-getter";
 import {FunctionServiceGetter} from "../../service/function-service/function-service-getter";
+import {ImportServiceGetter} from "../../service/import-service/import-service-getter";
 
 /**
  * A class that can resolve any identifier
  */
 export class IdentifierResolver implements IIdentifierResolver {
 	constructor (private astMapper: AstMapperGetter,
-							 private importService: ImportServiceGetter,
 							 private languageService: ITypescriptLanguageService,
+							 private importService: ImportServiceGetter,
 							 private classService: ClassServiceGetter,
 							 private functionService: FunctionServiceGetter) {
 	}
@@ -70,18 +70,25 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * @returns {string[]}
 	 */
 	private addDependencies (identifier: FormattedExpression): string[] {
-		const imports = this.importService().getImportedFilesForFile(identifier.file);
+		// Get all import paths
+		const imports = this.importService().getImportsForFile(identifier.file);
+		const paths: string[] = [];
 
 		// Return the normalized file paths
-		return imports.filter(path => {
-			const pathInfo = this.languageService.getPathInfo(path);
+		imports
+		// Only take those that references the identifier directly
+			.filter(importPath => importPath.bindings.some(binding => isFormattedDefaultModuleBinding(binding) || isFormattedNamedModuleBinding(binding) && binding.name === identifier.toString()))
+			.forEach(importPath => {
+				const pathInfo = this.languageService.getPathInfo(importPath.path, importPath.file);
 
-			// Only add the file if it needs an update
-			if (pathInfo.needsUpdate) this.languageService.addFile(pathInfo);
-
-			// Include the file if it needs an update
-			return pathInfo.needsUpdate;
-		});
+				// Only add the file if it needs an update
+				if (pathInfo.needsUpdate) {
+					this.languageService.addFile(pathInfo);
+					// TODO: Also add exports!
+					paths.push(pathInfo.normalizedPath);
+				}
+			});
+		return paths;
 	}
 
 	/**
