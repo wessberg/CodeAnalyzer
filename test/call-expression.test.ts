@@ -9,6 +9,7 @@ test("foo", t => {
 	const expressions = codeAnalyzer.getCallExpressionsForFile("./test/static/call-expression/a");
 	expressions.forEach(_expression => {
 		codeAnalyzer.getDefinitionMatchingExpression(_expression.typeArguments[0]);
+
 	});
 	t.true(true);
 });

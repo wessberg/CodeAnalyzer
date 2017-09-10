@@ -110,7 +110,7 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @param {FormattedExpression} expression
 	 * @returns {FormattedExpression}
 	 */
-	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|null {
+	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|undefined {
 		return resolverServiceGetter().getDefinitionMatchingExpression(expression);
 	}
 

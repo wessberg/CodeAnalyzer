@@ -1,8 +1,6 @@
 import {IIdentifierResolver} from "./i-identifier-resolver";
-import {FormattedExpression, IFormattedExport, IFormattedImport} from "@wessberg/type";
+import {FormattedExpression, FormattedFunction, IFormattedClass, IFormattedExport, IFormattedImport, isFormattedNormalFunction, isFormattedPropertyStaticName} from "@wessberg/type";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {AstMapperGetter} from "../../mapper/ast-mapper/ast-mapper-getter";
-import {DefinitionInfo, ScriptElementKind} from "typescript";
 import {ClassServiceGetter} from "../../service/class-service/class-service-getter";
 import {FunctionServiceGetter} from "../../service/function-service/function-service-getter";
 import {ImportServiceGetter} from "../../service/import-service/import-service-getter";
@@ -12,8 +10,7 @@ import {ExportServiceGetter} from "../../service/export-service/export-service-g
  * A class that can resolve any identifier
  */
 export class IdentifierResolver implements IIdentifierResolver {
-	constructor (private astMapper: AstMapperGetter,
-							 private languageService: ITypescriptLanguageService,
+	constructor (private languageService: ITypescriptLanguageService,
 							 private importService: ImportServiceGetter,
 							 private exportService: ExportServiceGetter,
 							 private classService: ClassServiceGetter,
@@ -25,67 +22,72 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * @param {IFormattedIdentifier} identifier
 	 * @returns {FormattedExpression}
 	 */
-	public resolve (identifier: FormattedExpression): FormattedExpression|null {
-		// Fetch all imported paths and add them to the Language Service first
-		const imports = this.addDependencies(identifier);
-
-		// Get the definition
-		const definition = this.getDefinitionForIdentifier(identifier);
-		if (definition == null) return null;
-
-		// Check the dependencies first
-		this.checkDependencies(imports, definition);
-
-		// Get the matching formatted expression
-		return this.astMapper().getFormattedExpressionForFileAtPosition(definition.fileName, definition.textSpan.start);
+	public resolve (identifier: FormattedExpression): FormattedExpression|undefined {
+		return this.findDefinitionForIdentifier(identifier);
 	}
 
 	/**
-	 * Checks all dependencies for relevant expressions.
-	 * For example, if Typescript informs that an identifier is a class
-	 * we want to make sure that the class has been parsed by the CodeAnalyzer
-	 * so that it can be properly resolved
-	 * @param {string[]} paths
-	 * @param {DefinitionInfo} definition
-	 */
-	private checkDependencies (paths: string[], definition: DefinitionInfo): void {
-
-		new Set([...paths, definition.fileName]).forEach(path => {
-			switch (definition.kind) {
-
-				case ScriptElementKind.classElement:
-					// Check the file for classes unless it is already being checked
-					this.classService().getClassesForFile(path);
-					break;
-
-				case ScriptElementKind.functionElement:
-					// Check the file for functions unless it is already being checked
-					this.functionService().getFunctionsForFile(path);
-					break;
-			}
-		});
-	}
-
-	/**
-	 * Adds all the dependencies of the file containing the provided identifier to the language service
+	 * Finds the FormattedExpression that matches the provided identifier.
+	 * Checks the host file before attempting to locate it within the imports of the module
 	 * @param {FormattedExpression} identifier
-	 * @returns {string[]}
+	 * @returns {FormattedExpression}
 	 */
-	private addDependencies (identifier: FormattedExpression): string[] {
-		// Get all import paths
+	private findDefinitionForIdentifier (identifier: FormattedExpression): FormattedExpression|undefined {
 		const importService = this.importService();
+
+		// Check the file containing the identifier first
+		const hostMatch = this.findIdentifier(identifier, identifier.file);
+		if (hostMatch != null) return hostMatch;
+
+		// Check the imports that directly references the identifier
 		const imports = importService.getImportsForFile(identifier.file);
-		const stringified = identifier.toString();
-		const paths: Set<string> = new Set();
 
-		imports
 		// Only take those that references the identifier directly
-			.filter(importPath => this.qualifyModuleBindings(importPath, stringified))
-			// Take all of the relevant imports and exports
-			.forEach(importPath => this.takeRelevantImportPaths(importPath, stringified, paths));
+		const filtered = imports.filter(importPath => this.qualifyModuleBindings(importPath, identifier));
 
-		// Return the normalized paths.
-		return [...paths];
+		for (const importPath of filtered) {
+			const match = this.findInImportPath(importPath, identifier);
+			if (match != null) return match;
+		}
+		return undefined;
+	}
+
+	/**
+	 * Finds the FormattedExpression that matches the identifier, if possible
+	 * @param {FormattedExpression} identifier
+	 * @param {string} file
+	 * @returns {FormattedExpression}
+	 */
+	private findIdentifier (identifier: FormattedExpression, file: string): FormattedExpression|undefined {
+		// Check if it is a class
+		const classMatch = this.findMatchingClass(identifier, this.classService().getClassesForFile(file));
+		if (classMatch != null) return classMatch;
+
+		// Check if it is a function
+		const functionMatch = this.findMatchingFunction(identifier, this.functionService().getFunctionsForFile(file));
+		if (functionMatch != null) return functionMatch;
+
+		return undefined;
+	}
+
+	/**
+	 * Finds a class that matches the given identifier
+	 * @param {FormattedExpression} identifier
+	 * @param {IFormattedClass[]} classes
+	 * @returns {IFormattedClass}
+	 */
+	private findMatchingClass (identifier: FormattedExpression, classes: IFormattedClass[]): IFormattedClass|undefined {
+		return classes.find(formatted => formatted.name != null && formatted.name.name === identifier.toString());
+	}
+
+	/**
+	 * Finds a function that matches the given identifier
+	 * @param {FormattedExpression} identifier
+	 * @param {FormattedFunction[]} functions
+	 * @returns {FormattedFunction}
+	 */
+	private findMatchingFunction (identifier: FormattedExpression, functions: FormattedFunction[]): FormattedFunction|undefined {
+		return functions.find(formatted => isFormattedNormalFunction(formatted) && formatted.name != null && isFormattedPropertyStaticName(formatted.name) && formatted.name.name === identifier.toString());
 	}
 
 	/**
@@ -94,46 +96,32 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * should also be included
 	 * @param {IFormattedImport} importPath
 	 * @param {string} identifier
-	 * @param {Set<string>} [existingPaths]
 	 */
-	private takeRelevantImportPaths (importPath: IFormattedImport, identifier: string, existingPaths: Set<string> = new Set()): void {
+	private findInImportPath (importPath: IFormattedImport, identifier: FormattedExpression): FormattedExpression|undefined {
+		// Check if the identifier is located within the file itself
+		const {normalizedPath} = this.languageService.getAddPath(importPath.path, importPath.file);
+		const match = this.findIdentifier(identifier, normalizedPath);
+		if (match != null) return match;
 
-		const languageService = this.languageService;
-
-		// Take the addPath
-		const addPath = this.languageService.getAddPath(importPath.path, importPath.file);
-
-		// Stop immediately if the path has already been added
-		if (existingPaths.has(addPath.normalizedPath)) return;
-
-		// Otherwise, convert it into pathInfo
-		const pathInfo = languageService.getPathInfo(addPath);
-
-		// Only add the file if it needs an update
-		if (pathInfo.needsUpdate) {
-			// Add it to the language service immediately so future 'needsUpdate' values for duplicates will return false
-			this.languageService.addFile(pathInfo);
-			existingPaths.add(pathInfo.normalizedPath);
-
-			// Check its exports. It may re-export something from another file.
-			this.takeRelevantExportsForFile(pathInfo.normalizedPath, identifier, existingPaths);
-		}
+		// Check its exports. It may re-export something from another file.
+		return this.findInExportsForFile(normalizedPath, identifier);
 	}
 
 	/**
 	 * Takes all relevant exports from a file
 	 * @param {string} file
 	 * @param {string} identifier
-	 * @param {Set<string>} [existingPaths]
 	 */
-	private takeRelevantExportsForFile (file: string, identifier: string, existingPaths: Set<string> = new Set()): void {
+	private findInExportsForFile (file: string, identifier: FormattedExpression): FormattedExpression|undefined {
 		const exportService = this.exportService();
 
 		// Check its exports. It may re-export something from another file.
 		const exports = exportService.getExportsForFile(file);
-		exports.forEach(exportPath => {
-			this.takeRelevantExportPaths(exportPath, file, identifier, existingPaths);
-		});
+		for (const exportPath of exports) {
+			const match = this.findInExportPath(exportPath, file, identifier);
+			if (match != null) return match;
+		}
+		return undefined;
 	}
 
 	/**
@@ -143,10 +131,9 @@ export class IdentifierResolver implements IIdentifierResolver {
 	 * @param {IFormattedExport} exportPath
 	 * @param {string} hostNormalizedPath
 	 * @param {string} identifier
-	 * @param {Set<string>} [existingPaths]
+	 * @returns {FormattedExpression?}
 	 */
-	private takeRelevantExportPaths (exportPath: IFormattedExport, hostNormalizedPath: string, identifier: string, existingPaths: Set<string> = new Set()): void {
-		const languageService = this.languageService;
+	private findInExportPath (exportPath: IFormattedExport, hostNormalizedPath: string, identifier: FormattedExpression): FormattedExpression|undefined {
 
 		// If the export has no path, it exports from the host module.
 		// We don't need it since that will already be covered by the import of the host module
@@ -157,49 +144,29 @@ export class IdentifierResolver implements IIdentifierResolver {
 		// Don't use it if it doesn't export the desired identifier
 		if (!hasRelevantExportBinding) return;
 
-		// Take the addPath
-		const addPath = this.languageService.getAddPath(exportPath.path, exportPath.file);
-
-		// Stop immediately if the path has already been added
-		if (existingPaths.has(addPath.normalizedPath)) return;
-
-		// Format the path info
-		const pathInfo = languageService.getPathInfo(addPath);
+		// Check if the identifier is located within the file itself
+		const {normalizedPath} = this.languageService.getAddPath(exportPath.path, exportPath.file);
 
 		// Check if the export is exporting from the same path as the host module
-		const isSamePath = pathInfo.normalizedPath === hostNormalizedPath;
+		const isSamePath = normalizedPath === hostNormalizedPath;
 
-		// Only add it if it doesn't export from the same path as the host module and the reference path needs an update
-		if (!isSamePath && pathInfo.needsUpdate) {
-			// Add it to the language service immediately so future 'needsUpdate' values for duplicates will return false
-			this.languageService.addFile(pathInfo);
-			existingPaths.add(pathInfo.normalizedPath);
-			// Do this recursively as it may re-export from another module that re-exports (and so on)
-			this.takeRelevantExportsForFile(pathInfo.normalizedPath, identifier, existingPaths);
-		}
+		// Return immediately if it doesn't export from the same path as the host module (which we have checked already)
+		if (isSamePath) return;
+
+		const match = this.findIdentifier(identifier, normalizedPath);
+		if (match != null) return match;
+
+		// Do this recursively as it may re-export from another module that re-exports (and so on)
+		return this.findInExportsForFile(normalizedPath, identifier);
 	}
 
 	/**
 	 * Qualifies module bindings. They must have at least one that exactly matches the one provided as the second argument
 	 * @param {IFormattedImport | IFormattedExport} importPath
-	 * @param {string} bindingMustMatch
+	 * @param {FormattedExpression} identifier
 	 * @returns {boolean}
 	 */
-	private qualifyModuleBindings (importPath: IFormattedImport|IFormattedExport, bindingMustMatch: string): boolean {
-		return importPath.bindings.some(binding => binding.name === bindingMustMatch);
+	private qualifyModuleBindings (importPath: IFormattedImport|IFormattedExport, identifier: FormattedExpression): boolean {
+		return importPath.bindings.some(binding => binding.name === identifier.toString());
 	}
-
-	/**
-	 * Gets the definition for a formatted expression
-	 * @param {FormattedExpression} identifier
-	 * @returns {DefinitionInfo}
-	 */
-	private getDefinitionForIdentifier (identifier: FormattedExpression): DefinitionInfo|null {
-		const rawDefinitions = this.languageService.getDefinitionAtPosition(identifier.file, identifier.startsAt);
-		if (rawDefinitions == null) return null;
-
-		// Return the first definition
-		return rawDefinitions[0];
-	}
-
 }

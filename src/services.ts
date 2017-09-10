@@ -573,6 +573,6 @@ importService = new ImportService(astUtil, languageService, cacheServiceGetter, 
 exportService = new ExportService(astUtil, languageService, cacheServiceGetter, exportFormatterGetter);
 
 // Resolvers
-identifierResolver = new IdentifierResolver(astMapperGetter, languageService, importServiceGetter, exportServiceGetter, classServiceGetter, functionServiceGetter);
+identifierResolver = new IdentifierResolver(languageService, importServiceGetter, exportServiceGetter, classServiceGetter, functionServiceGetter);
 
 export {interfaceTypeServiceGetter, classServiceGetter, callExpressionServiceGetter, identifierExpressionServiceGetter, functionServiceGetter, importServiceGetter, exportServiceGetter, resolverServiceGetter};

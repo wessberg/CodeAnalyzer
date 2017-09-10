@@ -14,7 +14,7 @@ export class ResolverService implements IResolverService {
 	 * @param {FormattedExpression} expression
 	 * @returns {FormattedExpression}
 	 */
-	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|null {
+	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|undefined {
 		return this.resolver().resolve(expression);
 	}
 }
