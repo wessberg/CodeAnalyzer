@@ -56,7 +56,7 @@ export class InterfaceTypeService implements IInterfaceTypeService {
 			this.filesBeingAnalyzedForInterfaces.add(pathInfo.normalizedPath);
 
 			// Get the functions
-			const interfaces = this.getInterfacesForStatements(statements);
+			const interfaces = this.getInterfacesForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForInterfaces.delete(pathInfo.normalizedPath);

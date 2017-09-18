@@ -56,7 +56,7 @@ export class FunctionService implements IFunctionService {
 			this.filesBeingAnalyzedForFunctions.add(pathInfo.normalizedPath);
 
 			// Get the functions
-			const functions = this.getFunctionsForStatements(statements);
+			const functions = this.getFunctionsForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForFunctions.delete(pathInfo.normalizedPath);

@@ -56,7 +56,7 @@ export class IdentifierService implements IIdentifierService {
 			this.filesBeingAnalyzedForIdentifiers.add(pathInfo.normalizedPath);
 
 			// Get the identifiers
-			const identifiers = this.getIdentifiersForStatements(statements);
+			const identifiers = this.getIdentifiersForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForIdentifiers.delete(pathInfo.normalizedPath);

@@ -88,7 +88,7 @@ export class CallExpressionService implements ICallExpressionService {
 			this.filesBeingAnalyzedForCallExpressions.add(pathInfo.normalizedPath);
 
 			// Get the call expressions
-			const callExpressions = this.getCallExpressionsForStatements(statements);
+			const callExpressions = this.getCallExpressionsForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForCallExpressions.delete(pathInfo.normalizedPath);

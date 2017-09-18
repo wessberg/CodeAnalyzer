@@ -57,7 +57,7 @@ export class ExportService implements IExportService {
 			this.filesBeingAnalyzedForExports.add(pathInfo.normalizedPath);
 
 			// Get the Exports
-			const exports = this.getExportsForStatements(statements);
+			const exports = this.getExportsForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForExports.delete(pathInfo.normalizedPath);

@@ -57,7 +57,7 @@ export class ImportService implements IImportService {
 			this.filesBeingAnalyzedForImports.add(pathInfo.normalizedPath);
 
 			// Get the imports
-			const imports = this.getImportsForStatements(statements);
+			const imports = this.getImportsForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForImports.delete(pathInfo.normalizedPath);

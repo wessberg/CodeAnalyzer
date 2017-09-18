@@ -57,7 +57,7 @@ export class ClassService implements IClassService {
 			this.filesBeingAnalyzedForClasses.add(pathInfo.normalizedPath);
 
 			// Get the classes
-			const classes = this.getClassesForStatements(statements);
+			const classes = this.getClassesForStatements(statements.statements);
 
 			// Un-mark the file from being analyzed
 			this.filesBeingAnalyzedForClasses.delete(pathInfo.normalizedPath);
