@@ -1,5 +1,6 @@
 import {INodeMatcherUtil} from "./i-node-matcher-util";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayTypeNode, BindingElement, BindingName, BindingPattern, Block, CallSignatureDeclaration, ComputedPropertyName, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, DeclarationName, Decorator, EntityName, FunctionDeclaration, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayTypeNode, isBindingElement, isBindingName, isBlock, isCallSignatureDeclaration, isComputedPropertyName, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isEntityName, isFunctionDeclaration, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isParameter, isParenthesizedTypeNode, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeElement, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, KeywordTypeNode, MethodDeclaration, MethodSignature, Node, NodeArray, NumericLiteral, ObjectBindingPattern, OmittedExpression, ParameterDeclaration, ParenthesizedTypeNode, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, Statement, StringLiteral, SyntaxKind, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayTypeNode, ArrowFunction, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, CallSignatureDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, DeclarationName, Decorator, DeleteExpression, EntityName, FunctionDeclaration, FunctionExpression, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, Identifier, ImportExpression, IndexedAccessTypeNode, IndexSignatureDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayTypeNode, isArrowFunction, isAwaitExpression, isBinaryExpression, isBindingElement, isBindingName, isBlock, isCallSignatureDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isDeleteExpression, isEntityName, isFunctionDeclaration, isFunctionExpression, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isIdentifier, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isLiteralTypeNode, isMappedTypeNode, isMethodDeclaration, isMethodSignature, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isParameter, isParenthesizedTypeNode, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isStringLiteral, isTemplateHead, isTemplateMiddle, isTemplateTail, isThisTypeNode, isToken, isTupleTypeNode, isTypeElement, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVoidExpression, isYieldExpression, KeywordTypeNode, LiteralTypeNode, MappedTypeNode, MethodDeclaration, MethodSignature, Node, NodeArray, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, OmittedExpression, ParameterDeclaration, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, Statement, StringLiteral, SuperExpression, SyntaxKind, TemplateHead, TemplateMiddle, TemplateTail, ThisExpression, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VoidExpression, YieldExpression} from "typescript";
+import {isBooleanLiteral} from "@wessberg/typescript-ast-util";
 
 /**
  * A class that helps with matching nodes
@@ -238,6 +239,110 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithParenthesizedTypeNode(node, matchNode);
 		}
 
+		else if (isTypeOperatorNode(matchNode)) {
+			return this.matchNodeWithTypeOperatorNode(node, matchNode);
+		}
+
+		else if (isIndexedAccessTypeNode(matchNode)) {
+			return this.matchNodeWithIndexedAccessTypeNode(node, matchNode);
+		}
+
+		else if (isMappedTypeNode(matchNode)) {
+			return this.matchNodeWithMappedTypeNode(node, matchNode);
+		}
+
+		else if (isLiteralTypeNode(matchNode)) {
+			return this.matchNodeWithLiteralTypeNode(node, matchNode);
+		}
+
+		else if (this.isPartiallyEmittedExpression(matchNode)) {
+			return this.matchNodeWithPartiallyEmittedExpression(node, matchNode);
+		}
+
+		else if (this.isPrefixUnaryExpression(matchNode)) {
+			return this.matchNodeWithPrefixUnaryExpression(node, matchNode);
+		}
+
+		else if (this.isPostfixUnaryExpression(matchNode)) {
+			return this.matchNodeWithPostfixUnaryExpression(node, matchNode);
+		}
+
+		else if (this.isNullLiteral(matchNode)) {
+			return this.matchNodeWithNullLiteral(node, matchNode);
+		}
+
+		else if (isBooleanLiteral(matchNode)) {
+			return this.matchNodeWithBooleanLiteral(node, matchNode);
+		}
+
+		else if (this.isThisExpression(matchNode)) {
+			return this.matchNodeWithThisExpression(node, matchNode);
+		}
+
+		else if (this.isSuperExpression(matchNode)) {
+			return this.matchNodeWithSuperExpression(node, matchNode);
+		}
+
+		else if (this.isImportExpression(matchNode)) {
+			return this.matchNodeWithImportExpression(node, matchNode);
+		}
+
+		else if (isDeleteExpression(matchNode)) {
+			return this.matchNodeWithDeleteExpression(node, matchNode);
+		}
+
+		else if (isTypeOfExpression(matchNode)) {
+			return this.matchNodeWithTypeOfExpression(node, matchNode);
+		}
+
+		else if (isVoidExpression(matchNode)) {
+			return this.matchNodeWithVoidExpression(node, matchNode);
+		}
+
+		else if (isAwaitExpression(matchNode)) {
+			return this.matchNodeWithAwaitExpression(node, matchNode);
+		}
+
+		else if (isYieldExpression(matchNode)) {
+			return this.matchNodeWithYieldExpression(node, matchNode);
+		}
+
+		else if (isBinaryExpression(matchNode)) {
+			return this.matchNodeWithBinaryExpression(node, matchNode);
+		}
+
+		else if (isConditionalExpression(matchNode)) {
+			return this.matchNodeWithConditionalExpression(node, matchNode);
+		}
+
+		else if (isFunctionExpression(matchNode)) {
+			return this.matchNodeWithFunctionExpression(node, matchNode);
+		}
+
+		else if (isArrowFunction(matchNode)) {
+			return this.matchNodeWithArrowFunction(node, matchNode);
+		}
+
+		else if (isRegularExpressionLiteral(matchNode)) {
+			return this.matchNodeWithRegularExpressionLiteral(node, matchNode);
+		}
+
+		else if (isNoSubstitutionTemplateLiteral(matchNode)) {
+			return this.matchNodeWithNoSubstitutionTemplateLiteral(node, <NoSubstitutionTemplateLiteral> matchNode);
+		}
+
+		else if (isTemplateHead(matchNode)) {
+			return this.matchNodeWithTemplateHead(node, matchNode);
+		}
+
+		else if (isTemplateMiddle(matchNode)) {
+			return this.matchNodeWithTemplateMiddle(node, matchNode);
+		}
+
+		else if (isTemplateTail(matchNode)) {
+			return this.matchNodeWithTemplateTail(node, matchNode);
+		}
+
 		return false;
 	}
 
@@ -342,6 +447,24 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided MappedTypeNode
+	 * @param {Node} node
+	 * @param {MappedTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithMappedTypeNode (node: Node, matchNode: MappedTypeNode): boolean {
+		// If the node is not a v, return false
+		if (!(isMappedTypeNode(node))) return false;
+
+		const typeParameterMatch = this.propIsNotGiven(node, matchNode, "typeParameter") || (this.propIsGiven(node, matchNode, "typeParameter") && this.matchNodeWithTypeParameterDeclaration(node.typeParameter!, matchNode.typeParameter!));
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const readonlyTokenMatch = this.propIsNotGiven(node, matchNode, "readonlyToken") || (this.propIsGiven(node, matchNode, "readonlyToken") && this.matchNodeWithToken(node.readonlyToken!, matchNode.readonlyToken!));
+
+		return typeParameterMatch && typeMatch && readonlyTokenMatch && questionTokenMatch;
+	}
+
+	/**
 	 * Matches the provided node with the provided FunctionOrConstructorTypeNode
 	 * @param {Node} node
 	 * @param {FunctionOrConstructorTypeNode} matchNode
@@ -368,6 +491,302 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		if (!(isParenthesizedTypeNode(node))) return false;
 
 		return this.matchNodeWithNode(node.type, matchNode.type);
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeOperatorNode
+	 * @param {Node} node
+	 * @param {TypeOperatorNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeOperatorNode (node: Node, matchNode: TypeOperatorNode): boolean {
+		// If the node is not a TypeOperatorNode, return false
+		if (!(isTypeOperatorNode(node))) return false;
+		const operatorMatch = node.operator === matchNode.operator;
+		const typeMatch = this.matchNodeWithNode(node.type, matchNode.type);
+
+		return operatorMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided IndexedAccessTypeNode
+	 * @param {Node} node
+	 * @param {IndexedAccessTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithIndexedAccessTypeNode (node: Node, matchNode: IndexedAccessTypeNode): boolean {
+		// If the node is not a IndexedAccessTypeNode, return false
+		if (!(isIndexedAccessTypeNode(node))) return false;
+		const objectTypeMatch = this.matchNodeWithNode(node.objectType, matchNode.objectType);
+		const indexTypeMatch = this.matchNodeWithNode(node.indexType, matchNode.indexType);
+		return objectTypeMatch && indexTypeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided BooleanLiteral
+	 * @param {Node} node
+	 * @param {BooleanLiteral} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithBooleanLiteral (node: Node, _matchNode: BooleanLiteral): boolean {
+		return isBooleanLiteral(node);
+	}
+
+	/**
+	 * Matches the provided node with the provided ThisExpression
+	 * @param {Node} node
+	 * @param {ThisExpression} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithThisExpression (node: Node, _matchNode: ThisExpression): boolean {
+		return this.isThisExpression(node);
+	}
+
+	/**
+	 * Matches the provided node with the provided SuperExpression
+	 * @param {Node} node
+	 * @param {SuperExpression} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithSuperExpression (node: Node, _matchNode: SuperExpression): boolean {
+		return this.isSuperExpression(node);
+	}
+
+	/**
+	 * Matches the provided node with the provided ImportExpression
+	 * @param {Node} node
+	 * @param {ImportExpression} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithImportExpression (node: Node, _matchNode: ImportExpression): boolean {
+		return this.isImportExpression(node);
+	}
+
+	/**
+	 * Matches the provided node with the provided NullLiteral
+	 * @param {Node} node
+	 * @param {NullLiteral} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithNullLiteral (node: Node, _matchNode: NullLiteral): boolean {
+		return this.isNullLiteral(node);
+	}
+
+	/**
+	 * Returns true if the provided Node is a NullLiteral
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isNullLiteral (node: Node): node is NullLiteral {
+		return node != null && node.kind === SyntaxKind.NullKeyword;
+	}
+
+	/**
+	 * Matches the provided node with the provided LiteralTypeNode
+	 * @param {Node} node
+	 * @param {LiteralTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithLiteralTypeNode (node: Node, matchNode: LiteralTypeNode): boolean {
+		// If the node is not a LiteralTypeNode, return false
+		if (!(isLiteralTypeNode(node))) return false;
+		return this.matchNodeWithNode(node.literal, matchNode.literal);
+	}
+
+	/**
+	 * Returns true if the provided Node is a ThisExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isThisExpression (node: Node): node is ThisExpression {
+		return node != null && node.kind === SyntaxKind.ThisKeyword;
+	}
+
+	/**
+	 * Returns true if the provided Node is a SuperExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isSuperExpression (node: Node): node is SuperExpression {
+		return node != null && node.kind === SyntaxKind.SuperKeyword;
+	}
+
+	/**
+	 * Returns true if the provided Node is a ImportExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isImportExpression (node: Node): node is ImportExpression {
+		return node != null && node.kind === SyntaxKind.ImportKeyword;
+	}
+
+	/**
+	 * Returns true if the provided Node is a PartiallyEmittedExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isPartiallyEmittedExpression (node: Node): node is PartiallyEmittedExpression {
+		return node != null && node.kind === SyntaxKind.PartiallyEmittedExpression;
+	}
+
+	/**
+	 * Returns true if the provided Node is a PrefixUnaryExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isPrefixUnaryExpression (node: Node): node is PrefixUnaryExpression {
+		return node != null && node.kind === SyntaxKind.PrefixUnaryExpression;
+	}
+
+	/**
+	 * Returns true if the provided Node is a PostfixUnaryExpression
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	private isPostfixUnaryExpression (node: Node): node is PostfixUnaryExpression {
+		return node != null && node.kind === SyntaxKind.PostfixUnaryExpression;
+	}
+
+	/**
+	 * Matches the provided node with the provided PartiallyEmittedExpression
+	 * @param {Node} node
+	 * @param {PartiallyEmittedExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithPartiallyEmittedExpression (node: Node, matchNode: PartiallyEmittedExpression): boolean {
+		// If the node is not a PartiallyEmittedExpression, return false
+		if (!(this.isPartiallyEmittedExpression(node))) return false;
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided DeleteExpression
+	 * @param {Node} node
+	 * @param {DeleteExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithDeleteExpression (node: Node, matchNode: DeleteExpression): boolean {
+		// If the node is not a DeleteExpression, return false
+		if (!(isDeleteExpression(node))) return false;
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeOfExpression
+	 * @param {Node} node
+	 * @param {TypeOfExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeOfExpression (node: Node, matchNode: TypeOfExpression): boolean {
+		// If the node is not a TypeOfExpression, return false
+		if (!(isTypeOfExpression(node))) return false;
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided VoidExpression
+	 * @param {Node} node
+	 * @param {VoidExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithVoidExpression (node: Node, matchNode: VoidExpression): boolean {
+		// If the node is not a VoidExpression, return false
+		if (!(isVoidExpression(node))) return false;
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided AwaitExpression
+	 * @param {Node} node
+	 * @param {AwaitExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithAwaitExpression (node: Node, matchNode: AwaitExpression): boolean {
+		// If the node is not a AwaitExpression, return false
+		if (!(isAwaitExpression(node))) return false;
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided YieldExpression
+	 * @param {Node} node
+	 * @param {YieldExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithYieldExpression (node: Node, matchNode: YieldExpression): boolean {
+		// If the node is not a YieldExpression, return false
+		if (!(isYieldExpression(node))) return false;
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const expressionMatch = this.propIsNotGiven(node, matchNode, "expression") || (this.propIsGiven(node, matchNode, "expression") && this.matchNodeWithNode(node.expression!, matchNode.expression!));
+
+		return asteriskTokenMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided BinaryExpression
+	 * @param {Node} node
+	 * @param {BinaryExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithBinaryExpression (node: Node, matchNode: BinaryExpression): boolean {
+		// If the node is not a BinaryExpression, return false
+		if (!(isBinaryExpression(node))) return false;
+		const leftMatch = this.matchNodeWithNode(node.left, matchNode.left);
+		const operatorTokenMatch = this.matchNodeWithToken(node.operatorToken, matchNode.operatorToken);
+		const rightMatch = this.matchNodeWithNode(node.right, matchNode.right);
+
+		return leftMatch && operatorTokenMatch && rightMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ConditionalExpression
+	 * @param {Node} node
+	 * @param {ConditionalExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithConditionalExpression (node: Node, matchNode: ConditionalExpression): boolean {
+		// If the node is not a ConditionalExpression, return false
+		if (!(isConditionalExpression(node))) return false;
+
+		const conditionMatch = this.matchNodeWithNode(node.condition, matchNode.condition);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken, matchNode.questionToken));
+		const colonTokenMatch = this.propIsNotGiven(node, matchNode, "colonToken") || (this.propIsGiven(node, matchNode, "colonToken") && this.matchNodeWithToken(node.colonToken, matchNode.colonToken));
+		const whenTrueMatch = this.propIsNotGiven(node, matchNode, "whenTrue") || (this.propIsGiven(node, matchNode, "whenTrue") && this.matchNodeWithNode(node.whenTrue, matchNode.whenTrue));
+		const whenFalseMatch = this.propIsNotGiven(node, matchNode, "whenFalse") || (this.propIsGiven(node, matchNode, "whenFalse") && this.matchNodeWithNode(node.whenFalse, matchNode.whenFalse));
+
+		return conditionMatch && questionTokenMatch && colonTokenMatch && whenTrueMatch && whenFalseMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided PrefixUnaryExpression
+	 * @param {Node} node
+	 * @param {PrefixUnaryExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithPrefixUnaryExpression (node: Node, matchNode: PrefixUnaryExpression): boolean {
+		// If the node is not a PrefixUnaryExpression, return false
+		if (!(this.isPrefixUnaryExpression(node))) return false;
+
+		const operatorMatch = node.operator === matchNode.operator;
+		const operandMatch = this.matchNodeWithNode(node.operand, matchNode.operand);
+
+		return operatorMatch && operandMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided PostfixUnaryExpression
+	 * @param {Node} node
+	 * @param {PostfixUnaryExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithPostfixUnaryExpression (node: Node, matchNode: PostfixUnaryExpression): boolean {
+		// If the node is not a PostfixUnaryExpression, return false
+		if (!(this.isPostfixUnaryExpression(node))) return false;
+
+		const operatorMatch = node.operator === matchNode.operator;
+		const operandMatch = this.matchNodeWithNode(node.operand, matchNode.operand);
+
+		return operatorMatch && operandMatch;
 	}
 
 	/**
@@ -529,6 +948,49 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
 
 		return nameMatch && bodyMatch && asteriskTokenMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided FunctionExpression
+	 * @param {Node} node
+	 * @param {FunctionExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithFunctionExpression (node: Node, matchNode: FunctionExpression): boolean {
+		// If the node is not a FunctionExpression, return false
+		if (!(isFunctionExpression(node))) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithIdentifier(node.name!, matchNode.name!));
+		const bodyMatch = this.matchNodeWithBlock(node.body, matchNode.body);
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && bodyMatch && asteriskTokenMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ArrowFunction
+	 * @param {Node} node
+	 * @param {ArrowFunction} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithArrowFunction (node: Node, matchNode: ArrowFunction): boolean {
+		// If the node is not a ArrowFunction, return false
+		if (!(isArrowFunction(node))) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithPropertyName(node.name!, matchNode.name!));
+		const bodyMatch = (isBlock(node.body) && !isBlock(matchNode.body) || !isBlock(node.body) && isBlock(matchNode.body)) ? false : isBlock(node.body) && isBlock(matchNode.body) ? this.matchNodeWithBlock(node.body, matchNode.body) : this.matchNodeWithNode(node.body, matchNode.body);
+		const equalsGreaterThanTokenMatch = this.propIsNotGiven(node, matchNode, "equalsGreaterThanToken") || (this.propIsGiven(node, matchNode, "equalsGreaterThanToken") && this.matchNodeWithToken(node.equalsGreaterThanToken!, matchNode.equalsGreaterThanToken!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && bodyMatch && equalsGreaterThanTokenMatch && asteriskTokenMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
 	}
 
 	/**
@@ -1167,6 +1629,66 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	private matchNodeWithStringLiteral (node: Node, matchNode: StringLiteral): boolean {
 		// If the node is not a StringLiteral, return false
 		if (!isStringLiteral(node)) return false;
+		return node.text === matchNode.text;
+	}
+
+	/**
+	 * Matches the provided node with the provided RegularExpressionLiteral
+	 * @param {Node} node
+	 * @param {RegularExpressionLiteral} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithRegularExpressionLiteral (node: Node, matchNode: RegularExpressionLiteral): boolean {
+		// If the node is not a RegularExpressionLiteral, return false
+		if (!isRegularExpressionLiteral(node)) return false;
+		return node.text === matchNode.text;
+	}
+
+	/**
+	 * Matches the provided node with the provided NoSubstitutionTemplateLiteral
+	 * @param {Node} node
+	 * @param {NoSubstitutionTemplateLiteral} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithNoSubstitutionTemplateLiteral (node: Node, matchNode: NoSubstitutionTemplateLiteral): boolean {
+		// If the node is not a NoSubstitutionTemplateLiteral, return false
+		if (!isNoSubstitutionTemplateLiteral(node)) return false;
+		return node.text === matchNode.text;
+	}
+
+	/**
+	 * Matches the provided node with the provided TemplateHead
+	 * @param {Node} node
+	 * @param {TemplateHead} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTemplateHead (node: Node, matchNode: TemplateHead): boolean {
+		// If the node is not a TemplateHead, return false
+		if (!isTemplateHead(node)) return false;
+		return node.text === matchNode.text;
+	}
+
+	/**
+	 * Matches the provided node with the provided TemplateMiddle
+	 * @param {Node} node
+	 * @param {TemplateMiddle} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTemplateMiddle (node: Node, matchNode: TemplateMiddle): boolean {
+		// If the node is not a TemplateMiddle, return false
+		if (!isTemplateMiddle(node)) return false;
+		return node.text === matchNode.text;
+	}
+
+	/**
+	 * Matches the provided node with the provided TemplateTail
+	 * @param {Node} node
+	 * @param {TemplateTail} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTemplateTail (node: Node, matchNode: TemplateTail): boolean {
+		// If the node is not a TemplateTail, return false
+		if (!isTemplateTail(node)) return false;
 		return node.text === matchNode.text;
 	}
 
