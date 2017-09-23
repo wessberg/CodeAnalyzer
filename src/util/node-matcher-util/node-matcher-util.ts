@@ -3540,8 +3540,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		return false;
 	}
 
-	name?: Identifier | StringLiteral | NumericLiteral;
-
 	/**
 	 * Matches the provided node with the provided Identifier|StringLiteral|NumericLiteral
 	 * @param {Node} node

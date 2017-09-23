@@ -1,6 +1,6 @@
 import {IFormatter} from "./i-formatter";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createClassExpression, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SourceFile, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createClassExpression, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
 import {DecoratorKind} from "../dict/decorator/decorator-kind";
 import {IParseService} from "../service/parse/i-parse-service";
@@ -37,19 +37,12 @@ import {isIClassDict} from "../dict/class/is-i-class-dict";
 import {isBindingNameDict} from "../dict/binding-name/is-binding-name-dict";
 import {isParameterDict} from "../dict/parameter/is-parameter-dict";
 import {isDecoratorDict} from "../dict/decorator/is-decorator-dict";
-import {IPrinter} from "../printer/i-printer";
-import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {IPredicateUtil} from "../../util/predicate-util/i-predicate-util";
-import {INodeMatcherUtil} from "../../util/node-matcher-util/i-node-matcher-util";
+import {INodeUpdaterUtil} from "../../util/node-updater-util/i-node-updater-util";
 
 export class Formatter implements IFormatter {
-	private static readonly NON_REPLACEABLE_KEYS = new Set<string>(["parent"]);
 
 	constructor (private parseService: IParseService,
-							 private languageService: ITypescriptLanguageService,
-							 private predicateUtil: IPredicateUtil,
-							 private nodeMatcherUtil: INodeMatcherUtil,
-							 private printer: IPrinter) {
+							 private nodeUpdaterUtil: INodeUpdaterUtil) {
 	}
 
 	/**
@@ -202,7 +195,7 @@ export class Formatter implements IFormatter {
 	public updateClass ({decorators, name, typeParameters, members, isAbstract, extendsClass, implementsInterfaces}: Partial<IClassDict>, existing: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If we're having to do with an expression
 		if (isClassExpression(existing)) {
-			return this.updateInPlace(createClassExpression(
+			return this.nodeUpdaterUtil.updateInPlace(createClassExpression(
 				isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
 				name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
 				typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
@@ -212,7 +205,7 @@ export class Formatter implements IFormatter {
 		}
 
 		// If we're having to do with a declaration
-		return this.updateInPlace(createClassDeclaration(
+		return this.nodeUpdaterUtil.updateInPlace(createClassDeclaration(
 			decorators == null ? existing.decorators : this.formatDecorators(decorators),
 			isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
 			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
@@ -509,7 +502,7 @@ export class Formatter implements IFormatter {
 		}
 
 		// Return the updated import declaration
-		return this.updateInPlace(createImportDeclaration(
+		return this.nodeUpdaterUtil.updateInPlace(createImportDeclaration(
 			existing.decorators,
 			existing.modifiers,
 			importClause,
@@ -846,123 +839,6 @@ export class Formatter implements IFormatter {
 	 */
 	public formatBlock (block: string): Block {
 		return this.parseService.parseBlock(block);
-	}
-
-	/**
-	 * Updates a Node in-place. This means it will be deep-mutated
-	 * @param {T} newNode
-	 * @param {T} existing
-	 * @returns {T}
-	 */
-	private updateInPlace<T extends Node> (newNode: T, existing: T): T {
-
-		// Perform an in-place update of the Node
-		this.updateNodeInPlace(newNode, existing);
-
-		// Get the SourceFile
-		const sourceFile = existing.getSourceFile();
-		if (sourceFile != null) {
-
-			// Update the SourceFile
-			this.updateSourceFileInPlace(sourceFile);
-		}
-		return existing;
-	}
-
-	/**
-	 * Updates a value in-place
-	 * @param {T} newNode
-	 * @param {T} existing
-	 * @param {Set<Node>} seenNodes
-	 * @param {string | number} keyOrIndex
-	 * @param {boolean} [onlyPosition=false]
-	 * @param {string | number} newNodeIndex
-	 */
-	private updateValueInPlace<T> (newNode: T, existing: T, seenNodes: Set<Node>, keyOrIndex: keyof T|number, onlyPosition: boolean = false, newNodeIndex: keyof T|number = keyOrIndex): void {
-		const key = <keyof T> keyOrIndex;
-		const newNodeKey = <keyof T> newNodeIndex;
-		const existingValue = existing[key];
-		const newValue = newNode[newNodeKey];
-		const supportsKey = !onlyPosition || key === "pos" || key === "end";
-
-		// Check if the new value is an array
-		if (Array.isArray(newValue)) {
-
-			// If it is, check if the existing value is an array too
-			if (Array.isArray(existingValue)) {
-				newValue.forEach((part, index) => {
-					const closestIndex = this.nodeMatcherUtil.matchIndex(part, existingValue);
-					if (closestIndex >= 0) {
-						this.updateValueInPlace(newValue, existingValue, seenNodes, closestIndex, onlyPosition, index);
-					} else {
-						// Add to array!
-						if (supportsKey) {
-							existingValue.push(part);
-						}
-					}
-				});
-			}
-
-			// Otherwise, set the value directly on the existing node
-			else if (supportsKey) {
-				existing[key] = newValue;
-			}
-		}
-
-		// Check if the new value is a node
-		else if (this.predicateUtil.isNode(newValue)) {
-
-			// If it is, check if the existing value is a node too
-			if (this.predicateUtil.isNode(existingValue)) {
-
-				// If it is, check if it has been seen previously (in which case it is a circular reference)
-				if (!seenNodes.has(newValue)) {
-					// If it hasn't, merge recursively
-					seenNodes.add(newValue);
-					this.updateNodeInPlace(newValue, existingValue, seenNodes, onlyPosition);
-				}
-			}
-
-			// Otherwise, set the value directly on the existing node
-			else if (supportsKey) {
-				existing[key] = newValue;
-			}
-		}
-
-		// Otherwise, set the value if it is not null or if it is but is not part of the set of non-replaceable keys
-		else if (supportsKey && (newValue != null || !Formatter.NON_REPLACEABLE_KEYS.has(key))) {
-			existing[key] = newValue;
-		}
-	}
-
-	/**
-	 * Updates a Node in-place. This means that it will be deep-mutated
-	 * @param {T} newNode
-	 * @param {T} existing
-	 * @param {Set<Node>} seenNodes
-	 * @param {boolean} [onlyPosition=false]
-	 * @returns {T}
-	 */
-	private updateNodeInPlace<T extends Node> (newNode: T, existing: T, seenNodes: Set<Node> = new Set(), onlyPosition: boolean = false): T {
-		// Update each of the keys
-		Object.keys(newNode).forEach((key: keyof T) => this.updateValueInPlace(newNode, existing, seenNodes, key, onlyPosition));
-
-		// Return the (mutated) existing node
-		return existing;
-	}
-
-	/**
-	 * Updates a SourceFile in-place
-	 * @param {SourceFile} sourceFile
-	 * @returns {SourceFile}
-	 */
-	private updateSourceFileInPlace (sourceFile: SourceFile): SourceFile {
-		const content = this.printer.print(sourceFile);
-		const path = sourceFile.fileName;
-
-		// Generate a new source file through the LanguageService
-		const newSourceFile = this.languageService.addFile({path, content});
-		return this.updateNodeInPlace(newSourceFile, sourceFile, undefined, true);
 	}
 
 	/**

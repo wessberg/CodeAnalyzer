@@ -51,7 +51,7 @@ classService.addPropertyToClass({
 	name: "bar",
 	decorators: [{
 		kind: DecoratorKind.EXPRESSION,
-		expression: "bar({})"
+		expression: "bar({a: 2, b: 3})"
 	}],
 	type: "string",
 	initializer: "'Goodbye world!'",
@@ -67,6 +67,12 @@ classService.implementInterfaceOnClass({
 	name: "IFoo",
 	typeArguments: ["Foo", "Bar"]
 }, A);
+
+classService.extendClassWith({
+	name: "FooBar",
+	typeArguments: null
+}, A);
+
 console.log(printer.stringify(sourceFile));
 console.log(printer.print(sourceFile));
 

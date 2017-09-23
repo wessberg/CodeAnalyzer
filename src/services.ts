@@ -25,8 +25,11 @@ import {IPredicateUtil} from "./util/predicate-util/i-predicate-util";
 import {PredicateUtil} from "./util/predicate-util/predicate-util";
 import {INodeMatcherUtil} from "./util/node-matcher-util/i-node-matcher-util";
 import {NodeMatcherUtil} from "./util/node-matcher-util/node-matcher-util";
+import {INodeUpdaterUtil} from "./util/node-updater-util/i-node-updater-util";
+import {NodeUpdaterUtil} from "./util/node-updater-util/node-updater-util";
 
 // Util
+DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
 DIContainer.registerSingleton<IPredicateUtil, PredicateUtil>();
 
