@@ -1,5 +1,5 @@
 import {INodeMatcherUtil} from "./i-node-matcher-util";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, CallExpression, CallSignatureDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, DeclarationName, Decorator, DeleteExpression, ElementAccessExpression, EntityName, ExpressionWithTypeArguments, FunctionDeclaration, FunctionExpression, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, Identifier, ImportExpression, IndexedAccessTypeNode, IndexSignatureDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBindingName, isBlock, isCallExpression, isCallSignatureDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isDeleteExpression, isElementAccessExpression, isEntityName, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionExpression, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isIdentifier, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isLiteralTypeNode, isMappedTypeNode, isMethodDeclaration, isMethodSignature, isNewExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralElementLike, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isToken, isTupleTypeNode, isTypeElement, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVoidExpression, isYieldExpression, KeywordTypeNode, LiteralTypeNode, MappedTypeNode, MethodDeclaration, MethodSignature, NewExpression, Node, NodeArray, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElementLike, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VoidExpression, YieldExpression} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CallSignatureDeclaration, CaseBlock, CaseClause, CaseOrDefaultClause, CatchClause, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, ContinueStatement, DebuggerStatement, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, ExpressionStatement, ExpressionWithTypeArguments, ForInitializer, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, Identifier, IfStatement, ImportExpression, IndexedAccessTypeNode, IndexSignatureDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBindingName, isBlock, isBreakStatement, isCallExpression, isCallSignatureDeclaration, isCaseBlock, isCaseClause, isCaseOrDefaultClause, isCatchClause, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isContinueStatement, isDebuggerStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEntityName, isExpressionStatement, isExpressionWithTypeArguments, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isIdentifier, isIfStatement, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isIntersectionTypeNode, isJsxAttribute, isJsxAttributes, isJsxClosingElement, isJsxElement, isJsxExpression, isJsxOpeningElement, isJsxSelfClosingElement, isJsxSpreadAttribute, isJsxText, isLabeledStatement, isLiteralTypeNode, isMappedTypeNode, isMetaProperty, isMethodDeclaration, isMethodSignature, isMissingDeclaration, isNewExpression, isNonNullExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralElementLike, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isReturnStatement, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isThrowStatement, isToken, isTryStatement, isTupleTypeNode, isTypeAssertion, isTypeElement, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement, isWithStatement, isYieldExpression, JsxAttribute, JsxAttributeLike, JsxAttributes, JsxClosingElement, JsxElement, JsxExpression, JsxOpeningElement, JsxSelfClosingElement, JsxSpreadAttribute, JsxTagNameExpression, JsxText, KeywordTypeNode, LabeledStatement, LiteralTypeNode, MappedTypeNode, MetaProperty, MethodDeclaration, MethodSignature, MissingDeclaration, NewExpression, Node, NodeArray, NonNullExpression, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElementLike, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, ReturnStatement, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAssertion, TypeElement, TypeLiteralNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement, WithStatement, YieldExpression} from "typescript";
 import {isBooleanLiteral} from "@wessberg/typescript-ast-util";
 
 /**
@@ -397,6 +397,146 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 
 		else if (isAsExpression(matchNode)) {
 			return this.matchNodeWithAsExpression(node, matchNode);
+		}
+
+		else if (isTypeAssertion(matchNode)) {
+			return this.matchNodeWithTypeAssertion(node, matchNode);
+		}
+
+		else if (isNonNullExpression(matchNode)) {
+			return this.matchNodeWithNonNullExpression(node, matchNode);
+		}
+
+		else if (isMetaProperty(matchNode)) {
+			return this.matchNodeWithMetaProperty(node, matchNode);
+		}
+
+		else if (isJsxElement(matchNode)) {
+			return this.matchNodeWithJsxElement(node, matchNode);
+		}
+
+		else if (isJsxOpeningElement(matchNode)) {
+			return this.matchNodeWithJsxOpeningElement(node, matchNode);
+		}
+
+		else if (isJsxClosingElement(matchNode)) {
+			return this.matchNodeWithJsxClosingElement(node, matchNode);
+		}
+
+		else if (isJsxAttributes(matchNode)) {
+			return this.matchNodeWithJsxAttributes(node, matchNode);
+		}
+
+		else if (isJsxAttribute(matchNode)) {
+			return this.matchNodeWithJsxAttribute(node, matchNode);
+		}
+
+		else if (isJsxSpreadAttribute(matchNode)) {
+			return this.matchNodeWithJsxSpreadAttribute(node, matchNode);
+		}
+
+		else if (isJsxExpression(matchNode)) {
+			return this.matchNodeWithJsxExpression(node, matchNode);
+		}
+
+		else if (isJsxSelfClosingElement(matchNode)) {
+			return this.matchNodeWithJsxSelfClosingElement(node, matchNode);
+		}
+
+		else if (isJsxText(matchNode)) {
+			return this.matchNodeWithJsxText(node, matchNode);
+		}
+
+		else if (isEmptyStatement(matchNode)) {
+			return this.matchNodeWithEmptyStatement(node, matchNode);
+		}
+
+		else if (isDebuggerStatement(matchNode)) {
+			return this.matchNodeWithDebuggerStatement(node, matchNode);
+		}
+
+		else if (isMissingDeclaration(matchNode)) {
+			return this.matchNodeWithMissingDeclaration(node, matchNode);
+		}
+
+		else if (isVariableStatement(matchNode)) {
+			return this.matchNodeWithVariableStatement(node, matchNode);
+		}
+
+		else if (isExpressionStatement(matchNode)) {
+			return this.matchNodeWithExpressionStatement(node, matchNode);
+		}
+
+		else if (isIfStatement(matchNode)) {
+			return this.matchNodeWithIfStatement(node, matchNode);
+		}
+
+		else if (isDoStatement(matchNode)) {
+			return this.matchNodeWithDoStatement(node, matchNode);
+		}
+
+		else if (isWhileStatement(matchNode)) {
+			return this.matchNodeWithWhileStatement(node, matchNode);
+		}
+
+		else if (isForStatement(matchNode)) {
+			return this.matchNodeWithForStatement(node, matchNode);
+		}
+
+		else if (isForInStatement(matchNode)) {
+			return this.matchNodeWithForInStatement(node, matchNode);
+		}
+
+		else if (isForOfStatement(matchNode)) {
+			return this.matchNodeWithForOfStatement(node, matchNode);
+		}
+
+		else if (isBreakStatement(matchNode)) {
+			return this.matchNodeWithBreakStatement(node, matchNode);
+		}
+
+		else if (isContinueStatement(matchNode)) {
+			return this.matchNodeWithContinueStatement(node, matchNode);
+		}
+
+		else if (isReturnStatement(matchNode)) {
+			return this.matchNodeWithReturnStatement(node, matchNode);
+		}
+
+		else if (isWithStatement(matchNode)) {
+			return this.matchNodeWithWithStatement(node, matchNode);
+		}
+
+		else if (isSwitchStatement(matchNode)) {
+			return this.matchNodeWithSwitchStatement(node, matchNode);
+		}
+
+		else if (isCaseBlock(matchNode)) {
+			return this.matchNodeWithCaseBlock(node, matchNode);
+		}
+
+		else if (isCaseClause(matchNode)) {
+			return this.matchNodeWithCaseClause(node, matchNode);
+		}
+
+		else if (isDefaultClause(matchNode)) {
+				return this.matchNodeWithDefaultClause(node, matchNode);
+		}
+
+		else if (isLabeledStatement(matchNode)) {
+			return this.matchNodeWithLabeledStatement(node, matchNode);
+		}
+
+		else if (isThrowStatement(matchNode)) {
+			return this.matchNodeWithThrowStatement(node, matchNode);
+		}
+
+		else if (isTryStatement(matchNode)) {
+			return this.matchNodeWithTryStatement(node, matchNode);
+		}
+
+		else if (isCatchClause(matchNode)) {
+			return this.matchNodeWithCatchClause(node, matchNode);
 		}
 
 		return false;
@@ -968,7 +1108,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	private matchNodeWithTypePredicateNode (node: Node, matchNode: TypePredicateNode): boolean {
 		// If the node is not a TypePredicateNode, return false
 		if (!(isTypePredicateNode(node))) return false;
-		const parameterNameMatch = isIdentifier(node.parameterName) && !isIdentifier(matchNode.parameterName) ? false : isThisTypeNode(node.parameterName) && !isThisTypeNode(matchNode.parameterName) ? false : isIdentifier(node.parameterName) && isIdentifier(matchNode.parameterName) ? this.matchNodeWithIdentifier(node.parameterName, matchNode.parameterName) : this.matchNodeWithThisTypeNode(node.parameterName, <ThisTypeNode> matchNode.parameterName);
+		const parameterNameMatch = this.matchNodeWithIdentifierOrThisTypeNode(node.parameterName, matchNode.parameterName);
 		const typeMatch = this.matchNodeWithNode(node.type, matchNode.type);
 		return parameterNameMatch && typeMatch;
 	}
@@ -1335,10 +1475,22 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		// Return false if the provided Node is not a TemplateSpan
 		if (!isTemplateSpan(node)) return false;
 
-		const literalMatch = ((isTemplateMiddle(node.literal) && !isTemplateMiddle(matchNode.literal)) || (!isTemplateMiddle(node.literal) && isTemplateMiddle(matchNode.literal))) ? false : isTemplateMiddle(node.literal) && isTemplateMiddle(matchNode.literal) ? this.matchNodeWithTemplateMiddle(node.literal, matchNode.literal) : isTemplateTail(node.literal) && isTemplateTail(matchNode.literal) ? this.matchNodeWithTemplateTail(node.literal, matchNode.literal) : false;
+		const literalMatch = this.matchNodeWithTemplateMiddleOrTemplateTail(node.literal, matchNode.literal);
 		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
 
 		return literalMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided NodeArray of CaseOrDefaultClauses
+	 * @param {Node} node
+	 * @param {NodeArray<CaseOrDefaultClause>} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithCaseOrDefaultClauses (node: NodeArray<Node>, matchNode: NodeArray<CaseOrDefaultClause>): boolean {
+		// Return false if they don't have the same amount of elements
+		if (node.length !== matchNode.length) return false;
+		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithCaseOrDefaultClause(nodeElement, element)));
 	}
 
 	/**
@@ -1351,6 +1503,18 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		// Return false if they don't have the same amount of elements
 		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithObjectLiteralElementLike(nodeElement, element)));
+	}
+
+	/**
+	 * Matches the provided node with the provided NodeArray of JsxAttributeLikes
+	 * @param {Node} node
+	 * @param {NodeArray<JsxAttributeLike>} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxAttributeLikes (node: NodeArray<Node>, matchNode: NodeArray<JsxAttributeLike>): boolean {
+		// Return false if they don't have the same amount of elements
+		if (node.length !== matchNode.length) return false;
+		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithJsxAttributeLike(nodeElement, element)));
 	}
 
 	/**
@@ -1537,6 +1701,326 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided IfStatement
+	 * @param {Node} node
+	 * @param {IfStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithIfStatement (node: Node, matchNode: IfStatement): boolean {
+		// If the node is not a IfStatement, return false
+		if (!isIfStatement(node)) return false;
+
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const thenStatementMatch = this.propIsNotGiven(node, matchNode, "thenStatement") || (this.propIsGiven(node, matchNode, "thenStatement") && this.matchNodeWithNode(node.thenStatement, matchNode.thenStatement));
+		const elseStatementMatch = this.propIsNotGiven(node, matchNode, "elseStatement") || (this.propIsGiven(node, matchNode, "elseStatement") && this.matchNodeWithNode(node.elseStatement!, matchNode.elseStatement!));
+
+		return expressionMatch && thenStatementMatch && elseStatementMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided DoStatement
+	 * @param {Node} node
+	 * @param {DoStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithDoStatement (node: Node, matchNode: DoStatement): boolean {
+		// If the node is not a DoStatement, return false
+		if (!isDoStatement(node)) return false;
+
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+
+		return statementMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided DoStatement
+	 * @param {Node} node
+	 * @param {DoStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithWhileStatement (node: Node, matchNode: WhileStatement): boolean {
+		// If the node is not a WhileStatement, return false
+		if (!isWhileStatement(node)) return false;
+
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+
+		return statementMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ForStatement
+	 * @param {Node} node
+	 * @param {ForStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithForStatement (node: Node, matchNode: ForStatement): boolean {
+		// If the node is not a ForStatement, return false
+		if (!isForStatement(node)) return false;
+
+		const initializerMatch = this.propIsNotGiven(node, matchNode, "initializer") || (this.propIsGiven(node, matchNode, "initializer") && this.matchNodeWithForInitializer(node.initializer!, matchNode.initializer!));
+		const conditionMatch = this.propIsNotGiven(node, matchNode, "condition") || (this.propIsGiven(node, matchNode, "condition") && this.matchNodeWithNode(node.condition!, matchNode.condition!));
+		const incrementorMatch = this.propIsNotGiven(node, matchNode, "incrementor") || (this.propIsGiven(node, matchNode, "incrementor") && this.matchNodeWithNode(node.incrementor!, matchNode.incrementor!));
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+
+		return statementMatch && initializerMatch && conditionMatch && incrementorMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ForInStatement
+	 * @param {Node} node
+	 * @param {ForInStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithForInStatement (node: Node, matchNode: ForInStatement): boolean {
+		// If the node is not a ForInStatement, return false
+		if (!isForInStatement(node)) return false;
+
+		const initializerMatch = this.matchNodeWithForInitializer(node.initializer, matchNode.initializer);
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+
+		return statementMatch && initializerMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ForOfStatement
+	 * @param {Node} node
+	 * @param {ForOfStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithForOfStatement (node: Node, matchNode: ForOfStatement): boolean {
+		// If the node is not a ForOfStatement, return false
+		if (!isForOfStatement(node)) return false;
+
+		const initializerMatch = this.matchNodeWithForInitializer(node.initializer, matchNode.initializer);
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const awaitModifierMatch = this.propIsNotGiven(node, matchNode, "awaitModifier") || (this.propIsGiven(node, matchNode, "awaitModifier") && this.matchNodeWithToken(node.awaitModifier!, matchNode.awaitModifier!));
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+
+		return initializerMatch && expressionMatch && awaitModifierMatch && statementMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided BreakStatement
+	 * @param {Node} node
+	 * @param {BreakStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithBreakStatement (node: Node, matchNode: BreakStatement): boolean {
+		// If the node is not a BreakStatement, return false
+		if (!isBreakStatement(node)) return false;
+
+		return this.propIsNotGiven(node, matchNode, "label") || (this.propIsGiven(node, matchNode, "label") && this.matchNodeWithIdentifier(node.label!, matchNode.label!));
+	}
+
+	/**
+	 * Matches the provided node with the provided ContinueStatement
+	 * @param {Node} node
+	 * @param {ContinueStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithContinueStatement (node: Node, matchNode: ContinueStatement): boolean {
+		// If the node is not a ContinueStatement, return false
+		if (!isContinueStatement(node)) return false;
+
+		return this.propIsNotGiven(node, matchNode, "label") || (this.propIsGiven(node, matchNode, "label") && this.matchNodeWithIdentifier(node.label!, matchNode.label!));
+	}
+
+	/**
+	 * Matches the provided node with the provided ReturnStatement
+	 * @param {Node} node
+	 * @param {ReturnStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithReturnStatement (node: Node, matchNode: ReturnStatement): boolean {
+		// If the node is not a ReturnStatement, return false
+		if (!isReturnStatement(node)) return false;
+
+		return this.propIsNotGiven(node, matchNode, "expression") || (this.propIsGiven(node, matchNode, "expression") && this.matchNodeWithNode(node.expression!, matchNode.expression!));
+	}
+
+	/**
+	 * Matches the provided node with the provided CaseClause
+	 * @param {Node} node
+	 * @param {CaseClause} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithCaseClause (node: Node, matchNode: CaseClause): boolean {
+		// If the node is not a CaseClause, return false
+		if (!isCaseClause(node)) return false;
+
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const statementsMatch = this.matchNodeWithNodes(node.statements, matchNode.statements);
+
+		return expressionMatch && statementsMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided DefaultClause
+	 * @param {Node} node
+	 * @param {DefaultClause} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithDefaultClause (node: Node, matchNode: DefaultClause): boolean {
+		// If the node is not a DefaultClause, return false
+		if (!isDefaultClause(node)) return false;
+
+		return this.matchNodeWithNodes(node.statements, matchNode.statements);
+	}
+
+	/**
+	 * Matches the provided node with the provided LabeledStatement
+	 * @param {Node} node
+	 * @param {LabeledStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithLabeledStatement (node: Node, matchNode: LabeledStatement): boolean {
+		// If the node is not a LabeledStatement, return false
+		if (!isLabeledStatement(node)) return false;
+
+		const labelMatch = this.matchNodeWithIdentifier(node.label, matchNode.label);
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+
+		return labelMatch && statementMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ThrowStatement
+	 * @param {Node} node
+	 * @param {ThrowStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithThrowStatement (node: Node, matchNode: ThrowStatement): boolean {
+		// If the node is not a ThrowStatement, return false
+		if (!isThrowStatement(node)) return false;
+
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided TryStatement
+	 * @param {Node} node
+	 * @param {TryStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTryStatement (node: Node, matchNode: TryStatement): boolean {
+		// If the node is not a TryStatement, return false
+		if (!isTryStatement(node)) return false;
+
+		const tryBlockMatch = this.matchNodeWithBlock(node.tryBlock, matchNode.tryBlock);
+		const finallyBlockMatch = this.propIsNotGiven(node, matchNode, "finallyBlock") || (this.propIsGiven(node, matchNode, "finallyBlock") && this.matchNodeWithBlock(node.finallyBlock!, matchNode.finallyBlock!));
+		const catchClauseMatch = this.propIsNotGiven(node, matchNode, "catchClause") || (this.propIsGiven(node, matchNode, "catchClause") && this.matchNodeWithCatchClause(node.catchClause!, matchNode.catchClause!));
+
+		return tryBlockMatch && finallyBlockMatch && catchClauseMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided CatchClause
+	 * @param {Node} node
+	 * @param {CatchClause} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithCatchClause (node: Node, matchNode: CatchClause): boolean {
+		// If the node is not a CatchClause, return false
+		if (!isCatchClause(node)) return false;
+
+		const blockMatch = this.matchNodeWithBlock(node.block, matchNode.block);
+		const variableDeclarationMatch = this.propIsNotGiven(node, matchNode, "variableDeclaration") || (this.propIsGiven(node, matchNode, "variableDeclaration") && this.matchNodeWithVariableDeclaration(node.variableDeclaration!, matchNode.variableDeclaration!));
+
+		return blockMatch && variableDeclarationMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided WithStatement
+	 * @param {Node} node
+	 * @param {WithStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithWithStatement (node: Node, matchNode: WithStatement): boolean {
+		// If the node is not a WithStatement, return false
+		if (!isWithStatement(node)) return false;
+
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const statementMatch = this.matchNodeWithNode(node.statement, matchNode.statement);
+
+		return expressionMatch && statementMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided SwitchStatement
+	 * @param {Node} node
+	 * @param {SwitchStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithSwitchStatement (node: Node, matchNode: SwitchStatement): boolean {
+		// If the node is not a SwitchStatement, return false
+		if (!isSwitchStatement(node)) return false;
+
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const caseBlockMatch = this.matchNodeWithCaseBlock(node.caseBlock, matchNode.caseBlock);
+		const possiblyExhaustiveMatch = node.possiblyExhaustive === matchNode.possiblyExhaustive;
+
+		return expressionMatch && caseBlockMatch && possiblyExhaustiveMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided CaseBlock
+	 * @param {Node} node
+	 * @param {CaseBlock} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithCaseBlock (node: Node, matchNode: CaseBlock): boolean {
+		// If the node is not a CaseBlock, return false
+		if (!isCaseBlock(node)) return false;
+
+		return this.matchNodeWithCaseOrDefaultClauses(node.clauses, matchNode.clauses);
+	}
+
+	/**
+	 * Matches the provided node with the provided MissingDeclaration
+	 * @param {Node} node
+	 * @param {MissingDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithMissingDeclaration (node: Node, matchNode: MissingDeclaration): boolean {
+		// If the node is not a MissingDeclaration, return false
+		if (!isMissingDeclaration(node)) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithIdentifier(node.name!, matchNode.name!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+
+		return nameMatch && questionTokenMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided VariableStatement
+	 * @param {Node} node
+	 * @param {VariableStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithVariableStatement (node: Node, matchNode: VariableStatement): boolean {
+		// If the node is not a VariableStatement, return false
+		if (!isVariableStatement(node)) return false;
+
+		return this.matchNodeWithVariableDeclarationList(node.declarationList, matchNode.declarationList);
+	}
+
+	/**
+	 * Matches the provided node with the provided ExpressionStatement
+	 * @param {Node} node
+	 * @param {ExpressionStatement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithExpressionStatement (node: Node, matchNode: ExpressionStatement): boolean {
+		// If the node is not a ExpressionStatement, return false
+		if (!isExpressionStatement(node)) return false;
+
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
 	 * Matches the provided node with the provided NewExpression
 	 * @param {Node} node
 	 * @param {NewExpression} matchNode
@@ -1583,6 +2067,182 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		const typeMatch = this.matchNodeWithNode(node.type, matchNode.type);
 
 		return expressionMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeAssertion
+	 * @param {Node} node
+	 * @param {TypeAssertion} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeAssertion (node: Node, matchNode: TypeAssertion): boolean {
+		// If the node is not a TypeAssertion, return false
+		if (!isTypeAssertion(node)) return false;
+
+		const expressionMatch = this.matchNodeWithNode(node.expression, matchNode.expression);
+		const typeMatch = this.matchNodeWithNode(node.type, matchNode.type);
+
+		return expressionMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided NonNullExpression
+	 * @param {Node} node
+	 * @param {NonNullExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithNonNullExpression (node: Node, matchNode: NonNullExpression): boolean {
+		// If the node is not a NonNullExpression, return false
+		if (!isNonNullExpression(node)) return false;
+
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
+	}
+
+	/**
+	 * Matches the provided node with the provided MetaProperty
+	 * @param {Node} node
+	 * @param {MetaProperty} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithMetaProperty (node: Node, matchNode: MetaProperty): boolean {
+		// If the node is not a MetaProperty, return false
+		if (!isMetaProperty(node)) return false;
+
+		const keywordTokenMatch = node.keywordToken === matchNode.keywordToken;
+		const nameMatch = this.matchNodeWithIdentifier(node.name, matchNode.name);
+
+		return keywordTokenMatch && nameMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxElement
+	 * @param {Node} node
+	 * @param {JsxElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxElement (node: Node, matchNode: JsxElement): boolean {
+		// If the node is not a JsxElement, return false
+		if (!isJsxElement(node)) return false;
+
+		const openingElement = this.matchNodeWithJsxOpeningElement(node.openingElement, matchNode.openingElement);
+		const childrenMatch = this.matchNodeWithNodes(node.children, matchNode.children);
+		const closingElement = this.matchNodeWithJsxClosingElement(node.closingElement, matchNode.closingElement);
+
+		return openingElement && childrenMatch && closingElement;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxOpeningElement
+	 * @param {Node} node
+	 * @param {JsxOpeningElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxOpeningElement (node: Node, matchNode: JsxOpeningElement): boolean {
+		// If the node is not a JsxOpeningElement, return false
+		if (!isJsxOpeningElement(node)) return false;
+
+		const tagNameMatch = this.matchNodeWithJsxTagNameExpression(node.tagName, matchNode.tagName);
+		const attributesMatch = this.matchNodeWithJsxAttributes(node.attributes, matchNode.attributes);
+
+		return tagNameMatch && attributesMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxExpression
+	 * @param {Node} node
+	 * @param {JsxExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxExpression (node: Node, matchNode: JsxExpression): boolean {
+		// If the node is not a JsxExpression, return false
+		if (!isJsxExpression(node)) return false;
+
+		const dotDotDotTokenMatch = this.propIsNotGiven(node, matchNode, "dotDotDotToken") || (this.propIsGiven(node, matchNode, "dotDotDotToken") && this.matchNodeWithToken(node.dotDotDotToken!, matchNode.dotDotDotToken!));
+		const expressionMatch = this.propIsNotGiven(node, matchNode, "expression") || (this.propIsGiven(node, matchNode, "expression") && this.matchNodeWithNode(node.expression!, matchNode.expression!));
+
+		return dotDotDotTokenMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxText
+	 * @param {Node} node
+	 * @param {JsxText} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxText (node: Node, matchNode: JsxText): boolean {
+		// If the node is not a JsxText, return false
+		if (!isJsxText(node)) return false;
+
+		return node.containsOnlyWhiteSpaces === matchNode.containsOnlyWhiteSpaces;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxClosingElement
+	 * @param {Node} node
+	 * @param {JsxClosingElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxClosingElement (node: Node, matchNode: JsxClosingElement): boolean {
+		// If the node is not a JsxClosingElement, return false
+		if (!isJsxClosingElement(node)) return false;
+
+		return this.matchNodeWithJsxTagNameExpression(node.tagName, matchNode.tagName);
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxSelfClosingElement
+	 * @param {Node} node
+	 * @param {JsxSelfClosingElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxSelfClosingElement (node: Node, matchNode: JsxSelfClosingElement): boolean {
+		// If the node is not a JsxSelfClosingElement, return false
+		if (!isJsxSelfClosingElement(node)) return false;
+
+		const tagNameMatch = this.matchNodeWithJsxTagNameExpression(node.tagName, matchNode.tagName);
+		const attributesMatch = this.matchNodeWithJsxAttributes(node.attributes, matchNode.attributes);
+
+		return tagNameMatch && attributesMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxAttributes
+	 * @param {Node} node
+	 * @param {JsxAttributes} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxAttributes (node: Node, matchNode: JsxAttributes): boolean {
+		// If the node is not a JsxAttributes, return false
+		if (!isJsxAttributes(node)) return false;
+
+		return this.matchNodeWithJsxAttributeLikes(node.properties, matchNode.properties);
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxAttribute
+	 * @param {Node} node
+	 * @param {JsxAttribute} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxAttribute (node: Node, matchNode: JsxAttribute): boolean {
+		// If the node is not a JsxAttribute, return false
+		if (!isJsxAttribute(node)) return false;
+		const tagNameMatch = this.propIsNotGiven(node, matchNode, "initializer") || (this.propIsGiven(node, matchNode, "initializer") && this.matchNodeWithStringLiteralOrJsxExpression(node.initializer!, matchNode.initializer!));
+		const nameMatch = this.matchNodeWithIdentifier(node.name, matchNode.name);
+		return tagNameMatch && nameMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided JsxSpreadAttribute
+	 * @param {Node} node
+	 * @param {JsxSpreadAttribute} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxSpreadAttribute (node: Node, matchNode: JsxSpreadAttribute): boolean {
+		// If the node is not a JsxSpreadAttribute, return false
+		if (!isJsxSpreadAttribute(node)) return false;
+
+		return this.matchNodeWithNode(node.expression, matchNode.expression);
 	}
 
 	/**
@@ -1944,6 +2604,26 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided EmptyStatement
+	 * @param {Node} node
+	 * @param {EmptyStatement} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithEmptyStatement (node: Node, _matchNode: EmptyStatement): boolean {
+		return isEmptyStatement(node);
+	}
+
+	/**
+	 * Matches the provided node with the provided DebuggerStatement
+	 * @param {Node} node
+	 * @param {DebuggerStatement} _matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithDebuggerStatement (node: Node, _matchNode: DebuggerStatement): boolean {
+		return isDebuggerStatement(node);
+	}
+
+	/**
 	 * Matches the provided node with the provided ArrayLiteralExpression
 	 * @param {Node} node
 	 * @param {ArrayLiteralExpression} matchNode
@@ -2016,6 +2696,27 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided JsxAttributeLike
+	 * @param {Node} node
+	 * @param {JsxAttributeLike} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxAttributeLike (node: Node, matchNode: JsxAttributeLike): boolean {
+		// If the node is not a JsxAttributeLike, return false
+		if (!isJsxAttribute(node) && !isJsxSpreadAttribute(node)) return false;
+
+		if (isJsxAttribute(matchNode)) {
+			return this.matchNodeWithJsxAttribute(node, matchNode);
+		}
+
+		else if (isJsxSpreadAttribute(matchNode)) {
+			return this.matchNodeWithJsxSpreadAttribute(node, matchNode);
+		}
+
+		return false;
+	}
+
+	/**
 	 * Matches the provided node with the provided identifier
 	 * @param {Node} node
 	 * @param {Identifier} matchNode
@@ -2060,6 +2761,38 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided ForInitializer
+	 * @param {Node} node
+	 * @param {ForInitializer} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithForInitializer (node: Node, matchNode: ForInitializer): boolean {
+
+		if (isVariableDeclarationList(matchNode)) {
+			return this.matchNodeWithVariableDeclarationList(node, matchNode);
+		}
+
+		return this.matchNodeWithNode(node, matchNode);
+	}
+
+	/**
+	 * Matches the provided node with the provided CaseOrDefaultClause
+	 * @param {Node} node
+	 * @param {CaseOrDefaultClause} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithCaseOrDefaultClause (node: Node, matchNode: CaseOrDefaultClause): boolean {
+		// If the node is not a CaseOrDefaultClause, return false
+		if (!isCaseOrDefaultClause(node)) return false;
+
+		if (isCaseClause(matchNode)) return this.matchNodeWithCaseClause(node, matchNode);
+		else if (isDefaultClause(matchNode)) return this.matchNodeWithDefaultClause(node, matchNode);
+
+		// The two nodes are different kinds of nodes. Return false
+		return false;
+	}
+
+	/**
 	 * Matches the provided node with the provided AccessorDeclaration
 	 * @param {Node} node
 	 * @param {AccessorDeclaration} matchNode
@@ -2074,5 +2807,86 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
+	}
+
+	/**
+	 * Matches the provided node with the provided StringLiteral|JsxExpression
+	 * @param {Node} node
+	 * @param {StringLiteral|JsxExpression} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithStringLiteralOrJsxExpression (node: Node, matchNode: StringLiteral|JsxExpression): boolean {
+		// If the node is neither a StringLiteral nor a JsxExpression, return false
+		if (!isStringLiteral(node) && !isJsxExpression(node)) return false;
+
+		if (isStringLiteral(matchNode)) {
+			return this.matchNodeWithStringLiteral(node, matchNode);
+		}
+
+		else if (isJsxExpression(matchNode)) {
+			return this.matchNodeWithJsxExpression(node, matchNode);
+		}
+
+		// The two nodes are different kinds of nodes. Return false
+		return false;
+	}
+
+	/**
+	 * Matches the provided node with the provided TemplateMiddle|TemplateTail
+	 * @param {Node} node
+	 * @param {TemplateMiddle|TemplateTail} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTemplateMiddleOrTemplateTail (node: Node, matchNode: TemplateMiddle|TemplateTail): boolean {
+		// If the node is neither a TemplateMiddle nor a TemplateTail, return false
+		if (!isTemplateMiddle(node) && !isTemplateTail(node)) return false;
+
+		if (isTemplateMiddle(matchNode)) {
+			return this.matchNodeWithTemplateMiddle(node, matchNode);
+		}
+
+		else if (isTemplateTail(matchNode)) {
+			return this.matchNodeWithTemplateTail(node, matchNode);
+		}
+
+		// The two nodes are different kinds of nodes. Return false
+		return false;
+	}
+
+	/**
+	 * Matches the provided node with the provided Identifier|ThisTypeNode
+	 * @param {Node} node
+	 * @param {Identifier|ThisTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithIdentifierOrThisTypeNode (node: Node, matchNode: Identifier|ThisTypeNode): boolean {
+		// If the node is neither a Identifier nor a ThisTypeNode, return false
+		if (!isIdentifier(node) && !isThisTypeNode(node)) return false;
+
+		if (isIdentifier(matchNode)) {
+			return this.matchNodeWithIdentifier(node, matchNode);
+		}
+
+		else if (isThisTypeNode(matchNode)) {
+			return this.matchNodeWithThisTypeNode(node, matchNode);
+		}
+
+		// The two nodes are different kinds of nodes. Return false
+		return false;
+	}
+
+	/**
+	 * Matches the provided node with the provided Identifier|ThisTypeNode
+	 * @param {Node} node
+	 * @param {Identifier|ThisTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithJsxTagNameExpression (node: Node, matchNode: JsxTagNameExpression): boolean {
+
+		if (isPropertyAccessExpression(matchNode)) {
+			return this.matchNodeWithPropertyAccessExpression(node, matchNode);
+		}
+
+		return this.matchNodeWithNode(node, matchNode);
 	}
 }
