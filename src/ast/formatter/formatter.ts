@@ -40,7 +40,7 @@ import {isDecoratorDict} from "../dict/decorator/is-decorator-dict";
 import {IPrinter} from "../printer/i-printer";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IPredicateUtil} from "../../util/predicate-util/i-predicate-util";
-import {IDiffUtil} from "../../util/diff-util/i-diff-util";
+import {INodeMatcherUtil} from "../../util/node-matcher-util/i-node-matcher-util";
 
 export class Formatter implements IFormatter {
 	private static readonly NON_REPLACEABLE_KEYS = new Set<string>(["parent"]);
@@ -48,7 +48,7 @@ export class Formatter implements IFormatter {
 	constructor (private parseService: IParseService,
 							 private languageService: ITypescriptLanguageService,
 							 private predicateUtil: IPredicateUtil,
-							 private diffUtil: IDiffUtil,
+							 private nodeMatcherUtil: INodeMatcherUtil,
 							 private printer: IPrinter) {
 	}
 
@@ -891,7 +891,7 @@ export class Formatter implements IFormatter {
 			// If it is, check if the existing value is an array too
 			if (Array.isArray(existingValue)) {
 				newValue.forEach((part, index) => {
-					const closestIndex = this.diffUtil.findClosestMatchingIndexInArray(part, newValue.length, existingValue);
+					const closestIndex = this.nodeMatcherUtil.matchIndex(part, existingValue);
 					if (closestIndex >= 0) {
 						this.updateValueInPlace(newValue, existingValue, seenNodes, closestIndex, onlyPosition, index);
 					} else {

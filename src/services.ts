@@ -21,13 +21,13 @@ import {ITypescriptLanguageService, TypescriptLanguageService} from "@wessberg/t
 import {ITypescriptPackageReassembler, TypescriptPackageReassembler} from "@wessberg/typescript-package-reassembler";
 import {IPrinter} from "./ast/printer/i-printer";
 import {Printer} from "./ast/printer/printer";
-import {IDiffUtil} from "./util/diff-util/i-diff-util";
-import {DiffUtil} from "./util/diff-util/diff-util";
 import {IPredicateUtil} from "./util/predicate-util/i-predicate-util";
 import {PredicateUtil} from "./util/predicate-util/predicate-util";
+import {INodeMatcherUtil} from "./util/node-matcher-util/i-node-matcher-util";
+import {NodeMatcherUtil} from "./util/node-matcher-util/node-matcher-util";
 
 // Util
-DIContainer.registerSingleton<IDiffUtil, DiffUtil>();
+DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
 DIContainer.registerSingleton<IPredicateUtil, PredicateUtil>();
 
 // Formatter
