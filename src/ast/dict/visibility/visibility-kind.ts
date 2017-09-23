@@ -1,0 +1,1 @@
+export declare type VisibilityKind = "private"|"protected"|"public";
