@@ -1,5 +1,5 @@
 import {INodeMatcherUtil} from "./i-node-matcher-util";
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, BindingPattern, CallSignatureDeclaration, ComputedPropertyName, ConstructorTypeNode, ConstructSignatureDeclaration, DeclarationName, Decorator, EntityName, FunctionOrConstructorTypeNode, FunctionTypeNode, Identifier, isArrayBindingPattern, isBindingElement, isBindingName, isCallSignatureDeclaration, isComputedPropertyName, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isEntityName, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isIdentifier, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isParameter, isPropertyName, isPropertySignature, isQualifiedName, isStringLiteral, isThisTypeNode, isToken, isTypeParameterDeclaration, isVariableDeclaration, isVariableDeclarationList, KeywordTypeNode, Node, NodeArray, NumericLiteral, ObjectBindingPattern, OmittedExpression, ParameterDeclaration, PropertyName, PropertySignature, QualifiedName, StringLiteral, SyntaxKind, ThisTypeNode, Token, TypeParameterDeclaration, VariableDeclaration, VariableDeclarationList} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayTypeNode, BindingElement, BindingName, BindingPattern, Block, CallSignatureDeclaration, ComputedPropertyName, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, DeclarationName, Decorator, EntityName, FunctionDeclaration, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayTypeNode, isBindingElement, isBindingName, isBlock, isCallSignatureDeclaration, isComputedPropertyName, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isEntityName, isFunctionDeclaration, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isParameter, isParenthesizedTypeNode, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeElement, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, KeywordTypeNode, MethodDeclaration, MethodSignature, Node, NodeArray, NumericLiteral, ObjectBindingPattern, OmittedExpression, ParameterDeclaration, ParenthesizedTypeNode, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, Statement, StringLiteral, SyntaxKind, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList} from "typescript";
 
 /**
  * A class that helps with matching nodes
@@ -142,6 +142,102 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithPropertySignature(node, matchNode);
 		}
 
+		else if (isPropertyDeclaration(matchNode)) {
+			return this.matchNodeWithPropertyDeclaration(node, matchNode);
+		}
+
+		else if (isPropertyAssignment(matchNode)) {
+			return this.matchNodeWithPropertyAssignment(node, matchNode);
+		}
+
+		else if (isShorthandPropertyAssignment(matchNode)) {
+			return this.matchNodeWithShorthandPropertyAssignment(node, matchNode);
+		}
+
+		else if (isSpreadAssignment(matchNode)) {
+			return this.matchNodeWithSpreadAssignment(node, matchNode);
+		}
+
+		else if (isFunctionDeclaration(matchNode)) {
+			return this.matchNodeWithFunctionDeclaration(node, matchNode);
+		}
+
+		else if (isBlock(matchNode)) {
+			return this.matchNodeWithBlock(node, matchNode);
+		}
+
+		else if (isMethodSignature(matchNode)) {
+			return this.matchNodeWithMethodSignature(node, matchNode);
+		}
+
+		else if (isMethodDeclaration(matchNode)) {
+			return this.matchNodeWithMethodDeclaration(node, matchNode);
+		}
+
+		else if (isConstructorDeclaration(matchNode)) {
+			return this.matchNodeWithConstructorDeclaration(node, matchNode);
+		}
+
+		else if (isSemicolonClassElement(matchNode)) {
+			return this.matchNodeWithSemiColonClassElement(node, matchNode);
+		}
+
+		else if (isGetAccessorDeclaration(matchNode)) {
+			return this.matchNodeWithGetAccessorDeclaration(node, matchNode);
+		}
+
+		else if (isSetAccessorDeclaration(matchNode)) {
+			return this.matchNodeWithSetAccessorDeclaration(node, matchNode);
+		}
+
+		else if (isAccessor(matchNode)) {
+			return this.matchNodeWithAccessorDeclaration(node, matchNode);
+		}
+
+		else if (isIndexSignatureDeclaration(matchNode)) {
+			return this.matchNodeWithIndexSignatureDeclaration(node, matchNode);
+		}
+
+		else if (isTypeReferenceNode(matchNode)) {
+			return this.matchNodeWithTypeReferenceNode(node, matchNode);
+		}
+
+		else if (isTypePredicateNode(matchNode)) {
+			return this.matchNodeWithTypePredicateNode(node, matchNode);
+		}
+
+		else if (isTypeQueryNode(matchNode)) {
+			return this.matchNodeWithTypeQueryNode(node, matchNode);
+		}
+
+		else if (isTypeElement(matchNode)) {
+			return this.matchNodeWithTypeElement(node, matchNode);
+		}
+
+		else if (isTypeLiteralNode(matchNode)) {
+			return this.matchNodeWithTypeLiteralNode(node, matchNode);
+		}
+
+		else if (isArrayTypeNode(matchNode)) {
+			return this.matchNodeWithArrayTypeNode(node, matchNode);
+		}
+
+		else if (isTupleTypeNode(matchNode)) {
+			return this.matchNodeWithTupleTypeNode(node, matchNode);
+		}
+
+		else if (isUnionTypeNode(matchNode)) {
+			return this.matchNodeWithUnionTypeNode(node, matchNode);
+		}
+
+		else if (isIntersectionTypeNode(matchNode)) {
+			return this.matchNodeWithIntersectionTypeNode(node, matchNode);
+		}
+
+		else if (isParenthesizedTypeNode(matchNode)) {
+			return this.matchNodeWithParenthesizedTypeNode(node, matchNode);
+		}
+
 		return false;
 	}
 
@@ -262,6 +358,45 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided ParenthesizedTypeNode
+	 * @param {Node} node
+	 * @param {ParenthesizedTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithParenthesizedTypeNode (node: Node, matchNode: ParenthesizedTypeNode): boolean {
+		// If the node is not a ParenthesizedTypeNode, return false
+		if (!(isParenthesizedTypeNode(node))) return false;
+
+		return this.matchNodeWithNode(node.type, matchNode.type);
+	}
+
+	/**
+	 * Matches the provided node with the provided UnionTypeNode
+	 * @param {Node} node
+	 * @param {UnionTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithUnionTypeNode (node: Node, matchNode: UnionTypeNode): boolean {
+		// If the node is not a UnionTypeNode, return false
+		if (!(isUnionTypeNode(node))) return false;
+
+		return this.matchNodeWithNodes(node.types, matchNode.types);
+	}
+
+	/**
+	 * Matches the provided node with the provided IntersectionTypeNode
+	 * @param {Node} node
+	 * @param {IntersectionTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithIntersectionTypeNode (node: Node, matchNode: IntersectionTypeNode): boolean {
+		// If the node is not a IntersectionTypeNode, return false
+		if (!(isIntersectionTypeNode(node))) return false;
+
+		return this.matchNodeWithNodes(node.types, matchNode.types);
+	}
+
+	/**
 	 * Returns true if the provided prop is given on both nodes
 	 * @param {T} a
 	 * @param {T} b
@@ -297,6 +432,250 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
 		const parametersMatch = this.propIsNotGiven(node, matchNode, "parameters") || (this.propIsGiven(node, matchNode, "parameters") && this.matchNodeWithParameterDeclarations(node.parameters!, matchNode.parameters!));
 		return nameMatch && typeMatch && typeParametersMatch && parametersMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ArrayTypeNode
+	 * @param {Node} node
+	 * @param {ArrayTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithArrayTypeNode (node: Node, matchNode: ArrayTypeNode): boolean {
+		// If the node is not a ArrayTypeNode, return false
+		if (!(isArrayTypeNode(node))) return false;
+		return this.matchNodeWithNode(node.elementType, matchNode.elementType);
+	}
+
+	/**
+	 * Matches the provided node with the provided TupleTypeNode
+	 * @param {Node} node
+	 * @param {TupleTypeNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTupleTypeNode (node: Node, matchNode: TupleTypeNode): boolean {
+		// If the node is not a TupleTypeNode, return false
+		if (!(isTupleTypeNode(node))) return false;
+		return this.matchNodeWithNodes(node.elementTypes, matchNode.elementTypes);
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeLiteralNode
+	 * @param {Node} node
+	 * @param {TypeLiteralNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeLiteralNode (node: Node, matchNode: TypeLiteralNode): boolean {
+		// If the node is not a TypeLiteralNode, return false
+		if (!(isTypeLiteralNode(node))) return false;
+		return this.matchNodeWithTypeElements(node.members, matchNode.members);
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeReferenceNode
+	 * @param {Node} node
+	 * @param {TypeReferenceNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeReferenceNode (node: Node, matchNode: TypeReferenceNode): boolean {
+		// If the node is not a TypeReferenceNode, return false
+		if (!(isTypeReferenceNode(node))) return false;
+		const typeNameMatch = this.matchNodeWithEntityName(node.typeName, matchNode.typeName);
+		const typeArgumentsMatch = this.propIsNotGiven(node, matchNode, "typeArguments") || (this.propIsGiven(node, matchNode, "typeArguments") && this.matchNodeWithNodes(node.typeArguments!, matchNode.typeArguments!));
+		return typeNameMatch && typeArgumentsMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided TypePredicateNode
+	 * @param {Node} node
+	 * @param {TypePredicateNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypePredicateNode (node: Node, matchNode: TypePredicateNode): boolean {
+		// If the node is not a TypePredicateNode, return false
+		if (!(isTypePredicateNode(node))) return false;
+		const parameterNameMatch = isIdentifier(node.parameterName) && !isIdentifier(matchNode.parameterName) ? false : isThisTypeNode(node.parameterName) && !isThisTypeNode(matchNode.parameterName) ? false : isIdentifier(node.parameterName) && isIdentifier(matchNode.parameterName) ? this.matchNodeWithIdentifier(node.parameterName, matchNode.parameterName) : this.matchNodeWithThisTypeNode(node.parameterName, <ThisTypeNode> matchNode.parameterName);
+		const typeMatch = this.matchNodeWithNode(node.type, matchNode.type);
+		return parameterNameMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided TypeQueryNode
+	 * @param {Node} node
+	 * @param {TypeQueryNode} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeQueryNode (node: Node, matchNode: TypeQueryNode): boolean {
+		// If the node is not a TypeQueryNode, return false
+		if (!(isTypeQueryNode(node))) return false;
+		return this.matchNodeWithEntityName(node.exprName, matchNode.exprName);
+	}
+
+	/**
+	 * Matches the provided node with the provided FunctionDeclaration
+	 * @param {Node} node
+	 * @param {FunctionDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithFunctionDeclaration (node: Node, matchNode: FunctionDeclaration): boolean {
+		// If the node is not a FunctionDeclaration, return false
+		if (!(isFunctionDeclaration(node))) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithIdentifier(node.name!, matchNode.name!));
+		const bodyMatch = this.propIsNotGiven(node, matchNode, "body") || (this.propIsGiven(node, matchNode, "body") && this.matchNodeWithBlock(node.body!, matchNode.body!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && bodyMatch && asteriskTokenMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided MethodSignature
+	 * @param {Node} node
+	 * @param {MethodSignature} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithMethodSignature (node: Node, matchNode: MethodSignature): boolean {
+		// If the node is not a MethodSignature, return false
+		if (!(isMethodSignature(node))) return false;
+
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided IndexSignatureDeclaration
+	 * @param {Node} node
+	 * @param {IndexSignatureDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithIndexSignatureDeclaration (node: Node, matchNode: IndexSignatureDeclaration): boolean {
+		// If the node is not a IndexSignatureDeclaration, return false
+		if (!(isIndexSignatureDeclaration(node))) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithPropertyName(node.name!, matchNode.name!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && questionTokenMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided MethodDeclaration
+	 * @param {Node} node
+	 * @param {MethodDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithMethodDeclaration (node: Node, matchNode: MethodDeclaration): boolean {
+		// If the node is not a MethodDeclaration, return false
+		if (!(isMethodDeclaration(node))) return false;
+
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const bodyMatch = this.propIsNotGiven(node, matchNode, "body") || (this.propIsGiven(node, matchNode, "body") && this.matchNodeWithBlock(node.body!, matchNode.body!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && questionTokenMatch && asteriskTokenMatch && bodyMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided GetAccessorDeclaration
+	 * @param {Node} node
+	 * @param {GetAccessorDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithGetAccessorDeclaration (node: Node, matchNode: GetAccessorDeclaration): boolean {
+		// If the node is not a GetAccessorDeclaration, return false
+		if (!(isGetAccessorDeclaration(node))) return false;
+
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const bodyMatch = this.matchNodeWithBlock(node.body, matchNode.body);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && questionTokenMatch && asteriskTokenMatch && bodyMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided SetAccessorDeclaration
+	 * @param {Node} node
+	 * @param {SetAccessorDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithSetAccessorDeclaration (node: Node, matchNode: SetAccessorDeclaration): boolean {
+		// If the node is not a SetAccessorDeclaration, return false
+		if (!(isSetAccessorDeclaration(node))) return false;
+
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const bodyMatch = this.matchNodeWithBlock(node.body, matchNode.body);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return nameMatch && questionTokenMatch && asteriskTokenMatch && bodyMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ConstructorDeclaration
+	 * @param {Node} node
+	 * @param {ConstructorDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithConstructorDeclaration (node: Node, matchNode: ConstructorDeclaration): boolean {
+		// If the node is not a ConstructorDeclaration, return false
+		if (!(isConstructorDeclaration(node))) return false;
+
+		const bodyMatch = this.propIsNotGiven(node, matchNode, "body") || (this.propIsGiven(node, matchNode, "body") && this.matchNodeWithBlock(node.body!, matchNode.body!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const asteriskTokenMatch = this.propIsNotGiven(node, matchNode, "asteriskToken") || (this.propIsGiven(node, matchNode, "asteriskToken") && this.matchNodeWithToken(node.asteriskToken!, matchNode.asteriskToken!));
+		const typeParametersMatch = this.propIsNotGiven(node, matchNode, "typeParameters") || (this.propIsGiven(node, matchNode, "typeParameters") && this.matchNodeWithTypeParameterDeclarations(node.typeParameters!, matchNode.typeParameters!));
+		const parametersMatch = this.matchNodeWithParameterDeclarations(node.parameters, matchNode.parameters);
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+
+		return questionTokenMatch && asteriskTokenMatch && bodyMatch && typeParametersMatch && parametersMatch && typeMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided SemicolonClassElement
+	 * @param {Node} node
+	 * @param {SemicolonClassElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithSemiColonClassElement (node: Node, matchNode: SemicolonClassElement): boolean {
+		// If the node is not a SemicolonClassElement, return false
+		if (!(isSemicolonClassElement(node))) return false;
+
+		return this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithPropertyName(node.name!, matchNode.name!));
+	}
+
+	/**
+	 * Matches the provided node with the provided Block
+	 * @param {Node} node
+	 * @param {Block} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithBlock (node: Node, matchNode: Block): boolean {
+		// If the node is not a Block, return false
+		if (!(isBlock(node))) return false;
+
+		return this.matchNodeWithStatements(node.statements, matchNode.statements);
 	}
 
 	/**
@@ -413,6 +792,34 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
+	 * Matches the provided node with the provided TypeElement
+	 * @param {Node} node
+	 * @param {TypeElement} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeElement (node: Node, matchNode: TypeElement): boolean {
+		// Return false if the provided Node is not a TypeElement
+		if (!isTypeElement(node)) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithPropertyName(node.name!, matchNode.name!));
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+
+		return nameMatch && questionTokenMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided NodeArray of TypeElements
+	 * @param {Node} node
+	 * @param {NodeArray<TypeElement>} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithTypeElements (node: NodeArray<Node>, matchNode: NodeArray<TypeElement>): boolean {
+		// Return false if they don't have the same amount of elements
+		if (node.length !== matchNode.length) return false;
+		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithTypeElement(nodeElement, element)));
+	}
+
+	/**
 	 * Matches the provided node with the provided NodeArray of VariableDeclarations
 	 * @param {Node} node
 	 * @param {NodeArray<VariableDeclaration>} matchNode
@@ -422,6 +829,30 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		// Return false if they don't have the same amount of elements
 		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithVariableDeclaration(nodeElement, element)));
+	}
+
+	/**
+	 * Matches the provided node with the provided NodeArray of Statements
+	 * @param {Node} node
+	 * @param {NodeArray<Statement>} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithStatements (node: NodeArray<Node>, matchNode: NodeArray<Statement>): boolean {
+		// Return false if they don't have the same amount of elements
+		if (node.length !== matchNode.length) return false;
+		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithNode(nodeElement, element)));
+	}
+
+	/**
+	 * Matches the provided node with the provided NodeArray of Nodes
+	 * @param {Node} node
+	 * @param {NodeArray<Node>} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithNodes (node: NodeArray<Node>, matchNode: NodeArray<Node>): boolean {
+		// Return false if they don't have the same amount of elements
+		if (node.length !== matchNode.length) return false;
+		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithNode(nodeElement, element)));
 	}
 
 	/**
@@ -462,6 +893,73 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		const defaultMatch = this.propIsNotGiven(node, matchNode, "default") || (this.propIsGiven(node, matchNode, "default") && this.matchNodeWithNode(node.default!, matchNode.default!));
 		const expressionMatch = this.propIsNotGiven(node, matchNode, "expression") || (this.propIsGiven(node, matchNode, "expression") && this.matchNodeWithNode(node.expression!, matchNode.expression!));
 		return identifierMatch && constraintMatch && defaultMatch && expressionMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided PropertyDeclaration
+	 * @param {Node} node
+	 * @param {PropertyDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithPropertyDeclaration (node: Node, matchNode: PropertyDeclaration): boolean {
+		// If the node is not a PropertyDeclaration, return false
+		if (!isPropertyDeclaration(node)) return false;
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const typeMatch = this.propIsNotGiven(node, matchNode, "type") || (this.propIsGiven(node, matchNode, "type") && this.matchNodeWithNode(node.type!, matchNode.type!));
+		const initializerMatch = this.propIsNotGiven(node, matchNode, "initializer") || (this.propIsGiven(node, matchNode, "initializer") && this.matchNodeWithNode(node.initializer!, matchNode.initializer!));
+
+		return nameMatch && questionTokenMatch && typeMatch && initializerMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided PropertyAssignment
+	 * @param {Node} node
+	 * @param {PropertyAssignment} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithPropertyAssignment (node: Node, matchNode: PropertyAssignment): boolean {
+		// If the node is not a PropertyAssignment, return false
+		if (!isPropertyAssignment(node)) return false;
+
+		const nameMatch = this.matchNodeWithPropertyName(node.name, matchNode.name);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const initializerMatch = this.propIsNotGiven(node, matchNode, "initializer") || (this.propIsGiven(node, matchNode, "initializer") && this.matchNodeWithNode(node.initializer!, matchNode.initializer!));
+
+		return nameMatch && questionTokenMatch && initializerMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided ShorthandPropertyAssignment
+	 * @param {Node} node
+	 * @param {ShorthandPropertyAssignment} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithShorthandPropertyAssignment (node: Node, matchNode: ShorthandPropertyAssignment): boolean {
+		// If the node is not a ShorthandPropertyAssignment, return false
+		if (!isShorthandPropertyAssignment(node)) return false;
+
+		const nameMatch = this.matchNodeWithIdentifier(node.name, matchNode.name);
+		const questionTokenMatch = this.propIsNotGiven(node, matchNode, "questionToken") || (this.propIsGiven(node, matchNode, "questionToken") && this.matchNodeWithToken(node.questionToken!, matchNode.questionToken!));
+		const equalsTokenMatch = this.propIsNotGiven(node, matchNode, "equalsToken") || (this.propIsGiven(node, matchNode, "equalsToken") && this.matchNodeWithToken(node.equalsToken!, matchNode.equalsToken!));
+		const initializerMatch = this.propIsNotGiven(node, matchNode, "objectAssignmentInitializer") || (this.propIsGiven(node, matchNode, "objectAssignmentInitializer") && this.matchNodeWithNode(node.objectAssignmentInitializer!, matchNode.objectAssignmentInitializer!));
+
+		return nameMatch && questionTokenMatch && equalsTokenMatch && initializerMatch;
+	}
+
+	/**
+	 * Matches the provided node with the provided SpreadAssignment
+	 * @param {Node} node
+	 * @param {SpreadAssignment} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithSpreadAssignment (node: Node, matchNode: SpreadAssignment): boolean {
+		// If the node is not a SpreadAssignment, return false
+		if (!isSpreadAssignment(node)) return false;
+
+		const nameMatch = this.propIsNotGiven(node, matchNode, "name") || (this.propIsGiven(node, matchNode, "name") && this.matchNodeWithPropertyName(node.name!, matchNode.name!));
+		const expressionMatch = this.propIsNotGiven(node, matchNode, "expression") || (this.propIsGiven(node, matchNode, "expression") && this.matchNodeWithNode(node.expression!, matchNode.expression!));
+		return nameMatch && expressionMatch;
 	}
 
 	/**
@@ -723,6 +1221,23 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 
 		// If both nodes are qualified names, call matchNodeWithQualifiedName
 		else if (isQualifiedName(matchNode)) return this.matchNodeWithQualifiedName(node, matchNode);
+
+		// The two nodes are different kinds of nodes. Return false
+		return false;
+	}
+
+	/**
+	 * Matches the provided node with the provided AccessorDeclaration
+	 * @param {Node} node
+	 * @param {AccessorDeclaration} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeWithAccessorDeclaration (node: Node, matchNode: AccessorDeclaration): boolean {
+		// If the node is not a AccessorDeclaration, return false
+		if (!isAccessor(node)) return false;
+
+		if (isGetAccessorDeclaration(matchNode)) return this.matchNodeWithGetAccessorDeclaration(node, matchNode);
+		else if (isSetAccessorDeclaration(matchNode)) return this.matchNodeWithSetAccessorDeclaration(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
