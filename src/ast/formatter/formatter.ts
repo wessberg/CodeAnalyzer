@@ -1,6 +1,6 @@
 import {IFormatter} from "./i-formatter";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createClassExpression, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
 import {DecoratorKind} from "../dict/decorator/decorator-kind";
 import {IParseService} from "../service/parse/i-parse-service";
@@ -126,6 +126,11 @@ export class Formatter implements IFormatter {
 			identifier
 		);
 
+		// Assign undefined to the typeArguments if they are not defined
+		if (expression.typeArguments != null && expression.typeArguments.length === 0) {
+			expression.typeArguments = undefined;
+		}
+
 		return createHeritageClause(SyntaxKind.ExtendsKeyword, createNodeArray([expression]));
 	}
 
@@ -146,10 +151,17 @@ export class Formatter implements IFormatter {
 			const identifier = createIdentifier(element.name);
 
 			// Wrap it inside an expression with type arguments
-			return createExpressionWithTypeArguments(
+			const expression = createExpressionWithTypeArguments(
 				element.typeArguments == null ? createNodeArray() : this.formatTypes(element.typeArguments),
 				identifier
 			);
+
+			// Assign undefined to the typeArguments if they are not defined
+			if (expression.typeArguments != null && expression.typeArguments.length === 0) {
+				expression.typeArguments = undefined;
+			}
+
+			return expression;
 		});
 
 		return createHeritageClause(SyntaxKind.ImplementsKeyword, createNodeArray(elements));
@@ -195,24 +207,33 @@ export class Formatter implements IFormatter {
 	public updateClass ({decorators, name, typeParameters, members, isAbstract, extendsClass, implementsInterfaces}: Partial<IClassDict>, existing: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If we're having to do with an expression
 		if (isClassExpression(existing)) {
-			return this.nodeUpdaterUtil.updateInPlace(createClassExpression(
+			const classExpressionUpdated = updateClassExpression(
+				existing,
 				isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
 				name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
 				typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
 				this.formatHeritageClauses(extendsClass, implementsInterfaces, existing.heritageClauses),
-				members == null ? existing.members : this.formatClassElements(members, existing.members)
-			), existing);
+				members == null ? existing.members : this.formatClassElements(members, existing.members));
+
+			// Force-set heritageClauses to undefined if they have none
+			if (classExpressionUpdated.heritageClauses!.length === 0) classExpressionUpdated.heritageClauses = undefined;
+			return this.nodeUpdaterUtil.updateInPlace(classExpressionUpdated, existing);
 		}
 
 		// If we're having to do with a declaration
-		return this.nodeUpdaterUtil.updateInPlace(createClassDeclaration(
+		const updated = updateClassDeclaration(
+			existing,
 			decorators == null ? existing.decorators : this.formatDecorators(decorators),
 			isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
 			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
 			typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
 			this.formatHeritageClauses(extendsClass, implementsInterfaces, existing.heritageClauses),
-			members == null ? existing.members : this.formatClassElements(members, existing.members)
-		), existing);
+			members == null ? existing.members : this.formatClassElements(members, existing.members));
+
+		// Force-set heritageClauses to undefined if they have none
+		if (updated.heritageClauses!.length === 0) updated.heritageClauses = undefined;
+
+		return this.nodeUpdaterUtil.updateInPlace(updated, existing);
 	}
 
 	/**

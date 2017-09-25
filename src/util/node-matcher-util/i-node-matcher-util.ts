@@ -1,5 +1,6 @@
-import {Node} from "typescript";
+import {NodeMatcherItem} from "./node-matcher-item";
+
 export interface INodeMatcherUtil {
-	match (node: Node, matchWithin: Node[]): Node|undefined;
-	matchIndex (node: Node, matchWithin: Node[]): number;
+	match <T extends NodeMatcherItem> (node: T, matchWithin: Iterable<T>): T|undefined;
+	matchIndex<T extends NodeMatcherItem> (node: T, matchWithin: Iterable<T>): number;
 }

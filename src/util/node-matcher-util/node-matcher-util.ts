@@ -1,39 +1,99 @@
 import {INodeMatcherUtil} from "./i-node-matcher-util";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CallSignatureDeclaration, CaseBlock, CaseClause, CaseOrDefaultClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, ContinueStatement, DebuggerStatement, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, ForInitializer, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportExpression, IndexedAccessTypeNode, IndexSignatureDeclaration, InterfaceDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBindingName, isBlock, isBreakStatement, isCallExpression, isCallSignatureDeclaration, isCaseBlock, isCaseClause, isCaseOrDefaultClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isContinueStatement, isDebuggerStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEntityName, isEnumDeclaration, isEnumMember, isExpressionStatement, isExpressionWithTypeArguments, isExternalModuleReference, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIfStatement, isImportClause, isImportDeclaration, isImportEqualsDeclaration, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isInterfaceDeclaration, isIntersectionTypeNode, isJsxAttribute, isJsxAttributes, isJsxClosingElement, isJsxElement, isJsxExpression, isJsxOpeningElement, isJsxSelfClosingElement, isJsxSpreadAttribute, isJsxText, isLabeledStatement, isLiteralTypeNode, isMappedTypeNode, isMetaProperty, isMethodDeclaration, isMethodSignature, isMissingDeclaration, isModuleBlock, isModuleDeclaration, isNewExpression, isNonNullExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralElementLike, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isReturnStatement, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isThrowStatement, isToken, isTryStatement, isTupleTypeNode, isTypeAliasDeclaration, isTypeAssertion, isTypeElement, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement, isWithStatement, isYieldExpression, JSDocNamespaceBody, JSDocNamespaceDeclaration, JsxAttribute, JsxAttributeLike, JsxAttributes, JsxClosingElement, JsxElement, JsxExpression, JsxOpeningElement, JsxSelfClosingElement, JsxSpreadAttribute, JsxTagNameExpression, JsxText, KeywordTypeNode, LabeledStatement, LiteralTypeNode, MappedTypeNode, MetaProperty, MethodDeclaration, MethodSignature, MissingDeclaration, ModuleBlock, ModuleBody, ModuleDeclaration, ModuleName, ModuleReference, NamespaceBody, NamespaceDeclaration, NewExpression, Node, NodeArray, NonNullExpression, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElementLike, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, ReturnStatement, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeElement, TypeLiteralNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement, WithStatement, YieldExpression, NamespaceImport, isNamespaceImport, NamedImports, isNamedImports, ImportSpecifier, isImportSpecifier, NamedImportBindings, NamespaceExportDeclaration, isNamespaceExportDeclaration, ExportDeclaration, isExportDeclaration, NamedExports, isNamedExports, ExportSpecifier, isExportSpecifier, ExportAssignment, isExportAssignment} from "typescript";
+import {AccessorDeclaration, AmdDependency, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, BindingPattern, Block, BooleanLiteral, BreakStatement, CallExpression, CallSignatureDeclaration, CaseBlock, CaseClause, CaseOrDefaultClause, CatchClause, ClassDeclaration, ClassExpression, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, ContinueStatement, DebuggerStatement, DeclarationName, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, FileReference, ForInitializer, ForInStatement, ForOfStatement, ForStatement, FunctionDeclaration, FunctionExpression, FunctionOrConstructorTypeNode, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportExpression, ImportSpecifier, IndexedAccessTypeNode, IndexSignatureDeclaration, InterfaceDeclaration, IntersectionTypeNode, isAccessor, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBindingName, isBlock, isBreakStatement, isCallExpression, isCallSignatureDeclaration, isCaseBlock, isCaseClause, isCaseOrDefaultClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isContinueStatement, isDebuggerStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEntityName, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExternalModuleReference, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isFunctionOrConstructorTypeNode, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIfStatement, isImportClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isInterfaceDeclaration, isIntersectionTypeNode, isJsxAttribute, isJsxAttributes, isJsxClosingElement, isJsxElement, isJsxExpression, isJsxOpeningElement, isJsxSelfClosingElement, isJsxSpreadAttribute, isJsxText, isLabeledStatement, isLiteralTypeNode, isMappedTypeNode, isMetaProperty, isMethodDeclaration, isMethodSignature, isMissingDeclaration, isModuleBlock, isModuleDeclaration, isNamedExports, isNamedImports, isNamespaceExportDeclaration, isNamespaceImport, isNewExpression, isNonNullExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralElementLike, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertyName, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isReturnStatement, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isThrowStatement, isToken, isTryStatement, isTupleTypeNode, isTypeAliasDeclaration, isTypeAssertion, isTypeElement, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement, isWithStatement, isYieldExpression, JSDocNamespaceBody, JSDocNamespaceDeclaration, JsxAttribute, JsxAttributeLike, JsxAttributes, JsxClosingElement, JsxElement, JsxExpression, JsxOpeningElement, JsxSelfClosingElement, JsxSpreadAttribute, JsxTagNameExpression, JsxText, KeywordTypeNode, LabeledStatement, LiteralTypeNode, MappedTypeNode, MetaProperty, MethodDeclaration, MethodSignature, MissingDeclaration, ModuleBlock, ModuleBody, ModuleDeclaration, ModuleName, ModuleReference, NamedExports, NamedImportBindings, NamedImports, NamespaceBody, NamespaceDeclaration, NamespaceExportDeclaration, NamespaceImport, NewExpression, Node, NodeArray, NonNullExpression, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElementLike, ObjectLiteralExpression, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, ReturnStatement, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeElement, TypeLiteralNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnionTypeNode, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement, WithStatement, YieldExpression} from "typescript";
 import {isBooleanLiteral} from "@wessberg/typescript-ast-util";
+import {NodeMatcherItem} from "./node-matcher-item";
+import {IPredicateUtil} from "../predicate-util/i-predicate-util";
 
 /**
  * A class that helps with matching nodes
  */
 export class NodeMatcherUtil implements INodeMatcherUtil {
+	constructor (private predicateUtil: IPredicateUtil) {
+	}
 
 	/**
 	 * Matches the provided node with any of the nodes within the provided Array
-	 * @param {Node} node
-	 * @param {Node[]} matchWithin
-	 * @returns {Node?}
+	 * @template T
+	 * @param {T} node
+	 * @param {Iterable<T>} matchWithin
+	 * @returns {T?}
 	 */
-	public match (node: Node, matchWithin: Node[]): Node|undefined {
+	public match<T extends NodeMatcherItem> (node: T, matchWithin: Iterable<T>): T|undefined {
 		// If the array already includes the node, return it
-		if (matchWithin.includes(node)) return node;
+		const normalizedMatchWithin = [...matchWithin];
+		if (normalizedMatchWithin.includes(node)) return node;
 
 		// Find the closest match
-		return matchWithin.find(matchNode => this.matchNodeWithNode(node, matchNode));
+		return normalizedMatchWithin.find(matchNode => this.matchNodeMatcherItemWithNodeMatcherItem(node, matchNode));
 	}
 
 	/**
 	 * Matches the provided node with any of the nodes within the provided Array and return its' index
-	 * @param {Node} node
-	 * @param {Node[]} matchWithin
+	 * @template T
+	 * @param {T} node
+	 * @param {Iterable<T>} matchWithin
 	 * @returns {number}
 	 */
-	public matchIndex (node: Node, matchWithin: Node[]): number {
+	public matchIndex<T extends NodeMatcherItem> (node: T, matchWithin: Iterable<T>): number {
 		// If the array already includes the node, return its index
-		const existingIndex = matchWithin.indexOf(node);
+		const normalizedMatchWithin = [...matchWithin];
+		const existingIndex = normalizedMatchWithin.indexOf(node);
 		if (existingIndex >= 0) return existingIndex;
 
 		// Find the closest match
-		return matchWithin.findIndex(matchNode => this.matchNodeWithNode(node, matchNode));
+		return normalizedMatchWithin.findIndex(matchNode => this.matchNodeMatcherItemWithNodeMatcherItem(node, matchNode));
+	}
+
+	/**
+	 * Matches the provided NodeMatcherItem with the provided NodeMatcherItem
+	 * @param {T} node
+	 * @param {T} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeMatcherItemWithNodeMatcherItem<T extends NodeMatcherItem> (node: T, matchNode: T): boolean {
+		if (this.predicateUtil.isAmdDependency(matchNode)) {
+			return this.matchNodeMatcherItemWithAmdDependency(node, matchNode);
+		}
+
+		else if (this.predicateUtil.isFileReference(matchNode)) {
+			return this.matchNodeMatcherItemWithFileReference(node, matchNode);
+		}
+
+		else if (!this.predicateUtil.isNode(node) || !this.predicateUtil.isNode(matchNode)) {
+			return false;
+		}
+
+		else {
+			return this.matchNodeWithNode(node, matchNode);
+		}
+	}
+
+	/**
+	 * Matches the provided NodeMatcherItem with the provided AmdDependency
+	 * @param {NodeMatcherItem} node
+	 * @param {AmdDependency} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeMatcherItemWithAmdDependency (node: NodeMatcherItem, matchNode: AmdDependency): boolean {
+		// If the node is not an AmdDependency, return false
+		if (!this.predicateUtil.isAmdDependency(node)) return false;
+		const pathMatch = node.path === matchNode.path;
+		const nameMatch = node.name === matchNode.name;
+
+		return pathMatch && nameMatch;
+	}
+
+	/**
+	 * Matches the provided NodeMatcherItem with the provided FileReference
+	 * @param {NodeMatcherItem} node
+	 * @param {FileReference} matchNode
+	 * @returns {boolean}
+	 */
+	private matchNodeMatcherItemWithFileReference (node: NodeMatcherItem, matchNode: FileReference): boolean {
+		// If the node is not an FileReference, return false
+		if (!this.predicateUtil.isFileReference(node)) return false;
+
+		return node.fileName === matchNode.fileName;
 	}
 
 	/**
@@ -70,11 +130,11 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithComputedPropertyName(node, matchNode);
 		}
 
-		else if (this.isDeclarationName(matchNode)) {
+		else if (this.predicateUtil.isDeclarationName(matchNode)) {
 			return this.matchNodeWithDeclarationName(node, matchNode);
 		}
 
-		else if (this.isBindingPattern(matchNode)) {
+		else if (this.predicateUtil.isBindingPattern(matchNode)) {
 			return this.matchNodeWithBindingPattern(node, matchNode);
 		}
 
@@ -86,7 +146,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithObjectBindingPattern(node, matchNode);
 		}
 
-		else if (this.isArrayBindingElement(matchNode)) {
+		else if (this.predicateUtil.isArrayBindingElement(matchNode)) {
 			return this.matchNodeWithArrayBindingElement(node, matchNode);
 		}
 
@@ -106,7 +166,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithDecorator(node, matchNode);
 		}
 
-		else if (this.isKeywordTypeNode(matchNode)) {
+		else if (this.predicateUtil.isKeywordTypeNode(matchNode)) {
 			return this.matchNodeWithKeywordTypeNode(node, matchNode);
 		}
 
@@ -270,19 +330,19 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithLiteralTypeNode(node, matchNode);
 		}
 
-		else if (this.isPartiallyEmittedExpression(matchNode)) {
+		else if (this.predicateUtil.isPartiallyEmittedExpression(matchNode)) {
 			return this.matchNodeWithPartiallyEmittedExpression(node, matchNode);
 		}
 
-		else if (this.isPrefixUnaryExpression(matchNode)) {
+		else if (this.predicateUtil.isPrefixUnaryExpression(matchNode)) {
 			return this.matchNodeWithPrefixUnaryExpression(node, matchNode);
 		}
 
-		else if (this.isPostfixUnaryExpression(matchNode)) {
+		else if (this.predicateUtil.isPostfixUnaryExpression(matchNode)) {
 			return this.matchNodeWithPostfixUnaryExpression(node, matchNode);
 		}
 
-		else if (this.isNullLiteral(matchNode)) {
+		else if (this.predicateUtil.isNullLiteral(matchNode)) {
 			return this.matchNodeWithNullLiteral(node, matchNode);
 		}
 
@@ -290,15 +350,15 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithBooleanLiteral(node, matchNode);
 		}
 
-		else if (this.isThisExpression(matchNode)) {
+		else if (this.predicateUtil.isThisExpression(matchNode)) {
 			return this.matchNodeWithThisExpression(node, matchNode);
 		}
 
-		else if (this.isSuperExpression(matchNode)) {
+		else if (this.predicateUtil.isSuperExpression(matchNode)) {
 			return this.matchNodeWithSuperExpression(node, matchNode);
 		}
 
-		else if (this.isImportExpression(matchNode)) {
+		else if (this.predicateUtil.isImportExpression(matchNode)) {
 			return this.matchNodeWithImportExpression(node, matchNode);
 		}
 
@@ -590,11 +650,11 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 			return this.matchNodeWithModuleDeclaration(node, matchNode);
 		}
 
-		else if (this.isNamespaceDeclaration(matchNode)) {
+		else if (this.predicateUtil.isNamespaceDeclaration(matchNode)) {
 			return this.matchNodeWithNamespaceDeclaration(node, matchNode);
 		}
 
-		else if (this.isJSDocNamespaceDeclaration(matchNode)) {
+		else if (this.predicateUtil.isJSDocNamespaceDeclaration(matchNode)) {
 			return this.matchNodeWithJSDocNamespaceDeclaration(node, matchNode);
 		}
 
@@ -643,8 +703,8 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		}
 
 		else if (isExportAssignment(matchNode)) {
-			return this.matchNodeWithExportAssignment(node, matchNode);
-		}
+				return this.matchNodeWithExportAssignment(node, matchNode);
+			}
 
 		return false;
 	}
@@ -663,31 +723,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
-	 * Returns true if a node a KeywordTypeNode
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isKeywordTypeNode (node: Node): node is KeywordTypeNode {
-		const {kind} = node;
-		switch (kind) {
-			case SyntaxKind.AnyKeyword:
-			case SyntaxKind.NumberKeyword:
-			case SyntaxKind.ObjectKeyword:
-			case SyntaxKind.BooleanKeyword:
-			case SyntaxKind.StringKeyword:
-			case SyntaxKind.SymbolKeyword:
-			case SyntaxKind.ThisKeyword:
-			case SyntaxKind.VoidKeyword:
-			case SyntaxKind.UndefinedKeyword:
-			case SyntaxKind.NullKeyword:
-			case SyntaxKind.NeverKeyword:
-				return true;
-			default:
-				return false;
-		}
-	}
-
-	/**
 	 * Matches the provided node with the provided KeywordTypeNode
 	 * @param {Node} node
 	 * @param {KeywordTypeNode} matchNode
@@ -695,7 +730,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithKeywordTypeNode (node: Node, matchNode: KeywordTypeNode): boolean {
 		// If the node is not a KeywordTypeNode, return false
-		if (!(this.isKeywordTypeNode(node))) return false;
+		if (!(this.predicateUtil.isKeywordTypeNode(node))) return false;
 		return node.kind === matchNode.kind;
 	}
 
@@ -986,7 +1021,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithThisExpression (node: Node, _matchNode: ThisExpression): boolean {
-		return this.isThisExpression(node);
+		return this.predicateUtil.isThisExpression(node);
 	}
 
 	/**
@@ -996,7 +1031,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithSuperExpression (node: Node, _matchNode: SuperExpression): boolean {
-		return this.isSuperExpression(node);
+		return this.predicateUtil.isSuperExpression(node);
 	}
 
 	/**
@@ -1006,7 +1041,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithImportExpression (node: Node, _matchNode: ImportExpression): boolean {
-		return this.isImportExpression(node);
+		return this.predicateUtil.isImportExpression(node);
 	}
 
 	/**
@@ -1016,16 +1051,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithNullLiteral (node: Node, _matchNode: NullLiteral): boolean {
-		return this.isNullLiteral(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a NullLiteral
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isNullLiteral (node: Node): node is NullLiteral {
-		return node != null && node.kind === SyntaxKind.NullKeyword;
+		return this.predicateUtil.isNullLiteral(node);
 	}
 
 	/**
@@ -1041,60 +1067,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
-	 * Returns true if the provided Node is a ThisExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isThisExpression (node: Node): node is ThisExpression {
-		return node != null && node.kind === SyntaxKind.ThisKeyword;
-	}
-
-	/**
-	 * Returns true if the provided Node is a SuperExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isSuperExpression (node: Node): node is SuperExpression {
-		return node != null && node.kind === SyntaxKind.SuperKeyword;
-	}
-
-	/**
-	 * Returns true if the provided Node is a ImportExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isImportExpression (node: Node): node is ImportExpression {
-		return node != null && node.kind === SyntaxKind.ImportKeyword;
-	}
-
-	/**
-	 * Returns true if the provided Node is a PartiallyEmittedExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isPartiallyEmittedExpression (node: Node): node is PartiallyEmittedExpression {
-		return node != null && node.kind === SyntaxKind.PartiallyEmittedExpression;
-	}
-
-	/**
-	 * Returns true if the provided Node is a PrefixUnaryExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isPrefixUnaryExpression (node: Node): node is PrefixUnaryExpression {
-		return node != null && node.kind === SyntaxKind.PrefixUnaryExpression;
-	}
-
-	/**
-	 * Returns true if the provided Node is a PostfixUnaryExpression
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isPostfixUnaryExpression (node: Node): node is PostfixUnaryExpression {
-		return node != null && node.kind === SyntaxKind.PostfixUnaryExpression;
-	}
-
-	/**
 	 * Matches the provided node with the provided PartiallyEmittedExpression
 	 * @param {Node} node
 	 * @param {PartiallyEmittedExpression} matchNode
@@ -1102,7 +1074,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithPartiallyEmittedExpression (node: Node, matchNode: PartiallyEmittedExpression): boolean {
 		// If the node is not a PartiallyEmittedExpression, return false
-		if (!(this.isPartiallyEmittedExpression(node))) return false;
+		if (!(this.predicateUtil.isPartiallyEmittedExpression(node))) return false;
 		return this.matchNodeWithNode(node.expression, matchNode.expression);
 	}
 
@@ -1212,7 +1184,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithPrefixUnaryExpression (node: Node, matchNode: PrefixUnaryExpression): boolean {
 		// If the node is not a PrefixUnaryExpression, return false
-		if (!(this.isPrefixUnaryExpression(node))) return false;
+		if (!(this.predicateUtil.isPrefixUnaryExpression(node))) return false;
 
 		const operatorMatch = node.operator === matchNode.operator;
 		const operandMatch = this.matchNodeWithNode(node.operand, matchNode.operand);
@@ -1228,7 +1200,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithPostfixUnaryExpression (node: Node, matchNode: PostfixUnaryExpression): boolean {
 		// If the node is not a PostfixUnaryExpression, return false
-		if (!(this.isPostfixUnaryExpression(node))) return false;
+		if (!(this.predicateUtil.isPostfixUnaryExpression(node))) return false;
 
 		const operatorMatch = node.operator === matchNode.operator;
 		const operandMatch = this.matchNodeWithNode(node.operand, matchNode.operand);
@@ -1604,33 +1576,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
-	 * Returns true if the provided node is an ArrayBindingElement
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isArrayBindingElement (node: Node): node is ArrayBindingElement {
-		return isBindingElement(node) || isOmittedExpression(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a BindingPattern
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isBindingPattern (node: Node): node is BindingPattern {
-		return isObjectBindingPattern(node) || isArrayBindingPattern(node);
-	}
-
-	/**
-	 * Returns true if the provided node is a DeclarationName
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isDeclarationName (node: Node): node is DeclarationName {
-		return isIdentifier(node) || isStringLiteral(node) || isNumericLiteral(node) || isComputedPropertyName(node) || this.isBindingPattern(node);
-	}
-
-	/**
 	 * Matches the provided node with the provided ComputedPropertyName
 	 * @param {Node} node
 	 * @param {ComputedPropertyName} matchNode
@@ -1650,7 +1595,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithBindingPattern (node: Node, matchNode: BindingPattern): boolean {
 		// If the node is not a BindingPattern, return false
-		if (!this.isBindingPattern(node)) return false;
+		if (!this.predicateUtil.isBindingPattern(node)) return false;
 
 		if (isObjectBindingPattern(matchNode)) return this.matchNodeWithObjectBindingPattern(node, matchNode);
 		else if (isArrayBindingPattern(matchNode)) return this.matchNodeWithArrayBindingPattern(node, matchNode);
@@ -1691,7 +1636,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithArrayBindingElement (node: Node, matchNode: ArrayBindingElement): boolean {
 		// If the node is not a DeclarationName, return false
-		if (!this.isArrayBindingElement(node)) return false;
+		if (!this.predicateUtil.isArrayBindingElement(node)) return false;
 
 		if (isBindingElement(matchNode)) return this.matchNodeWithBindingElement(node, matchNode);
 		else if (isOmittedExpression(matchNode)) return this.matchNodeWithOmittedExpression(node, matchNode);
@@ -1755,8 +1700,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithEnumMembers (node: NodeArray<Node>, matchNode: NodeArray<EnumMember>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithEnumMember(nodeElement, element)));
 	}
 
@@ -1767,8 +1710,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithHeritageClauses (node: NodeArray<Node>, matchNode: NodeArray<HeritageClause>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithHeritageClause(nodeElement, element)));
 	}
 
@@ -1779,8 +1720,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithCaseOrDefaultClauses (node: NodeArray<Node>, matchNode: NodeArray<CaseOrDefaultClause>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithCaseOrDefaultClause(nodeElement, element)));
 	}
 
@@ -1791,8 +1730,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithObjectLiteralElementLikes (node: NodeArray<Node>, matchNode: NodeArray<ObjectLiteralElementLike>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithObjectLiteralElementLike(nodeElement, element)));
 	}
 
@@ -1803,8 +1740,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithJsxAttributeLikes (node: NodeArray<Node>, matchNode: NodeArray<JsxAttributeLike>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithJsxAttributeLike(nodeElement, element)));
 	}
 
@@ -1815,8 +1750,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithTemplateSpans (node: NodeArray<Node>, matchNode: NodeArray<TemplateSpan>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithTemplateSpan(nodeElement, element)));
 	}
 
@@ -1827,8 +1760,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithTypeElements (node: NodeArray<Node>, matchNode: NodeArray<TypeElement>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithTypeElement(nodeElement, element)));
 	}
 
@@ -1839,8 +1770,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithVariableDeclarations (node: NodeArray<Node>, matchNode: NodeArray<VariableDeclaration>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithVariableDeclaration(nodeElement, element)));
 	}
 
@@ -1851,8 +1780,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithStatements (node: NodeArray<Node>, matchNode: NodeArray<Statement>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithNode(nodeElement, element)));
 	}
 
@@ -1863,8 +1790,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithNodes (node: NodeArray<Node>, matchNode: NodeArray<Node>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithNode(nodeElement, element)));
 	}
 
@@ -1875,8 +1800,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithArrayBindingElements (node: NodeArray<Node>, matchNode: NodeArray<ArrayBindingElement>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithArrayBindingElement(nodeElement, element)));
 	}
 
@@ -1887,8 +1810,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithBindingElements (node: NodeArray<Node>, matchNode: NodeArray<BindingElement>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithBindingElement(nodeElement, element)));
 	}
 
@@ -2804,8 +2725,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithImportSpecifiers (node: NodeArray<Node>, matchNode: NodeArray<ImportSpecifier>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithImportSpecifier(nodeElement, element)));
 	}
 
@@ -2816,8 +2735,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithExportSpecifiers (node: NodeArray<Node>, matchNode: NodeArray<ExportSpecifier>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithExportSpecifier(nodeElement, element)));
 	}
 
@@ -2828,8 +2745,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithTypeParameterDeclarations (node: NodeArray<Node>, matchNode: NodeArray<TypeParameterDeclaration>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithTypeParameterDeclaration(nodeElement, element)));
 	}
 
@@ -2840,8 +2755,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithExpressionWithTypeArgumentss (node: NodeArray<Node>, matchNode: NodeArray<ExpressionWithTypeArguments>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithExpressionWithTypeArguments(nodeElement, element)));
 	}
 
@@ -2852,8 +2765,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 * @returns {boolean}
 	 */
 	private matchNodeWithParameterDeclarations (node: NodeArray<Node>, matchNode: NodeArray<ParameterDeclaration>): boolean {
-		// Return false if they don't have the same amount of elements
-		if (node.length !== matchNode.length) return false;
 		return matchNode.every(element => node.some(nodeElement => this.matchNodeWithParameterDeclaration(nodeElement, element)));
 	}
 
@@ -2920,7 +2831,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		if (!isBindingName(node)) return false;
 
 		if (isIdentifier(matchNode)) return this.matchNodeWithIdentifier(node, matchNode);
-		else if (this.isBindingPattern(matchNode)) return this.matchNodeWithBindingPattern(node, matchNode);
+		else if (this.predicateUtil.isBindingPattern(matchNode)) return this.matchNodeWithBindingPattern(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
@@ -2934,7 +2845,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithDeclarationName (node: Node, matchNode: DeclarationName): boolean {
 		// If the node is not a DeclarationName, return false
-		if (!this.isDeclarationName(node)) return false;
+		if (!this.predicateUtil.isDeclarationName(node)) return false;
 
 		// If both nodes are identifiers, call matchNodeWithIdentifier
 		if (isIdentifier(matchNode)) return this.matchNodeWithIdentifier(node, matchNode);
@@ -2949,7 +2860,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 		else if (isComputedPropertyName(matchNode)) return this.matchNodeWithComputedPropertyName(node, matchNode);
 
 		// If both nodes are BindingPatterns, call matchNodeWithBindingPattern
-		else if (this.isBindingPattern(matchNode)) return this.matchNodeWithBindingPattern(node, matchNode);
+		else if (this.predicateUtil.isBindingPattern(matchNode)) return this.matchNodeWithBindingPattern(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
@@ -3318,51 +3229,6 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	}
 
 	/**
-	 * Returns true if the provided Node is a NamespaceDeclaration
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isNamespaceDeclaration (node: Node): node is NamespaceDeclaration {
-		return isModuleDeclaration(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a JSDocNamespaceDeclaration
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isJSDocNamespaceDeclaration (node: Node): node is JSDocNamespaceDeclaration {
-		return isModuleDeclaration(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a NamespaceBody
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isNamespaceBody (node: Node): node is NamespaceBody {
-		return isModuleBlock(node) || this.isNamespaceDeclaration(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a NamespaceBody
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isJSDocNamespaceBody (node: Node): node is JSDocNamespaceBody {
-		return isIdentifier(node) || isModuleDeclaration(node);
-	}
-
-	/**
-	 * Returns true if the provided Node is a ModuleBody
-	 * @param {Node} node
-	 * @returns {boolean}
-	 */
-	private isModuleBody (node: Node): node is ModuleBody {
-		return this.isNamespaceBody(node) || this.isJSDocNamespaceBody(node);
-	}
-
-	/**
 	 * Matches the provided node with the provided JSDocNamespaceDeclaration
 	 * @param {Node} node
 	 * @param {JSDocNamespaceDeclaration} matchNode
@@ -3370,7 +3236,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithJSDocNamespaceDeclaration (node: Node, matchNode: JSDocNamespaceDeclaration): boolean {
 		// If the node is not a JSDocNamespaceDeclaration, return false
-		if (!this.isJSDocNamespaceDeclaration(node)) return false;
+		if (!this.predicateUtil.isJSDocNamespaceDeclaration(node)) return false;
 
 		const nameMatch = this.matchNodeWithIdentifier(node.name, matchNode.name);
 		const bodyMatch = this.matchNodeWithJSDocNamespaceBody(node.body, matchNode.body);
@@ -3386,7 +3252,7 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithNamespaceDeclaration (node: Node, matchNode: NamespaceDeclaration): boolean {
 		// If the node is not a NamespaceDeclaration, return false
-		if (!this.isNamespaceDeclaration(node)) return false;
+		if (!this.predicateUtil.isNamespaceDeclaration(node)) return false;
 
 		const nameMatch = this.matchNodeWithIdentifier(node.name, matchNode.name);
 		const bodyMatch = this.matchNodeWithNamespaceBody(node.body, matchNode.body);
@@ -3402,10 +3268,10 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithNamespaceBody (node: Node, matchNode: NamespaceBody): boolean {
 		// If the node is not a ModuleName, return false
-		if (!this.isNamespaceBody(node)) return false;
+		if (!this.predicateUtil.isNamespaceBody(node)) return false;
 
 		if (isModuleBlock(matchNode)) return this.matchNodeWithModuleBlock(node, matchNode);
-		else if (this.isNamespaceDeclaration(matchNode)) return this.matchNodeWithNamespaceDeclaration(node, matchNode);
+		else if (this.predicateUtil.isNamespaceDeclaration(matchNode)) return this.matchNodeWithNamespaceDeclaration(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
@@ -3419,10 +3285,10 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithJSDocNamespaceBody (node: Node, matchNode: JSDocNamespaceBody): boolean {
 		// If the node is not a ModuleName, return false
-		if (!this.isJSDocNamespaceBody(node)) return false;
+		if (!this.predicateUtil.isJSDocNamespaceBody(node)) return false;
 
 		if (isIdentifier(matchNode)) return this.matchNodeWithIdentifier(node, matchNode);
-		else if (this.isJSDocNamespaceDeclaration(matchNode)) return this.matchNodeWithJSDocNamespaceDeclaration(node, matchNode);
+		else if (this.predicateUtil.isJSDocNamespaceDeclaration(matchNode)) return this.matchNodeWithJSDocNamespaceDeclaration(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
@@ -3436,10 +3302,10 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithModuleBody (node: Node, matchNode: ModuleBody): boolean {
 		// If the node is not a ModuleName, return false
-		if (!this.isModuleBody(node)) return false;
+		if (!this.predicateUtil.isModuleBody(node)) return false;
 
-		if (this.isNamespaceBody(matchNode)) return this.matchNodeWithNamespaceBody(node, matchNode);
-		else if (this.isJSDocNamespaceBody(matchNode)) return this.matchNodeWithJSDocNamespaceBody(node, matchNode);
+		if (this.predicateUtil.isNamespaceBody(matchNode)) return this.matchNodeWithNamespaceBody(node, matchNode);
+		else if (this.predicateUtil.isJSDocNamespaceBody(matchNode)) return this.matchNodeWithJSDocNamespaceBody(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
@@ -3487,10 +3353,10 @@ export class NodeMatcherUtil implements INodeMatcherUtil {
 	 */
 	private matchNodeWithModuleBodyOrJSDocNamespaceDeclaration (node: Node, matchNode: ModuleBody|JSDocNamespaceDeclaration): boolean {
 		// If the node is not a ModuleBody|JSDocNamespaceDeclaration, return false
-		if (!this.isModuleBody(node) && !this.isJSDocNamespaceDeclaration(node)) return false;
+		if (!this.predicateUtil.isModuleBody(node) && !this.predicateUtil.isJSDocNamespaceDeclaration(node)) return false;
 
-		if (this.isModuleBody(matchNode)) return this.matchNodeWithModuleBody(node, matchNode);
-		else if (this.isJSDocNamespaceDeclaration(matchNode)) return this.matchNodeWithJSDocNamespaceDeclaration(node, matchNode);
+		if (this.predicateUtil.isModuleBody(matchNode)) return this.matchNodeWithModuleBody(node, matchNode);
+		else if (this.predicateUtil.isJSDocNamespaceDeclaration(matchNode)) return this.matchNodeWithJSDocNamespaceDeclaration(node, matchNode);
 
 		// The two nodes are different kinds of nodes. Return false
 		return false;
