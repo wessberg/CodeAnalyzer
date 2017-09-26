@@ -28,7 +28,10 @@ classService.implementInterfaceOnClass({
 }, A);
 
 classService.addConstructorToClass({
-	body: "console.log(true)",
+	body: `
+		console.log(true);
+		let a = 2 + (a > b ? true : false);
+	`,
 	parameters: [
 		{
 			kind: ParameterKind.NORMAL,
