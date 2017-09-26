@@ -6,6 +6,7 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 import {IPrinter} from "../../src/ast/printer/i-printer";
 import {ParameterKind} from "../../src/ast/dict/parameter/parameter-kind";
 import {BindingNameKind} from "../../src/ast/dict/binding-name/binding-name-kind";
+import {DecoratorKind} from "../../src/ast/dict/decorator/decorator-kind";
 
 const classService = DIContainer.get<IClassService>();
 const languageService = DIContainer.get<ITypescriptLanguageService>();
@@ -39,7 +40,12 @@ classService.addConstructorToClass({
 			initializer: null,
 			isRestSpread: false,
 			isOptional: false,
-			decorators: null
+			decorators: [
+				{
+					kind: DecoratorKind.EXPRESSION,
+					expression: "foo({})"
+				}
+			]
 		}
 	]
 }, A);
