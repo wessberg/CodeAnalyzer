@@ -1,5 +1,5 @@
 import {INodeUpdaterUtil} from "./i-node-updater-util";
-import {AmdDependency, ArrayBindingElement, isJsxAttributes, isDeleteExpression, ArrayBindingPattern, ArrayTypeNode, BinaryExpression, BindingElement, BindingName, Block, CallExpression, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassLikeDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, Declaration, DeclarationName, DeclarationStatement, Decorator, ElementAccessExpression, EntityName, Expression, ExpressionStatement, ExpressionWithTypeArguments, FileReference, FunctionBody, FunctionDeclaration, FunctionLike, FunctionLikeDeclaration, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayTypeNode, isBinaryExpression, isBindingElement, isBlock, isCallExpression, isCallSignatureDeclaration, isClassDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isElementAccessExpression, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isModifier, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, MemberExpression, MethodDeclaration, MethodSignature, Modifier, NamedDeclaration, Node, NodeArray, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyLikeDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, Statement, StringLiteral, Symbol, SyntaxKind, TextRange, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableLikeDeclaration, VariableStatement, isTypeOperatorNode, IndexedAccessTypeNode, isIndexedAccessTypeNode, MappedTypeNode, isMappedTypeNode, LiteralTypeNode, isLiteralTypeNode, PartiallyEmittedExpression, PrefixUnaryExpression, PostfixUnaryExpression, NullLiteral, BooleanLiteral, ThisExpression, KeywordTypeNode, SuperExpression, ImportExpression, DeleteExpression, TypeOfExpression, isTypeOfExpression, VoidExpression, isVoidExpression, AwaitExpression, isAwaitExpression, YieldExpression, isYieldExpression, AssignmentExpression, AssignmentOperatorToken, ObjectDestructuringAssignment, ArrayDestructuringAssignment, FunctionExpression, isFunctionExpression, ArrowFunction, ConciseBody, isArrowFunction, RegularExpressionLiteral, NoSubstitutionTemplateLiteral, isRegularExpressionLiteral, isNoSubstitutionTemplateLiteral, TemplateHead, TemplateMiddle, TemplateTail, isTemplateHead, isTemplateMiddle, isTemplateTail, TemplateExpression, isTemplateExpression, TemplateSpan, isTemplateSpan, ArrayLiteralExpression, isArrayLiteralExpression, SpreadElement, isSpreadElement, SuperPropertyAccessExpression, PropertyAccessEntityNameExpression, NewExpression, isNewExpression, TaggedTemplateExpression, isTaggedTemplateExpression, AsExpression, isAsExpression, TypeAssertion, isTypeAssertion, NonNullExpression, isNonNullExpression, MetaProperty, isMetaProperty, JsxElement, isJsxElement, JsxOpeningElement, isJsxOpeningElement, JsxAttributes, JsxSelfClosingElement, isJsxSelfClosingElement, JsxClosingElement, isJsxClosingElement, JsxAttribute, isJsxAttribute, JsxSpreadAttribute, isJsxSpreadAttribute, JsxExpression, isJsxExpression, JsxText, isJsxText, NotEmittedStatement, EmptyStatement, isEmptyStatement, DebuggerStatement, isDebuggerStatement, MissingDeclaration, isMissingDeclaration, IfStatement, isIfStatement, IterationStatement, DoStatement, isDoStatement, WhileStatement, isWhileStatement, ForStatement, isForStatement, ForInStatement, isForInStatement, ForOfStatement, isForOfStatement} from "typescript";
+import {AmdDependency, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, Block, BooleanLiteral, BreakStatement, CallExpression, CallSignatureDeclaration, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassElement, ClassExpression, ClassLikeDeclaration, ComputedPropertyName, ConciseBody, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, ContinueStatement, DebuggerStatement, Declaration, DeclarationName, DeclarationStatement, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, FileReference, ForInStatement, ForOfStatement, ForStatement, FunctionBody, FunctionDeclaration, FunctionExpression, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportExpression, ImportSpecifier, IndexedAccessTypeNode, IndexSignatureDeclaration, InterfaceDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBlock, isBreakStatement, isCallExpression, isCallSignatureDeclaration, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isContinueStatement, isDebuggerStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExternalModuleReference, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIfStatement, isImportClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isInterfaceDeclaration, isIntersectionTypeNode, isJsxAttribute, isJsxAttributes, isJsxClosingElement, isJsxElement, isJsxExpression, isJsxOpeningElement, isJsxSelfClosingElement, isJsxSpreadAttribute, isJsxText, isLabeledStatement, isLiteralTypeNode, isMappedTypeNode, isMetaProperty, isMethodDeclaration, isMethodSignature, isMissingDeclaration, isModifier, isModuleBlock, isModuleDeclaration, isNamedExports, isNamedImports, isNamespaceExportDeclaration, isNamespaceImport, isNewExpression, isNonNullExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isReturnStatement, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isThrowStatement, isToken, isTryStatement, isTupleTypeNode, isTypeAliasDeclaration, isTypeAssertion, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement, isWithStatement, isYieldExpression, IterationStatement, JSDocNamespaceDeclaration, JsxAttribute, JsxAttributes, JsxClosingElement, JsxElement, JsxExpression, JsxOpeningElement, JsxSelfClosingElement, JsxSpreadAttribute, JsxText, KeywordTypeNode, LabeledStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, LiteralTypeNode, MappedTypeNode, MemberExpression, MetaProperty, MethodDeclaration, MethodSignature, MissingDeclaration, Modifier, ModuleBlock, ModuleDeclaration, NamedDeclaration, NamedExports, NamedImports, NamespaceDeclaration, NamespaceExportDeclaration, NamespaceImport, NewExpression, Node, NodeArray, NonNullExpression, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, ReturnStatement, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, Symbol, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, TextRange, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeElement, TypeLiteralNode, TypeNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement, WithStatement, YieldExpression} from "typescript";
 import {INodeMatcherUtil} from "../node-matcher-util/i-node-matcher-util";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
@@ -462,40 +462,679 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 			}
 
 			else if (isDebuggerStatement(newNode) && isDebuggerStatement(existing)) {
-					return <T><any> this.updateDebuggerStatement(newNode, existing);
+				return <T><any> this.updateDebuggerStatement(newNode, existing);
 			}
 
 			else if (isMissingDeclaration(newNode) && isMissingDeclaration(existing)) {
-					return <T><any> this.updateMissingDeclaration(newNode, existing);
+				return <T><any> this.updateMissingDeclaration(newNode, existing);
 			}
 
 			else if (isIfStatement(newNode) && isIfStatement(existing)) {
-					return <T><any> this.updateIfStatement(newNode, existing);
+				return <T><any> this.updateIfStatement(newNode, existing);
 			}
 
 			else if (isDoStatement(newNode) && isDoStatement(existing)) {
-					return <T><any> this.updateDoStatement(newNode, existing);
+				return <T><any> this.updateDoStatement(newNode, existing);
 			}
 
 			else if (isWhileStatement(newNode) && isWhileStatement(existing)) {
-					return <T><any> this.updateWhileStatement(newNode, existing);
+				return <T><any> this.updateWhileStatement(newNode, existing);
 			}
 
 			else if (isForStatement(newNode) && isForStatement(existing)) {
-					return <T><any> this.updateForStatement(newNode, existing);
+				return <T><any> this.updateForStatement(newNode, existing);
 			}
 
 			else if (isForInStatement(newNode) && isForInStatement(existing)) {
-					return <T><any> this.updateForInStatement(newNode, existing);
+				return <T><any> this.updateForInStatement(newNode, existing);
 			}
 
 			else if (isForOfStatement(newNode) && isForOfStatement(existing)) {
-					return <T><any> this.updateForOfStatement(newNode, existing);
+				return <T><any> this.updateForOfStatement(newNode, existing);
 			}
+
+			else if (isBreakStatement(newNode) && isBreakStatement(existing)) {
+				return <T><any> this.updateBreakStatement(newNode, existing);
+			}
+
+			else if (isContinueStatement(newNode) && isContinueStatement(existing)) {
+				return <T><any> this.updateContinueStatement(newNode, existing);
+			}
+
+			else if (isReturnStatement(newNode) && isReturnStatement(existing)) {
+				return <T><any> this.updateReturnStatement(newNode, existing);
+			}
+
+			else if (isWithStatement(newNode) && isWithStatement(existing)) {
+				return <T><any> this.updateWithStatement(newNode, existing);
+			}
+
+			else if (isSwitchStatement(newNode) && isSwitchStatement(existing)) {
+				return <T><any> this.updateSwitchStatement(newNode, existing);
+			}
+
+			else if (isCaseBlock(newNode) && isCaseBlock(existing)) {
+				return <T><any> this.updateCaseBlock(newNode, existing);
+			}
+
+			else if (isCaseClause(newNode) && isCaseClause(existing)) {
+				return <T><any> this.updateCaseClause(newNode, existing);
+			}
+
+			else if (isDefaultClause(newNode) && isDefaultClause(existing)) {
+				return <T><any> this.updateDefaultClause(newNode, existing);
+			}
+
+			else if (isLabeledStatement(newNode) && isLabeledStatement(existing)) {
+				return <T><any> this.updateLabeledStatement(newNode, existing);
+			}
+
+			else if (isThrowStatement(newNode) && isThrowStatement(existing)) {
+				return <T><any> this.updateThrowStatement(newNode, existing);
+			}
+
+			else if (isTryStatement(newNode) && isTryStatement(existing)) {
+				return <T><any> this.updateTryStatement(newNode, existing);
+			}
+
+			else if (isCatchClause(newNode) && isCatchClause(existing)) {
+				return <T><any> this.updateCatchClause(newNode, existing);
+			}
+
+			else if (isClassExpression(newNode) && isClassExpression(existing)) {
+				return <T><any> this.updateClassExpression(newNode, existing);
+			}
+
+			else if (isInterfaceDeclaration(newNode) && isInterfaceDeclaration(existing)) {
+				return <T><any> this.updateInterfaceDeclaration(newNode, existing);
+			}
+
+			else if (isTypeAliasDeclaration(newNode) && isTypeAliasDeclaration(existing)) {
+				return <T><any> this.updateTypeAliasDeclaration(newNode, existing);
+			}
+
+			else if (isEnumMember(newNode) && isEnumMember(existing)) {
+				return <T><any> this.updateEnumMember(newNode, existing);
+			}
+
+			else if (isEnumDeclaration(newNode) && isEnumDeclaration(existing)) {
+				return <T><any> this.updateEnumDeclaration(newNode, existing);
+			}
+
+			else if (this.predicateUtil.isNamespaceDeclaration(newNode) && this.predicateUtil.isNamespaceDeclaration(existing)) {
+				return <T><any> this.updateNamespaceDeclaration(newNode, existing);
+			}
+
+			else if (this.predicateUtil.isJSDocNamespaceDeclaration(newNode) && this.predicateUtil.isJSDocNamespaceDeclaration(existing)) {
+				return <T><any> this.updateJSDocNamespaceDeclaration(newNode, existing);
+			}
+
+			else if (isModuleDeclaration(newNode) && isModuleDeclaration(existing)) {
+				return <T><any> this.updateModuleDeclaration(newNode, existing);
+			}
+
+			else if (isModuleBlock(newNode) && isModuleBlock(existing)) {
+				return <T><any> this.updateModuleBlock(newNode, existing);
+			}
+
+			else if (isImportEqualsDeclaration(newNode) && isImportEqualsDeclaration(existing)) {
+				return <T><any> this.updateImportEqualsDeclaration(newNode, existing);
+			}
+
+			else if (isExternalModuleReference(newNode) && isExternalModuleReference(existing)) {
+				return <T><any> this.updateExternalModuleReference(newNode, existing);
+			}
+
+			else if (isImportDeclaration(newNode) && isImportDeclaration(existing)) {
+				return <T><any> this.updateImportDeclaration(newNode, existing);
+			}
+
+			else if (isImportClause(newNode) && isImportClause(existing)) {
+				return <T><any> this.updateImportClause(newNode, existing);
+			}
+
+			else if (isNamespaceImport(newNode) && isNamespaceImport(existing)) {
+				return <T><any> this.updateNamespaceImport(newNode, existing);
+			}
+
+			else if (isNamespaceExportDeclaration(newNode) && isNamespaceExportDeclaration(existing)) {
+				return <T><any> this.updateNamespaceExportDeclaration(newNode, existing);
+			}
+
+			else if (isExportDeclaration(newNode) && isExportDeclaration(existing)) {
+				return <T><any> this.updateExportDeclaration(newNode, existing);
+			}
+
+			else if (isNamedImports(newNode) && isNamedImports(existing)) {
+				return <T><any> this.updateNamedImports(newNode, existing);
+			}
+
+			else if (isNamedExports(newNode) && isNamedExports(existing)) {
+				return <T><any> this.updateNamedExports(newNode, existing);
+			}
+
+			else if (isImportSpecifier(newNode) && isImportSpecifier(existing)) {
+				return <T><any> this.updateImportSpecifier(newNode, existing);
+			}
+
+			else if (isExportSpecifier(newNode) && isExportSpecifier(existing)) {
+				return <T><any> this.updateExportSpecifier(newNode, existing);
+			}
+
+			else if (isExportAssignment(newNode) && isExportAssignment(existing)) {
+					return <T><any> this.updateExportAssignment(newNode, existing);
+				}
 		}
 
 		throw new TypeError(`${this.constructor.name} could not update a Node of kind ${SyntaxKind[existing.kind]}: It wasn't handled!`);
 		/*tslint:enable:no-any*/
+	}
+
+	/**
+	 * Updates a ExportAssignment
+	 * @param {ExportAssignment} newNode
+	 * @param {ExportAssignment} existing
+	 * @returns {ExportAssignment}
+	 */
+	private updateExportAssignment (newNode: ExportAssignment, existing: ExportAssignment): ExportAssignment {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.isExportEquals = newNode.isExportEquals;
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ExportSpecifier
+	 * @param {ExportSpecifier} newNode
+	 * @param {ExportSpecifier} existing
+	 * @returns {ExportSpecifier}
+	 */
+	private updateExportSpecifier (newNode: ExportSpecifier, existing: ExportSpecifier): ExportSpecifier {
+		this.updateNamedDeclaration(newNode, existing);
+
+		existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, this.updateIdentifier);
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates ExportSpecifiers
+	 * @param {Node} parent
+	 * @param {NodeArray<ExportSpecifier>} newNode
+	 * @param {NodeArray<ExportSpecifier>} existing
+	 * @returns {NodeArray<ExportSpecifier>}
+	 */
+	private updateExportSpecifiers (parent: Node, newNode: NodeArray<ExportSpecifier>, existing: NodeArray<ExportSpecifier>): NodeArray<ExportSpecifier> {
+		return this.updateNodeArray(parent, newNode, existing, this.updateExportSpecifier);
+	}
+
+	/**
+	 * Updates a ImportSpecifier
+	 * @param {ImportSpecifier} newNode
+	 * @param {ImportSpecifier} existing
+	 * @returns {ImportSpecifier}
+	 */
+	private updateImportSpecifier (newNode: ImportSpecifier, existing: ImportSpecifier): ImportSpecifier {
+		this.updateNamedDeclaration(newNode, existing);
+
+		existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, this.updateIdentifier);
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates ImportSpecifiers
+	 * @param {Node} parent
+	 * @param {NodeArray<ImportSpecifier>} newNode
+	 * @param {NodeArray<ImportSpecifier>} existing
+	 * @returns {NodeArray<ImportSpecifier>}
+	 */
+	private updateImportSpecifiers (parent: Node, newNode: NodeArray<ImportSpecifier>, existing: NodeArray<ImportSpecifier>): NodeArray<ImportSpecifier> {
+		return this.updateNodeArray(parent, newNode, existing, this.updateImportSpecifier);
+	}
+
+	/**
+	 * Updates a NamedExports
+	 * @param {NamedExports} newNode
+	 * @param {NamedExports} existing
+	 * @returns {NamedExports}
+	 */
+	private updateNamedExports (newNode: NamedExports, existing: NamedExports): NamedExports {
+		this.updateNode(newNode, existing);
+
+		existing.elements = this.updateExportSpecifiers(existing, newNode.elements, existing.elements);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a NamedImports
+	 * @param {NamedImports} newNode
+	 * @param {NamedImports} existing
+	 * @returns {NamedImports}
+	 */
+	private updateNamedImports (newNode: NamedImports, existing: NamedImports): NamedImports {
+		this.updateNode(newNode, existing);
+
+		existing.elements = this.updateImportSpecifiers(existing, newNode.elements, existing.elements);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ExportDeclaration
+	 * @param {ExportDeclaration} newNode
+	 * @param {ExportDeclaration} existing
+	 * @returns {ExportDeclaration}
+	 */
+	private updateExportDeclaration (newNode: ExportDeclaration, existing: ExportDeclaration): ExportDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.exportClause = this.updateNodeIfGiven(newNode.exportClause, existing.exportClause, this.updateNamedExports);
+		existing.moduleSpecifier = this.updateNodeIfGiven(newNode.moduleSpecifier, existing.moduleSpecifier, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a NamespaceExportDeclaration
+	 * @param {NamespaceExportDeclaration} newNode
+	 * @param {NamespaceExportDeclaration} existing
+	 * @returns {NamespaceExportDeclaration}
+	 */
+	private updateNamespaceExportDeclaration (newNode: NamespaceExportDeclaration, existing: NamespaceExportDeclaration): NamespaceExportDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a NamespaceImport
+	 * @param {NamespaceImport} newNode
+	 * @param {NamespaceImport} existing
+	 * @returns {NamespaceImport}
+	 */
+	private updateNamespaceImport (newNode: NamespaceImport, existing: NamespaceImport): NamespaceImport {
+		this.updateNamedDeclaration(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ImportClause
+	 * @param {ImportClause} newNode
+	 * @param {ImportClause} existing
+	 * @returns {ImportClause}
+	 */
+	private updateImportClause (newNode: ImportClause, existing: ImportClause): ImportClause {
+		this.updateNamedDeclaration(newNode, existing);
+
+		existing.name = this.updateNodeIfGiven(newNode.name, existing.name, this.updateIdentifier);
+		existing.namedBindings = this.updateNodeIfGiven(newNode.namedBindings, existing.namedBindings, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ImportDeclaration
+	 * @param {ImportDeclaration} newNode
+	 * @param {ImportDeclaration} existing
+	 * @returns {ImportDeclaration}
+	 */
+	private updateImportDeclaration (newNode: ImportDeclaration, existing: ImportDeclaration): ImportDeclaration {
+		this.updateStatement(newNode, existing);
+
+		existing.importClause = this.updateNodeIfGiven(newNode.importClause, existing.importClause, this.updateImportClause);
+		existing.moduleSpecifier = this.update(newNode.moduleSpecifier, existing.moduleSpecifier);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ExternalModuleReference
+	 * @param {ExternalModuleReference} newNode
+	 * @param {ExternalModuleReference} existing
+	 * @returns {ExternalModuleReference}
+	 */
+	private updateExternalModuleReference (newNode: ExternalModuleReference, existing: ExternalModuleReference): ExternalModuleReference {
+		this.updateNode(newNode, existing);
+
+		existing.expression = this.updateNodeIfGiven(newNode.expression, existing.expression, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ImportEqualsDeclaration
+	 * @param {ImportEqualsDeclaration} newNode
+	 * @param {ImportEqualsDeclaration} existing
+	 * @returns {ImportEqualsDeclaration}
+	 */
+	private updateImportEqualsDeclaration (newNode: ImportEqualsDeclaration, existing: ImportEqualsDeclaration): ImportEqualsDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.moduleReference = this.update(newNode.moduleReference, existing.moduleReference);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ModuleBlock
+	 * @param {ModuleBlock} newNode
+	 * @param {ModuleBlock} existing
+	 * @returns {ModuleBlock}
+	 */
+	private updateModuleBlock (newNode: ModuleBlock, existing: ModuleBlock): ModuleBlock {
+		this.updateNode(newNode, existing);
+		this.updateStatement(newNode, existing);
+
+		existing.statements = this.updateAll(existing, newNode.statements, existing.statements);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JSDocNamespaceDeclaration
+	 * @param {JSDocNamespaceDeclaration} newNode
+	 * @param {JSDocNamespaceDeclaration} existing
+	 * @returns {JSDocNamespaceDeclaration}
+	 */
+	private updateJSDocNamespaceDeclaration (newNode: JSDocNamespaceDeclaration, existing: JSDocNamespaceDeclaration): JSDocNamespaceDeclaration {
+		this.updateModuleDeclaration(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.body = this.update(newNode.body, existing.body);
+
+		return existing;
+	}
+
+	/**
+	 * Updates a NamespaceDeclaration
+	 * @param {NamespaceDeclaration} newNode
+	 * @param {NamespaceDeclaration} existing
+	 * @returns {NamespaceDeclaration}
+	 */
+	private updateNamespaceDeclaration (newNode: NamespaceDeclaration, existing: NamespaceDeclaration): NamespaceDeclaration {
+		this.updateModuleDeclaration(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.body = this.update(newNode.body, existing.body);
+
+		return existing;
+	}
+
+	/**
+	 * Updates a ModuleDeclaration
+	 * @param {ModuleDeclaration} newNode
+	 * @param {ModuleDeclaration} existing
+	 * @returns {ModuleDeclaration}
+	 */
+	private updateModuleDeclaration (newNode: ModuleDeclaration, existing: ModuleDeclaration): ModuleDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.update(newNode.name, existing.name);
+		existing.body = this.updateNodeIfGiven(newNode.body, existing.body, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a EnumDeclaration
+	 * @param {EnumDeclaration} newNode
+	 * @param {EnumDeclaration} existing
+	 * @returns {EnumDeclaration}
+	 */
+	private updateEnumDeclaration (newNode: EnumDeclaration, existing: EnumDeclaration): EnumDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.members = this.updateEnumMembers(existing, newNode.members, existing.members);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a EnumMember
+	 * @param {EnumMember} newNode
+	 * @param {EnumMember} existing
+	 * @returns {EnumMember}
+	 */
+	private updateEnumMember (newNode: EnumMember, existing: EnumMember): EnumMember {
+		this.updateNamedDeclaration(newNode, existing);
+
+		existing.name = this.updatePropertyName(newNode.name, existing.name);
+		existing.initializer = this.updateNodeIfGiven(newNode.initializer, existing.initializer, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates EnumMembers
+	 * @param {Node} parent
+	 * @param {NodeArray<EnumMember>} newNode
+	 * @param {NodeArray<EnumMember>} existing
+	 * @returns {NodeArray<EnumMember>}
+	 */
+	private updateEnumMembers (parent: Node, newNode: NodeArray<EnumMember>, existing: NodeArray<EnumMember>): NodeArray<EnumMember> {
+		return this.updateNodeArray(parent, newNode, existing, this.updateEnumMember);
+	}
+
+	/**
+	 * Updates a TypeAliasDeclaration
+	 * @param {TypeAliasDeclaration} newNode
+	 * @param {TypeAliasDeclaration} existing
+	 * @returns {TypeAliasDeclaration}
+	 */
+	private updateTypeAliasDeclaration (newNode: TypeAliasDeclaration, existing: TypeAliasDeclaration): TypeAliasDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.typeParameters = this.updateNodesIfGiven(existing, newNode.typeParameters, existing.typeParameters, this.updateTypeParameterDeclarations);
+		existing.type = this.update(newNode.type, existing.type);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a InterfaceDeclaration
+	 * @param {InterfaceDeclaration} newNode
+	 * @param {InterfaceDeclaration} existing
+	 * @returns {InterfaceDeclaration}
+	 */
+	private updateInterfaceDeclaration (newNode: InterfaceDeclaration, existing: InterfaceDeclaration): InterfaceDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.typeParameters = this.updateNodesIfGiven(existing, newNode.typeParameters, existing.typeParameters, this.updateTypeParameterDeclarations);
+		existing.heritageClauses = this.updateNodesIfGiven(existing, newNode.heritageClauses, existing.heritageClauses, this.updateHeritageClauses);
+		existing.members = this.updateAll(existing, newNode.members, existing.members);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a CatchClause
+	 * @param {CatchClause} newNode
+	 * @param {CatchClause} existing
+	 * @returns {CatchClause}
+	 */
+	private updateCatchClause (newNode: CatchClause, existing: CatchClause): CatchClause {
+		this.updateNode(newNode, existing);
+
+		existing.variableDeclaration = this.updateNodeIfGiven(newNode.variableDeclaration, existing.variableDeclaration, this.updateVariableDeclaration);
+		existing.block = this.updateBlock(newNode.block, existing.block);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a TryStatement
+	 * @param {TryStatement} newNode
+	 * @param {TryStatement} existing
+	 * @returns {TryStatement}
+	 */
+	private updateTryStatement (newNode: TryStatement, existing: TryStatement): TryStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.tryBlock = this.updateBlock(newNode.tryBlock, existing.tryBlock);
+		existing.catchClause = this.updateNodeIfGiven(newNode.catchClause, existing.catchClause, this.updateCatchClause);
+		existing.finallyBlock = this.updateNodeIfGiven(newNode.finallyBlock, existing.finallyBlock, this.updateBlock);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ThrowStatement
+	 * @param {ThrowStatement} newNode
+	 * @param {ThrowStatement} existing
+	 * @returns {ThrowStatement}
+	 */
+	private updateThrowStatement (newNode: ThrowStatement, existing: ThrowStatement): ThrowStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a LabeledStatement
+	 * @param {LabeledStatement} newNode
+	 * @param {LabeledStatement} existing
+	 * @returns {LabeledStatement}
+	 */
+	private updateLabeledStatement (newNode: LabeledStatement, existing: LabeledStatement): LabeledStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.label = this.updateIdentifier(newNode.label, existing.label);
+		existing.statement = this.update(newNode.statement, existing.statement);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a DefaultClause
+	 * @param {DefaultClause} newNode
+	 * @param {DefaultClause} existing
+	 * @returns {DefaultClause}
+	 */
+	private updateDefaultClause (newNode: DefaultClause, existing: DefaultClause): DefaultClause {
+		this.updateNode(newNode, existing);
+
+		existing.statements = this.updateAll(existing, newNode.statements, existing.statements);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a CaseClause
+	 * @param {CaseClause} newNode
+	 * @param {CaseClause} existing
+	 * @returns {CaseClause}
+	 */
+	private updateCaseClause (newNode: CaseClause, existing: CaseClause): CaseClause {
+		this.updateNode(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+		existing.statements = this.updateAll(existing, newNode.statements, existing.statements);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a CaseBlock
+	 * @param {CaseBlock} newNode
+	 * @param {CaseBlock} existing
+	 * @returns {CaseBlock}
+	 */
+	private updateCaseBlock (newNode: CaseBlock, existing: CaseBlock): CaseBlock {
+		this.updateNode(newNode, existing);
+
+		existing.clauses = this.updateAll(existing, newNode.clauses, existing.clauses);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a SwitchStatement
+	 * @param {SwitchStatement} newNode
+	 * @param {SwitchStatement} existing
+	 * @returns {SwitchStatement}
+	 */
+	private updateSwitchStatement (newNode: SwitchStatement, existing: SwitchStatement): SwitchStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+		existing.caseBlock = this.updateCaseBlock(newNode.caseBlock, existing.caseBlock);
+		existing.possiblyExhaustive = newNode.possiblyExhaustive;
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a WithStatement
+	 * @param {WithStatement} newNode
+	 * @param {WithStatement} existing
+	 * @returns {WithStatement}
+	 */
+	private updateWithStatement (newNode: WithStatement, existing: WithStatement): WithStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+		existing.statement = this.updateStatement(newNode.statement, existing.statement);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ReturnStatement
+	 * @param {ReturnStatement} newNode
+	 * @param {ReturnStatement} existing
+	 * @returns {ReturnStatement}
+	 */
+	private updateReturnStatement (newNode: ReturnStatement, existing: ReturnStatement): ReturnStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.expression = this.updateNodeIfGiven(newNode.expression, existing.expression, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ContinueStatement
+	 * @param {ContinueStatement} newNode
+	 * @param {ContinueStatement} existing
+	 * @returns {ContinueStatement}
+	 */
+	private updateContinueStatement (newNode: ContinueStatement, existing: ContinueStatement): ContinueStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.label = this.updateNodeIfGiven(newNode.label, existing.label, this.updateIdentifier);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a BreakStatement
+	 * @param {BreakStatement} newNode
+	 * @param {BreakStatement} existing
+	 * @returns {BreakStatement}
+	 */
+	private updateBreakStatement (newNode: BreakStatement, existing: BreakStatement): BreakStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.label = this.updateNodeIfGiven(newNode.label, existing.label, this.updateIdentifier);
+
+		return this.extraTransformStep(newNode, existing);
 	}
 
 	/**
@@ -1729,86 +2368,9 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	 * @param {Declaration} existing
 	 * @returns {Declaration}
 	 */
-	private updateAssignmentExpression<TOperator extends AssignmentOperatorToken> (newNode: AssignmentExpression<TOperator>, existing: AssignmentExpression<TOperator>): AssignmentExpression<TOperator> {
-		this.updateBinaryExpression(newNode, existing);
-		existing._declarationBrand = newNode._declarationBrand;
-
-		existing.left = this.update(newNode.left, existing.left);
-		existing.operatorToken = <TOperator> this.updateToken(newNode.operatorToken, existing.operatorToken);
-
-		return existing;
-	}
-
-	/**
-	 * Updates a ObjectDestructuringAssignment
-	 * @param {ObjectDestructuringAssignment} newNode
-	 * @param {ObjectDestructuringAssignment} existing
-	 * @returns {ObjectDestructuringAssignment}
-	 */
-	private updateObjectDestructuringAssignment (newNode: ObjectDestructuringAssignment, existing: ObjectDestructuringAssignment): ObjectDestructuringAssignment {
-		this.updateAssignmentExpression(newNode, existing);
-
-		existing.left = this.update(newNode.left, existing.left);
-
-		return existing;
-	}
-
-	/**
-	 * Updates a ArrayDestructuringAssignment
-	 * @param {ArrayDestructuringAssignment} newNode
-	 * @param {ArrayDestructuringAssignment} existing
-	 * @returns {ArrayDestructuringAssignment}
-	 */
-	private updateArrayDestructuringAssignment (newNode: ArrayDestructuringAssignment, existing: ArrayDestructuringAssignment): ArrayDestructuringAssignment {
-		this.updateAssignmentExpression(newNode, existing);
-
-		existing.left = this.update(newNode.left, existing.left);
-
-		return existing;
-	}
-
-	/**
-	 * Updates a Declaration
-	 * @param {Declaration} newNode
-	 * @param {Declaration} existing
-	 * @returns {Declaration}
-	 */
 	private updateDeclaration (newNode: Declaration, existing: Declaration): Declaration {
 		this.updateNode(newNode, existing);
 		existing._declarationBrand = newNode._declarationBrand;
-		return existing;
-	}
-
-	/**
-	 * Updates a VariableLikeDeclaration
-	 * @param {VariableLikeDeclaration} newNode
-	 * @param {VariableLikeDeclaration} existing
-	 * @returns {VariableLikeDeclaration}
-	 */
-	private updateVariableLikeDeclaration (newNode: VariableLikeDeclaration, existing: VariableLikeDeclaration): VariableLikeDeclaration {
-		this.updateNamedDeclaration(newNode, existing);
-
-		existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, this.updatePropertyName);
-		existing.dotDotDotToken = this.updateNodeIfGiven(newNode.dotDotDotToken, existing.dotDotDotToken, this.updateToken);
-		existing.name = this.updateNodeIfGiven(newNode.name, existing.name, this.updateDeclarationName);
-		existing.questionToken = this.updateNodeIfGiven(newNode.questionToken, existing.questionToken, this.updateToken);
-		existing.type = this.updateNodeIfGiven(newNode.type, existing.type, this.update);
-		existing.initializer = this.updateNodeIfGiven(newNode.initializer, existing.initializer, this.update);
-
-		return existing;
-	}
-
-	/**
-	 * Updates a PropertyLikeDeclaration
-	 * @param {PropertyLikeDeclaration} newNode
-	 * @param {PropertyLikeDeclaration} existing
-	 * @returns {PropertyLikeDeclaration}
-	 */
-	private updatePropertyLikeDeclaration (newNode: PropertyLikeDeclaration, existing: PropertyLikeDeclaration): PropertyLikeDeclaration {
-		this.updateNamedDeclaration(newNode, existing);
-
-		existing.name = this.updatePropertyName(newNode.name, existing.name);
-
 		return existing;
 	}
 
@@ -2172,26 +2734,6 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		existing._functionLikeDeclarationBrand = newNode._functionLikeDeclarationBrand;
 
 		return existing;
-	}
-
-	/**
-	 * Updates a FunctionLikeDeclaration
-	 * @param {FunctionLikeDeclaration} newNode
-	 * @param {FunctionLikeDeclaration} existing
-	 * @returns {FunctionLikeDeclaration}
-	 */
-	private updateFunctionLikeDeclaration (newNode: FunctionLikeDeclaration, existing: FunctionLikeDeclaration): FunctionLikeDeclaration {
-		return this.update(newNode, existing);
-	}
-
-	/**
-	 * Updates a FunctionLike
-	 * @param {FunctionLike} newNode
-	 * @param {FunctionLike} existing
-	 * @returns {FunctionLike}
-	 */
-	private updateFunctionLike (newNode: FunctionLike, existing: FunctionLike): FunctionLike {
-		return this.update(newNode, existing);
 	}
 
 	/**
@@ -2675,35 +3217,6 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	}
 
 	/**
-	 * Updates a SuperPropertyAccessExpression
-	 * @param {SuperPropertyAccessExpression} newNode
-	 * @param {SuperPropertyAccessExpression} existing
-	 * @returns {SuperPropertyAccessExpression}
-	 */
-	private updateSuperPropertyAccessExpression (newNode: SuperPropertyAccessExpression, existing: SuperPropertyAccessExpression): SuperPropertyAccessExpression {
-		this.updatePropertyAccessExpression(newNode, existing);
-
-		existing.expression = this.update(newNode.expression, existing.expression);
-
-		return existing;
-	}
-
-	/**
-	 * Updates a PropertyAccessEntityNameExpression
-	 * @param {PropertyAccessEntityNameExpression} newNode
-	 * @param {PropertyAccessEntityNameExpression} existing
-	 * @returns {PropertyAccessEntityNameExpression}
-	 */
-	private updatePropertyAccessEntityNameExpression (newNode: PropertyAccessEntityNameExpression, existing: PropertyAccessEntityNameExpression): PropertyAccessEntityNameExpression {
-		this.updatePropertyAccessExpression(newNode, existing);
-
-		existing._propertyAccessExpressionLikeQualifiedNameBrand = newNode._propertyAccessExpressionLikeQualifiedNameBrand;
-		existing.expression = this.update(newNode.expression, existing.expression);
-
-		return existing;
-	}
-
-	/**
 	 * Updates TypeParameterDeclarations
 	 * @param {Node} parent
 	 * @param {NodeArray<TypeParameterDeclaration>} newNode
@@ -2843,6 +3356,20 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		this.updateDeclarationStatement(newNode, existing);
 
 		existing.name = this.updateNodeIfGiven(newNode.name, existing.name, this.updateIdentifier);
+
+		this.extraTransformStep(newNode, existing);
+		return existing;
+	}
+
+	/**
+	 * Updates a ClassExpression
+	 * @param {ClassExpression} newNode
+	 * @param {ClassExpression} existing
+	 * @returns {ClassExpression}
+	 */
+	private updateClassExpression (newNode: ClassExpression, existing: ClassExpression): ClassExpression {
+		this.updateClassLikeDeclaration(newNode, existing);
+		this.updatePrimaryExpression(newNode, existing);
 
 		this.extraTransformStep(newNode, existing);
 		return existing;
