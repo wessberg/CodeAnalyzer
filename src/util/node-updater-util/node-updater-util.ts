@@ -1,5 +1,5 @@
 import {INodeUpdaterUtil} from "./i-node-updater-util";
-import {AmdDependency, ArrayBindingElement, isDeleteExpression, ArrayBindingPattern, ArrayTypeNode, BinaryExpression, BindingElement, BindingName, Block, CallExpression, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassLikeDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, Declaration, DeclarationName, DeclarationStatement, Decorator, ElementAccessExpression, EntityName, Expression, ExpressionStatement, ExpressionWithTypeArguments, FileReference, FunctionBody, FunctionDeclaration, FunctionLike, FunctionLikeDeclaration, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayTypeNode, isBinaryExpression, isBindingElement, isBlock, isCallExpression, isCallSignatureDeclaration, isClassDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isElementAccessExpression, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isModifier, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, MemberExpression, MethodDeclaration, MethodSignature, Modifier, NamedDeclaration, Node, NodeArray, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyLikeDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, Statement, StringLiteral, Symbol, SyntaxKind, TextRange, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableLikeDeclaration, VariableStatement, isTypeOperatorNode, IndexedAccessTypeNode, isIndexedAccessTypeNode, MappedTypeNode, isMappedTypeNode, LiteralTypeNode, isLiteralTypeNode, PartiallyEmittedExpression, PrefixUnaryExpression, PostfixUnaryExpression, NullLiteral, BooleanLiteral, ThisExpression, KeywordTypeNode, SuperExpression, ImportExpression, DeleteExpression, TypeOfExpression, isTypeOfExpression, VoidExpression, isVoidExpression, AwaitExpression, isAwaitExpression, YieldExpression, isYieldExpression, AssignmentExpression, AssignmentOperatorToken, ObjectDestructuringAssignment, ArrayDestructuringAssignment, FunctionExpression, isFunctionExpression, ArrowFunction, ConciseBody, isArrowFunction, RegularExpressionLiteral, NoSubstitutionTemplateLiteral, isRegularExpressionLiteral, isNoSubstitutionTemplateLiteral, TemplateHead, TemplateMiddle, TemplateTail, isTemplateHead, isTemplateMiddle, isTemplateTail, TemplateExpression, isTemplateExpression, TemplateSpan, isTemplateSpan, ArrayLiteralExpression, isArrayLiteralExpression, SpreadElement, isSpreadElement, SuperPropertyAccessExpression, PropertyAccessEntityNameExpression, NewExpression, isNewExpression, TaggedTemplateExpression, isTaggedTemplateExpression, AsExpression, isAsExpression, TypeAssertion, isTypeAssertion, NonNullExpression, isNonNullExpression, MetaProperty, isMetaProperty} from "typescript";
+import {AmdDependency, ArrayBindingElement, isJsxAttributes, isDeleteExpression, ArrayBindingPattern, ArrayTypeNode, BinaryExpression, BindingElement, BindingName, Block, CallExpression, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassLikeDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, Declaration, DeclarationName, DeclarationStatement, Decorator, ElementAccessExpression, EntityName, Expression, ExpressionStatement, ExpressionWithTypeArguments, FileReference, FunctionBody, FunctionDeclaration, FunctionLike, FunctionLikeDeclaration, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayTypeNode, isBinaryExpression, isBindingElement, isBlock, isCallExpression, isCallSignatureDeclaration, isClassDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isElementAccessExpression, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isModifier, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, MemberExpression, MethodDeclaration, MethodSignature, Modifier, NamedDeclaration, Node, NodeArray, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyLikeDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, Statement, StringLiteral, Symbol, SyntaxKind, TextRange, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableLikeDeclaration, VariableStatement, isTypeOperatorNode, IndexedAccessTypeNode, isIndexedAccessTypeNode, MappedTypeNode, isMappedTypeNode, LiteralTypeNode, isLiteralTypeNode, PartiallyEmittedExpression, PrefixUnaryExpression, PostfixUnaryExpression, NullLiteral, BooleanLiteral, ThisExpression, KeywordTypeNode, SuperExpression, ImportExpression, DeleteExpression, TypeOfExpression, isTypeOfExpression, VoidExpression, isVoidExpression, AwaitExpression, isAwaitExpression, YieldExpression, isYieldExpression, AssignmentExpression, AssignmentOperatorToken, ObjectDestructuringAssignment, ArrayDestructuringAssignment, FunctionExpression, isFunctionExpression, ArrowFunction, ConciseBody, isArrowFunction, RegularExpressionLiteral, NoSubstitutionTemplateLiteral, isRegularExpressionLiteral, isNoSubstitutionTemplateLiteral, TemplateHead, TemplateMiddle, TemplateTail, isTemplateHead, isTemplateMiddle, isTemplateTail, TemplateExpression, isTemplateExpression, TemplateSpan, isTemplateSpan, ArrayLiteralExpression, isArrayLiteralExpression, SpreadElement, isSpreadElement, SuperPropertyAccessExpression, PropertyAccessEntityNameExpression, NewExpression, isNewExpression, TaggedTemplateExpression, isTaggedTemplateExpression, AsExpression, isAsExpression, TypeAssertion, isTypeAssertion, NonNullExpression, isNonNullExpression, MetaProperty, isMetaProperty, JsxElement, isJsxElement, JsxOpeningElement, isJsxOpeningElement, JsxAttributes, JsxSelfClosingElement, isJsxSelfClosingElement, JsxClosingElement, isJsxClosingElement, JsxAttribute, isJsxAttribute, JsxSpreadAttribute, isJsxSpreadAttribute, JsxExpression, isJsxExpression, JsxText, isJsxText} from "typescript";
 import {INodeMatcherUtil} from "../node-matcher-util/i-node-matcher-util";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
@@ -420,10 +420,176 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 			else if (isMetaProperty(newNode) && isMetaProperty(existing)) {
 				return <T><any> this.updateMetaProperty(newNode, existing);
 			}
+
+			else if (isJsxElement(newNode) && isJsxElement(existing)) {
+				return <T><any> this.updateJsxElement(newNode, existing);
+			}
+
+			else if (isJsxOpeningElement(newNode) && isJsxOpeningElement(existing)) {
+				return <T><any> this.updateJsxOpeningElement(newNode, existing);
+			}
+
+			else if (isJsxClosingElement(newNode) && isJsxClosingElement(existing)) {
+				return <T><any> this.updateJsxClosingElement(newNode, existing);
+			}
+
+			else if (isJsxSelfClosingElement(newNode) && isJsxSelfClosingElement(existing)) {
+				return <T><any> this.updateJsxSelfClosingElement(newNode, existing);
+			}
+
+			else if (isJsxAttribute(newNode) && isJsxAttribute(existing)) {
+				return <T><any> this.updateJsxAttribute(newNode, existing);
+			}
+
+			else if (isJsxAttributes(newNode) && isJsxAttributes(existing)) {
+				return <T><any> this.updateJsxAttributes(newNode, existing);
+			}
+
+			else if (isJsxSpreadAttribute(newNode) && isJsxSpreadAttribute(existing)) {
+				return <T><any> this.updateJsxSpreadAttribute(newNode, existing);
+			}
+
+			else if (isJsxExpression(newNode) && isJsxExpression(existing)) {
+				return <T><any> this.updateJsxExpression(newNode, existing);
+			}
+
+			else if (isJsxText(newNode) && isJsxText(existing)) {
+				return <T><any> this.updateJsxText(newNode, existing);
+			}
 		}
 
 		throw new TypeError(`${this.constructor.name} could not update a Node of kind ${SyntaxKind[existing.kind]}: It wasn't handled!`);
 		/*tslint:enable:no-any*/
+	}
+
+	/**
+	 * Updates a JsxText
+	 * @param {JsxText} newNode
+	 * @param {JsxText} existing
+	 * @returns {JsxText}
+	 */
+	private updateJsxText (newNode: JsxText, existing: JsxText): JsxText {
+		this.updateNode(newNode, existing);
+
+		existing.containsOnlyWhiteSpaces = newNode.containsOnlyWhiteSpaces;
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxExpression
+	 * @param {JsxExpression} newNode
+	 * @param {JsxExpression} existing
+	 * @returns {JsxExpression}
+	 */
+	private updateJsxExpression (newNode: JsxExpression, existing: JsxExpression): JsxExpression {
+		this.updateExpression(newNode, existing);
+
+		existing.dotDotDotToken = this.updateNodeIfGiven(newNode.dotDotDotToken, existing.dotDotDotToken, this.updateToken);
+		existing.expression = this.updateNodeIfGiven(newNode.expression, existing.expression, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxSpreadAttribute
+	 * @param {JsxSpreadAttribute} newNode
+	 * @param {JsxSpreadAttribute} existing
+	 * @returns {JsxSpreadAttribute}
+	 */
+	private updateJsxSpreadAttribute (newNode: JsxSpreadAttribute, existing: JsxSpreadAttribute): JsxSpreadAttribute {
+		this.updateObjectLiteralElement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxAttribute
+	 * @param {JsxAttribute} newNode
+	 * @param {JsxAttribute} existing
+	 * @returns {JsxAttribute}
+	 */
+	private updateJsxAttribute (newNode: JsxAttribute, existing: JsxAttribute): JsxAttribute {
+		this.updateObjectLiteralElement(newNode, existing);
+
+		existing.name = this.updateIdentifier(newNode.name, existing.name);
+		existing.initializer = this.updateNodeIfGiven(newNode.initializer, existing.initializer, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxAttributes
+	 * @param {JsxAttributes} newNode
+	 * @param {JsxAttributes} existing
+	 * @returns {JsxAttributes}
+	 */
+	private updateJsxAttributes (newNode: JsxAttributes, existing: JsxAttributes): JsxAttributes {
+		this.updateObjectLiteralExpressionBase(newNode, existing);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxOpeningElement
+	 * @param {JsxOpeningElement} newNode
+	 * @param {JsxOpeningElement} existing
+	 * @returns {JsxOpeningElement}
+	 */
+	private updateJsxOpeningElement (newNode: JsxOpeningElement, existing: JsxOpeningElement): JsxOpeningElement {
+		this.updateExpression(newNode, existing);
+
+		existing.tagName = this.update(newNode.tagName, existing.tagName);
+		existing.attributes = this.update(newNode.attributes, existing.attributes);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxClosingElement
+	 * @param {JsxClosingElement} newNode
+	 * @param {JsxClosingElement} existing
+	 * @returns {JsxClosingElement}
+	 */
+	private updateJsxClosingElement (newNode: JsxClosingElement, existing: JsxClosingElement): JsxClosingElement {
+		this.updateNode(newNode, existing);
+
+		existing.tagName = this.update(newNode.tagName, existing.tagName);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxSelfClosingElement
+	 * @param {JsxSelfClosingElement} newNode
+	 * @param {JsxSelfClosingElement} existing
+	 * @returns {JsxSelfClosingElement}
+	 */
+	private updateJsxSelfClosingElement (newNode: JsxSelfClosingElement, existing: JsxSelfClosingElement): JsxSelfClosingElement {
+		this.updatePrimaryExpression(newNode, existing);
+
+		existing.tagName = this.update(newNode.tagName, existing.tagName);
+		existing.attributes = this.update(newNode.attributes, existing.attributes);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a JsxElement
+	 * @param {JsxElement} newNode
+	 * @param {JsxElement} existing
+	 * @returns {JsxElement}
+	 */
+	private updateJsxElement (newNode: JsxElement, existing: JsxElement): JsxElement {
+		this.updatePrimaryExpression(newNode, existing);
+
+		existing.openingElement = this.updateJsxOpeningElement(newNode.openingElement, existing.openingElement);
+		existing.closingElement = this.updateJsxClosingElement(newNode.closingElement, existing.closingElement);
+		existing.children = this.updateAll(existing, newNode.children, existing.children);
+
+		return this.extraTransformStep(newNode, existing);
 	}
 
 	/**
