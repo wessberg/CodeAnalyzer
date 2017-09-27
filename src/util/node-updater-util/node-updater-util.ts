@@ -1,5 +1,5 @@
 import {INodeUpdaterUtil} from "./i-node-updater-util";
-import {AmdDependency, ArrayBindingElement, isJsxAttributes, isDeleteExpression, ArrayBindingPattern, ArrayTypeNode, BinaryExpression, BindingElement, BindingName, Block, CallExpression, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassLikeDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, Declaration, DeclarationName, DeclarationStatement, Decorator, ElementAccessExpression, EntityName, Expression, ExpressionStatement, ExpressionWithTypeArguments, FileReference, FunctionBody, FunctionDeclaration, FunctionLike, FunctionLikeDeclaration, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayTypeNode, isBinaryExpression, isBindingElement, isBlock, isCallExpression, isCallSignatureDeclaration, isClassDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isElementAccessExpression, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isModifier, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, MemberExpression, MethodDeclaration, MethodSignature, Modifier, NamedDeclaration, Node, NodeArray, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyLikeDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, Statement, StringLiteral, Symbol, SyntaxKind, TextRange, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableLikeDeclaration, VariableStatement, isTypeOperatorNode, IndexedAccessTypeNode, isIndexedAccessTypeNode, MappedTypeNode, isMappedTypeNode, LiteralTypeNode, isLiteralTypeNode, PartiallyEmittedExpression, PrefixUnaryExpression, PostfixUnaryExpression, NullLiteral, BooleanLiteral, ThisExpression, KeywordTypeNode, SuperExpression, ImportExpression, DeleteExpression, TypeOfExpression, isTypeOfExpression, VoidExpression, isVoidExpression, AwaitExpression, isAwaitExpression, YieldExpression, isYieldExpression, AssignmentExpression, AssignmentOperatorToken, ObjectDestructuringAssignment, ArrayDestructuringAssignment, FunctionExpression, isFunctionExpression, ArrowFunction, ConciseBody, isArrowFunction, RegularExpressionLiteral, NoSubstitutionTemplateLiteral, isRegularExpressionLiteral, isNoSubstitutionTemplateLiteral, TemplateHead, TemplateMiddle, TemplateTail, isTemplateHead, isTemplateMiddle, isTemplateTail, TemplateExpression, isTemplateExpression, TemplateSpan, isTemplateSpan, ArrayLiteralExpression, isArrayLiteralExpression, SpreadElement, isSpreadElement, SuperPropertyAccessExpression, PropertyAccessEntityNameExpression, NewExpression, isNewExpression, TaggedTemplateExpression, isTaggedTemplateExpression, AsExpression, isAsExpression, TypeAssertion, isTypeAssertion, NonNullExpression, isNonNullExpression, MetaProperty, isMetaProperty, JsxElement, isJsxElement, JsxOpeningElement, isJsxOpeningElement, JsxAttributes, JsxSelfClosingElement, isJsxSelfClosingElement, JsxClosingElement, isJsxClosingElement, JsxAttribute, isJsxAttribute, JsxSpreadAttribute, isJsxSpreadAttribute, JsxExpression, isJsxExpression, JsxText, isJsxText} from "typescript";
+import {AmdDependency, ArrayBindingElement, isJsxAttributes, isDeleteExpression, ArrayBindingPattern, ArrayTypeNode, BinaryExpression, BindingElement, BindingName, Block, CallExpression, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassLikeDeclaration, ComputedPropertyName, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, Declaration, DeclarationName, DeclarationStatement, Decorator, ElementAccessExpression, EntityName, Expression, ExpressionStatement, ExpressionWithTypeArguments, FileReference, FunctionBody, FunctionDeclaration, FunctionLike, FunctionLikeDeclaration, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IndexSignatureDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayTypeNode, isBinaryExpression, isBindingElement, isBlock, isCallExpression, isCallSignatureDeclaration, isClassDeclaration, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isDecorator, isElementAccessExpression, isExpressionStatement, isExpressionWithTypeArguments, isFunctionDeclaration, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIndexSignatureDeclaration, isIntersectionTypeNode, isMethodDeclaration, isMethodSignature, isModifier, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isStringLiteral, isThisTypeNode, isToken, isTupleTypeNode, isTypeLiteralNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, MemberExpression, MethodDeclaration, MethodSignature, Modifier, NamedDeclaration, Node, NodeArray, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyLikeDeclaration, PropertyName, PropertySignature, QualifiedName, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, Statement, StringLiteral, Symbol, SyntaxKind, TextRange, ThisTypeNode, Token, TupleTypeNode, TypeElement, TypeLiteralNode, TypeNode, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableLikeDeclaration, VariableStatement, isTypeOperatorNode, IndexedAccessTypeNode, isIndexedAccessTypeNode, MappedTypeNode, isMappedTypeNode, LiteralTypeNode, isLiteralTypeNode, PartiallyEmittedExpression, PrefixUnaryExpression, PostfixUnaryExpression, NullLiteral, BooleanLiteral, ThisExpression, KeywordTypeNode, SuperExpression, ImportExpression, DeleteExpression, TypeOfExpression, isTypeOfExpression, VoidExpression, isVoidExpression, AwaitExpression, isAwaitExpression, YieldExpression, isYieldExpression, AssignmentExpression, AssignmentOperatorToken, ObjectDestructuringAssignment, ArrayDestructuringAssignment, FunctionExpression, isFunctionExpression, ArrowFunction, ConciseBody, isArrowFunction, RegularExpressionLiteral, NoSubstitutionTemplateLiteral, isRegularExpressionLiteral, isNoSubstitutionTemplateLiteral, TemplateHead, TemplateMiddle, TemplateTail, isTemplateHead, isTemplateMiddle, isTemplateTail, TemplateExpression, isTemplateExpression, TemplateSpan, isTemplateSpan, ArrayLiteralExpression, isArrayLiteralExpression, SpreadElement, isSpreadElement, SuperPropertyAccessExpression, PropertyAccessEntityNameExpression, NewExpression, isNewExpression, TaggedTemplateExpression, isTaggedTemplateExpression, AsExpression, isAsExpression, TypeAssertion, isTypeAssertion, NonNullExpression, isNonNullExpression, MetaProperty, isMetaProperty, JsxElement, isJsxElement, JsxOpeningElement, isJsxOpeningElement, JsxAttributes, JsxSelfClosingElement, isJsxSelfClosingElement, JsxClosingElement, isJsxClosingElement, JsxAttribute, isJsxAttribute, JsxSpreadAttribute, isJsxSpreadAttribute, JsxExpression, isJsxExpression, JsxText, isJsxText, NotEmittedStatement, EmptyStatement, isEmptyStatement, DebuggerStatement, isDebuggerStatement, MissingDeclaration, isMissingDeclaration, IfStatement, isIfStatement, IterationStatement, DoStatement, isDoStatement, WhileStatement, isWhileStatement, ForStatement, isForStatement, ForInStatement, isForInStatement, ForOfStatement, isForOfStatement} from "typescript";
 import {INodeMatcherUtil} from "../node-matcher-util/i-node-matcher-util";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
@@ -456,10 +456,178 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 			else if (isJsxText(newNode) && isJsxText(existing)) {
 				return <T><any> this.updateJsxText(newNode, existing);
 			}
+
+			else if (isEmptyStatement(newNode) && isEmptyStatement(existing)) {
+				return <T><any> this.updateEmptyStatement(newNode, existing);
+			}
+
+			else if (isDebuggerStatement(newNode) && isDebuggerStatement(existing)) {
+					return <T><any> this.updateDebuggerStatement(newNode, existing);
+			}
+
+			else if (isMissingDeclaration(newNode) && isMissingDeclaration(existing)) {
+					return <T><any> this.updateMissingDeclaration(newNode, existing);
+			}
+
+			else if (isIfStatement(newNode) && isIfStatement(existing)) {
+					return <T><any> this.updateIfStatement(newNode, existing);
+			}
+
+			else if (isDoStatement(newNode) && isDoStatement(existing)) {
+					return <T><any> this.updateDoStatement(newNode, existing);
+			}
+
+			else if (isWhileStatement(newNode) && isWhileStatement(existing)) {
+					return <T><any> this.updateWhileStatement(newNode, existing);
+			}
+
+			else if (isForStatement(newNode) && isForStatement(existing)) {
+					return <T><any> this.updateForStatement(newNode, existing);
+			}
+
+			else if (isForInStatement(newNode) && isForInStatement(existing)) {
+					return <T><any> this.updateForInStatement(newNode, existing);
+			}
+
+			else if (isForOfStatement(newNode) && isForOfStatement(existing)) {
+					return <T><any> this.updateForOfStatement(newNode, existing);
+			}
 		}
 
 		throw new TypeError(`${this.constructor.name} could not update a Node of kind ${SyntaxKind[existing.kind]}: It wasn't handled!`);
 		/*tslint:enable:no-any*/
+	}
+
+	/**
+	 * Updates a ForOfStatement
+	 * @param {ForOfStatement} newNode
+	 * @param {ForOfStatement} existing
+	 * @returns {ForOfStatement}
+	 */
+	private updateForOfStatement (newNode: ForOfStatement, existing: ForOfStatement): ForOfStatement {
+		this.updateIterationStatement(newNode, existing);
+
+		existing.awaitModifier = this.updateNodeIfGiven(newNode.awaitModifier, existing.awaitModifier, this.updateToken);
+		existing.initializer = this.update(newNode.initializer, existing.initializer);
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ForInStatement
+	 * @param {ForInStatement} newNode
+	 * @param {ForInStatement} existing
+	 * @returns {ForInStatement}
+	 */
+	private updateForInStatement (newNode: ForInStatement, existing: ForInStatement): ForInStatement {
+		this.updateIterationStatement(newNode, existing);
+
+		existing.initializer = this.update(newNode.initializer, existing.initializer);
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a ForStatement
+	 * @param {ForStatement} newNode
+	 * @param {ForStatement} existing
+	 * @returns {ForStatement}
+	 */
+	private updateForStatement (newNode: ForStatement, existing: ForStatement): ForStatement {
+		this.updateIterationStatement(newNode, existing);
+
+		existing.initializer = this.updateNodeIfGiven(newNode.initializer, existing.initializer, this.update);
+		existing.condition = this.updateNodeIfGiven(newNode.condition, existing.condition, this.update);
+		existing.incrementor = this.updateNodeIfGiven(newNode.incrementor, existing.incrementor, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a WhileStatement
+	 * @param {WhileStatement} newNode
+	 * @param {WhileStatement} existing
+	 * @returns {WhileStatement}
+	 */
+	private updateWhileStatement (newNode: WhileStatement, existing: WhileStatement): WhileStatement {
+		this.updateIterationStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a DoStatement
+	 * @param {DoStatement} newNode
+	 * @param {DoStatement} existing
+	 * @returns {DoStatement}
+	 */
+	private updateDoStatement (newNode: DoStatement, existing: DoStatement): DoStatement {
+		this.updateIterationStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates an IfStatement
+	 * @param {IfStatement} newNode
+	 * @param {IfStatement} existing
+	 * @returns {IfStatement}
+	 */
+	private updateIfStatement (newNode: IfStatement, existing: IfStatement): IfStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.expression = this.update(newNode.expression, existing.expression);
+		existing.thenStatement = this.update(newNode.thenStatement, existing.thenStatement);
+		existing.elseStatement = this.updateNodeIfGiven(newNode.elseStatement, existing.elseStatement, this.update);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a MissingDeclaration
+	 * @param {MissingDeclaration} newNode
+	 * @param {MissingDeclaration} existing
+	 * @returns {MissingDeclaration}
+	 */
+	private updateMissingDeclaration (newNode: MissingDeclaration, existing: MissingDeclaration): MissingDeclaration {
+		this.updateDeclarationStatement(newNode, existing);
+		this.updateClassElement(newNode, existing);
+		this.updateObjectLiteralElement(newNode, existing);
+		this.updateTypeElement(newNode, existing);
+
+		existing.name = this.updateNodeIfGiven(newNode.name, existing.name, this.updateIdentifier);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a DebuggerStatement
+	 * @param {DebuggerStatement} newNode
+	 * @param {DebuggerStatement} existing
+	 * @returns {DebuggerStatement}
+	 */
+	private updateDebuggerStatement (newNode: DebuggerStatement, existing: DebuggerStatement): DebuggerStatement {
+		this.updateStatement(newNode, existing);
+
+		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates a EmptyStatement
+	 * @param {EmptyStatement} newNode
+	 * @param {EmptyStatement} existing
+	 * @returns {EmptyStatement}
+	 */
+	private updateEmptyStatement (newNode: EmptyStatement, existing: EmptyStatement): EmptyStatement {
+		this.updateStatement(newNode, existing);
+
+		return this.extraTransformStep(newNode, existing);
 	}
 
 	/**
@@ -928,6 +1096,19 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		this.updatePrimaryExpression(newNode, existing);
 
 		return this.extraTransformStep(newNode, existing);
+	}
+
+	/**
+	 * Updates an IterationStatement
+	 * @param {IterationStatement} newNode
+	 * @param {IterationStatement} existing
+	 * @returns {IterationStatement}
+	 */
+	private updateIterationStatement (newNode: IterationStatement, existing: IterationStatement): IterationStatement {
+		this.updateStatement(newNode, existing);
+
+		existing.statement = this.update(newNode.statement, existing.statement);
+		return existing;
 	}
 
 	/**
