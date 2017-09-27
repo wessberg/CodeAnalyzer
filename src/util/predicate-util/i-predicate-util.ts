@@ -1,4 +1,4 @@
-import {AmdDependency, ArrayBindingElement, Symbol, BindingPattern, DeclarationName, FileReference, ImportExpression, JSDocNamespaceBody, JSDocNamespaceDeclaration, KeywordTypeNode, ModuleBody, NamespaceBody, NamespaceDeclaration, Node, NullLiteral, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, SuperExpression, ThisExpression} from "typescript";
+import {AmdDependency, ArrayBindingElement, Symbol, BindingPattern, DeclarationName, FileReference, ImportExpression, JSDocNamespaceBody, JSDocNamespaceDeclaration, KeywordTypeNode, ModuleBody, NamespaceBody, NamespaceDeclaration, Node, NullLiteral, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, SuperExpression, ThisExpression, BooleanLiteral} from "typescript";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
 
 export interface IPredicateUtil {
@@ -10,6 +10,7 @@ export interface IPredicateUtil {
 	isFileReference (node: NodeMatcherItem): node is FileReference;
 	isKeywordTypeNode (node: Node): node is KeywordTypeNode;
 	isNullLiteral (node: Node): node is NullLiteral;
+	isBooleanLiteral (node: Node): node is BooleanLiteral;
 	isThisExpression (node: Node): node is ThisExpression;
 	isSuperExpression (node: Node): node is SuperExpression;
 	isImportExpression (node: Node): node is ImportExpression;

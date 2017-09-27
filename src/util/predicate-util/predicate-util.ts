@@ -1,5 +1,5 @@
 import {IPredicateUtil} from "./i-predicate-util";
-import {AmdDependency, ArrayBindingElement, Symbol, BindingPattern, DeclarationName, FileReference, ImportExpression, isArrayBindingPattern, isBindingElement, isComputedPropertyName, isIdentifier, isModuleBlock, isModuleDeclaration, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isStringLiteral, JSDocNamespaceBody, JSDocNamespaceDeclaration, KeywordTypeNode, ModuleBody, NamespaceBody, NamespaceDeclaration, Node, NullLiteral, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, SuperExpression, SyntaxKind, ThisExpression} from "typescript";
+import {AmdDependency, ArrayBindingElement, Symbol, BindingPattern, DeclarationName, FileReference, ImportExpression, isArrayBindingPattern, isBindingElement, isComputedPropertyName, isIdentifier, isModuleBlock, isModuleDeclaration, isNumericLiteral, isObjectBindingPattern, isOmittedExpression, isStringLiteral, JSDocNamespaceBody, JSDocNamespaceDeclaration, KeywordTypeNode, ModuleBody, NamespaceBody, NamespaceDeclaration, Node, NullLiteral, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, SuperExpression, SyntaxKind, ThisExpression, BooleanLiteral} from "typescript";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
 
 /**
@@ -82,6 +82,15 @@ export class PredicateUtil implements IPredicateUtil {
 	 */
 	public isNullLiteral (node: Node): node is NullLiteral {
 		return node != null && node.kind === SyntaxKind.NullKeyword;
+	}
+
+	/**
+	 * Returns true if the provided Node is a BooleanLiteral
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isBooleanLiteral (node: Node): node is BooleanLiteral {
+		return node != null && (node.kind === SyntaxKind.TrueKeyword || node.kind === SyntaxKind.FalseKeyword);
 	}
 
 	/**
