@@ -3726,9 +3726,6 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private extraTransformStep<T extends Node> (newNode: T, existing: T, options: INodeUpdaterUtilUpdateOptions): T {
 		/*tslint:disable:no-any*/
 		if (this.predicateUtil.hasSymbol(newNode)) {
-			if (existing.getSourceFile == null) {
-				console.log(existing);
-			}
 			const parent = existing.getSourceFile();
 			(<any>existing).symbol = this.copySymbolWithParent(parent, newNode.symbol, options);
 		}

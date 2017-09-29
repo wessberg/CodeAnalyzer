@@ -81,7 +81,7 @@ classService.addMethodToClass({
 	isAbstract: false,
 	isOptional: false,
 	isStatic: false,
-	visibility: "protected",
+	visibility: "public",
 	isAsync: true,
 	parameters: null,
 	typeParameters: ["A"],

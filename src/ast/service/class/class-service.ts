@@ -1,5 +1,5 @@
 import {IClassService} from "./i-class-service";
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, ExpressionWithTypeArguments, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, ExpressionWithTypeArguments, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, Node, NodeArray, SourceFile, SyntaxKind} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IFormatter} from "../../formatter/i-formatter";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
@@ -91,7 +91,27 @@ export class ClassService implements IClassService {
 			}
 
 			else if (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) {
-				return ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name);
+				return ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && !this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
+			}
+			return false;
+		});
+	}
+
+	/**
+	 * Gets the static member of the class with the provided name. In case there are multiple (such as will
+	 * be the case with getters and setters, the first matched one will be returned).
+	 * @param {string} name
+	 * @param {ClassDeclaration|ClassExpression} classDeclaration
+	 * @returns {ClassElement}
+	 */
+	public getStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined {
+		return classDeclaration.members.find(member => {
+			if (isConstructorDeclaration(member)) {
+				return name === "constructor";
+			}
+
+			else if (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) {
+				return ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
 			}
 			return false;
 		});
@@ -151,6 +171,16 @@ export class ClassService implements IClassService {
 	 */
 	public hasMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		return this.getMemberWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the provided class has a static member with a name equal to the provided one
+	 * @param {string} name
+	 * @param {ClassDeclaration|ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getStaticMemberWithName(name, classDeclaration) != null;
 	}
 
 	/**
@@ -259,5 +289,16 @@ export class ClassService implements IClassService {
 		if (this.hasGetterWithName(method.name, classDeclaration)) return classDeclaration;
 
 		return this.formatter.updateClass({members: [method]}, classDeclaration);
+	}
+
+	/**
+	 * Returns true if the class has a modifier with the provided kind
+	 * @param {ts.SyntaxKind} kind
+	 * @param {Node} classMember
+	 * @returns {boolean}
+	 */
+	private hasModifierWithKind (kind: SyntaxKind, classMember: Node): boolean {
+		if (classMember.modifiers == null) return false;
+		return classMember.modifiers.find(modifier => modifier.kind === kind) != null;
 	}
 }
