@@ -6,6 +6,7 @@ export interface IPredicateUtil {
 	isObject (item: any): item is {[key: string]: any};
 	isNode (item: any): item is Node;
 	/*tslint:enable:no-any*/
+	isIterable<T> (item: T|Iterable<T>|undefined|null|{}): item is Iterable<T>;
 	isAmdDependency (node: NodeMatcherItem): node is AmdDependency;
 	isFileReference (node: NodeMatcherItem): node is FileReference;
 	isKeywordTypeNode (node: Node): node is KeywordTypeNode;

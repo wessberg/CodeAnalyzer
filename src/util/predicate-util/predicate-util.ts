@@ -10,6 +10,16 @@ export class PredicateUtil implements IPredicateUtil {
 	/*tslint:disable:no-any*/
 
 	/**
+	 * Checks if something is an Iterable
+	 * @param item
+	 * @returns {boolean}
+	 */
+	public isIterable<T> (item: T|Iterable<T>|undefined|null|{}): item is Iterable<T> {
+		if (item == null) return false;
+		return typeof (<Iterable<T>>item)[Symbol.iterator] === "function";
+	}
+
+	/**
 	 * Returns true if the provided item is an object
 	 * @param item
 	 * @returns {boolean}

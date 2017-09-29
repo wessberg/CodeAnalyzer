@@ -38,10 +38,12 @@ import {isBindingNameDict} from "../dict/binding-name/is-binding-name-dict";
 import {isParameterDict} from "../dict/parameter/is-parameter-dict";
 import {isDecoratorDict} from "../dict/decorator/is-decorator-dict";
 import {INodeUpdaterUtil} from "../../util/node-updater-util/i-node-updater-util";
+import {IPredicateUtil} from "../../util/predicate-util/i-predicate-util";
 
 export class Formatter implements IFormatter {
 
 	constructor (private parseService: IParseService,
+							 private predicateUtil: IPredicateUtil,
 							 private nodeUpdaterUtil: INodeUpdaterUtil) {
 	}
 
@@ -99,8 +101,8 @@ export class Formatter implements IFormatter {
 		// Find any existing 'implements' heritage clause, if it exists and is given as an argument
 		const existingImplements = existing == null ? undefined : existing.find(clause => clause.token === SyntaxKind.ImplementsKeyword);
 
-		const extendsClause = extend == null ? existingExtends == null ? [] : [existingExtends] : [isINameWithTypeArguments(extend) || this.isIterable(implement) ? this.formatExtendsHeritageClause(extend) : extend];
-		const implementsClause = implement == null ? existingImplements == null ? [] : [existingImplements] : [isINameWithTypeArguments(implement) || this.isIterable(implement) ? this.formatImplementsHeritageClause(implement) : implement];
+		const extendsClause = extend == null ? existingExtends == null ? [] : [existingExtends] : [isINameWithTypeArguments(extend) || this.predicateUtil.isIterable(implement) ? this.formatExtendsHeritageClause(extend) : extend];
+		const implementsClause = implement == null ? existingImplements == null ? [] : [existingImplements] : [isINameWithTypeArguments(implement) || this.predicateUtil.isIterable(implement) ? this.formatImplementsHeritageClause(implement, existingImplements) : implement];
 		return createNodeArray([...extendsClause, ...implementsClause]);
 	}
 
@@ -137,15 +139,16 @@ export class Formatter implements IFormatter {
 	/**
 	 * Formats the provided implements heritage clause
 	 * @param {INameWithTypeArguments | Iterable<INameWithTypeArguments>|HeritageClause} implement
+	 * @param {HeritageClause} [existing]
 	 * @returns {ts.HeritageClause}
 	 */
-	public formatImplementsHeritageClause (implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause): HeritageClause {
+	public formatImplementsHeritageClause (implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause, existing?: HeritageClause): HeritageClause {
 		// Return the existing HeritageClause if called with such a thing
-		if (!isINameWithTypeArguments(implement) && !this.isIterable(implement)) {
+		if (!isINameWithTypeArguments(implement) && !this.predicateUtil.isIterable(implement)) {
 			return implement;
 		}
 
-		const normalized = this.isIterable(implement) ? [...implement] : [implement];
+		const normalized = this.predicateUtil.isIterable(implement) ? [...implement] : [implement];
 		const elements = normalized.map(element => {
 			// Generate an identifier for the extended class
 			const identifier = createIdentifier(element.name);
@@ -164,7 +167,10 @@ export class Formatter implements IFormatter {
 			return expression;
 		});
 
-		return createHeritageClause(SyntaxKind.ImplementsKeyword, createNodeArray(elements));
+		// Add-in the existing 'implements' expressions
+		const existingImplementsExpressions = existing == null ? [] : existing.types;
+
+		return createHeritageClause(SyntaxKind.ImplementsKeyword, createNodeArray([...elements, ...existingImplementsExpressions]));
 	}
 
 	/**
@@ -584,7 +590,7 @@ export class Formatter implements IFormatter {
 		}
 
 		// The input is already a NamedImports.
-		else if (!this.isIterable(namedImports)) {
+		else if (!this.predicateUtil.isIterable(namedImports)) {
 			return namedImports;
 		}
 
@@ -861,15 +867,4 @@ export class Formatter implements IFormatter {
 	public formatBlock (block: string): Block {
 		return this.parseService.parseBlock(block);
 	}
-
-	/**
-	 * Checks if something is an Iterable
-	 * @param item
-	 * @returns {boolean}
-	 */
-	private isIterable<T> (item: /*tslint:disable*/any/*tslint:enable*/): item is Iterable<T> {
-		if (item == null) return false;
-		return typeof item[Symbol.iterator] === "function";
-	}
-
 }

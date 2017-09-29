@@ -11,7 +11,7 @@ export class ParseService implements IParseService {
 	 * The ScriptTarget to use when generating a SourceFile from an expression
 	 * @type {ScriptTarget.ES2017}
 	 */
-	private static readonly SCRIPT_TARGET = ScriptTarget.ES2017;
+	private static readonly SCRIPT_TARGET = ScriptTarget.Latest;
 
 	/**
 	 * Parses the provided string into a Block
@@ -47,9 +47,11 @@ export class ParseService implements IParseService {
 	 * @returns {NodeArray<T>}
 	 */
 	public parse<T extends Node = Statement> (expression: string): NodeArray<T> {
+		/*tslint:disable:no-any*/
 		// Create a source file to allow the type expression to be parsed from a string
 		const sourceFile = createSourceFile(ParseService.FILENAME, expression, ParseService.SCRIPT_TARGET);
-		return <NodeArray<T>></*tslint:disable*/any/*tslint:enable*/> createNodeArray(sourceFile.statements.map(statement => isExpressionStatement(statement) ? statement.expression : statement));
+		return <NodeArray<T>><any> createNodeArray(sourceFile.statements.map(statement => isExpressionStatement(statement) ? statement.expression : statement));
+		/*tslint:enable:no-any*/
 	}
 
 	/**

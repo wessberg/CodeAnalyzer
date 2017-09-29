@@ -1,6 +1,6 @@
 import {Node} from "typescript";
-import {INodeUpdaterUtilUpdateOptions} from "./i-node-updater-util-update-options";
+import {INodeUpdaterUtilUpdateOptionsDict} from "./i-node-updater-util-update-options-dict";
 
 export interface INodeUpdaterUtil {
-	updateInPlace<T extends Node> (newNode: T, existing: T, options?: Partial<INodeUpdaterUtilUpdateOptions>): T;
+	updateInPlace<T extends Node> (newNode: T, existing: T, options?: Partial<INodeUpdaterUtilUpdateOptionsDict>): T;
 }

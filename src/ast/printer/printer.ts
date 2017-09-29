@@ -9,7 +9,7 @@ export class Printer implements IPrinter {
 	 * Keys to discard when stringifying a Node
 	 * @type {Set<string>}
 	 */
-	private static readonly DISCARD_KEYS = new Set(["parent", "flags", "transformFlags", "symbol", "identifiers", "classifiableNames", "lineMap", "modifierFlagsCache", "imports", "moduleAugmentations", "ambientModuleNames", "nextContainer", "locals", "scriptSnapshot", "symbolCount", "bindDiagnostics", "text", "languageVersion", "fileName", "languageVariant", "isDeclarationFile", "scriptKind", "referencedFiles", "typeReferenceDirectives", "amdDependencies", "path", "version", "parseDiagnostics", "nodeCount", "identifierCount", "endOfFileToken", "autoGenerateKind", "autoGenerateId", "original"]);
+	private static readonly DISCARD_KEYS = new Set(["parent", "flags", "transformFlags", "symbol", "identifiers", "classifiableNames", "lineMap", "modifierFlagsCache", "imports", "moduleAugmentations", "ambientModuleNames", "nextContainer", "locals", "scriptSnapshot", "symbolCount", "bindDiagnostics", "text", "languageVersion", "fileName", "languageVariant", "isDeclarationFile", "scriptKind", "referencedFiles", "typeReferenceDirectives", "amdDependencies", "path", "version", "parseDiagnostics", "nodeCount", "identifierCount", "endOfFileToken", "autoGenerateKind", "autoGenerateId", "original", "localSymbol"]);
 
 	/**
 	 * The spacing to use when stringifying a Node

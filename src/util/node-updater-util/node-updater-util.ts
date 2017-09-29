@@ -2,10 +2,11 @@ import {INodeUpdaterUtil} from "./i-node-updater-util";
 import {AmdDependency, ArrayBindingElement, ArrayBindingPattern, ArrayLiteralExpression, ArrayTypeNode, ArrowFunction, AsExpression, AwaitExpression, BinaryExpression, BindingElement, BindingName, Block, BooleanLiteral, BreakStatement, CallExpression, CallSignatureDeclaration, CaseBlock, CaseClause, CatchClause, ClassDeclaration, ClassElement, ClassExpression, ClassLikeDeclaration, ComputedPropertyName, ConciseBody, ConditionalExpression, ConstructorDeclaration, ConstructorTypeNode, ConstructSignatureDeclaration, ContinueStatement, DebuggerStatement, Declaration, DeclarationName, DeclarationStatement, Decorator, DefaultClause, DeleteExpression, DoStatement, ElementAccessExpression, EmptyStatement, EntityName, EnumDeclaration, EnumMember, ExportAssignment, ExportDeclaration, ExportSpecifier, Expression, ExpressionStatement, ExpressionWithTypeArguments, ExternalModuleReference, FileReference, ForInStatement, ForOfStatement, ForStatement, FunctionBody, FunctionDeclaration, FunctionExpression, FunctionLikeDeclarationBase, FunctionTypeNode, GetAccessorDeclaration, HeritageClause, Identifier, IfStatement, ImportClause, ImportDeclaration, ImportEqualsDeclaration, ImportExpression, ImportSpecifier, IndexedAccessTypeNode, IndexSignatureDeclaration, InterfaceDeclaration, IntersectionTypeNode, isArrayBindingPattern, isArrayLiteralExpression, isArrayTypeNode, isArrowFunction, isAsExpression, isAwaitExpression, isBinaryExpression, isBindingElement, isBlock, isBreakStatement, isCallExpression, isCallSignatureDeclaration, isCaseBlock, isCaseClause, isCatchClause, isClassDeclaration, isClassExpression, isComputedPropertyName, isConditionalExpression, isConstructorDeclaration, isConstructorTypeNode, isConstructSignatureDeclaration, isContinueStatement, isDebuggerStatement, isDecorator, isDefaultClause, isDeleteExpression, isDoStatement, isElementAccessExpression, isEmptyStatement, isEnumDeclaration, isEnumMember, isExportAssignment, isExportDeclaration, isExportSpecifier, isExpressionStatement, isExpressionWithTypeArguments, isExternalModuleReference, isForInStatement, isForOfStatement, isForStatement, isFunctionDeclaration, isFunctionExpression, isFunctionTypeNode, isGetAccessorDeclaration, isHeritageClause, isIdentifier, isIfStatement, isImportClause, isImportDeclaration, isImportEqualsDeclaration, isImportSpecifier, isIndexedAccessTypeNode, isIndexSignatureDeclaration, isInterfaceDeclaration, isIntersectionTypeNode, isJsxAttribute, isJsxAttributes, isJsxClosingElement, isJsxElement, isJsxExpression, isJsxOpeningElement, isJsxSelfClosingElement, isJsxSpreadAttribute, isJsxText, isLabeledStatement, isLiteralTypeNode, isMappedTypeNode, isMetaProperty, isMethodDeclaration, isMethodSignature, isMissingDeclaration, isModifier, isModuleBlock, isModuleDeclaration, isNamedExports, isNamedImports, isNamespaceExportDeclaration, isNamespaceImport, isNewExpression, isNonNullExpression, isNoSubstitutionTemplateLiteral, isNumericLiteral, isObjectBindingPattern, isObjectLiteralExpression, isOmittedExpression, isParameter, isParenthesizedExpression, isParenthesizedTypeNode, isPropertyAccessExpression, isPropertyAssignment, isPropertyDeclaration, isPropertySignature, isQualifiedName, isRegularExpressionLiteral, isReturnStatement, isSemicolonClassElement, isSetAccessorDeclaration, isShorthandPropertyAssignment, isSourceFile, isSpreadAssignment, isSpreadElement, isStringLiteral, isSwitchStatement, isTaggedTemplateExpression, isTemplateExpression, isTemplateHead, isTemplateMiddle, isTemplateSpan, isTemplateTail, isThisTypeNode, isThrowStatement, isToken, isTryStatement, isTupleTypeNode, isTypeAliasDeclaration, isTypeAssertion, isTypeLiteralNode, isTypeOfExpression, isTypeOperatorNode, isTypeParameterDeclaration, isTypePredicateNode, isTypeQueryNode, isTypeReferenceNode, isUnionTypeNode, isVariableDeclaration, isVariableDeclarationList, isVariableStatement, isVoidExpression, isWhileStatement, isWithStatement, isYieldExpression, IterationStatement, JSDocNamespaceDeclaration, JsxAttribute, JsxAttributes, JsxClosingElement, JsxElement, JsxExpression, JsxOpeningElement, JsxSelfClosingElement, JsxSpreadAttribute, JsxText, KeywordTypeNode, LabeledStatement, LeftHandSideExpression, LiteralExpression, LiteralLikeNode, LiteralTypeNode, MappedTypeNode, MemberExpression, MetaProperty, MethodDeclaration, MethodSignature, MissingDeclaration, Modifier, ModuleBlock, ModuleDeclaration, NamedDeclaration, NamedExports, NamedImports, NamespaceDeclaration, NamespaceExportDeclaration, NamespaceImport, NewExpression, Node, NodeArray, NonNullExpression, NoSubstitutionTemplateLiteral, NullLiteral, NumericLiteral, ObjectBindingPattern, ObjectLiteralElement, ObjectLiteralElementLike, ObjectLiteralExpression, ObjectLiteralExpressionBase, OmittedExpression, ParameterDeclaration, ParenthesizedExpression, ParenthesizedTypeNode, PartiallyEmittedExpression, PostfixUnaryExpression, PrefixUnaryExpression, PrimaryExpression, PropertyAccessExpression, PropertyAssignment, PropertyDeclaration, PropertyName, PropertySignature, QualifiedName, RegularExpressionLiteral, ReturnStatement, SemicolonClassElement, SetAccessorDeclaration, ShorthandPropertyAssignment, SignatureDeclaration, SourceFile, SpreadAssignment, SpreadElement, Statement, StringLiteral, SuperExpression, SwitchStatement, Symbol, SyntaxKind, TaggedTemplateExpression, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail, TextRange, ThisExpression, ThisTypeNode, ThrowStatement, Token, TryStatement, TupleTypeNode, TypeAliasDeclaration, TypeAssertion, TypeElement, TypeLiteralNode, TypeNode, TypeOfExpression, TypeOperatorNode, TypeParameterDeclaration, TypePredicateNode, TypeQueryNode, TypeReferenceNode, UnaryExpression, UnionTypeNode, UpdateExpression, VariableDeclaration, VariableDeclarationList, VariableStatement, VoidExpression, WhileStatement, WithStatement, YieldExpression} from "typescript";
 import {INodeMatcherUtil} from "../node-matcher-util/i-node-matcher-util";
 import {NodeMatcherItem} from "../node-matcher-util/node-matcher-item";
-import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IPrinter} from "../../ast/printer/i-printer";
 import {IPredicateUtil} from "../predicate-util/i-predicate-util";
 import {INodeUpdaterUtilUpdateOptions} from "./i-node-updater-util-update-options";
+import {INodeUpdaterUtilUpdateOptionsDict} from "./i-node-updater-util-update-options-dict";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A class that helps with updating (mutating) nodes in-place
@@ -13,31 +14,20 @@ import {INodeUpdaterUtilUpdateOptions} from "./i-node-updater-util-update-option
 export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private PRESERVE_KEYS_ON_STRIP: Set<string> = new Set(["parent"]);
 
-	constructor (private nodeMatcherUtil: INodeMatcherUtil,
+	constructor (private languageService: ITypescriptLanguageService,
+							 private nodeMatcherUtil: INodeMatcherUtil,
 							 private predicateUtil: IPredicateUtil,
-							 private printer: IPrinter,
-							 private languageService: ITypescriptLanguageService) {
-	}
-
-	/**
-	 * Gets normalized INodeUpdaterUtilUpdateOptions
-	 * @param {Partial<INodeUpdaterUtilUpdateOptions>} options
-	 * @returns {INodeUpdaterUtilUpdateOptions}
-	 */
-	private getUpdateOptions ({onlyTypes = false}: Partial<INodeUpdaterUtilUpdateOptions>): INodeUpdaterUtilUpdateOptions {
-		return {
-			onlyTypes
-		};
+							 private printer: IPrinter) {
 	}
 
 	/**
 	 * Updates a Node in-place. This means it will be deep-mutated
 	 * @param {T} newNode
 	 * @param {T} existing
-	 * @param {Partial<INodeUpdaterUtilUpdateOptions>} [options={}]
+	 * @param {Partial<INodeUpdaterUtilUpdateOptionsDict>} [options={}]
 	 * @returns {T}
 	 */
-	public updateInPlace<T extends Node> (newNode: T, existing: T, options: Partial<INodeUpdaterUtilUpdateOptions> = {}): T {
+	public updateInPlace<T extends Node> (newNode: T, existing: T, options: Partial<INodeUpdaterUtilUpdateOptionsDict> = {}): T {
 
 		const normalizedOptions = this.getUpdateOptions(options);
 
@@ -47,7 +37,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		// Take the SourceFile
 		const sourceFile = existing.getSourceFile();
 
-		// Update it in the LanguageService
+		// Generate a new SourceFile
 		const path = sourceFile.fileName;
 		const content = this.printer.print(sourceFile);
 		const newSourceFile = this.languageService.addFile({path, content});
@@ -55,6 +45,15 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		// Update the existing SourceFile (primarily for positions)
 		this.update(newSourceFile, sourceFile, normalizedOptions);
 		return existing;
+	}
+
+	/**
+	 * Gets normalized INodeUpdaterUtilUpdateOptions
+	 * @param {Partial<INodeUpdaterUtilUpdateOptions>} options
+	 * @returns {INodeUpdaterUtilUpdateOptions}
+	 */
+	private getUpdateOptions ({}: Partial<INodeUpdaterUtilUpdateOptionsDict>): INodeUpdaterUtilUpdateOptions {
+		return {};
 	}
 
 	/**
@@ -656,10 +655,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateExportAssignment (newNode: ExportAssignment, existing: ExportAssignment, options: INodeUpdaterUtilUpdateOptions): ExportAssignment {
 		this.updateDeclarationStatement(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.isExportEquals = newNode.isExportEquals;
-			existing.expression = this.update(newNode.expression, existing.expression, options);
-		}
+		existing.isExportEquals = newNode.isExportEquals;
+		existing.expression = this.update(newNode.expression, existing.expression, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -674,10 +671,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateExportSpecifier (newNode: ExportSpecifier, existing: ExportSpecifier, options: INodeUpdaterUtilUpdateOptions): ExportSpecifier {
 		this.updateNamedDeclaration(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, options, this.updateIdentifier);
-			existing.name = this.updateIdentifier(newNode.name, existing.name, options);
-		}
+		existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, options, this.updateIdentifier);
+		existing.name = this.updateIdentifier(newNode.name, existing.name, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -704,10 +699,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateImportSpecifier (newNode: ImportSpecifier, existing: ImportSpecifier, options: INodeUpdaterUtilUpdateOptions): ImportSpecifier {
 		this.updateNamedDeclaration(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, options, this.updateIdentifier);
-			existing.name = this.updateIdentifier(newNode.name, existing.name, options);
-		}
+		existing.propertyName = this.updateNodeIfGiven(newNode.propertyName, existing.propertyName, options, this.updateIdentifier);
+		existing.name = this.updateIdentifier(newNode.name, existing.name, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -734,9 +727,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateNamedExports (newNode: NamedExports, existing: NamedExports, options: INodeUpdaterUtilUpdateOptions): NamedExports {
 		this.updateNode(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.elements = this.updateExportSpecifiers(existing, newNode.elements, existing.elements, options);
-		}
+		existing.elements = this.updateExportSpecifiers(existing, newNode.elements, existing.elements, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -751,9 +742,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateNamedImports (newNode: NamedImports, existing: NamedImports, options: INodeUpdaterUtilUpdateOptions): NamedImports {
 		this.updateNode(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.elements = this.updateImportSpecifiers(existing, newNode.elements, existing.elements, options);
-		}
+		existing.elements = this.updateImportSpecifiers(existing, newNode.elements, existing.elements, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -768,10 +757,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateExportDeclaration (newNode: ExportDeclaration, existing: ExportDeclaration, options: INodeUpdaterUtilUpdateOptions): ExportDeclaration {
 		this.updateDeclarationStatement(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.exportClause = this.updateNodeIfGiven(newNode.exportClause, existing.exportClause, options, this.updateNamedExports);
-			existing.moduleSpecifier = this.updateNodeIfGiven(newNode.moduleSpecifier, existing.moduleSpecifier, options, this.update);
-		}
+		existing.exportClause = this.updateNodeIfGiven(newNode.exportClause, existing.exportClause, options, this.updateNamedExports);
+		existing.moduleSpecifier = this.updateNodeIfGiven(newNode.moduleSpecifier, existing.moduleSpecifier, options, this.update);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -786,9 +773,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateNamespaceExportDeclaration (newNode: NamespaceExportDeclaration, existing: NamespaceExportDeclaration, options: INodeUpdaterUtilUpdateOptions): NamespaceExportDeclaration {
 		this.updateDeclarationStatement(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.name = this.updateIdentifier(newNode.name, existing.name, options);
-		}
+		existing.name = this.updateIdentifier(newNode.name, existing.name, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -803,9 +788,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateNamespaceImport (newNode: NamespaceImport, existing: NamespaceImport, options: INodeUpdaterUtilUpdateOptions): NamespaceImport {
 		this.updateNamedDeclaration(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.name = this.updateIdentifier(newNode.name, existing.name, options);
-		}
+		existing.name = this.updateIdentifier(newNode.name, existing.name, options);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -820,10 +803,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private updateImportClause (newNode: ImportClause, existing: ImportClause, options: INodeUpdaterUtilUpdateOptions): ImportClause {
 		this.updateNamedDeclaration(newNode, existing, options);
 
-		if (!options.onlyTypes) {
-			existing.name = this.updateNodeIfGiven(newNode.name, existing.name, options, this.updateIdentifier);
-			existing.namedBindings = this.updateNodeIfGiven(newNode.namedBindings, existing.namedBindings, options, this.update);
-		}
+		existing.name = this.updateNodeIfGiven(newNode.name, existing.name, options, this.updateIdentifier);
+		existing.namedBindings = this.updateNodeIfGiven(newNode.namedBindings, existing.namedBindings, options, this.update);
 
 		return this.extraTransformStep(newNode, existing, options);
 	}
@@ -3539,7 +3520,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	 * @param {T} node
 	 * @returns {T}
 	 */
-	private changeParent<T extends Node> (parent: Node, node: T): T {
+	private cloneWithParent<T extends Node> (parent: Node, node: T): T {
 		node.parent = parent;
 		return node;
 	}
@@ -3556,8 +3537,8 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		return {
 			flags,
 			escapedName,
-			declarations: declarations == null ? undefined : declarations.map(declaration => this.changeParent(parent, declaration)),
-			valueDeclaration: valueDeclaration == null ? undefined : this.changeParent(parent, valueDeclaration),
+			declarations: declarations == null ? undefined : declarations.map(declaration => this.cloneWithParent(parent, declaration)),
+			valueDeclaration: valueDeclaration == null ? undefined : this.cloneWithParent(parent, valueDeclaration),
 			members,
 			exports,
 			globalExports,
@@ -3696,7 +3677,7 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 				boundHandler(newNode, match, options);
 			} else {
 				// Otherwise, push to the array, but do change the parent
-				mutableExistingNodes.push(this.changeParent(parent, newNode));
+				mutableExistingNodes.push(this.cloneWithParent(parent, newNode));
 			}
 		});
 		return existingNodes;
@@ -3720,19 +3701,19 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 
 	/**
 	 * Adds all keys from a Node to another
-	 * @param {T} node
+	 * @param {T} newNode
 	 * @param {T} existing
 	 * @returns {T}
 	 */
-	private addAllKeysOfNode<T extends Node> (node: T, existing: T): T {
-		Object.keys(existing).forEach((key: keyof T) => {
+	private addAllKeysOfNode<T extends Node> (newNode: T, existing: T): T {
+		Object.keys(newNode).forEach((key: keyof T) => {
 
 			// Don't add the key if the provided node must preserve it
 			if (!this.PRESERVE_KEYS_ON_STRIP.has(key)) {
-				node[key] = existing[key];
+				existing[key] = newNode[key];
 			}
 		});
-		return node;
+		return existing;
 	}
 
 	/**
@@ -3745,7 +3726,10 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 	private extraTransformStep<T extends Node> (newNode: T, existing: T, options: INodeUpdaterUtilUpdateOptions): T {
 		/*tslint:disable:no-any*/
 		if (this.predicateUtil.hasSymbol(newNode)) {
-			const parent = newNode.getSourceFile();
+			if (existing.getSourceFile == null) {
+				console.log(existing);
+			}
+			const parent = existing.getSourceFile();
 			(<any>existing).symbol = this.copySymbolWithParent(parent, newNode.symbol, options);
 		}
 
@@ -3774,12 +3758,12 @@ export class NodeUpdaterUtil implements INodeUpdaterUtil {
 		}
 
 		if (this.predicateUtil.hasNextContainer(newNode)) {
-			const parent = newNode.getSourceFile();
-			(<any>existing).nextContainer = this.changeParent(parent, newNode.nextContainer);
+			const parent = existing.getSourceFile();
+			(<any>existing).nextContainer = this.cloneWithParent(parent, newNode.nextContainer);
 		}
 
 		if (this.predicateUtil.hasLocals(newNode)) {
-			const parent = newNode.getSourceFile();
+			const parent = existing.getSourceFile();
 			const mapped: Map<string, Symbol> = <any> Array.from(newNode.locals.entries()).map(entry => [entry[0], this.copySymbolWithParent(parent, entry[1], options)]);
 			(<any>existing).locals = new Map(mapped);
 		}
