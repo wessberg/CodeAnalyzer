@@ -1,24 +1,25 @@
-import {ParameterDict} from "../dict/parameter/parameter-dict";
-import {AccessorDeclaration, BindingName, ClassDeclaration, ClassExpression, ClassElement, ConstructorDeclaration, Decorator, Expression, GetAccessorDeclaration, HeritageClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
-import {DecoratorDict} from "../dict/decorator/decorator-dict";
-import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
+import {AccessorDeclaration, BindingName, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, GetAccessorDeclaration, HeritageClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
+import {INamedImportDict} from "../dict/import/i-named-import-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
-import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
-import {ModifierKind} from "../dict/modifier/modifier-kind";
 import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
 import {IMethodDict} from "../dict/method/i-method-dict";
 import {IClassMethodDict} from "../dict/class-method/i-class-method-dict";
-import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
-import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
-import {IClassDict} from "../dict/class/i-class-dict";
-import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
+import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
+import {IClassDict} from "../dict/class/i-class-dict";
+import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
+import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
+import {ModifierKind} from "../dict/modifier/modifier-kind";
+import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
+import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
+import {ParameterDict} from "../dict/parameter/parameter-dict";
+import {DecoratorDict} from "../dict/decorator/decorator-dict";
 
 export interface IFormatter {
 	formatImportDeclaration (options: IImportDict|ImportDeclaration): ImportDeclaration;
 	updateImportDeclaration (options: Partial<IImportDict>, existing: ImportDeclaration): ImportDeclaration;
-	formatNamedImports (namedImports: string|Iterable<string>|NamedImports): NamedImports;
+	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>|NamedImports): NamedImports;
 	formatNamespaceImport (namespaceName: string|NamespaceImport): NamespaceImport;
 
 	formatAccessor (accessor: AccessorDict|AccessorDeclaration): AccessorDeclaration;

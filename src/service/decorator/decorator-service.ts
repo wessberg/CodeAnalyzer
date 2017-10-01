@@ -1,8 +1,8 @@
 import {IDecoratorService} from "./i-decorator-service";
 import {Decorator, isCallExpression, isDecorator, isIdentifier, isPropertyAccessExpression, Node} from "typescript";
-import {IFormatter} from "../../formatter/i-formatter";
 import {DecoratorKind} from "../../dict/decorator/decorator-kind";
 import {DecoratorDict} from "../../dict/decorator/decorator-dict";
+import {IFormatter} from "../../formatter/i-formatter";
 
 /**
  * A service for working with Decorators

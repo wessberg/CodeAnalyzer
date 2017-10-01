@@ -43,11 +43,11 @@
 		"@wessberg/ts-config": "0.0.23",
 		"@wessberg/environment": "^1.0.1",
 		"ava": "^0.22.0",
-		"conventional-changelog-cli": "^1.3.3",
+		"conventional-changelog-cli": "^1.3.4",
 		"husky": "latest",
 		"tslint": "^5.7.0",
 		"rollup": "^0.50.0",
-		"rollup-plugin-typescript2": "^0.6.0",
+		"rollup-plugin-typescript2": "^0.7.0",
 		"rollup-watch": "^4.3.1"
 	},
 	"dependencies": {
@@ -57,7 +57,7 @@
 		"@wessberg/moduleutil": "0.0.20",
 		"@wessberg/pathutil": "^0.0.7",
 		"@wessberg/type": "0.0.91",
-		"@wessberg/typescript-ast-util": "0.0.8",
+		"@wessberg/typescript-ast-util": "0.0.16",
 		"@wessberg/typescript-language-service": "0.0.29",
 		"@wessberg/typescript-package-reassembler": "0.0.6",
 		"tslib": "^1.7.1",

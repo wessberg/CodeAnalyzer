@@ -1,2 +1,5 @@
+/**
+ * foobar
+ */
 class A {
 }

@@ -20,7 +20,7 @@ export default {
 			tsconfig: Config.PRODUCTION ? "tsconfig.dist.json" : "tsconfig.json",
 			include: ["*.ts+(|x)", "**/*.ts+(|x)"],
 			exclude: ["*.d.ts", "**/*.d.ts"],
-			cacheRoot: "./.cache",
+			cacheRoot: "/tmp",
 			clean: true
 		})
 	],

@@ -1,6 +1,9 @@
 import {IParseService} from "./i-parse-service";
 import {Block, createNodeArray, createSourceFile, isExpressionStatement, isFunctionDeclaration, Node, NodeArray, ScriptTarget, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
 
+/**
+ * A class that helps with parsing string expressions into proper Nodes
+ */
 export class ParseService implements IParseService {
 	/**
 	 * The filename to use when generating a SourceFile from an expression

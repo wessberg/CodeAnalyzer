@@ -1,50 +1,56 @@
 import {IFormatter} from "./i-formatter";
-import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
-import {DecoratorDict} from "../dict/decorator/decorator-dict";
-import {DecoratorKind} from "../dict/decorator/decorator-kind";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IImportHelper, INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
 import {IParseService} from "../service/parse/i-parse-service";
-import {ArrayBindingElementKind} from "../dict/binding-element/array-binding-element-kind";
-import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
-import {BindingNameKind} from "../dict/binding-name/binding-name-kind";
-import {IImportDict} from "../dict/import/i-import-dict";
-import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
-import {AccessorKind} from "../dict/accessor/accessor-kind";
-import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
-import {ModifierKind} from "../dict/modifier/modifier-kind";
-import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
-import {IMethodDict} from "../dict/method/i-method-dict";
-import {IClassMethodDict} from "../dict/class-method/i-class-method-dict";
-import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
-import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
-import {IClassDict} from "../dict/class/i-class-dict";
-import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
+import {isClassElementDict} from "../dict/class-element/is-class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
 import {isIClassPropertyDict} from "../dict/class-property/is-i-class-property-dict";
 import {isIClassMethodDict} from "../dict/class-method/is-i-class-method-dict";
+import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {isINameWithTypeArguments} from "../dict/name-with-type-arguments/is-i-name-with-type-arguments";
+import {IClassDict} from "../dict/class/i-class-dict";
+import {isIClassDict} from "../dict/class/is-i-class-dict";
+import {IClassMethodDict} from "../dict/class-method/i-class-method-dict";
+import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
+import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
 import {isIConstructorDict} from "../dict/constructor/is-i-constructor-dict";
-import {isIImportDict} from "../dict/import/is-import-dict";
+import {IMethodDict} from "../dict/method/i-method-dict";
+import {isIMethodDict} from "../dict/method/is-i-method-dict";
+import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
+import {AccessorKind} from "../dict/accessor/accessor-kind";
+import {isIClassGetAccessorDict} from "../dict/class-accessor/is-i-class-get-accessor-dict";
+import {isIClassSetAccessorDict} from "../dict/class-accessor/is-i-class-set-accessor-dict";
+import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
 import {isAccessorDict} from "../dict/accessor/is-accessor-dict";
 import {isIGetAccessorDict} from "../dict/accessor/is-i-get-accessor-dict";
 import {isISetAccessorDict} from "../dict/accessor/is-i-set-accessor-dict";
-import {isIClassGetAccessorDict} from "../dict/class-accessor/is-i-class-get-accessor-dict";
-import {isIClassSetAccessorDict} from "../dict/class-accessor/is-i-class-set-accessor-dict";
-import {isIMethodDict} from "../dict/method/is-i-method-dict";
-import {isClassElementDict} from "../dict/class-element/is-class-element-dict";
-import {isIClassDict} from "../dict/class/is-i-class-dict";
-import {isBindingNameDict} from "../dict/binding-name/is-binding-name-dict";
-import {isParameterDict} from "../dict/parameter/is-parameter-dict";
+import {IImportDict} from "../dict/import/i-import-dict";
+import {isIImportDict} from "../dict/import/is-i-import-dict";
+import {INamedImportDict} from "../dict/import/i-named-import-dict";
+import {isINamedImportDict} from "../dict/import/is-i-named-import-dict";
+import {ModifierKind} from "../dict/modifier/modifier-kind";
+import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
+import {DecoratorDict} from "../dict/decorator/decorator-dict";
 import {isDecoratorDict} from "../dict/decorator/is-decorator-dict";
-import {INodeUpdaterUtil} from "../../util/node-updater-util/i-node-updater-util";
-import {IPredicateUtil} from "../../util/predicate-util/i-predicate-util";
+import {DecoratorKind} from "../dict/decorator/decorator-kind";
+import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
+import {isBindingNameDict} from "../dict/binding-name/is-binding-name-dict";
+import {BindingNameKind} from "../dict/binding-name/binding-name-kind";
+import {ArrayBindingElementKind} from "../dict/binding-element/array-binding-element-kind";
+import {ParameterDict} from "../dict/parameter/parameter-dict";
+import {isParameterDict} from "../dict/parameter/is-parameter-dict";
 
+/**
+ * A class that helps with transforming simple dict-objects into Typescript Nodes
+ */
 export class Formatter implements IFormatter {
 
-	constructor (private parseService: IParseService,
-							 private predicateUtil: IPredicateUtil,
-							 private nodeUpdaterUtil: INodeUpdaterUtil) {
+	constructor (private languageService: ITypescriptLanguageService,
+							 private importHelper: IImportHelper,
+							 private parseService: IParseService,
+							 private nodeUpdater: INodeUpdaterUtil) {
 	}
 
 	/**
@@ -101,8 +107,8 @@ export class Formatter implements IFormatter {
 		// Find any existing 'implements' heritage clause, if it exists and is given as an argument
 		const existingImplements = existing == null ? undefined : existing.find(clause => clause.token === SyntaxKind.ImplementsKeyword);
 
-		const extendsClause = extend == null ? existingExtends == null ? [] : [existingExtends] : [isINameWithTypeArguments(extend) || this.predicateUtil.isIterable(implement) ? this.formatExtendsHeritageClause(extend) : extend];
-		const implementsClause = implement == null ? existingImplements == null ? [] : [existingImplements] : [isINameWithTypeArguments(implement) || this.predicateUtil.isIterable(implement) ? this.formatImplementsHeritageClause(implement, existingImplements) : implement];
+		const extendsClause = extend == null ? existingExtends == null ? [] : [existingExtends] : [isINameWithTypeArguments(extend) || isIterable(implement) ? this.formatExtendsHeritageClause(extend) : extend];
+		const implementsClause = implement == null ? existingImplements == null ? [] : [existingImplements] : [isINameWithTypeArguments(implement) || isIterable(implement) ? this.formatImplementsHeritageClause(implement, existingImplements) : implement];
 		return createNodeArray([...extendsClause, ...implementsClause]);
 	}
 
@@ -144,11 +150,11 @@ export class Formatter implements IFormatter {
 	 */
 	public formatImplementsHeritageClause (implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause, existing?: HeritageClause): HeritageClause {
 		// Return the existing HeritageClause if called with such a thing
-		if (!isINameWithTypeArguments(implement) && !this.predicateUtil.isIterable(implement)) {
+		if (!isINameWithTypeArguments(implement) && !isIterable(implement)) {
 			return implement;
 		}
 
-		const normalized = this.predicateUtil.isIterable(implement) ? [...implement] : [implement];
+		const normalized = isIterable(implement) ? [...implement] : [implement];
 		const elements = normalized.map(element => {
 			// Generate an identifier for the extended class
 			const identifier = createIdentifier(element.name);
@@ -223,7 +229,7 @@ export class Formatter implements IFormatter {
 
 			// Force-set heritageClauses to undefined if they have none
 			if (classExpressionUpdated.heritageClauses!.length === 0) classExpressionUpdated.heritageClauses = undefined;
-			return this.nodeUpdaterUtil.updateInPlace(classExpressionUpdated, existing);
+			return this.nodeUpdater.updateInPlace(classExpressionUpdated, existing, this.languageService);
 		}
 
 		// If we're having to do with a declaration
@@ -239,7 +245,7 @@ export class Formatter implements IFormatter {
 		// Force-set heritageClauses to undefined if they have none
 		if (updated.heritageClauses!.length === 0) updated.heritageClauses = undefined;
 
-		return this.nodeUpdaterUtil.updateInPlace(updated, existing);
+		return this.nodeUpdater.updateInPlace(updated, existing, this.languageService);
 	}
 
 	/**
@@ -505,7 +511,7 @@ export class Formatter implements IFormatter {
 			}
 
 			// Update the default name if it is given in the dict. It may already be an Identifier
-			const defaultNameIdentifier = defaultName == null ? undefined : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
+			const defaultNameIdentifier = defaultName == null ? this.importHelper.getNameForImportDeclaration(existing) : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
 
 			if (!hasNewNamedBindings) {
 
@@ -529,12 +535,12 @@ export class Formatter implements IFormatter {
 		}
 
 		// Return the updated import declaration
-		return this.nodeUpdaterUtil.updateInPlace(createImportDeclaration(
+		return this.nodeUpdater.updateInPlace(createImportDeclaration(
 			existing.decorators,
 			existing.modifiers,
 			importClause,
 			newPath
-		), existing);
+		), existing, this.languageService);
 	}
 
 	/**
@@ -579,25 +585,25 @@ export class Formatter implements IFormatter {
 	 * @param {Iterable<string>|string|NamedImports} namedImports
 	 * @returns {NamedImports}
 	 */
-	public formatNamedImports (namedImports: string|Iterable<string>|NamedImports): NamedImports {
-		if (typeof namedImports === "string") {
-			// Create an identifier for the named import
-			const namedImportIdentifier = createIdentifier(namedImports);
+	public formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>|NamedImports): NamedImports {
+		if (isINamedImportDict(namedImports)) {
+			// Create identifiers for the named import
+			const [namedImportIdentifier, propertyNameIdentifier] = this.createNamedImportIdentifiers(namedImports);
 
 			// Create a NamedImport for it
-			return createNamedImports(createNodeArray([createImportSpecifier(namedImportIdentifier, namedImportIdentifier)]));
+			return createNamedImports(createNodeArray([createImportSpecifier(propertyNameIdentifier, namedImportIdentifier)]));
 
 		}
 
 		// The input is already a NamedImports.
-		else if (!this.predicateUtil.isIterable(namedImports)) {
+		else if (!isIterable(namedImports)) {
 			return namedImports;
 		}
 
 		else {
 			// Create identifiers for all of the named imports
-			const importIdentifiers = [...namedImports].map(namedImport => createIdentifier(namedImport));
-			const importSpecifiers = importIdentifiers.map(identifier => createImportSpecifier(identifier, identifier));
+			const importIdentifiers = [...namedImports].map(namedImport => this.createNamedImportIdentifiers(namedImport));
+			const importSpecifiers = importIdentifiers.map(identifier => createImportSpecifier(identifier[1], identifier[0]));
 
 			// Create NamedImports for them
 			return createNamedImports(createNodeArray(importSpecifiers));
@@ -866,5 +872,16 @@ export class Formatter implements IFormatter {
 	 */
 	public formatBlock (block: string): Block {
 		return this.parseService.parseBlock(block);
+	}
+
+	/**
+	 * Creates a tuple of identifiers for NamedImports. The first item is for the name, the second is for the propertyName, if any is given.
+	 * @param {INamedImportDict} namedImport
+	 * @returns {[Identifier , Identifier]}
+	 */
+	private createNamedImportIdentifiers (namedImport: INamedImportDict): [Identifier, Identifier|undefined] {
+		const namedImportIdentifier = createIdentifier(namedImport.name);
+		const propertyNameIdentifier = namedImport.propertyName == null ? undefined : createIdentifier(namedImport.propertyName);
+		return [namedImportIdentifier, propertyNameIdentifier];
 	}
 }
