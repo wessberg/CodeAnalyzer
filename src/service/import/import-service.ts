@@ -4,7 +4,7 @@ import {INodeUpdaterUtil, ITypescriptASTUtil} from "@wessberg/typescript-ast-uti
 import {IImportDict} from "../../dict/import/i-import-dict";
 import {INamedImportDict} from "../../dict/import/i-named-import-dict";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {IFormatterGetter} from "../../formatter/i-formatter-getter";
+import {IFormatter} from "../../formatter/i-formatter-getter";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -12,7 +12,7 @@ import {IFormatterGetter} from "../../formatter/i-formatter-getter";
 export class ImportService implements IImportService {
 	constructor (private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil,
-							 private formatter: IFormatterGetter,
+							 private formatter: IFormatter,
 							 private astUtil: ITypescriptASTUtil) {
 	}
 
@@ -204,7 +204,7 @@ export class ImportService implements IImportService {
 	 * @returns {ImportDeclaration}
 	 */
 	public createImportDeclaration (options: IImportDict): ImportDeclaration {
-		return this.formatter().formatImportDeclaration(options);
+		return this.formatter.formatImportDeclaration(options);
 	}
 
 	/**
@@ -214,7 +214,7 @@ export class ImportService implements IImportService {
 	 * @returns {ts.ImportDeclaration}
 	 */
 	public changePathOfImportDeclaration (path: string, importDeclaration: ImportDeclaration): ImportDeclaration {
-		return this.formatter().updateImportDeclaration({path}, importDeclaration);
+		return this.formatter.updateImportDeclaration({path}, importDeclaration);
 	}
 
 	/**
@@ -227,7 +227,7 @@ export class ImportService implements IImportService {
 		// If the importDeclaration already has the provided name as default import name, do nothing
 		if (this.hasSpecificName(name, importDeclaration)) return importDeclaration;
 
-		return this.formatter().updateImportDeclaration({defaultName: name}, importDeclaration);
+		return this.formatter.updateImportDeclaration({defaultName: name}, importDeclaration);
 	}
 
 	/**
@@ -240,7 +240,7 @@ export class ImportService implements IImportService {
 		// If the importDeclaration already has the namespace import with the requested name, do nothing
 		if (this.hasNamespaceImportWithName(namespaceName, importDeclaration)) return importDeclaration;
 
-		return this.formatter().updateImportDeclaration({namespace: namespaceName}, importDeclaration);
+		return this.formatter.updateImportDeclaration({namespace: namespaceName}, importDeclaration);
 	}
 
 	/**
@@ -259,7 +259,7 @@ export class ImportService implements IImportService {
 		// Merge the imports and deduplicate them
 		const mergedNamedImports: Set<INamedImportDict> = new Set([namedImport, ...(namedImports == null ? [] : namedImports.elements.map(element => ({name: element.name.text, propertyName: element.propertyName == null ? null : element.propertyName.text})))]);
 
-		return this.formatter().updateImportDeclaration({namedImports: mergedNamedImports}, importDeclaration);
+		return this.formatter.updateImportDeclaration({namedImports: mergedNamedImports}, importDeclaration);
 	}
 
 	/**

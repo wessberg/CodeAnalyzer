@@ -8,13 +8,13 @@ import {IClassMethodDict} from "../../dict/class-method/i-class-method-dict";
 import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-accessor/class-accessor-dict";
 import {IClassDict} from "../../dict/class/i-class-dict";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {IFormatterGetter} from "../../formatter/i-formatter-getter";
+import {IFormatter} from "../../formatter/i-formatter-getter";
 
 /**
  * A class for working with classes
  */
 export class ClassService implements IClassService {
-	constructor (private formatter: IFormatterGetter,
+	constructor (private formatter: IFormatter,
 							 private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil,
 							 private astUtil: ITypescriptASTUtil) {
@@ -215,7 +215,7 @@ export class ClassService implements IClassService {
 	 * @returns {ClassDeclaration}
 	 */
 	public createClassDeclaration (options: IClassDict): ClassDeclaration {
-		return <ClassDeclaration> this.formatter().formatClass(options);
+		return <ClassDeclaration> this.formatter.formatClass(options);
 	}
 
 	/**
@@ -236,7 +236,7 @@ export class ClassService implements IClassService {
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
 	public setNameOfClass (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-		return this.formatter().updateClass({name}, classDeclaration);
+		return this.formatter.updateClass({name}, classDeclaration);
 	}
 
 	/**
@@ -248,7 +248,7 @@ export class ClassService implements IClassService {
 	public extendClassWith (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already extends something matching the provided name, return the existing class declaration
 		if (this.doesExtendClassWithName(name.name, classDeclaration)) return classDeclaration;
-		return this.formatter().updateClass({extendsClass: name}, classDeclaration);
+		return this.formatter.updateClass({extendsClass: name}, classDeclaration);
 	}
 
 	/**
@@ -262,7 +262,7 @@ export class ClassService implements IClassService {
 		if (this.doesImplementInterfaceWithName(name.name, classDeclaration)) return classDeclaration;
 
 		// Update the class with it
-		return this.formatter().updateClass({implementsInterfaces: [name]}, classDeclaration);
+		return this.formatter.updateClass({implementsInterfaces: [name]}, classDeclaration);
 	}
 
 	/**
@@ -275,7 +275,7 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(property.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter().updateClass({members: [property]}, classDeclaration);
+		return this.formatter.updateClass({members: [property]}, classDeclaration);
 	}
 
 	/**
@@ -288,7 +288,7 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasConstructor(classDeclaration)) return classDeclaration;
 
-		return this.formatter().updateClass({members: [constructor]}, classDeclaration);
+		return this.formatter.updateClass({members: [constructor]}, classDeclaration);
 	}
 
 	/**
@@ -300,7 +300,7 @@ export class ClassService implements IClassService {
 	public addMethodToClass (method: IClassMethodDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(method.name, classDeclaration)) return classDeclaration;
-		return this.formatter().updateClass({members: [method]}, classDeclaration);
+		return this.formatter.updateClass({members: [method]}, classDeclaration);
 	}
 
 	/**
@@ -313,7 +313,7 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasSetterWithName(method.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter().updateClass({members: [method]}, classDeclaration);
+		return this.formatter.updateClass({members: [method]}, classDeclaration);
 	}
 
 	/**
@@ -326,7 +326,7 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasGetterWithName(method.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter().updateClass({members: [method]}, classDeclaration);
+		return this.formatter.updateClass({members: [method]}, classDeclaration);
 	}
 
 	/**

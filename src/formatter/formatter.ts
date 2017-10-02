@@ -1,4 +1,4 @@
-import {IFormatter} from "./i-formatter";
+import {IFormatterBase} from "./i-formatter";
 import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
@@ -46,7 +46,7 @@ import {IImportService} from "../service/import/i-import-service";
 /**
  * A class that helps with transforming simple dict-objects into Typescript Nodes
  */
-export class Formatter implements IFormatter {
+export class Formatter implements IFormatterBase {
 
 	constructor (private languageService: ITypescriptLanguageService,
 							 private importService: IImportService,

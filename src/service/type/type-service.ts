@@ -1,12 +1,12 @@
 import {ITypeService} from "./i-type-service";
 import {TypeNode, TypeParameterDeclaration} from "typescript";
-import {IFormatterGetter} from "../../formatter/i-formatter-getter";
+import {IFormatter} from "../../formatter/i-formatter-getter";
 
 /**
  * A service for working with Types
  */
 export class TypeService implements ITypeService {
-	constructor (private formatter: IFormatterGetter) {
+	constructor (private formatter: IFormatter) {
 	}
 
 	/**
@@ -15,7 +15,7 @@ export class TypeService implements ITypeService {
 	 * @returns {TypeParameterDeclaration}
 	 */
 	public createTypeParameterDeclaration (type: string): TypeParameterDeclaration {
-		return this.formatter().formatTypeParameter(type);
+		return this.formatter.formatTypeParameter(type);
 	}
 
 	/**
@@ -24,6 +24,6 @@ export class TypeService implements ITypeService {
 	 * @returns {TypeNode}
 	 */
 	public createTypeNode (type: string): TypeNode {
-		return this.formatter().formatType(type);
+		return this.formatter.formatType(type);
 	}
 }

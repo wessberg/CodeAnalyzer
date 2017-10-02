@@ -16,7 +16,7 @@ import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
 
-export interface IFormatter {
+export interface IFormatterBase {
 	formatImportDeclaration (options: IImportDict|ImportDeclaration): ImportDeclaration;
 	updateImportDeclaration (options: Partial<IImportDict>, existing: ImportDeclaration): ImportDeclaration;
 	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>|NamedImports): NamedImports;
