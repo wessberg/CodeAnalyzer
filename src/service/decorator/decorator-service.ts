@@ -2,14 +2,14 @@ import {IDecoratorService} from "./i-decorator-service";
 import {Decorator, isCallExpression, isDecorator, isIdentifier, isPropertyAccessExpression, Node} from "typescript";
 import {DecoratorKind} from "../../dict/decorator/decorator-kind";
 import {DecoratorDict} from "../../dict/decorator/decorator-dict";
-import {IFormatter} from "../../formatter/i-formatter";
+import {IFormatterGetter} from "../../formatter/i-formatter-getter";
 
 /**
  * A service for working with Decorators
  */
 export class DecoratorService implements IDecoratorService {
 
-	constructor (private formatter: IFormatter) {
+	constructor (private formatter: IFormatterGetter) {
 	}
 
 	/**
@@ -18,7 +18,7 @@ export class DecoratorService implements IDecoratorService {
 	 * @returns {Decorator}
 	 */
 	public createDecorator (decorator: DecoratorDict): Decorator {
-		return this.formatter.formatDecorator(decorator);
+		return this.formatter().formatDecorator(decorator);
 	}
 
 	/**
@@ -38,7 +38,7 @@ export class DecoratorService implements IDecoratorService {
 	 * @returns {Decorator}
 	 */
 	public createIdentifierDecorator (name: string): Decorator {
-		return this.formatter.formatDecorator({
+		return this.formatter().formatDecorator({
 			kind: DecoratorKind.IDENTIFIER,
 			name
 		});
@@ -51,7 +51,7 @@ export class DecoratorService implements IDecoratorService {
 	 * @returns {Decorator}
 	 */
 	public createExpressionDecorator (expression: string): Decorator {
-		return this.formatter.formatDecorator({
+		return this.formatter().formatDecorator({
 			kind: DecoratorKind.EXPRESSION,
 			expression
 		});

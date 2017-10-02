@@ -31,6 +31,16 @@ const importDeclaration = importService.createAndAddImportDeclarationToSourceFil
 
 importService.addNamespaceImportToImportDeclaration("MyNamespace", importDeclaration);
 
+classService.createAndAddClassDeclarationToSourceFile({
+	name: "MyClass",
+	members: null,
+	decorators: null,
+	isAbstract: true,
+	extendsClass: null,
+	implementsInterfaces: null,
+	typeParameters: null
+}, sourceFile);
+
 console.log(printer.print(sourceFile));
 
 test("foo", t => {

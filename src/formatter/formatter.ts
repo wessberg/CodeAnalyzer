@@ -1,7 +1,7 @@
 import {IFormatter} from "./i-formatter";
 import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {IImportHelper, INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
+import {INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
 import {IParseService} from "../service/parse/i-parse-service";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
 import {isClassElementDict} from "../dict/class-element/is-class-element-dict";
@@ -41,6 +41,7 @@ import {BindingNameKind} from "../dict/binding-name/binding-name-kind";
 import {ArrayBindingElementKind} from "../dict/binding-element/array-binding-element-kind";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {isParameterDict} from "../dict/parameter/is-parameter-dict";
+import {IImportService} from "../service/import/i-import-service";
 
 /**
  * A class that helps with transforming simple dict-objects into Typescript Nodes
@@ -48,7 +49,7 @@ import {isParameterDict} from "../dict/parameter/is-parameter-dict";
 export class Formatter implements IFormatter {
 
 	constructor (private languageService: ITypescriptLanguageService,
-							 private importHelper: IImportHelper,
+							 private importService: IImportService,
 							 private parseService: IParseService,
 							 private nodeUpdater: INodeUpdaterUtil) {
 	}
@@ -511,7 +512,7 @@ export class Formatter implements IFormatter {
 			}
 
 			// Update the default name if it is given in the dict. It may already be an Identifier
-			const defaultNameIdentifier = defaultName == null ? this.importHelper.getNameForImportDeclaration(existing) : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
+			const defaultNameIdentifier = defaultName == null ? this.importService.getNameForImportDeclaration(existing) : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
 
 			if (!hasNewNamedBindings) {
 

@@ -1,4 +1,4 @@
-import {IImportHelper, ImportHelper, INodeMatcherUtil, INodeUpdaterUtil, IPrinter, ITypescriptASTUtil, NodeMatcherUtil, NodeUpdaterUtil, Printer, TypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {INodeMatcherUtil, INodeUpdaterUtil, IPrinter, ITypescriptASTUtil, NodeMatcherUtil, NodeUpdaterUtil, Printer, TypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IFormatter} from "./formatter/i-formatter";
 import {Formatter} from "./formatter/formatter";
 import {DIContainer} from "@wessberg/di";
@@ -19,15 +19,18 @@ import {ImportService} from "./service/import/import-service";
 import {ITypeService} from "./service/type/i-type-service";
 import {IImportService} from "./service/import/i-import-service";
 import {TypeService} from "./service/type/type-service";
+import {IFormatterGetter} from "./formatter/i-formatter-getter";
 
 // Utils
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
 DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
 DIContainer.registerSingleton<IPrinter, Printer>();
-DIContainer.registerSingleton<IImportHelper, ImportHelper>();
 
 // Formatter
 DIContainer.registerSingleton<IFormatter, Formatter>();
+
+// Provide a lazy-getter because there are circular dependencies between AST services and the Formatter
+DIContainer.registerSingleton<IFormatterGetter, IFormatterGetter>(() => () => DIContainer.get<IFormatter>());
 
 // Utilities
 DIContainer.registerSingleton<IModuleUtil, ModuleUtil>();

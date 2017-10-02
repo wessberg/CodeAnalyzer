@@ -2,13 +2,13 @@ import {IModifierService} from "./i-modifier-service";
 import {createNodeArray, Modifier, Node, NodeArray, SyntaxKind} from "typescript";
 import {VisibilityKind} from "../../dict/visibility/visibility-kind";
 import {ModifierKind} from "../../dict/modifier/modifier-kind";
-import {IFormatter} from "../../formatter/i-formatter";
+import {IFormatterGetter} from "../../formatter/i-formatter-getter";
 
 /**
  * A service that helps with Modifiers
  */
 export class ModifierService implements IModifierService {
-	constructor (private formatter: IFormatter) {
+	constructor (private formatter: IFormatterGetter) {
 	}
 
 	/**
@@ -97,7 +97,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createModifierFromString (modifier: ModifierKind): Modifier {
-		return this.formatter.formatModifier(modifier);
+		return this.formatter().formatModifier(modifier);
 	}
 
 	/**
@@ -114,7 +114,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createConstModifier (): Modifier {
-		return this.formatter.formatModifier("const");
+		return this.formatter().formatModifier("const");
 	}
 
 	/**
@@ -122,7 +122,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createDeclareModifier (): Modifier {
-		return this.formatter.formatModifier("declare");
+		return this.formatter().formatModifier("declare");
 	}
 
 	/**
@@ -130,7 +130,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createDefaultModifier (): Modifier {
-		return this.formatter.formatModifier("default");
+		return this.formatter().formatModifier("default");
 	}
 
 	/**
@@ -138,7 +138,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createExportModifier (): Modifier {
-		return this.formatter.formatModifier("export");
+		return this.formatter().formatModifier("export");
 	}
 
 	/**
@@ -146,7 +146,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createReadonlyModifier (): Modifier {
-		return this.formatter.formatModifier("readonly");
+		return this.formatter().formatModifier("readonly");
 	}
 
 	/**
@@ -154,7 +154,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createPrivateModifier (): Modifier {
-		return this.formatter.formatModifier("private");
+		return this.formatter().formatModifier("private");
 	}
 
 	/**
@@ -162,7 +162,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createPublicModifier (): Modifier {
-		return this.formatter.formatModifier("public");
+		return this.formatter().formatModifier("public");
 	}
 
 	/**
@@ -170,7 +170,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createProtectedModifier (): Modifier {
-		return this.formatter.formatModifier("protected");
+		return this.formatter().formatModifier("protected");
 	}
 
 	/**
@@ -178,7 +178,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createAsyncModifier (): Modifier {
-		return this.formatter.formatModifier("async");
+		return this.formatter().formatModifier("async");
 	}
 
 	/**
@@ -186,7 +186,7 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createStaticModifier (): Modifier {
-		return this.formatter.formatModifier("static");
+		return this.formatter().formatModifier("static");
 	}
 
 	/**
@@ -194,6 +194,6 @@ export class ModifierService implements IModifierService {
 	 * @returns {Modifier}
 	 */
 	public createAbstractModifier (): Modifier {
-		return this.formatter.formatModifier("abstract");
+		return this.formatter().formatModifier("abstract");
 	}
 }
