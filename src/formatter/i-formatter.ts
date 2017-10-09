@@ -1,4 +1,4 @@
-import {AccessorDeclaration, BindingName, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, GetAccessorDeclaration, HeritageClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, GetAccessorDeclaration, HeritageClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
 import {INamedImportDict} from "../dict/import/i-named-import-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
@@ -28,20 +28,26 @@ export interface IFormatterBase {
 
 	formatClassAccessor (accessor: ClassAccessorDict|AccessorDeclaration): AccessorDeclaration;
 	formatClassGetAccessor (accessor: IClassGetAccessorDict|GetAccessorDeclaration): GetAccessorDeclaration;
+	updateClassGetAccessor (accessor: IClassGetAccessorDict, existing: GetAccessorDeclaration): GetAccessorDeclaration;
 	formatClassSetAccessor (accessor: IClassSetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration;
+	updateClassSetAccessor (accessor: IClassSetAccessorDict, existing: SetAccessorDeclaration): SetAccessorDeclaration;
 
 	formatMethod (method: IMethodDict|MethodDeclaration): MethodDeclaration;
 	formatClassMethod (method: IClassMethodDict|MethodDeclaration): MethodDeclaration;
+	updateClassMethod (method: IClassMethodDict, existing: MethodDeclaration): MethodDeclaration;
 
 	formatClassElement (member: ClassElementDict|ClassElement): ClassElement;
 	formatClassElements (members: Iterable<ClassElementDict|ClassElement>): NodeArray<ClassElement>;
+	updateClassElement (classElement: ClassElementDict, existing: ClassElement): ClassElement;
 
 	formatClassProperty (property: IClassPropertyDict|PropertyDeclaration): PropertyDeclaration;
+	updateClassProperty (property: IClassPropertyDict, existing: PropertyDeclaration): PropertyDeclaration;
 
 	formatClass (classDeclaration: IClassDict|ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	updateClass (options: Partial<IClassDict>, existing: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 
 	formatConstructor (constructor: IConstructorDict|ConstructorDeclaration): ConstructorDeclaration;
+	updateConstructor (constructor: IConstructorDict, existing: ConstructorDeclaration): ConstructorDeclaration;
 
 	formatHeritageClauses (extend: INameWithTypeArguments|HeritageClause|undefined|null, implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause|undefined|null, fillUndefinedFrom?: NodeArray<HeritageClause>): NodeArray<HeritageClause>;
 	formatExtendsHeritageClause (extend: INameWithTypeArguments|HeritageClause): HeritageClause;
@@ -61,8 +67,12 @@ export interface IFormatterBase {
 	formatDotDotDotToken (isRestSpread: boolean): Token<SyntaxKind.DotDotDotToken>|undefined;
 	formatQuestionToken (isOptional: boolean): Token<SyntaxKind.QuestionToken>|undefined;
 	formatExpression (expression: string): Expression;
+	formatStatement (statement: string): Statement;
 	formatType (type: string): TypeNode;
 	formatTypes (types: Iterable<string>): NodeArray<TypeNode>;
 	formatTypeParameter (type: string): TypeParameterDeclaration;
 	formatTypeParameters (types: Iterable<string>): NodeArray<TypeParameterDeclaration>;
+
+	formatBlock (block: string): Block;
+	updateBlock (newInstructions: string, block: Block): Block;
 }

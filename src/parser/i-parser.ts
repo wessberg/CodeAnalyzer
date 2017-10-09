@@ -1,6 +1,6 @@
 import {Block, Node, NodeArray, TypeNode, TypeParameterDeclaration} from "typescript";
 
-export interface IParseService {
+export interface IParser {
 	parse<T extends Node = Node> (expression: string): NodeArray<T>;
 	parseOne<T extends Node = Node> (expression: string): T;
 	parseType (type: string): TypeNode;

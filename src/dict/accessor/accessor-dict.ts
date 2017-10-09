@@ -1,6 +1,8 @@
 import {AccessorKind} from "./accessor-kind";
 import {IFunctionLikeDict} from "../function-like/i-function-like-dict";
-import {IFunctionLikeWithParametersDict} from "../function-like-with-parameters/i-function-like-with-parameters-dict";
+import {ParameterDict} from "../parameter/parameter-dict";
+import {DecoratorDict} from "../decorator/decorator-dict";
+import {Decorator, ParameterDeclaration} from "typescript";
 
 export interface IAccessorDict {
 	kind: AccessorKind;
@@ -11,8 +13,11 @@ export interface IGetAccessorDict extends IAccessorDict, IFunctionLikeDict {
 	kind: AccessorKind.GET;
 }
 
-export interface ISetAccessorDict extends IAccessorDict, IFunctionLikeWithParametersDict {
+export interface ISetAccessorDict extends IAccessorDict {
 	kind: AccessorKind.SET;
+	decorators: Iterable<DecoratorDict|Decorator>|null;
+	body: string|null;
+	parameters: Iterable<ParameterDict|ParameterDeclaration>|null;
 }
 
 export declare type AccessorDict = IGetAccessorDict|ISetAccessorDict;

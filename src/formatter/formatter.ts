@@ -1,8 +1,8 @@
 import {IFormatterBase} from "./i-formatter";
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createBlock, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, isConstructorDeclaration, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
-import {IParseService} from "../service/parse/i-parse-service";
+import {IParser} from "../parser/i-parser";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
 import {isClassElementDict} from "../dict/class-element/is-class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
@@ -50,7 +50,7 @@ export class Formatter implements IFormatterBase {
 
 	constructor (private languageService: ITypescriptLanguageService,
 							 private importService: IImportService,
-							 private parseService: IParseService,
+							 private parseService: IParser,
 							 private nodeUpdater: INodeUpdaterUtil) {
 	}
 
@@ -250,6 +250,158 @@ export class Formatter implements IFormatterBase {
 	}
 
 	/**
+	 * Updates a MethodDeclaration
+	 * @param {Iterable<DecoratorDict | Decorator>} decorators
+	 * @param {boolean} isAbstract
+	 * @param {boolean} isOptional
+	 * @param {boolean} isAsync
+	 * @param {boolean} isStatic
+	 * @param {string} name
+	 * @param {Iterable<string>} typeParameters
+	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
+	 * @param {string} type
+	 * @param {string} body
+	 * @param {VisibilityKind} visibility
+	 * @param {MethodDeclaration} existing
+	 * @returns {MethodDeclaration}
+	 */
+	public updateClassMethod ({decorators, isAbstract, isOptional, isAsync, isStatic, name, typeParameters, parameters, type, body, visibility}: IClassMethodDict, existing: MethodDeclaration): MethodDeclaration {
+		return this.nodeUpdater.updateInPlace(createMethod(
+			decorators == null ? existing.decorators : this.formatDecorators(decorators),
+			isAbstract == null && isAsync == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility}),
+			existing.asteriskToken,
+			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
+			isOptional == null ? existing.questionToken : this.formatQuestionToken(isOptional),
+			typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
+			parameters == null ? existing.parameters : this.formatParameters(parameters),
+			type == null ? existing.type : this.formatType(type),
+			body == null ? existing.body : this.formatBlock(body)
+		), existing, this.languageService);
+	}
+
+	/**
+	 * Updates a GetAccessorDeclaration
+	 * @param {Iterable<DecoratorDict | Decorator>} decorators
+	 * @param {boolean} isAbstract
+	 * @param {boolean} isAsync
+	 * @param {boolean} isStatic
+	 * @param {string} name
+	 * @param {string} type
+	 * @param {string} body
+	 * @param {VisibilityKind} visibility
+	 * @param {GetAccessorDeclaration} existing
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateClassGetAccessor ({decorators, isAbstract, isAsync, isStatic, name, type, body, visibility}: IClassGetAccessorDict, existing: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.nodeUpdater.updateInPlace(createGetAccessor(
+			decorators == null ? existing.decorators : this.formatDecorators(decorators),
+			isAbstract == null && isAsync == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility}),
+			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
+			existing.parameters,
+			type == null ? existing.type : this.formatType(type),
+			body == null ? existing.body : this.formatBlock(body)
+		), existing, this.languageService);
+	}
+
+	/**
+	 * Updates a SetAccessorDeclaration
+	 * @param {Iterable<DecoratorDict | Decorator>} decorators
+	 * @param {boolean} isAbstract
+	 * @param {boolean} isStatic
+	 * @param {string} name
+	 * @param {string} type
+	 * @param {string} body
+	 * @param {VisibilityKind} visibility
+	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
+	 * @param {SetAccessorDeclaration} existing
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public updateClassSetAccessor ({decorators, isAbstract, isStatic, name, body, visibility, parameters}: IClassSetAccessorDict, existing: SetAccessorDeclaration): SetAccessorDeclaration {
+		return this.nodeUpdater.updateInPlace(createSetAccessor(
+			decorators == null ? existing.decorators : this.formatDecorators(decorators),
+			isAbstract == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isStatic, visibility}),
+			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
+			parameters == null ? existing.parameters : this.formatParameters(parameters),
+			body == null ? existing.body : this.formatBlock(body)
+		), existing, this.languageService);
+	}
+
+	/**
+	 * Updates a ConstructorDeclaration
+	 * @param {string} body
+	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
+	 * @param {ConstructorDeclaration} existing
+	 * @returns {ConstructorDeclaration}
+	 */
+	public updateConstructor ({body, parameters}: IConstructorDict, existing: ConstructorDeclaration): ConstructorDeclaration {
+		return this.nodeUpdater.updateInPlace(createConstructor(
+			existing.decorators,
+			existing.modifiers,
+			parameters == null ? existing.parameters : this.formatParameters(parameters),
+			body == null ? existing.body : this.formatBlock(body)
+		), existing, this.languageService);
+	}
+
+	/**
+	 * Updates a PropertyDeclaration
+	 * @param {Iterable<DecoratorDict | Decorator>} decorators
+	 * @param {VisibilityKind} visibility
+	 * @param {boolean} isStatic
+	 * @param {boolean} isAsync
+	 * @param {boolean} isAbstract
+	 * @param {boolean} isOptional
+	 * @param {string} initializer
+	 * @param {string} name
+	 * @param {string} type
+	 * @param {boolean} isReadonly
+	 * @param {PropertyDeclaration} existing
+	 * @returns {PropertyDeclaration}
+	 */
+	public updateClassProperty ({decorators, visibility, isStatic, isAsync, isAbstract, isOptional, initializer, name, type, isReadonly}: IClassPropertyDict, existing: PropertyDeclaration): PropertyDeclaration {
+		return this.nodeUpdater.updateInPlace(createProperty(
+			decorators == null ? existing.decorators : this.formatDecorators(decorators),
+			isAbstract == null && isAsync == null && isStatic == null && visibility == null && isReadonly == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility, isReadonly}),
+			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
+			isOptional == null ? existing.questionToken : this.formatQuestionToken(isOptional),
+			type == null ? existing.type : this.formatType(type),
+			initializer == null ? existing.initializer : this.formatExpression(initializer)
+		), existing, this.languageService);
+	}
+
+	/**
+	 * Updates the provided ClassElement
+	 * @param {ClassElementDict} classElement
+	 * @param {ClassElement} existing
+	 * @returns {ClassElement}
+	 */
+	public updateClassElement (classElement: ClassElementDict, existing: ClassElement): ClassElement {
+
+		if (isIClassMethodDict(classElement) && isMethodDeclaration(existing)) {
+			return this.updateClassMethod(classElement, existing);
+		}
+
+		else if (isIClassGetAccessorDict(classElement) && isGetAccessorDeclaration(existing)) {
+			return this.updateClassGetAccessor(classElement, existing);
+		}
+
+		else if (isIClassSetAccessorDict(classElement) && isSetAccessorDeclaration(existing)) {
+			return this.updateClassSetAccessor(classElement, existing);
+		}
+
+		else if (isIConstructorDict(classElement) && isConstructorDeclaration(existing)) {
+			return this.updateConstructor(classElement, existing);
+		}
+
+		else if (isIClassPropertyDict(classElement) && isPropertyDeclaration(existing)) {
+			return this.updateClassProperty(classElement, existing);
+		}
+
+		else {
+			throw new ReferenceError(`${this.constructor.name} could not format a class element: ${classElement}`);
+		}
+	}
+
+	/**
 	 * Creates a ConstructorDeclaration from the provided options
 	 * @param {IConstructorDict | ts.ConstructorDeclaration} options
 	 * @returns {ts.ConstructorDeclaration}
@@ -271,8 +423,8 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a PropertyDeclaration from the provided options
-	 * @param {IClassPropertyDict | ts.PropertyDeclaration} options
-	 * @returns {ts.PropertyDeclaration}
+	 * @param {IClassPropertyDict | PropertyDeclaration} options
+	 * @returns {PropertyDeclaration}
 	 */
 	public formatClassProperty (options: IClassPropertyDict|PropertyDeclaration): PropertyDeclaration {
 		// It may already be a PropertyDeclaration
@@ -295,8 +447,8 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a MethodDeclaration from the provided options
-	 * @param {IMethodDict | ts.MethodDeclaration} options
-	 * @returns {ts.MethodDeclaration}
+	 * @param {IMethodDict | MethodDeclaration} options
+	 * @returns {MethodDeclaration}
 	 */
 	public formatMethod (options: IMethodDict|MethodDeclaration): MethodDeclaration {
 		// It may be a method already
@@ -360,7 +512,7 @@ export class Formatter implements IFormatterBase {
 		if (accessor.kind === AccessorKind.GET) {
 			return this.formatGetAccessor(accessor);
 		} else {
-			return this.formatSetAccessor(accessor);
+			return this.formatClassSetAccessor(accessor);
 		}
 	}
 
@@ -390,8 +542,8 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats the provided options into a SetAccessorDeclaration
-	 * @param {IClassSetAccessorDict | ts.SetAccessorDeclaration} options
-	 * @returns {ts.SetAccessorDeclaration}
+	 * @param {IClassSetAccessorDict | SetAccessorDeclaration} options
+	 * @returns {SetAccessorDeclaration}
 	 */
 	public formatClassSetAccessor (options: IClassSetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration {
 		// It may already be a SetAccessor
@@ -400,10 +552,10 @@ export class Formatter implements IFormatterBase {
 		}
 
 		// Unpack it
-		const {decorators, isAsync, isStatic, isAbstract, visibility, name, body, parameters} = options;
+		const {decorators, isStatic, isAbstract, visibility, name, body, parameters} = options;
 		return createSetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
-			this.formatModifiers({isAsync, isStatic, isAbstract, visibility}),
+			this.formatModifiers({isStatic, isAbstract, visibility}),
 			name,
 			parameters == null ? createNodeArray() : this.formatParameters(parameters),
 			body == null ? undefined : this.formatBlock(body)
@@ -462,11 +614,11 @@ export class Formatter implements IFormatterBase {
 		}
 
 		// Unpack it
-		const {decorators, isAsync, name, body, parameters} = options;
+		const {decorators, name, body, parameters} = options;
 
 		return createSetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
-			this.formatModifiers({isAsync}),
+			undefined,
 			name,
 			parameters == null ? createNodeArray() : this.formatParameters(parameters),
 			body == null ? undefined : this.formatBlock(body)
@@ -710,6 +862,15 @@ export class Formatter implements IFormatterBase {
 	}
 
 	/**
+	 * Formats a Statement
+	 * @param {string} statement
+	 * @returns {Expression}
+	 */
+	public formatStatement (statement: string): Statement {
+		return this.parseService.parseOne<Statement>(statement);
+	}
+
+	/**
 	 * Formats a DotDotDotToken
 	 * @param {boolean} isRestSpread
 	 * @returns {Token<SyntaxKind.DotDotDotToken>}
@@ -868,11 +1029,22 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a Block from the provided string
-	 * @param {string} block
+	 * @param {string} instructions
 	 * @returns {Block}
 	 */
-	public formatBlock (block: string): Block {
-		return this.parseService.parseBlock(block);
+	public formatBlock (instructions: string): Block {
+		return this.parseService.parseBlock(instructions);
+	}
+
+	/**
+	 * Adds the provided block instructions to the given Block
+	 * @param {string} newInstructions
+	 * @param {Block} block
+	 * @returns {Block}
+	 */
+	public updateBlock (newInstructions: string, block: Block): Block {
+		const {statements} = this.formatBlock(newInstructions);
+		return this.nodeUpdater.updateInPlace(createBlock([...block.statements, ...statements]), block, this.languageService);
 	}
 
 	/**

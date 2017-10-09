@@ -1,6 +1,6 @@
 import {PredicateArgument} from "../node/i-node-dict";
 import {INameWithTypeArguments} from "./i-name-with-type-arguments";
-import {isTypescriptNode} from "../typescript-node/is-typescript-node";
+import {isTypescriptNode} from "@wessberg/typescript-ast-util";
 
 /**
  * Checks if the provided item is an INameWithTypeArguments

@@ -2,7 +2,6 @@ import {PredicateArgument} from "../node/i-node-dict";
 import {ISetAccessorDict} from "./accessor-dict";
 import {isIAccessorDict} from "./is-i-accessor-dict";
 import {AccessorKind} from "./accessor-kind";
-import {isIFunctionLikeWithParametersDict} from "../function-like-with-parameters/is-i-function-like-with-parameters-dict";
 
 /**
  * Checks if the provided item is an ISetAccessorDict
@@ -10,7 +9,10 @@ import {isIFunctionLikeWithParametersDict} from "../function-like-with-parameter
  * @returns {boolean}
  */
 export function isISetAccessorDict (item: PredicateArgument): item is ISetAccessorDict {
-	return isIAccessorDict(item) && isIFunctionLikeWithParametersDict(item) && (
-		item.kind === AccessorKind.SET
+	return isIAccessorDict(item) && (
+		item.kind === AccessorKind.SET &&
+		"decorators" in item &&
+		"body" in item &&
+		"parameters" in item
 	);
 }

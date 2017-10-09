@@ -7,8 +7,8 @@ import {IPathUtil, PathUtil} from "@wessberg/pathutil";
 import {FileLoader, IFileLoader} from "@wessberg/fileloader";
 import {ITypescriptLanguageService, TypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypescriptPackageReassembler, TypescriptPackageReassembler} from "@wessberg/typescript-package-reassembler";
-import {IParseService} from "./service/parse/i-parse-service";
-import {ParseService} from "./service/parse/parse-service";
+import {IParser} from "./parser/i-parser";
+import {Parser} from "./parser/parser";
 import {IDecoratorService} from "./service/decorator/i-decorator-service";
 import {DecoratorService} from "./service/decorator/decorator-service";
 import {ModifierService} from "./service/modifier/modifier-service";
@@ -20,6 +20,8 @@ import {ITypeService} from "./service/type/i-type-service";
 import {IImportService} from "./service/import/i-import-service";
 import {TypeService} from "./service/type/type-service";
 import {IFormatter, wrappedIFormatter} from "./formatter/i-formatter-getter";
+import {ICallExpressionService} from "./service/call-expression/i-call-expression-service";
+import {CallExpressionService} from "./service/call-expression/call-expression-service";
 
 // Utils
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
@@ -41,9 +43,10 @@ DIContainer.registerSingleton<ITypescriptLanguageService, TypescriptLanguageServ
 DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
 
 // Services
-DIContainer.registerSingleton<IParseService, ParseService>();
+DIContainer.registerSingleton<IParser, Parser>();
 DIContainer.registerSingleton<IDecoratorService, DecoratorService>();
 DIContainer.registerSingleton<IModifierService, ModifierService>();
 DIContainer.registerSingleton<IClassService, ClassService>();
 DIContainer.registerSingleton<IImportService, ImportService>();
 DIContainer.registerSingleton<ITypeService, TypeService>();
+DIContainer.registerSingleton<ICallExpressionService, CallExpressionService>();

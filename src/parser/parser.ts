@@ -1,10 +1,11 @@
-import {IParseService} from "./i-parse-service";
+import {IParser} from "./i-parser";
 import {Block, createNodeArray, createSourceFile, isExpressionStatement, isFunctionDeclaration, Node, NodeArray, ScriptTarget, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
 
 /**
  * A class that helps with parsing string expressions into proper Nodes
  */
-export class ParseService implements IParseService {
+export class Parser implements IParser {
+
 	/**
 	 * The filename to use when generating a SourceFile from an expression
 	 * @type {string}
@@ -52,7 +53,7 @@ export class ParseService implements IParseService {
 	public parse<T extends Node = Statement> (expression: string): NodeArray<T> {
 		/*tslint:disable:no-any*/
 		// Create a source file to allow the type expression to be parsed from a string
-		const sourceFile = createSourceFile(ParseService.FILENAME, expression, ParseService.SCRIPT_TARGET);
+		const sourceFile = createSourceFile(Parser.FILENAME, expression, Parser.SCRIPT_TARGET);
 		return <NodeArray<T>><any> createNodeArray(sourceFile.statements.map(statement => isExpressionStatement(statement) ? statement.expression : statement));
 		/*tslint:enable:no-any*/
 	}

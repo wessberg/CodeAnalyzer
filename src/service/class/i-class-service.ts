@@ -1,4 +1,4 @@
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ExpressionWithTypeArguments, NodeArray, SourceFile} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ExpressionWithTypeArguments, MethodDeclaration, NodeArray, PropertyDeclaration, SourceFile} from "typescript";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
 import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
@@ -13,7 +13,11 @@ export interface IClassService {
 	getImplements (classDeclaration: ClassDeclaration|ClassExpression): NodeArray<ExpressionWithTypeArguments>;
 	getConstructor (classDeclaration: ClassDeclaration|ClassExpression): ConstructorDeclaration|undefined;
 	getMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
+	getMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
+	getPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;
 	getStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
+	getStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
+	getStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;
 
 	isBaseClass (classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	doesExtendClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
@@ -35,4 +39,7 @@ export interface IClassService {
 	addMethodToClass (method: IClassMethodDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	addSetterToClass (method: IClassSetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	addGetterToClass (method: IClassGetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	appendInstructionsToMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	appendInstructionsToStaticMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	appendInstructionsToConstructor (instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 }

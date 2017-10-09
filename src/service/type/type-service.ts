@@ -1,12 +1,25 @@
 import {ITypeService} from "./i-type-service";
-import {TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, isTypeNode, MethodDeclaration, ParameterDeclaration, PropertyDeclaration, TypeNode, TypeParameterDeclaration, VariableDeclaration} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
+import {IPrinter} from "@wessberg/typescript-ast-util";
 
 /**
  * A service for working with Types
  */
 export class TypeService implements ITypeService {
-	constructor (private formatter: IFormatter) {
+
+	/**
+	 * Gets the (string) name of a type
+	 * @param {ParameterDeclaration | AccessorDeclaration | PropertyDeclaration | MethodDeclaration | VariableDeclaration | TypeNode} node
+	 * @returns {string}
+	 */
+	public getTypeNameOf (node: ParameterDeclaration|AccessorDeclaration|PropertyDeclaration|MethodDeclaration|VariableDeclaration|TypeNode): string|undefined {
+		if (isTypeNode(node)) return this.printer.print(node);
+
+		return node.type == null ? undefined : this.printer.print(node.type);
+	}
+	constructor (private formatter: IFormatter,
+							 private printer: IPrinter) {
 	}
 
 	/**

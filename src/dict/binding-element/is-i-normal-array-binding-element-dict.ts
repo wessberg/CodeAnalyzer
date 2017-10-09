@@ -1,7 +1,7 @@
 import {PredicateArgument} from "../node/i-node-dict";
 import {INormalArrayBindingElementDict} from "./array-binding-element-dict";
 import {ArrayBindingElementKind} from "./array-binding-element-kind";
-import {isTypescriptNode} from "../typescript-node/is-typescript-node";
+import {isTypescriptNode} from "@wessberg/typescript-ast-util";
 
 /**
  * Checks if the provided item is an INormalArrayBindingElementDict

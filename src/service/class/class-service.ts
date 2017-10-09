@@ -1,5 +1,5 @@
 import {IClassService} from "./i-class-service";
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, ExpressionWithTypeArguments, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, Node, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {AccessorDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, ExpressionWithTypeArguments, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, NodeArray, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
 import {INodeUpdaterUtil, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
@@ -14,6 +14,7 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
  * A class for working with classes
  */
 export class ClassService implements IClassService {
+
 	constructor (private formatter: IFormatter,
 							 private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil,
@@ -96,10 +97,7 @@ export class ClassService implements IClassService {
 				return name === "constructor";
 			}
 
-			else if (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) {
-				return ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && !this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
-			}
-			return false;
+			return this.matchesMemberName(name, member);
 		});
 	}
 
@@ -116,11 +114,48 @@ export class ClassService implements IClassService {
 				return name === "constructor";
 			}
 
-			else if (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) {
-				return ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
-			}
-			return false;
+			return this.matchesStaticMemberName(name, member);
 		});
+	}
+
+	/**
+	 * Gets the MethodDeclaration from the provided ClassDeclaration or ClassExpression that matches the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {MethodDeclaration}
+	 */
+	public getMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined {
+		return <MethodDeclaration|undefined> classDeclaration.members.find(member => isMethodDeclaration(member) && this.matchesMemberName(name, member));
+	}
+
+	/**
+	 * Gets the PropertyDeclaration from the provided ClassDeclaration or ClassExpression that matches the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {PropertyDeclaration}
+	 */
+	public getPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined {
+		return <PropertyDeclaration|undefined> classDeclaration.members.find(member => isPropertyDeclaration(member) && this.matchesMemberName(name, member));
+	}
+
+	/**
+	 * Gets the (static) MethodDeclaration from the provided ClassDeclaration or ClassExpression that matches the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {MethodDeclaration}
+	 */
+	public getStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined {
+		return <MethodDeclaration|undefined> classDeclaration.members.find(member => isMethodDeclaration(member) && this.matchesStaticMemberName(name, member));
+	}
+
+	/**
+	 * Gets the (static) PropertyDeclaration from the provided ClassDeclaration or ClassExpression that matches the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {PropertyDeclaration}
+	 */
+	public getStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined {
+		return <PropertyDeclaration|undefined> classDeclaration.members.find(member => isPropertyDeclaration(member) && this.matchesStaticMemberName(name, member));
 	}
 
 	/**
@@ -207,6 +242,53 @@ export class ClassService implements IClassService {
 	 */
 	public hasSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		return classDeclaration.members.find(member => isSetAccessorDeclaration(member) && (isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name) != null;
+	}
+
+	/**
+	 * Appends one or more instructions to the method on the class that matches the provided name
+	 * @param {string} methodName
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public appendInstructionsToMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+		const method = this.getMethodWithName(methodName, classDeclaration);
+		if (method == null) {
+			throw new ReferenceError(`${this.constructor.name} could not find a method with the name: ${methodName}`);
+		}
+
+		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
+	}
+
+	/**
+	 * Appends one or more instructions to the static method on the class that matches the provided name
+	 * @param {string} methodName
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public appendInstructionsToStaticMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+		const method = this.getStaticMethodWithName(methodName, classDeclaration);
+		if (method == null) {
+			throw new ReferenceError(`${this.constructor.name} could not find a method with the name: ${methodName}`);
+		}
+
+		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
+	}
+
+	/**
+	 * Appends one or more instructions to the constructor on the provide class
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public appendInstructionsToConstructor (instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+		const method = this.getConstructor(classDeclaration);
+		if (method == null) {
+			throw new ReferenceError(`${this.constructor.name} could not find a constructor for the provided class`);
+		}
+
+		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
 	}
 
 	/**
@@ -300,6 +382,7 @@ export class ClassService implements IClassService {
 	public addMethodToClass (method: IClassMethodDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(method.name, classDeclaration)) return classDeclaration;
+
 		return this.formatter.updateClass({members: [method]}, classDeclaration);
 	}
 
@@ -330,6 +413,26 @@ export class ClassService implements IClassService {
 	}
 
 	/**
+	 * Returns true if provided member has the provided name
+	 * @param {string} name
+	 * @param {ClassElement} member
+	 * @returns {boolean}
+	 */
+	private matchesMemberName (name: string, member: ClassElement): boolean {
+		return (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) && ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && !this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
+	}
+
+	/**
+	 * Returns true if provided static member has the provided name
+	 * @param {string} name
+	 * @param {ClassElement} member
+	 * @returns {boolean}
+	 */
+	private matchesStaticMemberName (name: string, member: ClassElement): boolean {
+		return (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) && ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
+	}
+
+	/**
 	 * Returns true if the class has a modifier with the provided kind
 	 * @param {ts.SyntaxKind} kind
 	 * @param {Node} classMember
@@ -338,5 +441,25 @@ export class ClassService implements IClassService {
 	private hasModifierWithKind (kind: SyntaxKind, classMember: Node): boolean {
 		if (classMember.modifiers == null) return false;
 		return classMember.modifiers.find(modifier => modifier.kind === kind) != null;
+	}
+
+	/**
+	 * Appends one or more instructions to a FunctionLike ClassElement
+	 * @param {T} member
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	private appendInstructionsToFunctionLikeClassElement<T extends (MethodDeclaration|ConstructorDeclaration|AccessorDeclaration)> (member: T, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+
+		if (member.body == null) {
+			member.body = this.formatter.formatBlock(instructions);
+		} else {
+			member.body = this.formatter.updateBlock(instructions, member.body);
+		}
+
+		/*tslint:disable:no-any*/
+		return this.formatter.updateClass({members: [member]}, classDeclaration);
+		/*tslint:enable:no-any*/
 	}
 }
