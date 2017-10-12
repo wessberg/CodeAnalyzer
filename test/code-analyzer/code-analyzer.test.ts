@@ -6,9 +6,11 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
 import {IClassService} from "../../src/service/class/i-class-service";
 import {IImportService} from "../../src/service/import/i-import-service";
 import {ICallExpressionService} from "../../src/service/call-expression/i-call-expression-service";
+import {ITypeService} from "../../src/service/type/i-type-service";
 
 const classService = DIContainer.get<IClassService>();
 const importService = DIContainer.get<IImportService>();
+const typeService = DIContainer.get<ITypeService>();
 const languageService = DIContainer.get<ITypescriptLanguageService>();
 const callExpressionService = DIContainer.get<ICallExpressionService>();
 const printer = DIContainer.get<IPrinter>();
@@ -62,9 +64,8 @@ classService.appendInstructionsToConstructor("console.log('bar')", A);
 
 console.log(printer.print(sourceFile));
 
-const allCallExpressions = callExpressionService.getCallExpressions(sourceFile, false);
-const matchingCallExpressions = callExpressionService.getCallExpressionsOnPropertyAccessExpressionMatching("Math", undefined, sourceFile, false);
-console.log(allCallExpressions.length, matchingCallExpressions.length);
+const [firstMatch] = callExpressionService.getCallExpressionsMatching(/foo/, sourceFile, false);
+console.log(typeService.getTypeArgumentNamesOfExpression(firstMatch));
 
 test("foo", t => {
 	t.true(true);

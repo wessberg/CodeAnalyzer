@@ -1,9 +1,8 @@
 import {DecoratorDict} from "../decorator/decorator-dict";
-import {Decorator} from "typescript";
 
 export interface IFunctionLikeDict {
 	isAsync: boolean;
-	decorators: Iterable<DecoratorDict|Decorator>|null;
+	decorators: Iterable<DecoratorDict>|null;
 	type: string;
 	body: string|null;
 }

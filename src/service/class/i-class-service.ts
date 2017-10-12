@@ -1,4 +1,4 @@
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ExpressionWithTypeArguments, MethodDeclaration, NodeArray, PropertyDeclaration, SourceFile} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, MethodDeclaration, NodeArray, PropertyDeclaration, SourceFile} from "typescript";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
 import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
@@ -9,8 +9,8 @@ import {IClassDict} from "../../dict/class/i-class-dict";
 export interface IClassService {
 	getClasses (sourceFile: SourceFile): NodeArray<ClassDeclaration|ClassExpression>;
 	getNameOfClass (classDeclaration: ClassDeclaration|ClassExpression): string|undefined;
-	getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): ExpressionWithTypeArguments|undefined;
-	getImplements (classDeclaration: ClassDeclaration|ClassExpression): NodeArray<ExpressionWithTypeArguments>;
+	getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
+	getImplements (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
 	getConstructor (classDeclaration: ClassDeclaration|ClassExpression): ConstructorDeclaration|undefined;
 	getMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
 	getMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;

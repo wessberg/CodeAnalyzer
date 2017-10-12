@@ -1,10 +1,9 @@
 import {VisibilityKind} from "../visibility/visibility-kind";
 import {DecoratorDict} from "../decorator/decorator-dict";
-import {Decorator} from "typescript";
 
 export interface IClassPropertyDict {
 	name: string;
-	decorators: Iterable<DecoratorDict|Decorator>|null;
+	decorators: Iterable<DecoratorDict>|null;
 	type: string;
 	initializer: string|null;
 	isAbstract: boolean;

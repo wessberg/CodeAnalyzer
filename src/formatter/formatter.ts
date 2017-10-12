@@ -1,69 +1,48 @@
 import {IFormatterBase} from "./i-formatter";
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createBlock, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, isClassExpression, isConstructorDeclaration, isGetAccessorDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression} from "typescript";
-import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {INodeUpdaterUtil, isIterable} from "@wessberg/typescript-ast-util";
+import {BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
-import {isClassElementDict} from "../dict/class-element/is-class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
 import {isIClassPropertyDict} from "../dict/class-property/is-i-class-property-dict";
 import {isIClassMethodDict} from "../dict/class-method/is-i-class-method-dict";
 import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
-import {isINameWithTypeArguments} from "../dict/name-with-type-arguments/is-i-name-with-type-arguments";
 import {IClassDict} from "../dict/class/i-class-dict";
-import {isIClassDict} from "../dict/class/is-i-class-dict";
 import {IClassMethodDict} from "../dict/class-method/i-class-method-dict";
 import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
 import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
-import {isIConstructorDict} from "../dict/constructor/is-i-constructor-dict";
 import {IMethodDict} from "../dict/method/i-method-dict";
-import {isIMethodDict} from "../dict/method/is-i-method-dict";
 import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
 import {AccessorKind} from "../dict/accessor/accessor-kind";
-import {isIClassGetAccessorDict} from "../dict/class-accessor/is-i-class-get-accessor-dict";
-import {isIClassSetAccessorDict} from "../dict/class-accessor/is-i-class-set-accessor-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
-import {isAccessorDict} from "../dict/accessor/is-accessor-dict";
 import {isIGetAccessorDict} from "../dict/accessor/is-i-get-accessor-dict";
-import {isISetAccessorDict} from "../dict/accessor/is-i-set-accessor-dict";
 import {IImportDict} from "../dict/import/i-import-dict";
-import {isIImportDict} from "../dict/import/is-i-import-dict";
 import {INamedImportDict} from "../dict/import/i-named-import-dict";
 import {isINamedImportDict} from "../dict/import/is-i-named-import-dict";
 import {ModifierKind} from "../dict/modifier/modifier-kind";
 import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
-import {isDecoratorDict} from "../dict/decorator/is-decorator-dict";
 import {DecoratorKind} from "../dict/decorator/decorator-kind";
 import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
-import {isBindingNameDict} from "../dict/binding-name/is-binding-name-dict";
 import {BindingNameKind} from "../dict/binding-name/binding-name-kind";
 import {ArrayBindingElementKind} from "../dict/binding-element/array-binding-element-kind";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
-import {isParameterDict} from "../dict/parameter/is-parameter-dict";
-import {IImportService} from "../service/import/i-import-service";
+import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../dict/heritage/i-heritage-clause-dict";
+import {isIExtendsHeritageDict} from "../dict/heritage/is-i-extends-heritage-dict";
 
 /**
  * A class that helps with transforming simple dict-objects into Typescript Nodes
  */
 export class Formatter implements IFormatterBase {
 
-	constructor (private languageService: ITypescriptLanguageService,
-							 private importService: IImportService,
-							 private parseService: IParser,
-							 private nodeUpdater: INodeUpdaterUtil) {
+	constructor (private parseService: IParser) {
 	}
 
 	/**
 	 * Formats a ClassElement
-	 * @param {ClassElementDict|ClassElement} member
+	 * @param {ClassElementDict} member
 	 * @returns {ClassElement}
 	 */
-	public formatClassElement (member: ClassElementDict|ClassElement): ClassElement {
-		// It may be a proper ClassElement already
-		if (!isClassElementDict(member)) {
-			return member;
-		}
+	public formatClassElement (member: ClassElementDict): ClassElement {
 
 		if (isClassAccessorDict(member)) {
 			return this.formatClassAccessor(member);
@@ -84,48 +63,38 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats an Iterable of ClassElementDicts
-	 * @param {Iterable<ClassElementDict|ClassElement>} members
-	 * @param {NodeArray<ClassElement>?} [existing]
+	 * @param {Iterable<ClassElementDict>} members
 	 * @returns {NodeArray<ClassElement>}
 	 */
-	public formatClassElements (members: Iterable<ClassElementDict|ClassElement>, existing?: NodeArray<ClassElement>|undefined): NodeArray<ClassElement> {
-		const existingMembers = existing == null ? [] : [...existing];
-
-		return createNodeArray([...members, ...existingMembers].map(element => this.formatClassElement(element)));
+	public formatClassElements (members: Iterable<ClassElementDict>): NodeArray<ClassElement> {
+		return createNodeArray([...members].map(element => this.formatClassElement(element)));
 	}
 
 	/**
-	 * Formats the provided 'extend' and 'implement' options into a NodeArray of HeritageClauses.
-	 * @param {INameWithTypeArguments|HeritageClause|null|?} extend
-	 * @param {INameWithTypeArguments | Iterable<INameWithTypeArguments>|HeritageClause|null|?} implement
-	 * @param {NodeArray<HeritageClause>} [existing]
-	 * @returns {NodeArray<HeritageClause>}
-	 */
-	public formatHeritageClauses (extend: INameWithTypeArguments|undefined|null|HeritageClause, implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause|undefined|null, existing?: NodeArray<HeritageClause>): NodeArray<HeritageClause> {
-		// Find any existing 'extends' heritage clause, if it exists and is given as an argument
-		const existingExtends = existing == null ? undefined : existing.find(clause => clause.token === SyntaxKind.ExtendsKeyword);
-
-		// Find any existing 'implements' heritage clause, if it exists and is given as an argument
-		const existingImplements = existing == null ? undefined : existing.find(clause => clause.token === SyntaxKind.ImplementsKeyword);
-
-		const extendsClause = extend == null ? existingExtends == null ? [] : [existingExtends] : [isINameWithTypeArguments(extend) || isIterable(implement) ? this.formatExtendsHeritageClause(extend) : extend];
-		const implementsClause = implement == null ? existingImplements == null ? [] : [existingImplements] : [isINameWithTypeArguments(implement) || isIterable(implement) ? this.formatImplementsHeritageClause(implement, existingImplements) : implement];
-		return createNodeArray([...extendsClause, ...implementsClause]);
-	}
-
-	/**
-	 * Creates a Heritage Clause for an extends relation
-	 * @param {INameWithTypeArguments|HeritageClause} extend
+	 * Formats the provided HeritageClause
+	 * @param {HeritageDict} clause
 	 * @returns {HeritageClause}
 	 */
-	public formatExtendsHeritageClause (extend: INameWithTypeArguments|HeritageClause): HeritageClause {
-		// Return the existing HeritageClause if called with such a thing
-		if (!isINameWithTypeArguments(extend)) {
-			return extend;
-		}
+	public formatHeritageClause (clause: HeritageDict): HeritageClause {
+		return isIExtendsHeritageDict(clause) ? this.formatExtendsHeritageClause(clause) : this.formatImplementsHeritageClause(clause);
+	}
 
-		const {name, typeArguments} = extend;
+	/**
+	 * Formats all of the provided HeritageClauses
+	 * @param {Iterable<HeritageDict>} clauses
+	 * @returns {NodeArray<HeritageClause>}
+	 */
+	public formatHeritageClauses (clauses: Iterable<HeritageDict>): NodeArray<HeritageClause> {
+		return createNodeArray([...clauses].map(clause => this.formatHeritageClause(clause)));
+	}
 
+	/**
+	 * Formats an ExpressionWithTypeArguments
+	 * @param {string} name
+	 * @param {Iterable<string>} typeArguments
+	 * @returns {ExpressionWithTypeArguments}
+	 */
+	public formatExpressionWithTypeArguments ({name, typeArguments}: INameWithTypeArguments): ExpressionWithTypeArguments {
 		// Generate an identifier for the extended class
 		const identifier = createIdentifier(name);
 
@@ -139,280 +108,71 @@ export class Formatter implements IFormatterBase {
 		if (expression.typeArguments != null && expression.typeArguments.length === 0) {
 			expression.typeArguments = undefined;
 		}
-
-		return createHeritageClause(SyntaxKind.ExtendsKeyword, createNodeArray([expression]));
+		return expression;
 	}
 
 	/**
-	 * Formats the provided implements heritage clause
-	 * @param {INameWithTypeArguments | Iterable<INameWithTypeArguments>|HeritageClause} implement
-	 * @param {HeritageClause} [existing]
-	 * @returns {ts.HeritageClause}
+	 * Creates a Heritage Clause for an extends relation
+	 * @param {INameWithTypeArguments} extend
+	 * @returns {HeritageClause}
 	 */
-	public formatImplementsHeritageClause (implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause, existing?: HeritageClause): HeritageClause {
-		// Return the existing HeritageClause if called with such a thing
-		if (!isINameWithTypeArguments(implement) && !isIterable(implement)) {
-			return implement;
-		}
-
-		const normalized = isIterable(implement) ? [...implement] : [implement];
-		const elements = normalized.map(element => {
-			// Generate an identifier for the extended class
-			const identifier = createIdentifier(element.name);
-
-			// Wrap it inside an expression with type arguments
-			const expression = createExpressionWithTypeArguments(
-				element.typeArguments == null ? createNodeArray() : this.formatTypes(element.typeArguments),
-				identifier
-			);
-
-			// Assign undefined to the typeArguments if they are not defined
-			if (expression.typeArguments != null && expression.typeArguments.length === 0) {
-				expression.typeArguments = undefined;
-			}
-
-			return expression;
-		});
-
-		// Add-in the existing 'implements' expressions
-		const existingImplementsExpressions = existing == null ? [] : existing.types;
-
-		return createHeritageClause(SyntaxKind.ImplementsKeyword, createNodeArray([...elements, ...existingImplementsExpressions]));
+	public formatExtendsHeritageClause ({name, typeArguments}: IExtendsHeritageDict): HeritageClause {
+		return createHeritageClause(
+			SyntaxKind.ExtendsKeyword,
+			createNodeArray([this.formatExpressionWithTypeArguments({name, typeArguments})])
+		);
 	}
 
 	/**
-	 * Formats a ClassDeclaration|ClassExpression
-	 * @param {IClassDict | ClassDeclaration|ClassExpression} options
-	 * @returns {ts.ClassDeclaration|ClassExpression}
+	 * Formats the provided 'implements' heritage clause
+	 * @param {INameWithTypeArguments[]} elements
+	 * @returns {HeritageClause}
 	 */
-	public formatClass (options: IClassDict|ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-		// It may be a ClassDeclaration|ClassExpression already
-		if (!isIClassDict(options)) {
-			return options;
-		}
+	public formatImplementsHeritageClause ({elements}: IImplementsHeritageDict): HeritageClause {
+		return createHeritageClause(
+			SyntaxKind.ImplementsKeyword,
+			createNodeArray(elements.map(element => this.formatExpressionWithTypeArguments(element)))
+		);
+	}
 
-		// Unpack
-		const {isAbstract, implementsInterfaces, decorators, name, extendsClass, members, typeParameters} = options;
+	/**
+	 * Creates an Identifier from the provided name
+	 * @param {string} name
+	 * @returns {Identifier}
+	 */
+	public formatIdentifier (name: string): Identifier {
+		return createIdentifier(name);
+	}
 
+	/**
+	 * Formats a ClassDeclaration
+	 * @param {boolean} isAbstract
+	 * @param {IImplementsHeritageDict} implementsInterfaces
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {string} name
+	 * @param {IExtendsHeritageDict} extendsClass
+	 * @param {Iterable<ClassElementDict>} members
+	 * @param {Iterable<string>} typeParameters
+	 * @returns {ClassDeclaration}
+	 */
+	public formatClassDeclaration ({isAbstract, implementsInterfaces, decorators, name, extendsClass, members, typeParameters}: IClassDict): ClassDeclaration {
 		return createClassDeclaration(
 			decorators == null ? undefined : this.formatDecorators(decorators),
 			this.formatModifiers({isAbstract}),
 			name == null ? undefined : name,
 			typeParameters == null ? undefined : this.formatTypeParameters(typeParameters),
-			this.formatHeritageClauses(extendsClass, implementsInterfaces),
+			this.formatHeritageClauses([...(implementsInterfaces == null ? [] : [implementsInterfaces]), ...(extendsClass == null ? [] : [extendsClass])]),
 			members == null ? createNodeArray() : this.formatClassElements(members)
 		);
 	}
 
 	/**
-	 * Updates a ClassDeclaration|ClassExpression
-	 * @param {Iterable<DecoratorDict> | null} decorators
-	 * @param {string | null} name
-	 * @param {Iterable<string> | null} typeParameters
-	 * @param {Iterable<ClassElementDict> | null} members
-	 * @param {boolean} isAbstract
-	 * @param {INameWithTypeArguments | null} extendsClass
-	 * @param {Iterable<INameWithTypeArguments> | null} implementsInterfaces
-	 * @param {ClassDeclaration|ClassExpression} existing
-	 * @param {boolean} merge
-	 * @returns {ClassDeclaration|ClassExpression}
-	 */
-	public updateClass ({decorators, name, typeParameters, members, isAbstract, extendsClass, implementsInterfaces}: Partial<IClassDict>, existing: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-		// If we're having to do with an expression
-		if (isClassExpression(existing)) {
-			const classExpressionUpdated = updateClassExpression(
-				existing,
-				isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
-				name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-				typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
-				this.formatHeritageClauses(extendsClass, implementsInterfaces, existing.heritageClauses),
-				members == null ? existing.members : this.formatClassElements(members, existing.members));
-
-			// Force-set heritageClauses to undefined if they have none
-			if (classExpressionUpdated.heritageClauses!.length === 0) classExpressionUpdated.heritageClauses = undefined;
-			return this.nodeUpdater.updateInPlace(classExpressionUpdated, existing, this.languageService);
-		}
-
-		// If we're having to do with a declaration
-		const updated = updateClassDeclaration(
-			existing,
-			decorators == null ? existing.decorators : this.formatDecorators(decorators),
-			isAbstract == null ? existing.modifiers : this.formatModifiers({isAbstract}),
-			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-			typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
-			this.formatHeritageClauses(extendsClass, implementsInterfaces, existing.heritageClauses),
-			members == null ? existing.members : this.formatClassElements(members, existing.members));
-
-		// Force-set heritageClauses to undefined if they have none
-		if (updated.heritageClauses!.length === 0) updated.heritageClauses = undefined;
-
-		return this.nodeUpdater.updateInPlace(updated, existing, this.languageService);
-	}
-
-	/**
-	 * Updates a MethodDeclaration
-	 * @param {Iterable<DecoratorDict | Decorator>} decorators
-	 * @param {boolean} isAbstract
-	 * @param {boolean} isOptional
-	 * @param {boolean} isAsync
-	 * @param {boolean} isStatic
-	 * @param {string} name
-	 * @param {Iterable<string>} typeParameters
-	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
-	 * @param {string} type
+	 * Creates a ConstructorDeclaration from the provided options
 	 * @param {string} body
-	 * @param {VisibilityKind} visibility
-	 * @param {MethodDeclaration} existing
-	 * @returns {MethodDeclaration}
-	 */
-	public updateClassMethod ({decorators, isAbstract, isOptional, isAsync, isStatic, name, typeParameters, parameters, type, body, visibility}: IClassMethodDict, existing: MethodDeclaration): MethodDeclaration {
-		return this.nodeUpdater.updateInPlace(createMethod(
-			decorators == null ? existing.decorators : this.formatDecorators(decorators),
-			isAbstract == null && isAsync == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility}),
-			existing.asteriskToken,
-			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-			isOptional == null ? existing.questionToken : this.formatQuestionToken(isOptional),
-			typeParameters == null ? existing.typeParameters : this.formatTypeParameters(typeParameters),
-			parameters == null ? existing.parameters : this.formatParameters(parameters),
-			type == null ? existing.type : this.formatType(type),
-			body == null ? existing.body : this.formatBlock(body)
-		), existing, this.languageService);
-	}
-
-	/**
-	 * Updates a GetAccessorDeclaration
-	 * @param {Iterable<DecoratorDict | Decorator>} decorators
-	 * @param {boolean} isAbstract
-	 * @param {boolean} isAsync
-	 * @param {boolean} isStatic
-	 * @param {string} name
-	 * @param {string} type
-	 * @param {string} body
-	 * @param {VisibilityKind} visibility
-	 * @param {GetAccessorDeclaration} existing
-	 * @returns {GetAccessorDeclaration}
-	 */
-	public updateClassGetAccessor ({decorators, isAbstract, isAsync, isStatic, name, type, body, visibility}: IClassGetAccessorDict, existing: GetAccessorDeclaration): GetAccessorDeclaration {
-		return this.nodeUpdater.updateInPlace(createGetAccessor(
-			decorators == null ? existing.decorators : this.formatDecorators(decorators),
-			isAbstract == null && isAsync == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility}),
-			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-			existing.parameters,
-			type == null ? existing.type : this.formatType(type),
-			body == null ? existing.body : this.formatBlock(body)
-		), existing, this.languageService);
-	}
-
-	/**
-	 * Updates a SetAccessorDeclaration
-	 * @param {Iterable<DecoratorDict | Decorator>} decorators
-	 * @param {boolean} isAbstract
-	 * @param {boolean} isStatic
-	 * @param {string} name
-	 * @param {string} type
-	 * @param {string} body
-	 * @param {VisibilityKind} visibility
-	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
-	 * @param {SetAccessorDeclaration} existing
-	 * @returns {SetAccessorDeclaration}
-	 */
-	public updateClassSetAccessor ({decorators, isAbstract, isStatic, name, body, visibility, parameters}: IClassSetAccessorDict, existing: SetAccessorDeclaration): SetAccessorDeclaration {
-		return this.nodeUpdater.updateInPlace(createSetAccessor(
-			decorators == null ? existing.decorators : this.formatDecorators(decorators),
-			isAbstract == null && isStatic == null && visibility == null ? existing.modifiers : this.formatModifiers({isAbstract, isStatic, visibility}),
-			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-			parameters == null ? existing.parameters : this.formatParameters(parameters),
-			body == null ? existing.body : this.formatBlock(body)
-		), existing, this.languageService);
-	}
-
-	/**
-	 * Updates a ConstructorDeclaration
-	 * @param {string} body
-	 * @param {Iterable<ParameterDict | ParameterDeclaration>} parameters
-	 * @param {ConstructorDeclaration} existing
+	 * @param {Iterable<ParameterDict>} parameters
 	 * @returns {ConstructorDeclaration}
 	 */
-	public updateConstructor ({body, parameters}: IConstructorDict, existing: ConstructorDeclaration): ConstructorDeclaration {
-		return this.nodeUpdater.updateInPlace(createConstructor(
-			existing.decorators,
-			existing.modifiers,
-			parameters == null ? existing.parameters : this.formatParameters(parameters),
-			body == null ? existing.body : this.formatBlock(body)
-		), existing, this.languageService);
-	}
-
-	/**
-	 * Updates a PropertyDeclaration
-	 * @param {Iterable<DecoratorDict | Decorator>} decorators
-	 * @param {VisibilityKind} visibility
-	 * @param {boolean} isStatic
-	 * @param {boolean} isAsync
-	 * @param {boolean} isAbstract
-	 * @param {boolean} isOptional
-	 * @param {string} initializer
-	 * @param {string} name
-	 * @param {string} type
-	 * @param {boolean} isReadonly
-	 * @param {PropertyDeclaration} existing
-	 * @returns {PropertyDeclaration}
-	 */
-	public updateClassProperty ({decorators, visibility, isStatic, isAsync, isAbstract, isOptional, initializer, name, type, isReadonly}: IClassPropertyDict, existing: PropertyDeclaration): PropertyDeclaration {
-		return this.nodeUpdater.updateInPlace(createProperty(
-			decorators == null ? existing.decorators : this.formatDecorators(decorators),
-			isAbstract == null && isAsync == null && isStatic == null && visibility == null && isReadonly == null ? existing.modifiers : this.formatModifiers({isAbstract, isAsync, isStatic, visibility, isReadonly}),
-			name == null ? existing.name : typeof name === "string" ? createIdentifier(name) : name,
-			isOptional == null ? existing.questionToken : this.formatQuestionToken(isOptional),
-			type == null ? existing.type : this.formatType(type),
-			initializer == null ? existing.initializer : this.formatExpression(initializer)
-		), existing, this.languageService);
-	}
-
-	/**
-	 * Updates the provided ClassElement
-	 * @param {ClassElementDict} classElement
-	 * @param {ClassElement} existing
-	 * @returns {ClassElement}
-	 */
-	public updateClassElement (classElement: ClassElementDict, existing: ClassElement): ClassElement {
-
-		if (isIClassMethodDict(classElement) && isMethodDeclaration(existing)) {
-			return this.updateClassMethod(classElement, existing);
-		}
-
-		else if (isIClassGetAccessorDict(classElement) && isGetAccessorDeclaration(existing)) {
-			return this.updateClassGetAccessor(classElement, existing);
-		}
-
-		else if (isIClassSetAccessorDict(classElement) && isSetAccessorDeclaration(existing)) {
-			return this.updateClassSetAccessor(classElement, existing);
-		}
-
-		else if (isIConstructorDict(classElement) && isConstructorDeclaration(existing)) {
-			return this.updateConstructor(classElement, existing);
-		}
-
-		else if (isIClassPropertyDict(classElement) && isPropertyDeclaration(existing)) {
-			return this.updateClassProperty(classElement, existing);
-		}
-
-		else {
-			throw new ReferenceError(`${this.constructor.name} could not format a class element: ${classElement}`);
-		}
-	}
-
-	/**
-	 * Creates a ConstructorDeclaration from the provided options
-	 * @param {IConstructorDict | ts.ConstructorDeclaration} options
-	 * @returns {ts.ConstructorDeclaration}
-	 */
-	public formatConstructor (options: IConstructorDict|ConstructorDeclaration): ConstructorDeclaration {
-		if (!isIConstructorDict(options)) {
-			return options;
-		}
-
-		// Unpack
-		const {body, parameters} = options;
+	public formatConstructor ({body, parameters}: IConstructorDict): ConstructorDeclaration {
 		return createConstructor(
 			undefined,
 			undefined,
@@ -423,17 +183,19 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a PropertyDeclaration from the provided options
-	 * @param {IClassPropertyDict | PropertyDeclaration} options
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {boolean} isStatic
+	 * @param {boolean} isOptional
+	 * @param {boolean} isAbstract
+	 * @param {VisibilityKind} visibility
+	 * @param {boolean} isAsync
+	 * @param {string} name
+	 * @param {string} type
+	 * @param {string} initializer
+	 * @param {boolean} isReadonly
 	 * @returns {PropertyDeclaration}
 	 */
-	public formatClassProperty (options: IClassPropertyDict|PropertyDeclaration): PropertyDeclaration {
-		// It may already be a PropertyDeclaration
-		if (!isIClassPropertyDict(options)) {
-			return options;
-		}
-
-		// Unpack
-		const {decorators, isStatic, isOptional, isAbstract, visibility, isAsync, name, type, initializer, isReadonly} = options;
+	public formatClassProperty ({decorators, isStatic, isOptional, isAbstract, visibility, isAsync, name, type, initializer, isReadonly}: IClassPropertyDict): PropertyDeclaration {
 
 		return createProperty(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -447,17 +209,16 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a MethodDeclaration from the provided options
-	 * @param {IMethodDict | MethodDeclaration} options
-	 * @returns {MethodDeclaration}
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {string} body
+	 * @param {Iterable<string>} typeParameters
+	 * @param {boolean} isAsync
+	 * @param {string} name
+	 * @param {Iterable<ParameterDict>} parameters
+	 * @param {string} type
+	 * @returns {ts.MethodDeclaration}
 	 */
-	public formatMethod (options: IMethodDict|MethodDeclaration): MethodDeclaration {
-		// It may be a method already
-		if (!isIMethodDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, body, typeParameters, isAsync, name, parameters, type} = options;
+	public formatMethod ({decorators, body, typeParameters, isAsync, name, parameters, type}: IMethodDict): MethodDeclaration {
 
 		return createMethod(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -474,16 +235,20 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats a MethodDeclaration from the provided options
-	 * @param {IClassMethodDict | MethodDeclaration} options
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {string} type
+	 * @param {Iterable<ParameterDict>} parameters
+	 * @param {string} name
+	 * @param {boolean} isAsync
+	 * @param {Iterable<string>} typeParameters
+	 * @param {string} body
+	 * @param {VisibilityKind} visibility
+	 * @param {boolean} isStatic
+	 * @param {boolean} isAbstract
+	 * @param {boolean} isOptional
 	 * @returns {MethodDeclaration}
 	 */
-	public formatClassMethod (options: IClassMethodDict|MethodDeclaration): MethodDeclaration {
-		if (!isIClassMethodDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, type, parameters, name, isAsync, typeParameters, body, visibility, isStatic, isAbstract, isOptional} = options;
+	public formatClassMethod ({decorators, type, parameters, name, isAsync, typeParameters, body, visibility, isStatic, isAbstract, isOptional}: IClassMethodDict): MethodDeclaration {
 
 		return createMethod(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -503,12 +268,7 @@ export class Formatter implements IFormatterBase {
 	 * @param {ClassAccessorDict} accessor
 	 * @returns {GetAccessorDeclaration | SetAccessorDeclaration}
 	 */
-	public formatClassAccessor (accessor: ClassAccessorDict|AccessorDeclaration): GetAccessorDeclaration|SetAccessorDeclaration {
-		// It may already be an AccessorDeclaration
-		if (!isClassAccessorDict(accessor)) {
-			return accessor;
-		}
-
+	public formatClassAccessor (accessor: ClassAccessorDict): GetAccessorDeclaration|SetAccessorDeclaration {
 		if (accessor.kind === AccessorKind.GET) {
 			return this.formatGetAccessor(accessor);
 		} else {
@@ -518,17 +278,17 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats a GetAccessor from the provided options
-	 * @param {IClassGetAccessorDict | GetAccessorDeclaration} options
-	 * @returns {GetAccessorDeclaration}
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {boolean} isAsync
+	 * @param {boolean} isStatic
+	 * @param {boolean} isAbstract
+	 * @param {VisibilityKind} visibility
+	 * @param {string} name
+	 * @param {string} type
+	 * @param {string} body
+	 * @returns {ts.GetAccessorDeclaration}
 	 */
-	public formatClassGetAccessor (options: IClassGetAccessorDict|GetAccessorDeclaration): GetAccessorDeclaration {
-		// It may already be a GetAccessorDeclaration
-		if (!isIClassGetAccessorDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, isAsync, isStatic, isAbstract, visibility, name, type, body} = options;
+	public formatClassGetAccessor ({decorators, isAsync, isStatic, isAbstract, visibility, name, type, body}: IClassGetAccessorDict): GetAccessorDeclaration {
 
 		return createGetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -542,17 +302,16 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats the provided options into a SetAccessorDeclaration
-	 * @param {IClassSetAccessorDict | SetAccessorDeclaration} options
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {boolean} isStatic
+	 * @param {boolean} isAbstract
+	 * @param {VisibilityKind} visibility
+	 * @param {string} name
+	 * @param {string} body
+	 * @param {Iterable<ParameterDict>} parameters
 	 * @returns {SetAccessorDeclaration}
 	 */
-	public formatClassSetAccessor (options: IClassSetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration {
-		// It may already be a SetAccessor
-		if (!isIClassSetAccessorDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, isStatic, isAbstract, visibility, name, body, parameters} = options;
+	public formatClassSetAccessor ({decorators, isStatic, isAbstract, visibility, name, body, parameters}: IClassSetAccessorDict): SetAccessorDeclaration {
 		return createSetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
 			this.formatModifiers({isStatic, isAbstract, visibility}),
@@ -564,15 +323,10 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats the provided options into a GetAccessorDeclaration or a SetAccessorDeclaration
-	 * @param {AccessorDict|AccessorDeclaration} accessor
+	 * @param {AccessorDict} accessor
 	 * @returns {GetAccessorDeclaration | SetAccessorDeclaration}
 	 */
-	public formatAccessor (accessor: AccessorDict|AccessorDeclaration): GetAccessorDeclaration|SetAccessorDeclaration {
-		// If we already have a proper AccessorDeclaration, return a copy of it
-		if (!isAccessorDict(accessor)) {
-			return accessor;
-		}
-
+	public formatAccessor (accessor: AccessorDict): GetAccessorDeclaration|SetAccessorDeclaration {
 		if (isIGetAccessorDict(accessor)) {
 			return this.formatGetAccessor(accessor);
 		} else {
@@ -582,16 +336,14 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats a GetAccessor from the provided options
-	 * @param {IGetAccessorDict | GetAccessorDeclaration} options
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {boolean} isAsync
+	 * @param {string} type
+	 * @param {string} body
+	 * @param {string} name
 	 * @returns {GetAccessorDeclaration}
 	 */
-	public formatGetAccessor (options: IGetAccessorDict|GetAccessorDeclaration): GetAccessorDeclaration {
-		if (!isIGetAccessorDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, isAsync, type, body, name} = options;
+	public formatGetAccessor ({decorators, isAsync, type, body, name}: IGetAccessorDict): GetAccessorDeclaration {
 
 		return createGetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -605,16 +357,13 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats the provided options into a SetAccessorDeclaration
-	 * @param {ISetAccessorDict | SetAccessorDeclaration} options
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {string} name
+	 * @param {string} body
+	 * @param {Iterable<ParameterDict>} parameters
 	 * @returns {SetAccessorDeclaration}
 	 */
-	public formatSetAccessor (options: ISetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration {
-		if (!isISetAccessorDict(options)) {
-			return options;
-		}
-
-		// Unpack it
-		const {decorators, name, body, parameters} = options;
+	public formatSetAccessor ({decorators, name, body, parameters}: ISetAccessorDict): SetAccessorDeclaration {
 
 		return createSetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
@@ -626,89 +375,23 @@ export class Formatter implements IFormatterBase {
 	}
 
 	/**
-	 * Updates an import declaration with the provided properties
-	 * @param {string} path
-	 * @param {string?} defaultName
-	 * @param {Iterable<string>?} namedImports
-	 * @param {string?} namespace
-	 * @param {ImportDeclaration} existing
-	 * @returns {ImportDeclaration}
+	 * Formats a StringLiteral
+	 * @param {string} literal
+	 * @returns {StringLiteral}
 	 */
-	public updateImportDeclaration ({path, defaultName, namedImports, namespace}: Partial<IImportDict>, existing: ImportDeclaration): ImportDeclaration {
-		// Update the path if it is given in the dict. It may be a StringLiteral already
-		const newPath = path == null ? existing.moduleSpecifier : typeof path === "string" ? createLiteral(path) : path;
-
-		// Check if new named bindings exist
-		const hasNewNamedBindings = namedImports != null || namespace != null;
-
-		let importClause: ImportClause|undefined;
-
-		// If neither new named imports, a new namespace import or a new default name is given, just use the existing import clause
-		if (!hasNewNamedBindings && defaultName == null) {
-			importClause = existing.importClause;
-		}
-
-		// Something new to the import clause is given
-		else {
-			let newDefaultName: string|undefined|null|Identifier;
-
-			// If there is no import clause or the import clause doesn't have a default name, assign the new default name to it.
-			// It may be undefined, which is fine
-			if (existing.importClause == null || existing.importClause.name == null) {
-				newDefaultName = defaultName;
-			}
-
-			// If there is a default import already, use it unless a new one is provided
-			else if (existing.importClause != null && existing.importClause.name != null) {
-				newDefaultName = defaultName == null ? existing.importClause.name.text : defaultName;
-			}
-
-			// Update the default name if it is given in the dict. It may already be an Identifier
-			const defaultNameIdentifier = defaultName == null ? this.importService.getNameForImportDeclaration(existing) : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
-
-			if (!hasNewNamedBindings) {
-
-				// Use the new name and the existing named bindings
-				importClause = createImportClause(defaultNameIdentifier, existing.importClause == null ? undefined : existing.importClause.namedBindings);
-			}
-
-			// Use the new name and the new named bindings
-			else {
-				// If a new namespace is given, use the new default name and the new namespace
-				if (namespace != null) {
-					importClause = createImportClause(defaultNameIdentifier, this.formatNamespaceImport(namespace));
-				}
-				// If new named imports is given, merge with the existing ones and the default name
-				else if (namedImports != null) {
-
-					// Generate a new import clause from them
-					importClause = createImportClause(defaultNameIdentifier, this.formatNamedImports(namedImports));
-				}
-			}
-		}
-
-		// Return the updated import declaration
-		return this.nodeUpdater.updateInPlace(createImportDeclaration(
-			existing.decorators,
-			existing.modifiers,
-			importClause,
-			newPath
-		), existing, this.languageService);
+	public formatStringLiteral (literal: string): StringLiteral {
+		return createLiteral(literal);
 	}
 
 	/**
 	 * Creates a new ImportDeclaration
-	 * @param {IImportDict | ImportDeclaration} importDeclaration
+	 * @param {string} path
+	 * @param {Iterable<INamedImportDict>} namedImports
+	 * @param {string} namespace
+	 * @param {string} defaultName
 	 * @returns {ImportDeclaration}
 	 */
-	public formatImportDeclaration (importDeclaration: IImportDict|ImportDeclaration): ImportDeclaration {
-		// If the provided item is already an ImportDeclaration, return it
-		if (!isIImportDict(importDeclaration)) {
-			return importDeclaration;
-		}
-
-		// Unpack it
-		const {path, namedImports, namespace, defaultName} = importDeclaration;
+	public formatImportDeclaration ({path, namedImports, namespace, defaultName}: IImportDict): ImportDeclaration {
 
 		// Create an identifier for the default name. The default name may already be an identifier
 		const nameIdentifier = defaultName == null ? undefined : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
@@ -729,16 +412,16 @@ export class Formatter implements IFormatterBase {
 			undefined,
 			clause,
 			// The path may already be a StringLiteral
-			typeof path === "string" ? createLiteral(path) : path
+			typeof path === "string" ? this.formatStringLiteral(path) : path
 		);
 	}
 
 	/**
 	 * Creates NamedImports from all of the provided named import names
-	 * @param {Iterable<string>|string|NamedImports} namedImports
+	 * @param {INamedImportDict | Iterable<INamedImportDict>} namedImports
 	 * @returns {NamedImports}
 	 */
-	public formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>|NamedImports): NamedImports {
+	public formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports {
 		if (isINamedImportDict(namedImports)) {
 			// Create identifiers for the named import
 			const [namedImportIdentifier, propertyNameIdentifier] = this.createNamedImportIdentifiers(namedImports);
@@ -748,31 +431,20 @@ export class Formatter implements IFormatterBase {
 
 		}
 
-		// The input is already a NamedImports.
-		else if (!isIterable(namedImports)) {
-			return namedImports;
-		}
+		// Create identifiers for all of the named imports
+		const importIdentifiers = [...namedImports].map(namedImport => this.createNamedImportIdentifiers(namedImport));
+		const importSpecifiers = importIdentifiers.map(identifier => createImportSpecifier(identifier[1], identifier[0]));
 
-		else {
-			// Create identifiers for all of the named imports
-			const importIdentifiers = [...namedImports].map(namedImport => this.createNamedImportIdentifiers(namedImport));
-			const importSpecifiers = importIdentifiers.map(identifier => createImportSpecifier(identifier[1], identifier[0]));
-
-			// Create NamedImports for them
-			return createNamedImports(createNodeArray(importSpecifiers));
-		}
+		// Create NamedImports for them
+		return createNamedImports(createNodeArray(importSpecifiers));
 	}
 
 	/**
 	 * Creates a NamespaceImport with the provided name
-	 * @param {string|NamespaceImport} namespaceName
+	 * @param {string} namespaceName
 	 * @returns {NamespaceImport}
 	 */
-	public formatNamespaceImport (namespaceName: string|NamespaceImport): NamespaceImport {
-		// The input is already a NamespaceImport
-		if (typeof namespaceName !== "string") {
-			return namespaceName;
-		}
+	public formatNamespaceImport (namespaceName: string): NamespaceImport {
 		// Create an identifier for the namespace import
 		const namedImportIdentifier = createIdentifier(namespaceName);
 
@@ -781,7 +453,7 @@ export class Formatter implements IFormatterBase {
 	}
 
 	/**
-	 * Creates a Modifier from the provided string
+	 * Creates a Modifier from the provided ModifierKind
 	 * @param {ModifierKind} modifier
 	 * @returns {Modifier}
 	 */
@@ -890,14 +562,10 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Generates a Decorator from the provided options
-	 * @param {DecoratorDict|Decorator} decorator
+	 * @param {DecoratorDict} decorator
 	 * @returns {Decorator}
 	 */
-	public formatDecorator (decorator: DecoratorDict|Decorator): Decorator {
-		// It may be a Decorator already
-		if (!isDecoratorDict(decorator)) {
-			return decorator;
-		}
+	public formatDecorator (decorator: DecoratorDict): Decorator {
 
 		if (decorator.kind === DecoratorKind.IDENTIFIER) {
 			// Creates a decorator with the provided name as identifier
@@ -912,10 +580,10 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats all of the provided DecoratorDicts into a NodeArray of Decorators
-	 * @param {Iterable<DecoratorDict|Decorator>} decorators
+	 * @param {Iterable<DecoratorDict>} decorators
 	 * @returns {NodeArray<Decorator>}
 	 */
-	public formatDecorators (decorators: Iterable<DecoratorDict|Decorator>): NodeArray<Decorator> {
+	public formatDecorators (decorators: Iterable<DecoratorDict>): NodeArray<Decorator> {
 		return createNodeArray([...decorators].map(decorator => this.formatDecorator(decorator)));
 	}
 
@@ -924,11 +592,7 @@ export class Formatter implements IFormatterBase {
 	 * @param {BindingNameDict} name
 	 * @returns {BindingName}
 	 */
-	public formatBindingName (name: BindingNameDict|BindingName): BindingName {
-		// It may already be a BindingName
-		if (!isBindingNameDict(name)) {
-			return name;
-		}
+	public formatBindingName (name: BindingNameDict): BindingName {
 
 		if (name.kind === BindingNameKind.NORMAL) {
 			return createIdentifier(name.name);
@@ -961,16 +625,16 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Generates a Parameter from the provided options
-	 * @param {ParameterDict | ts.ParameterDeclaration} options
+	 * @param {INormalBindingNameDict | IObjectBindingNameDict | IArrayBindingNameDict} name
+	 * @param {Iterable<DecoratorDict>} decorators
+	 * @param {boolean} isRestSpread
+	 * @param {boolean} isOptional
+	 * @param {string} type
+	 * @param {string} initializer
 	 * @returns {ts.ParameterDeclaration}
 	 */
-	public formatParameter (options: ParameterDict|ParameterDeclaration): ParameterDeclaration {
-		if (!isParameterDict(options)) {
-			return options;
-		}
+	public formatParameter ({name, decorators, isRestSpread, isOptional, type, initializer}: ParameterDict): ParameterDeclaration {
 
-		// Unpack
-		const {name, decorators, isRestSpread, isOptional, type, initializer} = options;
 		return createParameter(
 			decorators == null ? undefined : this.formatDecorators(decorators),
 			undefined,
@@ -984,10 +648,10 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats all of the provided parameters
-	 * @param {Iterable<ParameterDict|ParameterDeclaration>} parameters
+	 * @param {Iterable<ParameterDict>} parameters
 	 * @returns {NodeArray<ParameterDeclaration>}
 	 */
-	public formatParameters (parameters: Iterable<ParameterDict|ParameterDeclaration>): NodeArray<ParameterDeclaration> {
+	public formatParameters (parameters: Iterable<ParameterDict>): NodeArray<ParameterDeclaration> {
 		return createNodeArray([...parameters].map(parameter => this.formatParameter(parameter)));
 	}
 
@@ -1034,17 +698,6 @@ export class Formatter implements IFormatterBase {
 	 */
 	public formatBlock (instructions: string): Block {
 		return this.parseService.parseBlock(instructions);
-	}
-
-	/**
-	 * Adds the provided block instructions to the given Block
-	 * @param {string} newInstructions
-	 * @param {Block} block
-	 * @returns {Block}
-	 */
-	public updateBlock (newInstructions: string, block: Block): Block {
-		const {statements} = this.formatBlock(newInstructions);
-		return this.nodeUpdater.updateInPlace(createBlock([...block.statements, ...statements]), block, this.languageService);
 	}
 
 	/**

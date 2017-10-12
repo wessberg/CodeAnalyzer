@@ -22,6 +22,22 @@ import {TypeService} from "./service/type/type-service";
 import {IFormatter, wrappedIFormatter} from "./formatter/i-formatter-getter";
 import {ICallExpressionService} from "./service/call-expression/i-call-expression-service";
 import {CallExpressionService} from "./service/call-expression/call-expression-service";
+import {IUpdaterBase} from "./updater/i-updater";
+import {Updater} from "./updater/updater";
+import {Joiner} from "./joiner/joiner";
+import {IJoiner, wrappedIJoiner} from "./joiner/i-joiner-getter";
+import {IUpdater, wrappedIUpdater} from "./updater/i-updater-getter";
+import {IJoinerBase} from "./joiner/i-joiner";
+import {IHeritageClauseService} from "./service/heritage-clause/i-heritage-clause-service";
+import {HeritageClauseService} from "./service/heritage-clause/heritage-clause-service";
+import {IMethodService} from "./service/method/i-method-service";
+import {MethodService} from "./service/method/method-service";
+import {IConstructorService} from "./service/constructor/i-constructor-service";
+import {ConstructorService} from "./service/constructor/constructor-service";
+import {INamedImportsService} from "./service/named-imports/i-named-imports-service";
+import {NamedImportsService} from "./service/named-imports/named-imports-service";
+import {INamespaceImportService} from "./service/namespace-import/i-namespace-import-service";
+import {NamespaceImportService} from "./service/namespace-import/namespace-import-service";
 
 // Utils
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
@@ -31,8 +47,19 @@ DIContainer.registerSingleton<IPrinter, Printer>();
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
 
-// Provide a lazy-getter because there are circular dependencies between AST services and the Formatter
+// Updater
+DIContainer.registerSingleton<IUpdaterBase, Updater>();
+
+// Joiner
+DIContainer.registerSingleton<IJoinerBase, Joiner>();
+
+// Provide lazy-getters because there are circular dependencies between AST services and these
+DIContainer.registerSingleton<IJoiner, IJoiner>(() => wrappedIJoiner);
+DIContainer.registerSingleton<IUpdater, IUpdater>(() => wrappedIUpdater);
 DIContainer.registerSingleton<IFormatter, IFormatter>(() => wrappedIFormatter);
+
+// Parser
+DIContainer.registerSingleton<IParser, Parser>();
 
 // Utilities
 DIContainer.registerSingleton<IModuleUtil, ModuleUtil>();
@@ -43,7 +70,11 @@ DIContainer.registerSingleton<ITypescriptLanguageService, TypescriptLanguageServ
 DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
 
 // Services
-DIContainer.registerSingleton<IParser, Parser>();
+DIContainer.registerSingleton<IHeritageClauseService, HeritageClauseService>();
+DIContainer.registerSingleton<INamedImportsService, NamedImportsService>();
+DIContainer.registerSingleton<INamespaceImportService, NamespaceImportService>();
+DIContainer.registerSingleton<IMethodService, MethodService>();
+DIContainer.registerSingleton<IConstructorService, ConstructorService>();
 DIContainer.registerSingleton<IDecoratorService, DecoratorService>();
 DIContainer.registerSingleton<IModifierService, ModifierService>();
 DIContainer.registerSingleton<IClassService, ClassService>();

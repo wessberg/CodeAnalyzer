@@ -1,19 +1,35 @@
 import {createNodeArray, Identifier, ImportDeclaration, ImportSpecifier, isNamedImports, isNamespaceImport, isStringLiteral, NamedImportBindings, NamedImports, NamespaceImport, NodeArray, SourceFile, SyntaxKind} from "typescript";
 import {IImportService} from "./i-import-service";
-import {INodeUpdaterUtil, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IImportDict} from "../../dict/import/i-import-dict";
 import {INamedImportDict} from "../../dict/import/i-named-import-dict";
-import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IFormatter} from "../../formatter/i-formatter-getter";
+import {INamedImportsService} from "../named-imports/i-named-imports-service";
+import {INamespaceImportService} from "../namespace-import/i-namespace-import-service";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
  */
 export class ImportService implements IImportService {
-	constructor (private languageService: ITypescriptLanguageService,
-							 private nodeUpdater: INodeUpdaterUtil,
+
+	constructor (private namedImportsService: INamedImportsService,
+							 private namespaceImportService: INamespaceImportService,
 							 private formatter: IFormatter,
+							 private printer: IPrinter,
+							 private joiner: IJoiner,
+							 private updater: IUpdater,
 							 private astUtil: ITypescriptASTUtil) {
+	}
+
+	/**
+	 * Gets the import path of an ImportDeclaration
+	 * @param {ImportDeclaration} importDeclaration
+	 * @returns {string}
+	 */
+	public getPathForImportDeclaration (importDeclaration: ImportDeclaration): string {
+		return this.printer.print(importDeclaration.moduleSpecifier);
 	}
 
 	/**
@@ -44,16 +60,9 @@ export class ImportService implements IImportService {
 	 * @param {SourceFile} sourceFile
 	 * @returns {NodeArray<ImportDeclaration>}
 	 */
-	public getImportsWithNamedImport (namedImport: { name: string; propertyName: string|null }, path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration> {
+	public getImportsWithNamedImport (namedImport: INamedImportDict, path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration> {
 		const imports = this.getImportsForPath(path, sourceFile);
-		return createNodeArray(imports.filter(importDeclaration => {
-
-			// Take the NamedImports for the ImportDeclaration
-			const namedImports = this.getNamedImportsForImportDeclaration(importDeclaration);
-
-			// There is match if any of the named imports matches the name that we're looking for.
-			return namedImports != null && namedImports.elements.some(element => this.matchesNamedImport(namedImport, element));
-		}));
+		return createNodeArray(imports.filter(importDeclaration => this.hasNamedImport(namedImport, importDeclaration)));
 	}
 
 	/**
@@ -84,8 +93,7 @@ export class ImportService implements IImportService {
 	 */
 	public hasNamedImport (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): boolean {
 		const namedImports = this.getNamedImportsForImportDeclaration(importDeclaration);
-		if (namedImports == null) return false;
-		return namedImports.elements.find(element => this.matchesNamedImport(namedImport, element)) != null;
+		return namedImports != null && this.namedImportsService.hasImportWithName(namedImport, namedImports);
 	}
 
 	/**
@@ -105,9 +113,7 @@ export class ImportService implements IImportService {
 	 */
 	public hasNamespaceImportWithName (namespaceName: string, importDeclaration: ImportDeclaration): boolean {
 		const namespace = this.getNamespaceImportForImportDeclaration(importDeclaration);
-		if (namespace == null) return false;
-
-		return namespace.name.text === namespaceName;
+		return namespace != null && this.namespaceImportService.getNameOfNamespace(namespace) === namespaceName;
 	}
 
 	/**
@@ -195,7 +201,14 @@ export class ImportService implements IImportService {
 	 */
 	public createAndAddImportDeclarationToSourceFile (options: IImportDict, sourceFile: SourceFile): ImportDeclaration {
 		const importDeclaration = this.createImportDeclaration(options);
-		return this.nodeUpdater.addInPlace(importDeclaration, sourceFile, this.languageService);
+
+		// Update the SourceFile to reflect the change
+		this.updater.updateSourceFileStatements(
+			this.joiner.joinStatementNodeArrays(importDeclaration, sourceFile.statements),
+			sourceFile
+		);
+
+		return importDeclaration;
 	}
 
 	/**
@@ -210,18 +223,26 @@ export class ImportService implements IImportService {
 	/**
 	 * Changes the path of an ImportDeclaration
 	 * @param {string} path
-	 * @param {ts.ImportDeclaration} importDeclaration
-	 * @returns {ts.ImportDeclaration}
+	 * @param {ImportDeclaration} importDeclaration
+	 * @returns {ImportDeclaration}
 	 */
 	public changePathOfImportDeclaration (path: string, importDeclaration: ImportDeclaration): ImportDeclaration {
-		return this.formatter.updateImportDeclaration({path}, importDeclaration);
+		// If the ImportDeclaration already imports from the path, do nothing
+		if (this.getPathForImportDeclaration(importDeclaration) === path) {
+			return importDeclaration;
+		}
+
+		// Generate a StringLiteral for the path
+		const moduleSpecifier = this.formatter.formatStringLiteral(path);
+
+		return this.updater.updateImportDeclarationModuleSpecifier(moduleSpecifier, importDeclaration);
 	}
 
 	/**
 	 * Adds a specific default name to an ImportDeclaration, unless it has that name already
 	 * @param {string} name
-	 * @param {ts.ImportDeclaration} importDeclaration
-	 * @returns {ts.ImportDeclaration}
+	 * @param {ImportDeclaration} importDeclaration
+	 * @returns {ImportDeclaration}
 	 */
 	public addNameToImportDeclaration (name: string, importDeclaration: ImportDeclaration): ImportDeclaration {
 		// If the importDeclaration already has the provided name as default import name, do nothing

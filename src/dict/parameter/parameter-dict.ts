@@ -1,7 +1,6 @@
 import {ParameterKind} from "./parameter-kind";
 import {DecoratorDict} from "../decorator/decorator-dict";
 import {BindingNameDict, IArrayBindingNameDict, INormalBindingNameDict, IObjectBindingNameDict} from "../binding-name/binding-name-dict";
-import {BindingName, Decorator} from "typescript";
 
 export interface IParameterDict {
 	kind: ParameterKind;
@@ -9,8 +8,8 @@ export interface IParameterDict {
 	initializer: string|null;
 	isRestSpread: boolean;
 	isOptional: boolean;
-	decorators: Iterable<DecoratorDict|Decorator>|null;
-	name: BindingNameDict|BindingName;
+	decorators: Iterable<DecoratorDict>|null;
+	name: BindingNameDict;
 }
 
 export interface INormalParameterDict extends IParameterDict {

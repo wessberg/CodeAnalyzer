@@ -4,6 +4,8 @@ class A {
 	}
 }
 
-console.log(true);
-Math.random();
-Math.abs(2);
+function foo<T> (bar: T): void {
+	console.log(bar);
+}
+
+foo<string>("");

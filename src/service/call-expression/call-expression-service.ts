@@ -1,13 +1,14 @@
 import {ICallExpressionService} from "./i-call-expression-service";
 import {CallExpression, createNodeArray, ExpressionStatement, isCallExpression, isExpressionStatement, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
-import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 
 /**
  * A class for working with classes
  */
 export class CallExpressionService implements ICallExpressionService {
 
-	constructor (private astUtil: ITypescriptASTUtil) {
+	constructor (private astUtil: ITypescriptASTUtil,
+							 private printer: IPrinter) {
 	}
 
 	/**
@@ -24,7 +25,20 @@ export class CallExpressionService implements ICallExpressionService {
 			if (!isPropertyAccessExpression(callExpression.expression)) return false;
 			return isIdentifier(callExpression.expression.expression) && callExpression.expression.expression.text === identifier && property == null ? true : callExpression.expression.name.text === property;
 		}));
+	}
 
+	/**
+	 * Returns all CallExpressions where the base matches the provided Regular Expression
+	 * @param {RegExp} match
+	 * @param {SourceFile} sourceFile
+	 * @param {boolean} deep
+	 * @returns {NodeArray<CallExpression>}
+	 */
+	public getCallExpressionsMatching (match: RegExp, sourceFile: SourceFile, deep: boolean = true): NodeArray<CallExpression> {
+		const filtered = this.getCallExpressions(sourceFile, deep);
+		return createNodeArray(filtered.filter(callExpression => {
+			return match.test(this.printer.print(callExpression.expression));
+		}));
 	}
 
 	/**

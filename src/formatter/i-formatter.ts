@@ -1,4 +1,4 @@
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, GetAccessorDeclaration, HeritageClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
 import {INamedImportDict} from "../dict/import/i-named-import-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
@@ -15,54 +15,51 @@ import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
 import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
+import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../dict/heritage/i-heritage-clause-dict";
 
 export interface IFormatterBase {
-	formatImportDeclaration (options: IImportDict|ImportDeclaration): ImportDeclaration;
-	updateImportDeclaration (options: Partial<IImportDict>, existing: ImportDeclaration): ImportDeclaration;
-	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>|NamedImports): NamedImports;
-	formatNamespaceImport (namespaceName: string|NamespaceImport): NamespaceImport;
+	formatImportDeclaration (options: IImportDict): ImportDeclaration;
+	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports;
+	formatNamespaceImport (namespaceName: string): NamespaceImport;
 
-	formatAccessor (accessor: AccessorDict|AccessorDeclaration): AccessorDeclaration;
-	formatGetAccessor (accessor: IGetAccessorDict|GetAccessorDeclaration): GetAccessorDeclaration;
-	formatSetAccessor (accessor: ISetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration;
+	formatAccessor (accessor: AccessorDict): AccessorDeclaration;
+	formatGetAccessor (accessor: IGetAccessorDict): GetAccessorDeclaration;
+	formatSetAccessor (accessor: ISetAccessorDict): SetAccessorDeclaration;
 
-	formatClassAccessor (accessor: ClassAccessorDict|AccessorDeclaration): AccessorDeclaration;
-	formatClassGetAccessor (accessor: IClassGetAccessorDict|GetAccessorDeclaration): GetAccessorDeclaration;
-	updateClassGetAccessor (accessor: IClassGetAccessorDict, existing: GetAccessorDeclaration): GetAccessorDeclaration;
-	formatClassSetAccessor (accessor: IClassSetAccessorDict|SetAccessorDeclaration): SetAccessorDeclaration;
-	updateClassSetAccessor (accessor: IClassSetAccessorDict, existing: SetAccessorDeclaration): SetAccessorDeclaration;
+	formatClassAccessor (accessor: ClassAccessorDict): AccessorDeclaration;
+	formatClassGetAccessor (accessor: IClassGetAccessorDict): GetAccessorDeclaration;
+	formatClassSetAccessor (accessor: IClassSetAccessorDict): SetAccessorDeclaration;
 
-	formatMethod (method: IMethodDict|MethodDeclaration): MethodDeclaration;
-	formatClassMethod (method: IClassMethodDict|MethodDeclaration): MethodDeclaration;
-	updateClassMethod (method: IClassMethodDict, existing: MethodDeclaration): MethodDeclaration;
+	formatMethod (method: IMethodDict): MethodDeclaration;
+	formatClassMethod (method: IClassMethodDict): MethodDeclaration;
 
-	formatClassElement (member: ClassElementDict|ClassElement): ClassElement;
-	formatClassElements (members: Iterable<ClassElementDict|ClassElement>): NodeArray<ClassElement>;
-	updateClassElement (classElement: ClassElementDict, existing: ClassElement): ClassElement;
+	formatClassElement (member: ClassElementDict): ClassElement;
+	formatClassElements (members: Iterable<ClassElementDict>): NodeArray<ClassElement>;
 
-	formatClassProperty (property: IClassPropertyDict|PropertyDeclaration): PropertyDeclaration;
-	updateClassProperty (property: IClassPropertyDict, existing: PropertyDeclaration): PropertyDeclaration;
+	formatClassProperty (property: IClassPropertyDict): PropertyDeclaration;
 
-	formatClass (classDeclaration: IClassDict|ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	updateClass (options: Partial<IClassDict>, existing: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	formatClassDeclaration (classDeclaration: IClassDict): ClassDeclaration;
 
-	formatConstructor (constructor: IConstructorDict|ConstructorDeclaration): ConstructorDeclaration;
-	updateConstructor (constructor: IConstructorDict, existing: ConstructorDeclaration): ConstructorDeclaration;
+	formatConstructor (constructor: IConstructorDict): ConstructorDeclaration;
 
-	formatHeritageClauses (extend: INameWithTypeArguments|HeritageClause|undefined|null, implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause|undefined|null, fillUndefinedFrom?: NodeArray<HeritageClause>): NodeArray<HeritageClause>;
-	formatExtendsHeritageClause (extend: INameWithTypeArguments|HeritageClause): HeritageClause;
-	formatImplementsHeritageClause (implement: INameWithTypeArguments|Iterable<INameWithTypeArguments>|HeritageClause): HeritageClause;
+	formatHeritageClause (clause: HeritageDict): HeritageClause;
+	formatHeritageClauses (clauses: Iterable<HeritageDict>): NodeArray<HeritageClause>;
+	formatExtendsHeritageClause (options: IExtendsHeritageDict): HeritageClause;
+	formatImplementsHeritageClause (options: IImplementsHeritageDict): HeritageClause;
+
+	formatExpressionWithTypeArguments (options: INameWithTypeArguments): ExpressionWithTypeArguments;
 
 	formatModifier (modifier: ModifierKind): Modifier;
 	formatModifiers (modifiers: Partial<IAllModifiersDict>): NodeArray<Modifier>;
 
-	formatBindingName (name: BindingNameDict|BindingName): BindingName;
+	formatBindingName (name: BindingNameDict): BindingName;
+	formatIdentifier (name: string): Identifier;
 
-	formatParameter (parameter: ParameterDict|ParameterDeclaration): ParameterDeclaration;
-	formatParameters (parameters: Iterable<ParameterDict|ParameterDeclaration>): NodeArray<ParameterDeclaration>;
+	formatParameter (parameter: ParameterDict): ParameterDeclaration;
+	formatParameters (parameters: Iterable<ParameterDict>): NodeArray<ParameterDeclaration>;
 
-	formatDecorator (decorator: DecoratorDict|Decorator): Decorator;
-	formatDecorators (decorators: Iterable<DecoratorDict|Decorator>): NodeArray<Decorator>;
+	formatDecorator (decorator: DecoratorDict): Decorator;
+	formatDecorators (decorators: Iterable<DecoratorDict>): NodeArray<Decorator>;
 
 	formatDotDotDotToken (isRestSpread: boolean): Token<SyntaxKind.DotDotDotToken>|undefined;
 	formatQuestionToken (isOptional: boolean): Token<SyntaxKind.QuestionToken>|undefined;
@@ -74,5 +71,5 @@ export interface IFormatterBase {
 	formatTypeParameters (types: Iterable<string>): NodeArray<TypeParameterDeclaration>;
 
 	formatBlock (block: string): Block;
-	updateBlock (newInstructions: string, block: Block): Block;
+	formatStringLiteral (literal: string): StringLiteral;
 }

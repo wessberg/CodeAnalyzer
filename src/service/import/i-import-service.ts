@@ -10,6 +10,7 @@ export interface IImportService {
 	getNamedImportBindingsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImportBindings|undefined;
 	getNamedImportsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImports|undefined;
 	getNamespaceImportForImportDeclaration (importDeclaration: ImportDeclaration): NamespaceImport|undefined;
+	getPathForImportDeclaration (importDeclaration: ImportDeclaration): string;
 
 	hasNamedImports (importDeclaration: ImportDeclaration): boolean;
 	hasNamedImport (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): boolean;

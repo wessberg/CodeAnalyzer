@@ -1,5 +1,5 @@
 import {IClassService} from "./i-class-service";
-import {AccessorDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, ExpressionWithTypeArguments, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, NodeArray, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, NodeArray, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
 import {INodeUpdaterUtil, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
@@ -9,6 +9,11 @@ import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-acc
 import {IClassDict} from "../../dict/class/i-class-dict";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IFormatter} from "../../formatter/i-formatter-getter";
+import {IUpdaterBase} from "../../updater/i-updater";
+import {HeritageKind} from "../../dict/heritage/heritage-kind";
+import {IJoinerBase} from "../../joiner/i-joiner";
+import {IMethodService} from "../method/i-method-service";
+import {IConstructorService} from "../constructor/i-constructor-service";
 
 /**
  * A class for working with classes
@@ -16,7 +21,11 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
 export class ClassService implements IClassService {
 
 	constructor (private formatter: IFormatter,
+							 private updater: IUpdaterBase,
+							 private joiner: IJoinerBase,
 							 private languageService: ITypescriptLanguageService,
+							 private methodService: IMethodService,
+							 private constructorService: IConstructorService,
 							 private nodeUpdater: INodeUpdaterUtil,
 							 private astUtil: ITypescriptASTUtil) {
 	}
@@ -44,7 +53,7 @@ export class ClassService implements IClassService {
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): ExpressionWithTypeArguments|undefined {
+	public getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined {
 		// If no heritage clauses exist, the class doesn't extend anything
 		if (classDeclaration.heritageClauses == null) return undefined;
 
@@ -54,25 +63,25 @@ export class ClassService implements IClassService {
 		if (extendsClass == null) return undefined;
 
 		// Return the first extended class expression (there can only be 1)
-		return extendsClass.types[0];
+		return extendsClass;
 	}
 
 	/**
 	 * Gets all implemented interfaces of the provided ClassDeclaration|ClassExpression
-	 * @param {ClassDeclaration|ClassExpression} classDeclaration
-	 * @returns {NodeArray<ExpressionWithTypeArguments>}
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {HeritageClause}
 	 */
-	public getImplements (classDeclaration: ClassDeclaration|ClassExpression): NodeArray<ExpressionWithTypeArguments> {
+	public getImplements (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined {
 		// If no heritage clauses exist, the class doesn't extend anything
-		if (classDeclaration.heritageClauses == null) return createNodeArray();
+		if (classDeclaration.heritageClauses == null) return undefined;
 
-		const extendsClass = classDeclaration.heritageClauses.find(clause => clause.token === SyntaxKind.ImplementsKeyword);
+		const implementsClause = classDeclaration.heritageClauses.find(clause => clause.token === SyntaxKind.ImplementsKeyword);
 
-		// If none of the clauses were an 'extends' clause, the class doesn't extend anything
-		if (extendsClass == null) return createNodeArray();
+		// If none of the clauses were an 'implements' clause, the class doesn't extend anything
+		if (implementsClause == null) return undefined;
 
 		// Return the first extended class expression (there can only be 1)
-		return extendsClass.types;
+		return implementsClause;
 	}
 
 	/**
@@ -178,8 +187,11 @@ export class ClassService implements IClassService {
 		// If the class doesn't extend anything, return false.
 		if (extendedClass == null) return false;
 
+		// Take the first extends type (there can only be one)
+		const [firstType] = extendedClass.types;
+
 		// It does if the expression is an identifier with text equal to the provided name
-		return isIdentifier(extendedClass.expression) && extendedClass.expression.text === name;
+		return isIdentifier(firstType.expression) && firstType.expression.text === name;
 	}
 
 	/**
@@ -190,9 +202,10 @@ export class ClassService implements IClassService {
 	 */
 	public doesImplementInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const implementedInterfaces = this.getImplements(classDeclaration);
+		if (implementedInterfaces == null) return false;
 
 		// It does if any of the implemented interfaces is an identifier with a name equal to the provided one
-		return implementedInterfaces.some(implementedInterface => isIdentifier(implementedInterface.expression) && implementedInterface.expression.text === name);
+		return implementedInterfaces.types.some(implementedInterface => isIdentifier(implementedInterface.expression) && implementedInterface.expression.text === name);
 	}
 
 	/**
@@ -257,7 +270,11 @@ export class ClassService implements IClassService {
 			throw new ReferenceError(`${this.constructor.name} could not find a method with the name: ${methodName}`);
 		}
 
-		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
+		// Append the instructions
+		this.methodService.appendInstructionsToMethod(instructions, method);
+
+		// Return the original ClassDeclaration
+		return classDeclaration;
 	}
 
 	/**
@@ -273,7 +290,11 @@ export class ClassService implements IClassService {
 			throw new ReferenceError(`${this.constructor.name} could not find a method with the name: ${methodName}`);
 		}
 
-		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
+		// Append the instructions
+		this.methodService.appendInstructionsToMethod(instructions, method);
+
+		// Return the original ClassDeclaration
+		return classDeclaration;
 	}
 
 	/**
@@ -283,12 +304,16 @@ export class ClassService implements IClassService {
 	 * @returns {ClassDeclaration | ClassExpression}
 	 */
 	public appendInstructionsToConstructor (instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-		const method = this.getConstructor(classDeclaration);
-		if (method == null) {
+		const constructor = this.getConstructor(classDeclaration);
+		if (constructor == null) {
 			throw new ReferenceError(`${this.constructor.name} could not find a constructor for the provided class`);
 		}
 
-		return this.appendInstructionsToFunctionLikeClassElement(method, instructions, classDeclaration);
+		// Append the instructions
+		this.constructorService.appendInstructionsToConstructor(instructions, constructor);
+
+		// Return the original ClassDeclaration
+		return classDeclaration;
 	}
 
 	/**
@@ -297,7 +322,7 @@ export class ClassService implements IClassService {
 	 * @returns {ClassDeclaration}
 	 */
 	public createClassDeclaration (options: IClassDict): ClassDeclaration {
-		return <ClassDeclaration> this.formatter.formatClass(options);
+		return this.formatter.formatClassDeclaration(options);
 	}
 
 	/**
@@ -318,7 +343,13 @@ export class ClassService implements IClassService {
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
 	public setNameOfClass (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-		return this.formatter.updateClass({name}, classDeclaration);
+		// If the class already has the provided name, do nothing
+		if (this.getNameOfClass(classDeclaration) === name) return classDeclaration;
+
+		return this.updater.updateClassDeclarationName(
+			this.formatter.formatIdentifier(name),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -330,7 +361,17 @@ export class ClassService implements IClassService {
 	public extendClassWith (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already extends something matching the provided name, return the existing class declaration
 		if (this.doesExtendClassWithName(name.name, classDeclaration)) return classDeclaration;
-		return this.formatter.updateClass({extendsClass: name}, classDeclaration);
+
+		// Get the existing implements clause
+		const existing = this.getImplements(classDeclaration);
+
+		return this.updater.updateClassDeclarationHeritageClauses(
+			this.joiner.joinHeritageClauses(
+				this.formatter.formatExtendsHeritageClause({...name, kind: HeritageKind.EXTENDS}),
+				existing
+			),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -343,8 +384,19 @@ export class ClassService implements IClassService {
 		// If the class already implements something matching the provided name, return the existing class declaration
 		if (this.doesImplementInterfaceWithName(name.name, classDeclaration)) return classDeclaration;
 
-		// Update the class with it
-		return this.formatter.updateClass({implementsInterfaces: [name]}, classDeclaration);
+		// Generate a new HeritageClause
+		const newClause = this.formatter.formatImplementsHeritageClause({kind: HeritageKind.IMPLEMENTS, elements: [name]});
+
+		// Update the heritage clauses on the class
+		return this.updater.updateClassDeclarationHeritageClauses(
+			this.joiner.joinHeritageClauses(
+				// Join the new implements clause with the existing ones
+				this.joiner.joinImplementsHeritageClause(newClause, this.getImplements(classDeclaration)),
+				// Also take the existing Extends heritage clause
+				this.getExtendedClass(classDeclaration)
+			),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -357,7 +409,14 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(property.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter.updateClass({members: [property]}, classDeclaration);
+		// Create a PropertyDeclaration
+		const formatted = this.formatter.formatClassProperty(property);
+
+		// Merge the Property with the remaining ClassElements
+		return this.updater.updateClassDeclarationMembers(
+			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -370,7 +429,14 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasConstructor(classDeclaration)) return classDeclaration;
 
-		return this.formatter.updateClass({members: [constructor]}, classDeclaration);
+		// Create a ConstructorDeclaration
+		const formatted = this.formatter.formatConstructor(constructor);
+
+		// Merge the ConstructorDeclaration with the remaining ClassElements
+		return this.updater.updateClassDeclarationMembers(
+			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -383,7 +449,14 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(method.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter.updateClass({members: [method]}, classDeclaration);
+		// Create a MethodDeclaration
+		const formatted = this.formatter.formatClassMethod(method);
+
+		// Merge the MethodDeclaration with the remaining ClassElements
+		return this.updater.updateClassDeclarationMembers(
+			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -396,7 +469,14 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasSetterWithName(method.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter.updateClass({members: [method]}, classDeclaration);
+		// Create a SetAccessorDeclaration
+		const formatted = this.formatter.formatClassSetAccessor(method);
+
+		// Merge the SetAccessorDeclaration with the remaining ClassElements
+		return this.updater.updateClassDeclarationMembers(
+			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -409,7 +489,14 @@ export class ClassService implements IClassService {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasGetterWithName(method.name, classDeclaration)) return classDeclaration;
 
-		return this.formatter.updateClass({members: [method]}, classDeclaration);
+		// Create a GetAccessorDeclaration
+		const formatted = this.formatter.formatClassGetAccessor(method);
+
+		// Merge the GetAccessorDeclaration with the remaining ClassElements
+		return this.updater.updateClassDeclarationMembers(
+			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
+			classDeclaration
+		);
 	}
 
 	/**
@@ -441,25 +528,5 @@ export class ClassService implements IClassService {
 	private hasModifierWithKind (kind: SyntaxKind, classMember: Node): boolean {
 		if (classMember.modifiers == null) return false;
 		return classMember.modifiers.find(modifier => modifier.kind === kind) != null;
-	}
-
-	/**
-	 * Appends one or more instructions to a FunctionLike ClassElement
-	 * @param {T} member
-	 * @param {string} instructions
-	 * @param {ClassDeclaration | ClassExpression} classDeclaration
-	 * @returns {ClassDeclaration | ClassExpression}
-	 */
-	private appendInstructionsToFunctionLikeClassElement<T extends (MethodDeclaration|ConstructorDeclaration|AccessorDeclaration)> (member: T, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
-
-		if (member.body == null) {
-			member.body = this.formatter.formatBlock(instructions);
-		} else {
-			member.body = this.formatter.updateBlock(instructions, member.body);
-		}
-
-		/*tslint:disable:no-any*/
-		return this.formatter.updateClass({members: [member]}, classDeclaration);
-		/*tslint:enable:no-any*/
 	}
 }
