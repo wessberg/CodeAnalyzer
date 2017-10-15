@@ -1,5 +1,5 @@
 import {IJoinerBase} from "./i-joiner";
-import {Block, ClassElement, createBlock, createHeritageClause, createNamedImports, createNodeArray, HeritageClause, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
+import {Block, ClassElement, createBlock, createHeritageClause, createNamedImports, createNodeArray, Expression, HeritageClause, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {INamedImportsService} from "../service/named-imports/i-named-imports-service";
 
@@ -24,6 +24,22 @@ export class Joiner implements IJoinerBase {
 			return normalizedNewStatements;
 		}
 		return createNodeArray([...existingStatements, ...normalizedNewStatements]);
+	}
+
+	/**
+	 * Joins two arrays of Expressions
+	 * @param {NodeArray<Expression> | Expression} newExpressions
+	 * @param {NodeArray<Expression>} existingExpressions
+	 * @returns {NodeArray<Expression>}
+	 */
+	public joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined): NodeArray<Expression> {
+		const normalizedNewExpressions = Array.isArray(newExpressions) ? newExpressions : createNodeArray([<Expression>newExpressions]);
+
+		// If there are no existing expressions clause, just use the new ones
+		if (existingExpressions == null) {
+			return createNodeArray(normalizedNewExpressions);
+		}
+		return createNodeArray([...existingExpressions, ...normalizedNewExpressions]);
 	}
 
 	/**

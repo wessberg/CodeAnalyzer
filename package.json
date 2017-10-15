@@ -51,16 +51,16 @@
 		"rollup-watch": "^4.3.1"
 	},
 	"dependencies": {
-		"@types/node": "^8.0.31",
+		"@types/node": "^8.0.34",
 		"@wessberg/di": "^1.0.25",
 		"@wessberg/fileloader": "^1.1.4",
 		"@wessberg/moduleutil": "0.0.20",
 		"@wessberg/pathutil": "^0.0.7",
 		"@wessberg/type": "0.0.91",
-		"@wessberg/typescript-ast-util": "0.0.17",
+		"@wessberg/typescript-ast-util": "0.0.20",
 		"@wessberg/typescript-language-service": "0.0.29",
 		"@wessberg/typescript-package-reassembler": "0.0.6",
-		"tslib": "^1.7.1",
+		"tslib": "^1.8.0",
 		"typescript": "^2.5.3"
 	},
 	"main": "./dist/umd/index.js",

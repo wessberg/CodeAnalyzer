@@ -1,12 +1,23 @@
 import {IHeritageClauseService} from "./i-heritage-clause-service";
 import {ExpressionWithTypeArguments, HeritageClause, SyntaxKind} from "typescript";
-import {ITypeUtil} from "../../util/type-util/i-type-util";
+import {IPrinter} from "@wessberg/typescript-ast-util";
 
 /**
  * A service for working with HeritageClauses
  */
 export class HeritageClauseService implements IHeritageClauseService {
-	constructor (private typeUtil: ITypeUtil) {}
+
+	constructor (private printer: IPrinter) {
+	}
+
+	/**
+	 * Gets the names of the types bound to the HeritageClause
+	 * @param {HeritageClause} clause
+	 * @returns {string[]}
+	 */
+	public getTypeNames (clause: HeritageClause): string[] {
+		return clause.types.map(type => this.printer.print(type.expression));
+	}
 
 	/**
 	 * Returns true if the provided clause is an ImplementsClause
@@ -33,7 +44,7 @@ export class HeritageClauseService implements IHeritageClauseService {
 	 * @returns {boolean}
 	 */
 	public hasTypeWithName (name: string|ExpressionWithTypeArguments, clause: HeritageClause): boolean {
-		const normalizedName = typeof name === "string" ? name : this.typeUtil.getTypeNameOf(name);
-		return clause.types.some(type => this.typeUtil.getTypeNameOf(type) === normalizedName);
+		const normalizedName = typeof name === "string" ? name : this.printer.print(name.expression);
+		return this.getTypeNames(clause).includes(normalizedName);
 	}
 }

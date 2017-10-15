@@ -1,5 +1,5 @@
 import {IFormatterBase} from "./i-formatter";
-import {BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode, createKeywordTypeNode} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
@@ -41,6 +41,14 @@ export class Formatter implements IFormatterBase {
 	 */
 	public formatNodeArray<T extends Node> (nodes?: Iterable<T>|undefined): NodeArray<T> {
 		return createNodeArray(nodes == null ? undefined : [...nodes]);
+	}
+
+	/**
+	 * Formats an 'undefined' KeywordTypeNode
+	 * @returns {KeywordTypeNode}
+	 */
+	public formatUndefined (): KeywordTypeNode {
+		return createKeywordTypeNode(SyntaxKind.UndefinedKeyword);
 	}
 
 	constructor (private parseService: IParser) {
@@ -552,10 +560,10 @@ export class Formatter implements IFormatterBase {
 	/**
 	 * Formats an expression
 	 * @param {string} expression
-	 * @returns {ts.Expression}
+	 * @returns {Expression}
 	 */
 	public formatExpression (expression: string): Expression {
-		return this.parseService.parseOne<Expression>(expression);
+		return this.parseService.parseExpression(expression);
 	}
 
 	/**
@@ -564,7 +572,7 @@ export class Formatter implements IFormatterBase {
 	 * @returns {Expression}
 	 */
 	public formatStatement (statement: string): Statement {
-		return this.parseService.parseOne<Statement>(statement);
+		return this.parseService.parseStatement(statement);
 	}
 
 	/**
@@ -598,7 +606,7 @@ export class Formatter implements IFormatterBase {
 		}
 
 		else {
-			const firstExpression = this.parseService.parseOne<Expression>(decorator.expression);
+			const firstExpression = this.parseService.parseExpression(decorator.expression);
 			return createDecorator(firstExpression);
 		}
 	}

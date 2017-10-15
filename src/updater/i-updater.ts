@@ -1,4 +1,4 @@
-import {AsteriskToken, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
 
 export interface IUpdaterBase {
 	updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T;
@@ -7,6 +7,10 @@ export interface IUpdaterBase {
 	updateClassDeclarationModifiers <T extends ClassDeclaration|ClassExpression> (modifiers: ModifiersArray|undefined, classDeclaration: T): T;
 	updateClassDeclarationTypeParameters <T extends ClassDeclaration|ClassExpression> (typeParameters: NodeArray<TypeParameterDeclaration>|undefined, classDeclaration: T): T;
 	updateClassDeclarationMembers <T extends ClassDeclaration|ClassExpression> (members: NodeArray<ClassElement>|undefined, classDeclaration: T): T;
+
+	updateCallExpressionExpression (expression: LeftHandSideExpression, callExpression: CallExpression): CallExpression;
+	updateCallExpressionTypeArguments (typeArguments: NodeArray<TypeNode>|undefined, callExpression: CallExpression): CallExpression;
+	updateCallExpressionArguments (args: NodeArray<Expression>, callExpression: CallExpression): CallExpression;
 
 	updateMethodDeclarationBody (body: Block|undefined, method: MethodDeclaration): MethodDeclaration;
 	updateMethodDeclarationName (name: PropertyName, method: MethodDeclaration): MethodDeclaration;

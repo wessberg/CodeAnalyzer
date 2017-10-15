@@ -1,5 +1,5 @@
 import {IUpdaterBase} from "./i-updater";
-import {AsteriskToken, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression, updateConstructor, updateImportDeclaration, updateMethod, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateCall, updateClassDeclaration, updateClassExpression, updateConstructor, updateImportDeclaration, updateMethod, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 
@@ -9,6 +9,36 @@ import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 export class Updater implements IUpdaterBase {
 	constructor (private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil) {
+	}
+
+	/**
+	 * Updates the expression property of a CallExpression
+	 * @param {LeftHandSideExpression} expression
+	 * @param {CallExpression} callExpression
+	 * @returns {CallExpression}
+	 */
+	public updateCallExpressionExpression (expression: LeftHandSideExpression, callExpression: CallExpression): CallExpression {
+		return this.updateCallExpression("expression", expression, callExpression);
+	}
+
+	/**
+	 * Updates the typeArguments property of a CallExpression
+	 * @param {NodeArray<TypeNode>} typeArguments
+	 * @param {CallExpression} callExpression
+	 * @returns {CallExpression}
+	 */
+	public updateCallExpressionTypeArguments (typeArguments: NodeArray<TypeNode>|undefined, callExpression: CallExpression): CallExpression {
+		return this.updateCallExpression("typeArguments", typeArguments, callExpression);
+	}
+
+	/**
+	 * Updates the arguments property of a CallExpression
+	 * @param {NodeArray<Expression>} args
+	 * @param {CallExpression} callExpression
+	 * @returns {CallExpression}
+	 */
+	public updateCallExpressionArguments (args: NodeArray<Expression>, callExpression: CallExpression): CallExpression {
+		return this.updateCallExpression("arguments", args, callExpression);
 	}
 
 	/**
@@ -486,6 +516,24 @@ export class Updater implements IUpdaterBase {
 				key === "parameters" ? value : constructor.parameters,
 				key === "body" ? value : constructor.body
 			), constructor, this.languageService);
+	}
+
+	/**
+	 * Updates a CallExpression
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {CallExpression} callExpression
+	 * @returns {CallExpression}
+	 */
+	private updateCallExpression (key: keyof CallExpression, value: CallExpression[keyof CallExpression], callExpression: CallExpression): CallExpression {
+
+		return this.nodeUpdater.updateInPlace(
+			updateCall(
+				callExpression,
+				key === "expression" ? value : callExpression.expression,
+				key === "typeArguments" ? value : callExpression.typeArguments,
+				key === "arguments" ? value : callExpression.arguments
+			), callExpression, this.languageService);
 	}
 
 	/**

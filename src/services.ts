@@ -43,18 +43,10 @@ import {Remover} from "./remover/remover";
 import {IRemover, wrappedIRemover} from "./remover/i-remover-base";
 import {IPropertyService} from "./service/property/i-property-service";
 import {PropertyService} from "./service/property/property-service";
-import {ITypeUtil} from "./util/type-util/i-type-util";
-import {TypeUtil} from "./util/type-util/type-util";
 import {IInterfaceDeclarationService} from "./service/interface-declaration/i-interface-declaration-service";
 import {InterfaceDeclarationService} from "./service/interface-declaration/interface-declaration-service";
 import {ITypeLiteralNodeService} from "./service/type-literal-node/i-type-literal-node-service";
 import {TypeLiteralNodeService} from "./service/type-literal-node/type-literal-node-service";
-
-// Utils
-DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
-DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
-DIContainer.registerSingleton<IPrinter, Printer>();
-DIContainer.registerSingleton<ITypeUtil, TypeUtil>();
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -87,6 +79,9 @@ DIContainer.registerSingleton<IFileLoader, FileLoader>();
 DIContainer.registerSingleton<ITypescriptPackageReassembler, TypescriptPackageReassembler>();
 DIContainer.registerSingleton<ITypescriptLanguageService, TypescriptLanguageService>();
 DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
+DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
+DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
+DIContainer.registerSingleton<IPrinter, Printer>();
 
 // Services
 DIContainer.registerSingleton<IHeritageClauseService, HeritageClauseService>();

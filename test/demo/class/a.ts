@@ -14,11 +14,11 @@ class A {
 function aDecorator(target: {}, property: string) {
 }
 
-function foo<T> (bar: T): void {
-	console.log(bar);
+function foo<T, U> (bar: T, baz: U): void {
+	console.log(bar, baz);
 }
 
-foo<string>("");
+foo<string, number>("", 2);
 
 interface IFoo {
 	a?: string;

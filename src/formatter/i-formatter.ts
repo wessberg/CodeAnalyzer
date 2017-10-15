@@ -1,4 +1,4 @@
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
 import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
@@ -19,6 +19,7 @@ import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../di
 import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
 
 export interface IFormatterBase {
+	formatUndefined (): KeywordTypeNode;
 	formatImportDeclaration (options: IImportDict): ImportDeclaration;
 	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseDict): ImportClause;
 	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports;
