@@ -1,5 +1,5 @@
 import {IUpdaterBase} from "./i-updater";
-import {AsteriskToken, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassExpression, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression, updateConstructor, updateImportDeclaration, updateMethod, updateNamedImports, updateNamespaceImport, updateSourceFileNode} from "typescript";
+import {AsteriskToken, Block, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateClassDeclaration, updateClassExpression, updateConstructor, updateImportDeclaration, updateMethod, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 
@@ -7,9 +7,111 @@ import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
  * A class for updating nodes
  */
 export class Updater implements IUpdaterBase {
-
 	constructor (private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil) {
+	}
+
+	/**
+	 * Updates the questionToken property of a PropertyDeclaration
+	 * @param {QuestionToken} questionToken
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public updatePropertyDeclarationQuestionToken (questionToken: QuestionToken|undefined, property: PropertyDeclaration): PropertyDeclaration {
+		return this.updatePropertyDeclaration("questionToken", questionToken, property);
+	}
+
+	/**
+	 * Updates the name property of a PropertyDeclaration
+	 * @param {PropertyName} name
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public updatePropertyDeclarationName (name: PropertyName, property: PropertyDeclaration): PropertyDeclaration {
+		return this.updatePropertyDeclaration("name", name, property);
+	}
+
+	/**
+	 * Updates the type property of a PropertyDeclaration
+	 * @param {TypeNode} type
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public updatePropertyDeclarationType (type: TypeNode|undefined, property: PropertyDeclaration): PropertyDeclaration {
+		return this.updatePropertyDeclaration("type", type, property);
+	}
+
+	/**
+	 * Updates the initializer property of a PropertyDeclaration
+	 * @param {Expression} initializer
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public updatePropertyDeclarationInitializer (initializer: Expression|undefined, property: PropertyDeclaration): PropertyDeclaration {
+		return this.updatePropertyDeclaration("initializer", initializer, property);
+	}
+
+	/**
+	 * Updates the decorators property of the given Node
+	 * @param {ts.NodeArray<Decorator>} decorators
+	 * @param {T} node
+	 * @returns {T}
+	 */
+	public updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T {
+		/*tslint:disable:no-any*/
+
+		if (isPropertyDeclaration(node)) {
+			return <T><any> this.updatePropertyDeclaration("decorators", decorators, node);
+		}
+
+		else if (isMethodDeclaration(node)) {
+			return <T><any> this.updateMethodDeclaration("decorators", decorators, node);
+		}
+
+		else if (isClassDeclaration(node) || isClassExpression(node)) {
+			return <T><any> this.updateClassDeclaration("decorators", decorators, node);
+		}
+
+		else if (isImportDeclaration(node)) {
+			return <T><any> this.updateImportDeclaration("decorators", decorators, node);
+		}
+
+		else if (isConstructorDeclaration(node)) {
+			return <T><any> this.updateConstructorDeclaration("decorators", decorators, node);
+		}
+
+		/*tslint:enable:no-any*/
+		throw new TypeError(`${this.constructor.name} could not update decorators on a node of kind: ${SyntaxKind[node.kind]}: It wasn't handled!`);
+	}
+
+	/**
+	 * Updates the modifiers property of a PropertyDeclaration
+	 * @param {ModifiersArray} modifiers
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public updatePropertyDeclarationModifiers (modifiers: ModifiersArray|undefined, property: PropertyDeclaration): PropertyDeclaration {
+		return this.updatePropertyDeclaration("modifiers", modifiers, property);
+	}
+
+	/**
+	 * Adds a Statement to a SourceFile
+	 * @param {T} node
+	 * @param {ts.SourceFile} sourceFile
+	 * @returns {T}
+	 */
+	public addStatement<T extends Statement> (node: T, sourceFile: SourceFile): T {
+		return this.nodeUpdater.addInPlace(node, sourceFile, this.languageService);
+	}
+
+	/**
+	 * Replaces a Node with the new one
+	 * @param {T} newNode
+	 * @param {T} existing
+	 * @returns {T}
+	 */
+	public replace<T extends Node> (newNode: T, existing: T): T {
+		return this.nodeUpdater.updateInPlace(newNode, existing, this.languageService);
 	}
 
 	/**
@@ -43,16 +145,6 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
-	 * Updates the decorators property of an ImportDeclaration
-	 * @param {NodeArray<Decorator>} decorators
-	 * @param {ImportDeclaration} importDeclaration
-	 * @returns {ImportDeclaration}
-	 */
-	public updateImportDeclarationDecorators (decorators: NodeArray<Decorator>|undefined, importDeclaration: ImportDeclaration): ImportDeclaration {
-		return this.updateImportDeclaration("decorators", decorators, importDeclaration);
-	}
-
-	/**
 	 * Updates the modifiers property of an ImportDeclaration
 	 * @param {ModifiersArray} modifiers
 	 * @param {ImportDeclaration} importDeclaration
@@ -64,11 +156,11 @@ export class Updater implements IUpdaterBase {
 
 	/**
 	 * Updates the importClause property of an ImportDeclaration
-	 * @param {ImportClause} importClause
+	 * @param {ImportClause?} importClause
 	 * @param {ImportDeclaration} importDeclaration
 	 * @returns {ImportDeclaration}
 	 */
-	public updateImportDeclarationImportClause (importClause: ImportClause, importDeclaration: ImportDeclaration): ImportDeclaration {
+	public updateImportDeclarationImportClause (importClause: ImportClause|undefined, importDeclaration: ImportDeclaration): ImportDeclaration {
 		return this.updateImportDeclaration("importClause", importClause, importDeclaration);
 	}
 
@@ -143,16 +235,6 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
-	 * Updates the decorators property of a MethodDeclaration
-	 * @param {NodeArray<Decorator>} decorators
-	 * @param {MethodDeclaration} method
-	 * @returns {MethodDeclaration}
-	 */
-	public updateMethodDeclarationDecorators (decorators: NodeArray<Decorator>|undefined, method: MethodDeclaration): MethodDeclaration {
-		return this.updateMethodDeclaration("decorators", decorators, method);
-	}
-
-	/**
 	 * Updates the modifiers property of a MethodDeclaration
 	 * @param {ModifiersArray} modifiers
 	 * @param {MethodDeclaration} method
@@ -213,16 +295,6 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
-	 * Updates the decorators property of a ConstructorDeclaration
-	 * @param {NodeArray<Decorator>} decorators
-	 * @param {ConstructorDeclaration} constructor
-	 * @returns {ConstructorDeclaration}
-	 */
-	public updateConstructorDeclarationDecorators (decorators: NodeArray<Decorator>|undefined, constructor: ConstructorDeclaration): ConstructorDeclaration {
-		return this.updateConstructorDeclaration("decorators", decorators, constructor);
-	}
-
-	/**
 	 * Updates the modifiers property of a ConstructorDeclaration
 	 * @param {ModifiersArray} modifiers
 	 * @param {ConstructorDeclaration} constructor
@@ -239,7 +311,12 @@ export class Updater implements IUpdaterBase {
 	 * @returns {MethodDeclaration}
 	 */
 	public updateMethodDeclarationBody (body: Block|undefined, method: MethodDeclaration): MethodDeclaration {
-		return this.updateMethodDeclaration("body", body, method);
+		if (body == null || method.body == null) {
+			this.updateMethodDeclaration("body", body, method);
+		} else {
+			this.replace(body, method.body);
+		}
+		return method;
 	}
 
 	/**
@@ -249,7 +326,12 @@ export class Updater implements IUpdaterBase {
 	 * @returns {ConstructorDeclaration}
 	 */
 	public updateConstructorDeclarationBody (body: Block|undefined, constructor: ConstructorDeclaration): ConstructorDeclaration {
-		return this.updateConstructorDeclaration("body", body, constructor);
+		if (body == null || constructor.body == null) {
+			this.updateConstructorDeclaration("body", body, constructor);
+		} else {
+			this.replace(body, constructor.body);
+		}
+		return constructor;
 	}
 
 	/**
@@ -260,16 +342,6 @@ export class Updater implements IUpdaterBase {
 	 */
 	public updateClassDeclarationTypeParameters<T extends ClassDeclaration|ClassExpression> (typeParameters: NodeArray<TypeParameterDeclaration>|undefined, classDeclaration: T): T {
 		return this.updateClassDeclaration("typeParameters", typeParameters, classDeclaration);
-	}
-
-	/**
-	 * Updates the Decorators of a class
-	 * @param {NodeArray<Decorator>} decorators
-	 * @param {T} classDeclaration
-	 * @returns {T}
-	 */
-	public updateClassDeclarationDecorators<T extends ClassDeclaration|ClassExpression> (decorators: NodeArray<Decorator>|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("decorators", decorators, classDeclaration);
 	}
 
 	/**
@@ -377,6 +449,27 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
+	 * Updates a PropertyDeclaration
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	private updatePropertyDeclaration (key: keyof PropertyDeclaration, value: PropertyDeclaration[keyof PropertyDeclaration], property: PropertyDeclaration): PropertyDeclaration {
+
+		return this.nodeUpdater.updateInPlace(
+			updateProperty(
+				property,
+				key === "decorators" ? value : property.decorators,
+				key === "modifiers" ? value : property.modifiers,
+				key === "name" ? value : property.name,
+				key === "questionToken" ? value : property.questionToken,
+				key === "type" ? value : property.type,
+				key === "initializer" ? value : property.initializer
+			), property, this.languageService);
+	}
+
+	/**
 	 * Updates a ConstructorDeclaration
 	 * @param {string} key
 	 * @param {*} value
@@ -397,8 +490,8 @@ export class Updater implements IUpdaterBase {
 
 	/**
 	 * Updates an ImportDeclaration
-	 * @param {keyof ImportDeclaration} key
-	 * @param {ImportDeclaration[keyof ImportDeclaration]} value
+	 * @param {string} key
+	 * @param {*} value
 	 * @param {ImportDeclaration} importDeclaration
 	 * @returns {ImportDeclaration}
 	 */

@@ -1,12 +1,12 @@
 import {IHeritageClauseService} from "./i-heritage-clause-service";
 import {ExpressionWithTypeArguments, HeritageClause, SyntaxKind} from "typescript";
-import {ITypeService} from "../type/i-type-service";
+import {ITypeUtil} from "../../util/type-util/i-type-util";
 
 /**
  * A service for working with HeritageClauses
  */
 export class HeritageClauseService implements IHeritageClauseService {
-	constructor (private typeService: ITypeService) {}
+	constructor (private typeUtil: ITypeUtil) {}
 
 	/**
 	 * Returns true if the provided clause is an ImplementsClause
@@ -33,7 +33,7 @@ export class HeritageClauseService implements IHeritageClauseService {
 	 * @returns {boolean}
 	 */
 	public hasTypeWithName (name: string|ExpressionWithTypeArguments, clause: HeritageClause): boolean {
-		const normalizedName = typeof name === "string" ? name : this.typeService.getTypeNameOf(name);
-		return clause.types.some(type => this.typeService.getTypeNameOf(type) === normalizedName);
+		const normalizedName = typeof name === "string" ? name : this.typeUtil.getTypeNameOf(name);
+		return clause.types.some(type => this.typeUtil.getTypeNameOf(type) === normalizedName);
 	}
 }

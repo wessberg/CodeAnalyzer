@@ -1,42 +1,301 @@
 import {IClassService} from "./i-class-service";
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, NodeArray, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
-import {INodeUpdaterUtil, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
+import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
 import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
 import {IClassMethodDict} from "../../dict/class-method/i-class-method-dict";
 import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-accessor/class-accessor-dict";
 import {IClassDict} from "../../dict/class/i-class-dict";
-import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IFormatter} from "../../formatter/i-formatter-getter";
-import {IUpdaterBase} from "../../updater/i-updater";
 import {HeritageKind} from "../../dict/heritage/heritage-kind";
-import {IJoinerBase} from "../../joiner/i-joiner";
 import {IMethodService} from "../method/i-method-service";
 import {IConstructorService} from "../constructor/i-constructor-service";
+import {DecoratorDict} from "../../dict/decorator/decorator-dict";
+import {IDecoratorService} from "../decorator/i-decorator-service";
+import {IRemover} from "../../remover/i-remover-base";
+import {IUpdater} from "../../updater/i-updater-getter";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {NodeService} from "../node/node-service";
+import {IModifierService} from "../modifier/i-modifier-service";
 
 /**
  * A class for working with classes
  */
-export class ClassService implements IClassService {
+export class ClassService extends NodeService<ClassDeclaration|ClassExpression> implements IClassService {
+	/**
+	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
+	 * @type {SyntaxKind[]}
+	 */
+	protected readonly ALLOWED_KINDS = [SyntaxKind.ClassExpression, SyntaxKind.ClassDeclaration];
 
 	constructor (private formatter: IFormatter,
-							 private updater: IUpdaterBase,
-							 private joiner: IJoinerBase,
-							 private languageService: ITypescriptLanguageService,
+							 private updater: IUpdater,
+							 private joiner: IJoiner,
 							 private methodService: IMethodService,
+							 private modifierService: IModifierService,
 							 private constructorService: IConstructorService,
-							 private nodeUpdater: INodeUpdaterUtil,
-							 private astUtil: ITypescriptASTUtil) {
+							 astUtil: ITypescriptASTUtil,
+							 remover: IRemover,
+							 decoratorService: IDecoratorService) {
+		super(decoratorService, remover, astUtil);
 	}
 
 	/**
-	 * Gets all ClassDeclarations and ClassExpressions for the provided SourceFile
-	 * @param {SourceFile} sourceFile
-	 * @returns {NodeArray<ClassDeclaration|ClassExpression|ClassExpression>}
+	 * Removes the ClassElement with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
 	 */
-	public getClasses (sourceFile: SourceFile): NodeArray<ClassDeclaration|ClassExpression|ClassExpression> {
-		return this.astUtil.getFilteredStatements(sourceFile.statements, [SyntaxKind.ClassDeclaration, SyntaxKind.ClassExpression]);
+	public removeMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const member = this.getMemberWithName(name, classDeclaration);
+		if (member == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[member]
+		);
+	}
+
+	/**
+	 * Removes the static ClassElement with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const member = this.getStaticMemberWithName(name, classDeclaration);
+		if (member == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[member]
+		);
+	}
+
+	/**
+	 * Removes the PropertyDeclaration with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removePropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const property = this.getPropertyWithName(name, classDeclaration);
+		if (property == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[property]
+		);
+	}
+
+	/**
+	 * Removes the static PropertyDeclaration with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const property = this.getStaticPropertyWithName(name, classDeclaration);
+		if (property == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[property]
+		);
+	}
+
+	/**
+	 * Removes the MethodDeclaration with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const method = this.getMethodWithName(name, classDeclaration);
+		if (method == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[method]
+		);
+	}
+
+	/**
+	 * Removes the static MethodDeclaration with the provided name, if any exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const method = this.getStaticMethodWithName(name, classDeclaration);
+		if (method == null) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			[method]
+		);
+	}
+
+	/**
+	 * Removes all non-static class members that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const members = this.getMembersWithDecorator(decorator, classDeclaration);
+		if (members.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			members
+		);
+	}
+
+	/**
+	 * Removes all static class members that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const members = this.getStaticMembersWithDecorator(decorator, classDeclaration);
+		if (members.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			members
+		);
+	}
+
+	/**
+	 * Removes all non-static class properties that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removePropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getPropertiesWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
+	}
+
+	/**
+	 * Removes all static class properties that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getStaticPropertiesWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
+	}
+
+	/**
+	 * Removes all non-static class methods that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const methods = this.getMethodsWithDecorator(decorator, classDeclaration);
+		if (methods.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			methods
+		);
+	}
+
+	/**
+	 * Removes all static class methods that matches the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const methods = this.getStaticMethodsWithDecorator(decorator, classDeclaration);
+		if (methods.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			methods
+		);
+	}
+
+	/**
+	 * Returns all of the Class members that is decorated with the provided decorator
+	 * @param {string | DecoratorDict} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassElement[]}
+	 */
+	public getMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
+		return classDeclaration.members.filter(member => this.decoratorService.hasDecoratorWithExpression(decorator, member));
+	}
+
+	/**
+	 * Returns all static members that is decorated with the provided decorator
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassElement[]}
+	 */
+	public getStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
+		return this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns all members that are decorated with the provided decorator and are non-static PropertyDeclarations
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {PropertyDeclaration[]}
+	 */
+	public getPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
+		return <PropertyDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isPropertyDeclaration(member) && !this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns all members that are decorated with the provided decorator and are static PropertyDeclarations
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {PropertyDeclaration[]}
+	 */
+	public getStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
+		return <PropertyDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isPropertyDeclaration(member) && this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns all members that are decorated with the provided decorator and are non-static MethodDeclarations
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {MethodDeclaration[]}
+	 */
+	public getMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
+		return <MethodDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isMethodDeclaration(member) && !this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns all members that are decorated with the provided decorator and are static MethodDeclarations
+	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {MethodDeclaration[]}
+	 */
+	public getStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
+		return <MethodDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isMethodDeclaration(member) && this.modifierService.isStatic(member));
 	}
 
 	/**
@@ -271,7 +530,7 @@ export class ClassService implements IClassService {
 		}
 
 		// Append the instructions
-		this.methodService.appendInstructionsToMethod(instructions, method);
+		this.methodService.appendInstructions(instructions, method);
 
 		// Return the original ClassDeclaration
 		return classDeclaration;
@@ -291,7 +550,7 @@ export class ClassService implements IClassService {
 		}
 
 		// Append the instructions
-		this.methodService.appendInstructionsToMethod(instructions, method);
+		this.methodService.appendInstructions(instructions, method);
 
 		// Return the original ClassDeclaration
 		return classDeclaration;
@@ -310,7 +569,7 @@ export class ClassService implements IClassService {
 		}
 
 		// Append the instructions
-		this.constructorService.appendInstructionsToConstructor(instructions, constructor);
+		this.constructorService.appendInstructions(instructions, constructor);
 
 		// Return the original ClassDeclaration
 		return classDeclaration;
@@ -333,7 +592,14 @@ export class ClassService implements IClassService {
 	 */
 	public createAndAddClassDeclarationToSourceFile (options: IClassDict, sourceFile: SourceFile): ClassDeclaration {
 		const classDeclaration = this.createClassDeclaration(options);
-		return this.nodeUpdater.addInPlace(classDeclaration, sourceFile, this.languageService);
+
+		// Update the SourceFile to reflect the change
+		this.updater.addStatement(
+			classDeclaration,
+			sourceFile
+		);
+
+		return classDeclaration;
 	}
 
 	/**
@@ -516,7 +782,7 @@ export class ClassService implements IClassService {
 	 * @returns {boolean}
 	 */
 	private matchesStaticMemberName (name: string, member: ClassElement): boolean {
-		return (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) && ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && this.hasModifierWithKind(SyntaxKind.StaticKeyword, member));
+		return (isMethodDeclaration(member) || isPropertyDeclaration(member) || isAccessor(member)) && ((isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name && this.modifierService.isStatic(member));
 	}
 
 	/**

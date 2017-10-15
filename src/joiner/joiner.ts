@@ -81,12 +81,16 @@ export class Joiner implements IJoinerBase {
 	 * @returns {Block}
 	 */
 	public joinBlock (...blocks: (Block|undefined)[]): Block {
+		const combined: Statement[] = [];
 		// Make sure to clear out any undefined values
 		const filtered = <Block[]> blocks.filter(block => block != null);
 
+		// Add all of the statements to the combined Statement array
+		filtered.forEach(part => combined.push(...part.statements));
+
 		// Creates a block from the statements of all of the provided Blocks
 		return createBlock(
-			createNodeArray(...filtered.map(block => block.statements))
+			createNodeArray(combined)
 		);
 	}
 

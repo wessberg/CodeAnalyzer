@@ -1,13 +1,14 @@
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, MethodDeclaration, NodeArray, PropertyDeclaration, SourceFile} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, MethodDeclaration, PropertyDeclaration, SourceFile} from "typescript";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
 import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
 import {IClassMethodDict} from "../../dict/class-method/i-class-method-dict";
 import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-accessor/class-accessor-dict";
 import {IClassDict} from "../../dict/class/i-class-dict";
+import {DecoratorDict} from "../../dict/decorator/decorator-dict";
+import {INodeService} from "../node/i-node-service";
 
-export interface IClassService {
-	getClasses (sourceFile: SourceFile): NodeArray<ClassDeclaration|ClassExpression>;
+export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
 	getNameOfClass (classDeclaration: ClassDeclaration|ClassExpression): string|undefined;
 	getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
 	getImplements (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
@@ -18,6 +19,27 @@ export interface IClassService {
 	getStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
 	getStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
 	getStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;
+
+	getMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
+	getStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
+	getPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
+	getStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
+	getMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
+	getStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
+
+	removeMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removePropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+
+	removeMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removePropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
 	isBaseClass (classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	doesExtendClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;

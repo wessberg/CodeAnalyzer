@@ -6,6 +6,10 @@ export interface IDecoratorService {
 	createExpressionDecorator (expression: string): Decorator;
 	createDecorator (decorator: DecoratorDict): Decorator;
 
-	takeDecoratorName (name: string, decorator: Decorator): string|undefined;
-	hasDecoratorWithName (name: string, expression: Node): boolean;
+	takeDecoratorName (decorator: Decorator): string|undefined;
+	takeDecoratorExpression (node: Decorator): string;
+	hasDecoratorWithName (name: string|DecoratorDict|RegExp, node: Node): boolean;
+	hasDecoratorWithExpression (expression: string|DecoratorDict|RegExp, node: Node): boolean;
+	getDecoratorWithName (name: string|DecoratorDict|RegExp, node: Node): Decorator|undefined;
+	getDecoratorWithExpression (expression: string|DecoratorDict|RegExp, node: Node): Decorator|undefined;
 }

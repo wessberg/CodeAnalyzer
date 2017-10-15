@@ -1,5 +1,5 @@
 import {ImportSpecifier, NamedImports} from "typescript";
-import {INamedImportDict} from "../../dict/import/i-named-import-dict";
+import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
 
 export interface INamedImportsService {
 	hasImportWithName (name: string|INamedImportDict|ImportSpecifier, namedImports: NamedImports): boolean;

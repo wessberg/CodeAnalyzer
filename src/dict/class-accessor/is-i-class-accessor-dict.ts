@@ -9,7 +9,7 @@ import {isIAccessorDict} from "../accessor/is-i-accessor-dict";
  */
 export function isIClassAccessorDict (item: PredicateArgument): item is IClassAccessorDict {
 	return isIAccessorDict(item) && (
-		"isStatic" in item &&
+		"memberIsStatic" in item &&
 		"isAbstract" in item &&
 		"visibility" in item
 	);

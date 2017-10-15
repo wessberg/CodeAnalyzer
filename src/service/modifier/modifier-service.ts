@@ -8,7 +8,116 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
  * A service that helps with Modifiers
  */
 export class ModifierService implements IModifierService {
+
 	constructor (private formatter: IFormatter) {
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'async' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isAsync (node: Node): boolean {
+		return this.hasModifierWithName("async", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'declare' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isDeclared (node: Node): boolean {
+		return this.hasModifierWithName("declare", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'default' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isDefault (node: Node): boolean {
+		return this.hasModifierWithName("default", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'private' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isPrivate (node: Node): boolean {
+		return this.hasModifierWithName("private", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'protected' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isProtected (node: Node): boolean {
+		return this.hasModifierWithName("protected", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'public' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isPublic (node: Node): boolean {
+		return this.hasModifierWithName("public", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'static' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isStatic (node: Node): boolean {
+		return this.hasModifierWithName("static", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'abstract' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isAbstract (node: Node): boolean {
+		return this.hasModifierWithName("abstract", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'readonly' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isReadonly (node: Node): boolean {
+		return this.hasModifierWithName("readonly", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'const' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isConst (node: Node): boolean {
+		return this.hasModifierWithName("const", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'export' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isExported (node: Node): boolean {
+		return this.hasModifierWithName("export", node);
+	}
+
+	/**
+	 * Returns true if the provided Node has a 'default' and 'export' modifier
+	 * @param {Node} node
+	 * @returns {boolean}
+	 */
+	public isDefaultExported (node: Node): boolean {
+		return this.isDefault(node) && this.isExported(node);
 	}
 
 	/**

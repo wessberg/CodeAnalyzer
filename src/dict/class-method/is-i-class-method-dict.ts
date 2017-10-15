@@ -12,7 +12,7 @@ export function isIClassMethodDict (item: PredicateArgument): item is IClassMeth
 		"name" in item &&
 		"isAbstract" in item &&
 		"isOptional" in item &&
-		"isStatic" in item &&
+		"memberIsStatic" in item &&
 		"visibility" in item
 	);
 }

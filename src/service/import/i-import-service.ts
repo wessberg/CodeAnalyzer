@@ -1,11 +1,11 @@
 import {Identifier, ImportDeclaration, NamedImportBindings, NamedImports, NamespaceImport, NodeArray, SourceFile} from "typescript";
 import {IImportDict} from "../../dict/import/i-import-dict";
-import {INamedImportDict} from "../../dict/import/i-named-import-dict";
+import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
+import {INodeService} from "../node/i-node-service";
 
-export interface IImportService {
+export interface IImportService extends INodeService<ImportDeclaration> {
 	getImportsWithNamedImport (namedImport: INamedImportDict, path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration>;
 	getImportsForPath (path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration>;
-	getImports (sourceFile: SourceFile): NodeArray<ImportDeclaration>;
 	getNameForImportDeclaration (importDeclaration: ImportDeclaration): Identifier|undefined;
 	getNamedImportBindingsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImportBindings|undefined;
 	getNamedImportsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImports|undefined;

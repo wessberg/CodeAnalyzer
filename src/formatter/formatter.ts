@@ -1,5 +1,5 @@
 import {IFormatterBase} from "./i-formatter";
-import {BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
@@ -16,8 +16,8 @@ import {AccessorKind} from "../dict/accessor/accessor-kind";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
 import {isIGetAccessorDict} from "../dict/accessor/is-i-get-accessor-dict";
 import {IImportDict} from "../dict/import/i-import-dict";
-import {INamedImportDict} from "../dict/import/i-named-import-dict";
-import {isINamedImportDict} from "../dict/import/is-i-named-import-dict";
+import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
+import {isINamedImportDict} from "../dict/named-import/is-i-named-import-dict";
 import {ModifierKind} from "../dict/modifier/modifier-kind";
 import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
@@ -28,11 +28,20 @@ import {ArrayBindingElementKind} from "../dict/binding-element/array-binding-ele
 import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../dict/heritage/i-heritage-clause-dict";
 import {isIExtendsHeritageDict} from "../dict/heritage/is-i-extends-heritage-dict";
+import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
 
 /**
  * A class that helps with transforming simple dict-objects into Typescript Nodes
  */
 export class Formatter implements IFormatterBase {
+	/**
+	 * Formats a NodeArray from the provided Iterable
+	 * @param {Iterable<T extends Node>?} nodes
+	 * @returns {NodeArray<T extends Node>}
+	 */
+	public formatNodeArray<T extends Node> (nodes?: Iterable<T>|undefined): NodeArray<T> {
+		return createNodeArray(nodes == null ? undefined : [...nodes]);
+	}
 
 	constructor (private parseService: IParser) {
 	}
@@ -156,7 +165,7 @@ export class Formatter implements IFormatterBase {
 	 * @returns {ClassDeclaration}
 	 */
 	public formatClassDeclaration ({isAbstract, implementsInterfaces, decorators, name, extendsClass, members, typeParameters}: IClassDict): ClassDeclaration {
-		return createClassDeclaration(
+		const classDeclaration = createClassDeclaration(
 			decorators == null ? undefined : this.formatDecorators(decorators),
 			this.formatModifiers({isAbstract}),
 			name == null ? undefined : name,
@@ -164,6 +173,13 @@ export class Formatter implements IFormatterBase {
 			this.formatHeritageClauses([...(implementsInterfaces == null ? [] : [implementsInterfaces]), ...(extendsClass == null ? [] : [extendsClass])]),
 			members == null ? createNodeArray() : this.formatClassElements(members)
 		);
+
+		// Assign undefined to the heritageClauses if they are not defined
+		if (classDeclaration.heritageClauses != null && classDeclaration.heritageClauses.length === 0) {
+			classDeclaration.heritageClauses = undefined;
+		}
+
+		return classDeclaration;
 	}
 
 	/**
@@ -384,6 +400,29 @@ export class Formatter implements IFormatterBase {
 	}
 
 	/**
+	 * Formats an ImportClause
+	 * @param {Iterable<INamedImportDict>} namedImports
+	 * @param {string} namespace
+	 * @param {string} defaultName
+	 * @returns {ImportClause}
+	 */
+	public formatImportClause ({namedImports, namespace, defaultName}: IImportClauseDict): ImportClause {
+		// Create an identifier for the default name. The default name may already be an identifier
+		const nameIdentifier = defaultName == null ? undefined : createIdentifier(defaultName);
+
+		// Generate import specifiers for the named imports
+		const namedImportImportSpecifiers = namedImports == null ? undefined : this.formatNamedImports(namedImports);
+
+		// Generate a namespace import
+		const namespaceImport = namespace == null ? undefined : this.formatNamespaceImport(namespace);
+
+		return createImportClause(
+			nameIdentifier,
+			namespaceImport != null ? namespaceImport : namedImportImportSpecifiers
+		);
+	}
+
+	/**
 	 * Creates a new ImportDeclaration
 	 * @param {string} path
 	 * @param {Iterable<INamedImportDict>} namedImports
@@ -393,26 +432,12 @@ export class Formatter implements IFormatterBase {
 	 */
 	public formatImportDeclaration ({path, namedImports, namespace, defaultName}: IImportDict): ImportDeclaration {
 
-		// Create an identifier for the default name. The default name may already be an identifier
-		const nameIdentifier = defaultName == null ? undefined : typeof defaultName === "string" ? createIdentifier(defaultName) : defaultName;
-
-		// Generate import specifiers for the named imports
-		const namedImportImportSpecifiers = namedImports == null ? undefined : this.formatNamedImports(namedImports);
-
-		// Generate a namespace import
-		const namespaceImport = namespace == null ? undefined : this.formatNamespaceImport(namespace);
-
-		const clause = createImportClause(
-			nameIdentifier,
-			namespaceImport != null ? namespaceImport : namedImportImportSpecifiers
-		);
-
 		return createImportDeclaration(
 			undefined,
 			undefined,
-			clause,
+			this.formatImportClause({namedImports, namespace, defaultName}),
 			// The path may already be a StringLiteral
-			typeof path === "string" ? this.formatStringLiteral(path) : path
+			this.formatStringLiteral(path)
 		);
 	}
 

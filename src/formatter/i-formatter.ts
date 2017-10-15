@@ -1,6 +1,6 @@
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
-import {INamedImportDict} from "../dict/import/i-named-import-dict";
+import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
 import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
 import {IMethodDict} from "../dict/method/i-method-dict";
@@ -16,11 +16,14 @@ import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
 import {ParameterDict} from "../dict/parameter/parameter-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
 import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../dict/heritage/i-heritage-clause-dict";
+import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
 
 export interface IFormatterBase {
 	formatImportDeclaration (options: IImportDict): ImportDeclaration;
+	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseDict): ImportClause;
 	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports;
 	formatNamespaceImport (namespaceName: string): NamespaceImport;
+	formatNodeArray <T extends Node> (nodes?: Iterable<T>|undefined): NodeArray<T>;
 
 	formatAccessor (accessor: AccessorDict): AccessorDeclaration;
 	formatGetAccessor (accessor: IGetAccessorDict): GetAccessorDeclaration;

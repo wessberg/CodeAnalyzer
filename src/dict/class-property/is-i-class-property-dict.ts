@@ -17,7 +17,7 @@ export function isIClassPropertyDict (item: PredicateArgument): item is IClassPr
 		"isReadonly" in item &&
 		"isOptional" in item &&
 		"isAsync" in item &&
-		"isStatic" in item &&
+		"memberIsStatic" in item &&
 		"visibility" in item
 	);
 }

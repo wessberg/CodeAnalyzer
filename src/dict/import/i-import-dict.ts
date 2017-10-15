@@ -1,8 +1,5 @@
-import {INamedImportDict} from "./i-named-import-dict";
+import {IImportClauseDict} from "../import-clause/i-import-clause-dict";
 
-export interface IImportDict {
+export interface IImportDict extends IImportClauseDict {
 	path: string;
-	namedImports: Iterable<INamedImportDict>|null;
-	namespace: string|null;
-	defaultName: string|null;
 }

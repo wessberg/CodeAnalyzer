@@ -1,7 +1,7 @@
 import {INamedImportsService} from "./i-named-imports-service";
 import {ImportSpecifier, NamedImports} from "typescript";
-import {INamedImportDict} from "../../dict/import/i-named-import-dict";
-import {isINamedImportDict} from "../../dict/import/is-i-named-import-dict";
+import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
+import {isINamedImportDict} from "../../dict/named-import/is-i-named-import-dict";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";

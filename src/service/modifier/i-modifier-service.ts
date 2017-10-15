@@ -19,4 +19,16 @@ export interface IModifierService {
 	createAsyncModifier (): Modifier;
 	createStaticModifier (): Modifier;
 	createAbstractModifier (): Modifier;
+	isStatic (node: Node): boolean;
+	isAsync (node: Node): boolean;
+	isAbstract (node: Node): boolean;
+	isReadonly (node: Node): boolean;
+	isConst (node: Node): boolean;
+	isExported (node: Node): boolean;
+	isDefaultExported (node: Node): boolean;
+	isPrivate (node: Node): boolean;
+	isProtected (node: Node): boolean;
+	isPublic (node: Node): boolean;
+	isDeclared (node: Node): boolean;
+	isDefault (node: Node): boolean;
 }
