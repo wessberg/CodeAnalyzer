@@ -1,7 +1,7 @@
 import {ImportSpecifier, NamedImports} from "typescript";
-import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
+import {INamedImportExportDict} from "../../dict/named-import-export/i-named-import-export-dict";
 
 export interface INamedImportsService {
-	hasImportWithName (name: string|INamedImportDict|ImportSpecifier, namedImports: NamedImports): boolean;
-	addImportToNamedImports (name: string|INamedImportDict, namedImports: NamedImports): NamedImports;
+	hasImportWithName (name: string|INamedImportExportDict|ImportSpecifier, namedImports: NamedImports): boolean;
+	addImportToNamedImports (name: string|INamedImportExportDict, namedImports: NamedImports): NamedImports;
 }

@@ -1,14 +1,16 @@
 import {IJoinerBase} from "./i-joiner";
-import {Block, ClassElement, createBlock, createHeritageClause, createNamedImports, createNodeArray, Expression, HeritageClause, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
+import {Block, ClassElement, createBlock, createHeritageClause, createNamedExports, createNamedImports, createNodeArray, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {INamedImportsService} from "../service/named-imports/i-named-imports-service";
+import {INamedExportsService} from "../service/named-exports/i-named-exports-service";
 
 /**
  * A class for joining multiple different Nodes together to form new ones
  */
 export class Joiner implements IJoinerBase {
 	constructor (private heritageClauseService: IHeritageClauseService,
-							 private namedImportsService: INamedImportsService) {
+							 private namedImportsService: INamedImportsService,
+							 private namedExportsService: INamedExportsService) {
 	}
 
 	/**
@@ -128,6 +130,27 @@ export class Joiner implements IJoinerBase {
 		// Create a new NamedImports from the unique NamedImports
 		return createNamedImports(
 			createNodeArray([...existingNamedImports.elements, ...uniqueNamedImports])
+		);
+	}
+
+	/**
+	 * Joins two NamedExports
+	 * @param {NamedExports} newNamedExports
+	 * @param {NamedExports} existingNamedExports
+	 * @returns {NamedExports}
+	 */
+	public joinNamedExports (newNamedExports: NamedExports, existingNamedExports: NamedExports|undefined): NamedExports {
+		// If there are no existing NamedExports, just use the new one
+		if (existingNamedExports == null) {
+			return newNamedExports;
+		}
+
+		// Take all of the NamedExports not present in the existing NamedExports
+		const uniqueNamedExports = newNamedExports.elements.filter(element => !this.namedExportsService.hasExportWithName(element, existingNamedExports));
+
+		// Create a new NamedImports from the unique NamedImports
+		return createNamedExports(
+			createNodeArray([...existingNamedExports.elements, ...uniqueNamedExports])
 		);
 	}
 

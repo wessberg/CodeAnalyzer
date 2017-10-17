@@ -1,5 +1,5 @@
 import {IUpdaterBase} from "./i-updater";
-import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateCall, updateClassDeclaration, updateClassExpression, updateConstructor, updateImportDeclaration, updateMethod, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, ExportDeclaration, ExportSpecifier, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExportDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateCall, updateClassDeclaration, updateClassExpression, updateConstructor, updateExportDeclaration, updateImportDeclaration, updateMethod, updateNamedExports, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 
@@ -7,8 +7,39 @@ import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
  * A class for updating nodes
  */
 export class Updater implements IUpdaterBase {
+
 	constructor (private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil) {
+	}
+
+	/**
+	 * Updates the exportClause property of an ExportDeclaration
+	 * @param {NamedExports} exportClause
+	 * @param {ExportDeclaration} exportDeclaration
+	 * @returns {ExportDeclaration}
+	 */
+	public updateExportDeclarationExportClause (exportClause: NamedExports|undefined, exportDeclaration: ExportDeclaration): ExportDeclaration {
+		return this.updateExportDeclaration("exportClause", exportClause, exportDeclaration);
+	}
+
+	/**
+	 * Updates the moduleSpecifier property of an ExportDeclaration
+	 * @param {Expression} moduleSpecifier
+	 * @param {ExportDeclaration} exportDeclaration
+	 * @returns {ExportDeclaration}
+	 */
+	public updateExportDeclarationModuleSpecifier (moduleSpecifier: Expression|undefined, exportDeclaration: ExportDeclaration): ExportDeclaration {
+		return this.updateExportDeclaration("moduleSpecifier", moduleSpecifier, exportDeclaration);
+	}
+
+	/**
+	 * Updates the modifiers property of an ExportDeclaration
+	 * @param {ModifiersArray} modifiers
+	 * @param {ExportDeclaration} exportDeclaration
+	 * @returns {ExportDeclaration}
+	 */
+	public updateExportDeclarationModifiers (modifiers: ModifiersArray|undefined, exportDeclaration: ExportDeclaration): ExportDeclaration {
+		return this.updateExportDeclaration("modifiers", modifiers, exportDeclaration);
 	}
 
 	/**
@@ -106,6 +137,10 @@ export class Updater implements IUpdaterBase {
 			return <T><any> this.updateImportDeclaration("decorators", decorators, node);
 		}
 
+		else if (isExportDeclaration(node)) {
+			return <T><any> this.updateExportDeclaration("decorators", decorators, node);
+		}
+
 		else if (isConstructorDeclaration(node)) {
 			return <T><any> this.updateConstructorDeclaration("decorators", decorators, node);
 		}
@@ -172,6 +207,16 @@ export class Updater implements IUpdaterBase {
 	 */
 	public updateNamedImportsElements (elements: NodeArray<ImportSpecifier>, namedImports: NamedImports): NamedImports {
 		return this.updateNamedImports("elements", elements, namedImports);
+	}
+
+	/**
+	 * Updates the elements property of a NamedExports
+	 * @param {NodeArray<ExportSpecifier>} elements
+	 * @param {NamedExports} namedExports
+	 * @returns {NamedExports}
+	 */
+	public updateNamedExportsElements (elements: NodeArray<ExportSpecifier>, namedExports: NamedExports): NamedExports {
+		return this.updateNamedExports("elements", elements, namedExports);
 	}
 
 	/**
@@ -556,6 +601,25 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
+	 * Updates an ExportDeclaration
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {ExportDeclaration} exportDeclaration
+	 * @returns {ExportDeclaration}
+	 */
+	private updateExportDeclaration (key: keyof ExportDeclaration, value: ExportDeclaration[keyof ExportDeclaration], exportDeclaration: ExportDeclaration): ExportDeclaration {
+
+		return this.nodeUpdater.updateInPlace(
+			updateExportDeclaration(
+				exportDeclaration,
+				key === "decorators" ? value : exportDeclaration.decorators,
+				key === "modifiers" ? value : exportDeclaration.modifiers,
+				key === "exportClause" ? value : exportDeclaration.exportClause,
+				key === "moduleSpecifier" ? value : exportDeclaration.moduleSpecifier
+			), exportDeclaration, this.languageService);
+	}
+
+	/**
 	 * Updates a NamedImports
 	 * @param {string} key
 	 * @param {*} value
@@ -569,6 +633,22 @@ export class Updater implements IUpdaterBase {
 				namedImports,
 				key === "elements" ? <NodeArray<ImportSpecifier>> value : namedImports.elements
 			), namedImports, this.languageService);
+	}
+
+	/**
+	 * Updates a NamedExports
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {NamedExports} namedExports
+	 * @returns {NamedExports}
+	 */
+	private updateNamedExports (key: keyof NamedExports, value: NamedExports[keyof NamedExports], namedExports: NamedExports): NamedExports {
+
+		return this.nodeUpdater.updateInPlace(
+			updateNamedExports(
+				namedExports,
+				key === "elements" ? <NodeArray<ExportSpecifier>> value : namedExports.elements
+			), namedExports, this.languageService);
 	}
 
 	/**

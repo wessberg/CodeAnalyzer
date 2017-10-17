@@ -1,11 +1,14 @@
-import {Identifier, ImportDeclaration, NamedImportBindings, NamedImports, NamespaceImport, NodeArray, SourceFile} from "typescript";
+import {Identifier, ImportDeclaration, NamedImportBindings, NamedImports, NamespaceImport, SourceFile} from "typescript";
 import {IImportDict} from "../../dict/import/i-import-dict";
-import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
+import {INamedImportExportDict} from "../../dict/named-import-export/i-named-import-export-dict";
 import {INodeService} from "../node/i-node-service";
 
 export interface IImportService extends INodeService<ImportDeclaration> {
-	getImportsWithNamedImport (namedImport: INamedImportDict, path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration>;
-	getImportsForPath (path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration>;
+	getImportWithNamedImport (namedImport: INamedImportExportDict, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined;
+	getImportWithNamespace (namespace: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined;
+	getImportWithName (name: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined;
+	getImportWithBinding (binding: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined;
+	getImportsForPath (path: string, sourceFile: SourceFile): ImportDeclaration[];
 	getNameForImportDeclaration (importDeclaration: ImportDeclaration): Identifier|undefined;
 	getNamedImportBindingsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImportBindings|undefined;
 	getNamedImportsForImportDeclaration (importDeclaration: ImportDeclaration): NamedImports|undefined;
@@ -13,7 +16,7 @@ export interface IImportService extends INodeService<ImportDeclaration> {
 	getPathForImportDeclaration (importDeclaration: ImportDeclaration): string;
 
 	hasNamedImports (importDeclaration: ImportDeclaration): boolean;
-	hasNamedImport (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): boolean;
+	hasNamedImport (namedImport: INamedImportExportDict|string, importDeclaration: ImportDeclaration): boolean;
 	hasName (importDeclaration: ImportDeclaration): boolean;
 	hasSpecificName (name: string, importDeclaration: ImportDeclaration): boolean;
 	hasNamespaceImport (importDeclaration: ImportDeclaration): boolean;
@@ -24,6 +27,6 @@ export interface IImportService extends INodeService<ImportDeclaration> {
 
 	changePathOfImportDeclaration (path: string, importDeclaration: ImportDeclaration): ImportDeclaration;
 	addNameToImportDeclaration (name: string, importDeclaration: ImportDeclaration): ImportDeclaration;
-	addNamedImportToImportDeclaration (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): ImportDeclaration;
+	addNamedImportToImportDeclaration (namedImport: INamedImportExportDict, importDeclaration: ImportDeclaration): ImportDeclaration;
 	addNamespaceImportToImportDeclaration (namedImport: string, importDeclaration: ImportDeclaration): ImportDeclaration;
 }

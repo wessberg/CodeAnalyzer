@@ -9,8 +9,12 @@ import {DecoratorDict} from "../../dict/decorator/decorator-dict";
 import {INodeService} from "../node/i-node-service";
 
 export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
+	hasClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): boolean;
+	getClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): ClassDeclaration|ClassExpression|undefined;
 	getNameOfClass (classDeclaration: ClassDeclaration|ClassExpression): string|undefined;
 	getExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
+	getNameOfExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): string|undefined;
+	resolveExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression|undefined;
 	getImplements (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
 	getConstructor (classDeclaration: ClassDeclaration|ClassExpression): ConstructorDeclaration|undefined;
 	getMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;

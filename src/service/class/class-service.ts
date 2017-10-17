@@ -18,11 +18,14 @@ import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {NodeService} from "../node/node-service";
 import {IModifierService} from "../modifier/i-modifier-service";
+import {IResolver} from "../../resolver/i-resolver-getter";
+import {IHeritageClauseService} from "../heritage-clause/i-heritage-clause-service";
 
 /**
  * A class for working with classes
  */
 export class ClassService extends NodeService<ClassDeclaration|ClassExpression> implements IClassService {
+
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -35,10 +38,73 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 private methodService: IMethodService,
 							 private modifierService: IModifierService,
 							 private constructorService: IConstructorService,
+							 private heritageClauseService: IHeritageClauseService,
+							 private resolver: IResolver,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, remover, astUtil);
+	}
+
+	/**
+	 * Gets the name of the class that the given class extends
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {string}
+	 */
+	public getNameOfExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): string|undefined {
+		// If the class doesn't extend anything, return undefined
+		if (this.isBaseClass(classDeclaration)) {
+			return undefined;
+		}
+
+		// Get the HeritageClause for the extended class
+		const extendedClass = this.getExtendedClass(classDeclaration);
+
+		// If a HeritageClause couldn't be resolved, return undefined
+		if (extendedClass == null) return undefined;
+
+		// Take the first name. EcmaScript only supports inheritance from one class
+		const [firstName] = this.heritageClauseService.getTypeNames(extendedClass);
+		return firstName;
+	}
+
+	/**
+	 * Resolves the parent class of the given ClassDeclaration or ClassExpression
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression | undefined}
+	 */
+	public resolveExtendedClass (classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression|undefined {
+		// Get the name of the extended class
+		const name = this.getNameOfExtendedClass(classDeclaration);
+
+		// If a name could not be resolved, or if the class doesn't extend anything, return undefined
+		if (name == null) return undefined;
+
+		// Resolve it
+		return <ClassDeclaration|ClassExpression|undefined> this.resolver.resolve(name, classDeclaration.getSourceFile());
+	}
+
+	/**
+	 * Returns true if the given SourceFile contains a ClassDeclaration or ClassExpression with the provided name
+	 * @param {string} name
+	 * @param {SourceFile} sourceFile
+	 * @param {boolean} deep
+	 * @returns {boolean}
+	 */
+	public hasClassWithName (name: string, sourceFile: SourceFile, deep: boolean = true): boolean {
+		return this.getClassWithName(name, sourceFile, deep) != null;
+	}
+
+	/**
+	 * Gets the ClassDeclaration or ClassExpression within the provided SourceFile with the provided name
+	 * @param {string} name
+	 * @param {SourceFile} sourceFile
+	 * @param {boolean} deep
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public getClassWithName (name: string, sourceFile: SourceFile, deep: boolean = true): ClassDeclaration|ClassExpression|undefined {
+		return this.getAll(sourceFile, deep)
+			.find(classDeclaration => classDeclaration.name != null && classDeclaration.name.text === name);
 	}
 
 	/**

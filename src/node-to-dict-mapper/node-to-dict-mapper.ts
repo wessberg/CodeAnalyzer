@@ -1,7 +1,7 @@
 import {INodeToDictMapper} from "./i-node-to-dict-mapper";
 import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
-import {ImportClause, ImportSpecifier, isNamespaceImport} from "typescript";
-import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
+import {ExportSpecifier, ImportClause, ImportSpecifier, isNamespaceImport} from "typescript";
+import {INamedImportExportDict} from "../dict/named-import-export/i-named-import-export-dict";
 
 /**
  * A class that can map nodes to dicts
@@ -9,11 +9,11 @@ import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
 export class NodeToDictMapper implements INodeToDictMapper {
 
 	/**
-	 * Maps an ImportSpecifier to an INamedImportDict
-	 * @param {ImportSpecifier?} node
-	 * @returns {INamedImportDict?}
+	 * Maps an ImportSpecifier to an INamedImportExportDict
+	 * @param {ImportSpecifier|ExportSpecifier?} node
+	 * @returns {INamedImportExportDict?}
 	 */
-	public toNamedImportDict (node: ImportSpecifier|undefined): INamedImportDict|undefined {
+	public toNamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportDict|undefined {
 		if (node == null) return undefined;
 
 		return {
@@ -37,7 +37,7 @@ export class NodeToDictMapper implements INodeToDictMapper {
 				: node.namedBindings.name.text,
 			namedImports: node.namedBindings == null || isNamespaceImport(node.namedBindings)
 				? null
-				: node.namedBindings.elements.map(element => this.toNamedImportDict(element)!)
+				: node.namedBindings.elements.map(element => this.toNamedImportExportDict(element)!)
 		};
 	}
 

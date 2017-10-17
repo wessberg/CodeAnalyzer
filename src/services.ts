@@ -47,6 +47,18 @@ import {IInterfaceDeclarationService} from "./service/interface-declaration/i-in
 import {InterfaceDeclarationService} from "./service/interface-declaration/interface-declaration-service";
 import {ITypeLiteralNodeService} from "./service/type-literal-node/i-type-literal-node-service";
 import {TypeLiteralNodeService} from "./service/type-literal-node/type-literal-node-service";
+import {IParameterService} from "./service/parameter/i-parameter-service";
+import {ParameterService} from "./service/parameter/parameter-service";
+import {IResolverBase} from "./resolver/i-resolver";
+import {Resolver} from "./resolver/resolver";
+import {IResolver, wrappedIResolver} from "./resolver/i-resolver-getter";
+import {IExportService} from "./service/export/i-export-service";
+import {ExportService} from "./service/export/export-service";
+import {INamedExportsService} from "./service/named-exports/i-named-exports-service";
+import {NamedExportsService} from "./service/named-exports/named-exports-service";
+import {IStringUtil, StringUtil} from "@wessberg/stringutil";
+import {ICodeAnalyzer} from "./code-analyzer/i-code-analyzer";
+import {CodeAnalyzerBase} from "./code-analyzer/code-analyzer-base";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -60,6 +72,9 @@ DIContainer.registerSingleton<IRemoverBase, Remover>();
 // Joiner
 DIContainer.registerSingleton<IJoinerBase, Joiner>();
 
+// Resolver
+DIContainer.registerSingleton<IResolverBase, Resolver>();
+
 // Mappers
 DIContainer.registerSingleton<INodeToDictMapper, NodeToDictMapper>();
 
@@ -68,6 +83,7 @@ DIContainer.registerSingleton<IJoiner, IJoiner>(() => wrappedIJoiner);
 DIContainer.registerSingleton<IUpdater, IUpdater>(() => wrappedIUpdater);
 DIContainer.registerSingleton<IFormatter, IFormatter>(() => wrappedIFormatter);
 DIContainer.registerSingleton<IRemover, IRemover>(() => wrappedIRemover);
+DIContainer.registerSingleton<IResolver, IResolver>(() => wrappedIResolver);
 
 // Parser
 DIContainer.registerSingleton<IParser, Parser>();
@@ -82,10 +98,13 @@ DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
 DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
 DIContainer.registerSingleton<IPrinter, Printer>();
+DIContainer.registerSingleton<IStringUtil, StringUtil>();
 
 // Services
 DIContainer.registerSingleton<IHeritageClauseService, HeritageClauseService>();
 DIContainer.registerSingleton<INamedImportsService, NamedImportsService>();
+DIContainer.registerSingleton<INamedExportsService, NamedExportsService>();
+DIContainer.registerSingleton<IParameterService, ParameterService>();
 DIContainer.registerSingleton<INamespaceImportService, NamespaceImportService>();
 DIContainer.registerSingleton<IMethodService, MethodService>();
 DIContainer.registerSingleton<IPropertyService, PropertyService>();
@@ -94,6 +113,10 @@ DIContainer.registerSingleton<IDecoratorService, DecoratorService>();
 DIContainer.registerSingleton<IModifierService, ModifierService>();
 DIContainer.registerSingleton<IClassService, ClassService>();
 DIContainer.registerSingleton<IImportService, ImportService>();
+DIContainer.registerSingleton<IExportService, ExportService>();
 DIContainer.registerSingleton<IInterfaceDeclarationService, InterfaceDeclarationService>();
 DIContainer.registerSingleton<ITypeLiteralNodeService, TypeLiteralNodeService>();
 DIContainer.registerSingleton<ICallExpressionService, CallExpressionService>();
+
+// CodeAnalyzer
+DIContainer.registerSingleton<ICodeAnalyzer, CodeAnalyzerBase>();

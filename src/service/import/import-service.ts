@@ -1,8 +1,8 @@
-import {createNodeArray, Identifier, ImportDeclaration, isNamedImports, isNamespaceImport, isStringLiteral, NamedImportBindings, NamedImports, NamespaceImport, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {Identifier, ImportDeclaration, isNamedImports, isNamespaceImport, isStringLiteral, NamedImportBindings, NamedImports, NamespaceImport, SourceFile, SyntaxKind} from "typescript";
 import {IImportService} from "./i-import-service";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IImportDict} from "../../dict/import/i-import-dict";
-import {INamedImportDict} from "../../dict/named-import/i-named-import-dict";
+import {INamedImportExportDict} from "../../dict/named-import-export/i-named-import-export-dict";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {INamedImportsService} from "../named-imports/i-named-imports-service";
 import {INamespaceImportService} from "../namespace-import/i-namespace-import-service";
@@ -11,11 +11,13 @@ import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
+import {IStringUtil} from "@wessberg/stringutil";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
  */
 export class ImportService extends NodeService<ImportDeclaration> implements IImportService {
+
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -27,6 +29,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 							 private nodeToDictMapper: INodeToDictMapper,
 							 private formatter: IFormatter,
 							 private printer: IPrinter,
+							 private stringUtil: IStringUtil,
 							 private updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
@@ -40,7 +43,9 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	 * @returns {string}
 	 */
 	public getPathForImportDeclaration (importDeclaration: ImportDeclaration): string {
-		return this.printer.print(importDeclaration.moduleSpecifier);
+		const literal = this.printer.print(importDeclaration.moduleSpecifier);
+		// Make sure to return the path unquoted
+		return this.stringUtil.isQuoted(literal) ? literal.slice(1, literal.length - 1) : literal;
 	}
 
 	/**
@@ -49,22 +54,73 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	 * @param {SourceFile} sourceFile
 	 * @returns {NodeArray<ImportDeclaration>}
 	 */
-	public getImportsForPath (path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration> {
+	public getImportsForPath (path: string, sourceFile: SourceFile): ImportDeclaration[] {
 		const imports = this.getAll(sourceFile);
-		return createNodeArray(imports.filter(importDeclaration => isStringLiteral(importDeclaration.moduleSpecifier) && importDeclaration.moduleSpecifier.text === path));
+		return imports.filter(importDeclaration => isStringLiteral(importDeclaration.moduleSpecifier) && importDeclaration.moduleSpecifier.text === path);
 	}
 
 	/**
 	 * Gets the ImportDeclarations that refers to the provided path and
-	 * has a named import matching the provided one in the provided SourceFile
+	 * has a named import matching the provided one in the provided SourceFile.
+	 * If no path is provided, it will look across all ImportDeclarations
 	 * @param namedImport
 	 * @param {string} path
 	 * @param {SourceFile} sourceFile
-	 * @returns {NodeArray<ImportDeclaration>}
+	 * @returns {ImportDeclaration?}
 	 */
-	public getImportsWithNamedImport (namedImport: INamedImportDict, path: string, sourceFile: SourceFile): NodeArray<ImportDeclaration> {
-		const imports = this.getImportsForPath(path, sourceFile);
-		return createNodeArray(imports.filter(importDeclaration => this.hasNamedImport(namedImport, importDeclaration)));
+	public getImportWithNamedImport (namedImport: INamedImportExportDict, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined {
+		const imports = path == null ? [...this.getAll(sourceFile)] : this.getImportsForPath(path, sourceFile);
+		return imports.find(importDeclaration => this.hasNamedImport(namedImport, importDeclaration));
+	}
+
+	/**
+	 * Gets the ImportDeclarations that refers to the provided path and has a namespace import with the provided
+	 * namespace name. If no path is provided, it will look across all ImportDeclarations
+	 * @param {string} namespace
+	 * @param {SourceFile} sourceFile
+	 * @param {string} path
+	 * @returns {ImportDeclaration?}
+	 */
+	public getImportWithNamespace (namespace: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined {
+		const imports = path == null ? [...this.getAll(sourceFile)] : this.getImportsForPath(path, sourceFile);
+		return imports.find(importDeclaration => this.hasNamespaceImportWithName(namespace, importDeclaration));
+	}
+
+	/**
+	 * Gets the ImportDeclarations that refers to the provided path and has a default name matching the provided one.
+	 * If no path is provided, it will look across all ImportDeclarations
+	 * @param {string} name
+	 * @param {SourceFile} sourceFile
+	 * @param {string} path
+	 * @returns {ImportDeclaration?}
+	 */
+	public getImportWithName (name: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined {
+		const imports = path == null ? [...this.getAll(sourceFile)] : this.getImportsForPath(path, sourceFile);
+		return imports.find(importDeclaration => this.hasSpecificName(name, importDeclaration));
+	}
+
+	/**
+	 * Gets the ImportDeclarations that refers to the provided path and has any binding such as a named import, default
+	 * name or a namespace matching the provided one.
+	 * If no path is provided, it will look across all ImportDeclarations
+	 * @param {INamedImportExportDict | string} binding
+	 * @param {SourceFile} sourceFile
+	 * @param {string} path
+	 * @returns {ImportDeclaration?}
+	 */
+	public getImportWithBinding (binding: string, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined {
+		const imports = path == null ? [...this.getAll(sourceFile)] : this.getImportsForPath(path, sourceFile);
+
+		// First, check if a named binding is matched anywhere
+		const namedBindingMatch = imports.find(importDeclaration => this.hasNamedImport(binding, importDeclaration));
+		if (namedBindingMatch != null) return namedBindingMatch;
+
+		// Otherwise, check first if the namespace is matched
+		const namespaceMatch = imports.find(importDeclaration => this.hasNamespaceImportWithName(binding, importDeclaration));
+		if (namespaceMatch != null) return namespaceMatch;
+
+		// Otherwise, check if a matching default name is matched
+		return imports.find(importDeclaration => this.hasSpecificName(binding, importDeclaration));
 	}
 
 	/**
@@ -89,11 +145,11 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	/**
 	 * Returns true if the provided ImportDeclaration already imports the provided named import.
 	 * A named import is anything in between "{" and "}" in an import.
-	 * @param {INamedImportDict} namedImport
+	 * @param {INamedImportExportDict|string} namedImport
 	 * @param {ImportDeclaration} importDeclaration
 	 * @returns {boolean}
 	 */
-	public hasNamedImport (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): boolean {
+	public hasNamedImport (namedImport: string|INamedImportExportDict, importDeclaration: ImportDeclaration): boolean {
 		const namedImports = this.getNamedImportsForImportDeclaration(importDeclaration);
 		return namedImports != null && this.namedImportsService.hasImportWithName(namedImport, namedImports);
 	}
@@ -291,11 +347,11 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 
 	/**
 	 * Adds a NamedImport to an ImportDeclaration if it doesn't include it already
-	 * @param {INamedImportDict} namedImport
+	 * @param {INamedImportExportDict} namedImport
 	 * @param {ImportDeclaration} importDeclaration
 	 * @returns {ImportDeclaration}
 	 */
-	public addNamedImportToImportDeclaration (namedImport: INamedImportDict, importDeclaration: ImportDeclaration): ImportDeclaration {
+	public addNamedImportToImportDeclaration (namedImport: INamedImportExportDict, importDeclaration: ImportDeclaration): ImportDeclaration {
 		// If the importDeclaration already has the named import, do nothing
 		if (this.hasNamedImport(namedImport, importDeclaration)) return importDeclaration;
 

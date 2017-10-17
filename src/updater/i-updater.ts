@@ -1,4 +1,4 @@
-import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, ExportDeclaration, ExportSpecifier, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
 
 export interface IUpdaterBase {
 	updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T;
@@ -36,10 +36,17 @@ export interface IUpdaterBase {
 	updateConstructorDeclarationModifiers (modifiers: ModifiersArray|undefined, constructor: ConstructorDeclaration): ConstructorDeclaration;
 
 	updateImportDeclarationImportClause (importClause: ImportClause|undefined, importDeclaration: ImportDeclaration): ImportDeclaration;
-	updateImportDeclarationModuleSpecifier (moduleSpecifier: Expression, importDeclaration: ImportDeclaration): ImportDeclaration;
+	updateImportDeclarationModuleSpecifier (moduleSpecifier: Expression|undefined, importDeclaration: ImportDeclaration): ImportDeclaration;
 	updateImportDeclarationModifiers (modifiers: ModifiersArray|undefined, importDeclaration: ImportDeclaration): ImportDeclaration;
 
+	updateExportDeclarationExportClause (exportClause: NamedExports|undefined, exportDeclaration: ExportDeclaration): ExportDeclaration;
+	updateExportDeclarationModuleSpecifier (moduleSpecifier: Expression, exportDeclaration: ExportDeclaration): ExportDeclaration;
+	updateExportDeclarationModifiers (modifiers: ModifiersArray|undefined, exportDeclaration: ExportDeclaration): ExportDeclaration;
+
 	updateNamedImportsElements (elements: NodeArray<ImportSpecifier>, namedImports: NamedImports): NamedImports;
+
+	updateNamedExportsElements (elements: NodeArray<ExportSpecifier>, namedExports: NamedExports): NamedExports;
+
 	updateNamespaceImportName (name: Identifier, namespaceImport: NamespaceImport): NamespaceImport;
 
 	updateSourceFileStatements (statements: NodeArray<Statement>, sourceFile: SourceFile): SourceFile;

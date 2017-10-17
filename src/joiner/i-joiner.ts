@@ -1,4 +1,4 @@
-import {Block, ClassElement, Expression, HeritageClause, NamedImports, NodeArray, Statement} from "typescript";
+import {Block, ClassElement, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement} from "typescript";
 
 export interface IJoinerBase {
 	joinHeritageClauses (...clauses: (HeritageClause|undefined)[]): NodeArray<HeritageClause>;
@@ -8,4 +8,5 @@ export interface IJoinerBase {
 	joinStatementNodeArrays (newStatements: NodeArray<Statement>|Statement, existingStatements: NodeArray<Statement>|undefined): NodeArray<Statement>;
 	joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined): NodeArray<Expression>;
 	joinNamedImports (newNamedImports: NamedImports, existingNamedImports: NamedImports|undefined): NamedImports;
+	joinNamedExports (newNamedExports: NamedExports, existingNamedExports: NamedExports|undefined): NamedExports;
 }

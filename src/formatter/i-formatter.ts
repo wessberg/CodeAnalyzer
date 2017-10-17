@@ -1,6 +1,6 @@
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode} from "typescript";
+import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode, NamedExports} from "typescript";
 import {IImportDict} from "../dict/import/i-import-dict";
-import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
+import {INamedImportExportDict} from "../dict/named-import-export/i-named-import-export-dict";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
 import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
 import {IMethodDict} from "../dict/method/i-method-dict";
@@ -22,7 +22,8 @@ export interface IFormatterBase {
 	formatUndefined (): KeywordTypeNode;
 	formatImportDeclaration (options: IImportDict): ImportDeclaration;
 	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseDict): ImportClause;
-	formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports;
+	formatNamedImports (namedImports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedImports;
+	formatNamedExports (namedExports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedExports;
 	formatNamespaceImport (namespaceName: string): NamespaceImport;
 	formatNodeArray <T extends Node> (nodes?: Iterable<T>|undefined): NodeArray<T>;
 

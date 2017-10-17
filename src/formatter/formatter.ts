@@ -1,5 +1,5 @@
 import {IFormatterBase} from "./i-formatter";
-import {BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode, createKeywordTypeNode} from "typescript";
+import {BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createLiteral, createMethod, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode, createKeywordTypeNode, NamedExports, createNamedExports, createExportSpecifier} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementDict} from "../dict/class-element/class-element-dict";
 import {isClassAccessorDict} from "../dict/class-accessor/is-class-accessor-dict";
@@ -16,8 +16,8 @@ import {AccessorKind} from "../dict/accessor/accessor-kind";
 import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
 import {isIGetAccessorDict} from "../dict/accessor/is-i-get-accessor-dict";
 import {IImportDict} from "../dict/import/i-import-dict";
-import {INamedImportDict} from "../dict/named-import/i-named-import-dict";
-import {isINamedImportDict} from "../dict/named-import/is-i-named-import-dict";
+import {INamedImportExportDict} from "../dict/named-import-export/i-named-import-export-dict";
+import {isINamedImportExportDict} from "../dict/named-import-export/is-i-named-import-export-dict";
 import {ModifierKind} from "../dict/modifier/modifier-kind";
 import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
 import {DecoratorDict} from "../dict/decorator/decorator-dict";
@@ -409,7 +409,7 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Formats an ImportClause
-	 * @param {Iterable<INamedImportDict>} namedImports
+	 * @param {Iterable<INamedImportExportDict>} namedImports
 	 * @param {string} namespace
 	 * @param {string} defaultName
 	 * @returns {ImportClause}
@@ -433,7 +433,7 @@ export class Formatter implements IFormatterBase {
 	/**
 	 * Creates a new ImportDeclaration
 	 * @param {string} path
-	 * @param {Iterable<INamedImportDict>} namedImports
+	 * @param {Iterable<INamedImportExportDict>} namedImports
 	 * @param {string} namespace
 	 * @param {string} defaultName
 	 * @returns {ImportDeclaration}
@@ -451,13 +451,13 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates NamedImports from all of the provided named import names
-	 * @param {INamedImportDict | Iterable<INamedImportDict>} namedImports
+	 * @param {INamedImportExportDict | Iterable<INamedImportExportDict>} namedImports
 	 * @returns {NamedImports}
 	 */
-	public formatNamedImports (namedImports: INamedImportDict|Iterable<INamedImportDict>): NamedImports {
-		if (isINamedImportDict(namedImports)) {
+	public formatNamedImports (namedImports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedImports {
+		if (isINamedImportExportDict(namedImports)) {
 			// Create identifiers for the named import
-			const [namedImportIdentifier, propertyNameIdentifier] = this.createNamedImportIdentifiers(namedImports);
+			const [namedImportIdentifier, propertyNameIdentifier] = this.createNamedImportExportIdentifiers(namedImports);
 
 			// Create a NamedImport for it
 			return createNamedImports(createNodeArray([createImportSpecifier(propertyNameIdentifier, namedImportIdentifier)]));
@@ -465,11 +465,37 @@ export class Formatter implements IFormatterBase {
 		}
 
 		// Create identifiers for all of the named imports
-		const importIdentifiers = [...namedImports].map(namedImport => this.createNamedImportIdentifiers(namedImport));
+		const importIdentifiers = [...namedImports].map(namedImport => this.createNamedImportExportIdentifiers(namedImport));
 		const importSpecifiers = importIdentifiers.map(identifier => createImportSpecifier(identifier[1], identifier[0]));
 
 		// Create NamedImports for them
 		return createNamedImports(createNodeArray(importSpecifiers));
+	}
+
+
+	/**
+	 * Creates NamedExports from all of the provided named import names
+	 * @param {INamedImportExportDict | Iterable<INamedImportExportDict>} namedExports
+	 * @returns {NamedExports}
+	 */
+	public formatNamedExports (namedExports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedExports {
+		if (isINamedImportExportDict(namedExports)) {
+			// Create identifiers for the named import
+			const [namedExportIdentifier, propertyNameIdentifier] = this.createNamedImportExportIdentifiers(namedExports);
+
+			// Create NamedExports for it
+			return createNamedExports(
+				createNodeArray([createExportSpecifier(propertyNameIdentifier, namedExportIdentifier)])
+			);
+
+		}
+
+		// Create identifiers for all of the named exports
+		const exportIdentifiers = [...namedExports].map(namedImport => this.createNamedImportExportIdentifiers(namedImport));
+		const exportSpecifiers = exportIdentifiers.map(identifier => createExportSpecifier(identifier[1], identifier[0]));
+
+		// Create NamedExports for them
+		return createNamedExports(createNodeArray(exportSpecifiers));
 	}
 
 	/**
@@ -735,12 +761,12 @@ export class Formatter implements IFormatterBase {
 
 	/**
 	 * Creates a tuple of identifiers for NamedImports. The first item is for the name, the second is for the propertyName, if any is given.
-	 * @param {INamedImportDict} namedImport
+	 * @param {INamedImportExportDict} namedImport
 	 * @returns {[Identifier , Identifier]}
 	 */
-	private createNamedImportIdentifiers (namedImport: INamedImportDict): [Identifier, Identifier|undefined] {
-		const namedImportIdentifier = createIdentifier(namedImport.name);
+	private createNamedImportExportIdentifiers (namedImport: INamedImportExportDict): [Identifier, Identifier|undefined] {
+		const namedImportExportIdentifier = createIdentifier(namedImport.name);
 		const propertyNameIdentifier = namedImport.propertyName == null ? undefined : createIdentifier(namedImport.propertyName);
-		return [namedImportIdentifier, propertyNameIdentifier];
+		return [namedImportExportIdentifier, propertyNameIdentifier];
 	}
 }

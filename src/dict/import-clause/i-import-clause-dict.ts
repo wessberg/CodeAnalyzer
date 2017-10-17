@@ -1,7 +1,7 @@
-import {INamedImportDict} from "../named-import/i-named-import-dict";
+import {INamedImportExportDict} from "../named-import-export/i-named-import-export-dict";
 
 export interface IImportClauseDict {
-	namedImports: Iterable<INamedImportDict>|null;
+	namedImports: Iterable<INamedImportExportDict>|null;
 	namespace: string|null;
 	defaultName: string|null;
 }

@@ -1,5 +1,5 @@
 import {ICallExpressionService} from "./i-call-expression-service";
-import {CallExpression, createNodeArray, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {CallExpression, createNodeArray, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isExpressionWithTypeArguments, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
@@ -88,7 +88,7 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 	 * @returns {string[]}
 	 */
 	public getTypeArgumentNames (callExpression: CallExpression): string[] {
-		return callExpression.typeArguments == null ? [] : callExpression.typeArguments.map(argument => this.printer.print(argument));
+		return callExpression.typeArguments == null ? [] : callExpression.typeArguments.map(argument => isExpressionWithTypeArguments(argument) ? this.printer.print(argument.expression) : this.printer.print(argument));
 	}
 
 	/**
