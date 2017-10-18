@@ -7,6 +7,7 @@ import {IRemover} from "../../remover/i-remover-base";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
+import {PropertyAccessCallExpression} from "./property-access-call-expression";
 
 /**
  * A class for working with CallExpressions
@@ -97,11 +98,11 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 	 * @param {string} property
 	 * @param {SourceFile} sourceFile
 	 * @param {boolean} deep
-	 * @returns {NodeArray<CallExpression>}
+	 * @returns {NodeArray<PropertyAccessCallExpression>}
 	 */
-	public getCallExpressionsOnPropertyAccessExpressionMatching (identifier: string, property: string|undefined, sourceFile: SourceFile, deep: boolean = true): NodeArray<CallExpression> {
+	public getCallExpressionsOnPropertyAccessExpressionMatching (identifier: string, property: string|undefined, sourceFile: SourceFile, deep: boolean = true): NodeArray<PropertyAccessCallExpression> {
 		const filtered = this.getAll(sourceFile, deep);
-		return createNodeArray(filtered.filter(callExpression => {
+		return <NodeArray<PropertyAccessCallExpression>> createNodeArray(filtered.filter(callExpression => {
 			if (!isPropertyAccessExpression(callExpression.expression)) return false;
 			return isIdentifier(callExpression.expression.expression) && callExpression.expression.expression.text === identifier && property == null ? true : callExpression.expression.name.text === property;
 		}));
@@ -133,7 +134,7 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 		// For all ExpressionStatements, check if their expressions are CallExpressions. If not, filter them out
 		const filtered = match.filter(node => isExpressionStatement(node) ? isCallExpression(node.expression) : true);
 
-		// Take all CallExpressions for all ExpressionStatements and otherwise return the CallExpressions
-		return <NodeArray<CallExpression>> createNodeArray(filtered.map(node => isExpressionStatement(node) ? node.expression : node));
+		// Take all CallExpressions for all ExpressionStatements and otherwise return the CallExpressions. Make sure to deduplicate them
+		return <NodeArray<CallExpression>> createNodeArray([...new Set(filtered.map(node => isExpressionStatement(node) ? node.expression : node))]);
 	}
 }

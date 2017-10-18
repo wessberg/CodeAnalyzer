@@ -17,6 +17,9 @@ import {IParameterService} from "../service/parameter/i-parameter-service";
 import {IPropertyService} from "../service/property/i-property-service";
 import {ITypeLiteralNodeService} from "../service/type-literal-node/i-type-literal-node-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
+import {IResolver} from "../resolver/i-resolver-getter";
+import {IPrinter} from "@wessberg/typescript-ast-util";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -29,6 +32,18 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public readonly languageService: ITypescriptLanguageService;
 
 	/**
+	 * A service that can resolve Nodes from identifiers
+	 * @type {IResolver}
+	 */
+	public readonly resolver: IResolver;
+
+	/**
+	 * A service that can print nodes
+	 * @type {IResolver}
+	 */
+	public readonly printer: IPrinter;
+
+	/**
 	 * A service that helps with working with ClassExpressions and ClassDeclarations
 	 * @type {IClassService}
 	 */
@@ -39,6 +54,12 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {ICallExpressionService}
 	 */
 	public readonly callExpressionService: ICallExpressionService;
+
+	/**
+	 * A service that helps with working with PropertyAccessExpressions
+	 * @type {IPropertyAccessExpressionService}
+	 */
+	public readonly propertyAccessExpressionService: IPropertyAccessExpressionService;
 
 	/**
 	 * A service that helps with working with ConstructorDeclarations

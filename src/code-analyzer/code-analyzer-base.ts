@@ -16,14 +16,20 @@ import {IParameterService} from "../service/parameter/i-parameter-service";
 import {IPropertyService} from "../service/property/i-property-service";
 import {ITypeLiteralNodeService} from "../service/type-literal-node/i-type-literal-node-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
+import {IResolver} from "../resolver/i-resolver-getter";
+import {IPrinter} from "@wessberg/typescript-ast-util";
 
 /**
  * A service that contains all underlying services
  */
 export class CodeAnalyzerBase implements ICodeAnalyzer {
 	constructor (public readonly languageService: ITypescriptLanguageService,
+							 public readonly resolver: IResolver,
+							 public readonly printer: IPrinter,
 							 public readonly classService: IClassService,
 							 public readonly callExpressionService: ICallExpressionService,
+							 public readonly propertyAccessExpressionService: IPropertyAccessExpressionService,
 							 public readonly constructorService: IConstructorService,
 							 public readonly decoratorService: IDecoratorService,
 							 public readonly exportService: IExportService,

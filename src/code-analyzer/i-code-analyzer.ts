@@ -15,11 +15,17 @@ import {IParameterService} from "../service/parameter/i-parameter-service";
 import {IPropertyService} from "../service/property/i-property-service";
 import {ITypeLiteralNodeService} from "../service/type-literal-node/i-type-literal-node-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
+import {IResolver} from "../resolver/i-resolver-getter";
+import {IPrinter} from "@wessberg/typescript-ast-util";
 
 export interface ICodeAnalyzer {
 	readonly languageService: ITypescriptLanguageService;
 	readonly classService: IClassService;
+	readonly resolver: IResolver;
+	readonly printer: IPrinter;
 	readonly callExpressionService: ICallExpressionService;
+	readonly propertyAccessExpressionService: IPropertyAccessExpressionService;
 	readonly constructorService: IConstructorService;
 	readonly decoratorService: IDecoratorService;
 	readonly exportService: IExportService;

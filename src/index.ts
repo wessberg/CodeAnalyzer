@@ -4,6 +4,7 @@ export {CodeAnalyzer} from "./code-analyzer/code-analyzer";
 export {ICodeAnalyzer} from "./code-analyzer/i-code-analyzer";
 export {IClassService} from "./service/class/i-class-service";
 export {ICallExpressionService} from "./service/call-expression/i-call-expression-service";
+export {IPropertyAccessExpressionService} from "./service/property-access-expression/i-property-access-expression-service";
 export {IConstructorService} from "./service/constructor/i-constructor-service";
 export {IDecoratorService} from "./service/decorator/i-decorator-service";
 export {IExportService} from "./service/export/i-export-service";
@@ -18,6 +19,8 @@ export {INamespaceImportService} from "./service/namespace-import/i-namespace-im
 export {IParameterService} from "./service/parameter/i-parameter-service";
 export {IPropertyService} from "./service/property/i-property-service";
 export {ITypeLiteralNodeService} from "./service/type-literal-node/i-type-literal-node-service";
+export {IResolver} from "./resolver/i-resolver-getter";
+export {IPrinter} from "@wessberg/typescript-ast-util";
 
 // Dicts
 export {ISetAccessorDict, IGetAccessorDict, IAccessorDict, AccessorDict} from "./dict/accessor/accessor-dict";
@@ -100,3 +103,6 @@ export {isINormalParameterDict} from "./dict/parameter/is-i-normal-parameter-dic
 export {isIObjectBindingParameterDict} from "./dict/parameter/is-i-object-binding-parameter-dict";
 export {isIParameterDict} from "./dict/parameter/is-i-parameter-dict";
 export {isParameterDict} from "./dict/parameter/is-parameter-dict";
+
+// Types
+export {PropertyAccessCallExpression} from "./service/call-expression/property-access-call-expression";

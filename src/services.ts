@@ -59,6 +59,8 @@ import {NamedExportsService} from "./service/named-exports/named-exports-service
 import {IStringUtil, StringUtil} from "@wessberg/stringutil";
 import {ICodeAnalyzer} from "./code-analyzer/i-code-analyzer";
 import {CodeAnalyzerBase} from "./code-analyzer/code-analyzer-base";
+import {IPropertyAccessExpressionService} from "./service/property-access-expression/i-property-access-expression-service";
+import {PropertyAccessExpressionService} from "./service/property-access-expression/property-access-expression-service";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -117,6 +119,7 @@ DIContainer.registerSingleton<IExportService, ExportService>();
 DIContainer.registerSingleton<IInterfaceDeclarationService, InterfaceDeclarationService>();
 DIContainer.registerSingleton<ITypeLiteralNodeService, TypeLiteralNodeService>();
 DIContainer.registerSingleton<ICallExpressionService, CallExpressionService>();
+DIContainer.registerSingleton<IPropertyAccessExpressionService, PropertyAccessExpressionService>();
 
 // CodeAnalyzer
 DIContainer.registerSingleton<ICodeAnalyzer, CodeAnalyzerBase>();
