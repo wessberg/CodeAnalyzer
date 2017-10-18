@@ -1,4 +1,4 @@
-import {Identifier, ImportDeclaration, isNamedImports, isNamespaceImport, isStringLiteral, NamedImportBindings, NamedImports, NamespaceImport, SourceFile, SyntaxKind} from "typescript";
+import {createNodeArray, Identifier, ImportDeclaration, isNamedImports, isNamespaceImport, isStringLiteral, NamedImportBindings, NamedImports, NamespaceImport, SourceFile, SyntaxKind} from "typescript";
 import {IImportService} from "./i-import-service";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IImportDict} from "../../dict/import/i-import-dict";
@@ -12,6 +12,7 @@ import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IStringUtil} from "@wessberg/stringutil";
+import {IJoiner} from "../../joiner/i-joiner-getter";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -31,6 +32,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 							 private printer: IPrinter,
 							 private stringUtil: IStringUtil,
 							 private updater: IUpdater,
+							 private joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
 							 remover: IRemover) {
@@ -261,8 +263,8 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 		const importDeclaration = this.createImportDeclaration(options);
 
 		// Update the SourceFile to reflect the change
-		this.updater.addStatement(
-			importDeclaration,
+		this.updater.updateSourceFileStatements(
+			this.joiner.joinStatementNodeArrays(createNodeArray([importDeclaration]), sourceFile.statements, false),
 			sourceFile
 		);
 

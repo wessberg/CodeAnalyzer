@@ -160,16 +160,6 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
-	 * Adds a Statement to a SourceFile
-	 * @param {T} node
-	 * @param {ts.SourceFile} sourceFile
-	 * @returns {T}
-	 */
-	public addStatement<T extends Statement> (node: T, sourceFile: SourceFile): T {
-		return this.nodeUpdater.addInPlace(node, sourceFile, this.languageService);
-	}
-
-	/**
 	 * Replaces a Node with the new one
 	 * @param {T} newNode
 	 * @param {T} existing

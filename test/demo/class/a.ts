@@ -1,6 +1,9 @@
 /*tslint:disable*/
 import {B, C, D} from "./b";
 
+/**
+ * A comment
+ */
 @aDecorator
 class A extends D {
 	constructor (foo: string, bar: number = 2, baz: Promise<void>) {
@@ -8,13 +11,21 @@ class A extends D {
 		console.log(true);
 	}
 
+	/**
+	 * Foobarbaz
+	 * @type {string}
+	 */
 	@aDecorator
 	public aMethod (): void {
 
 	}
 }
 
-
+/**
+ * A function
+ * @param {{}} target
+ * @param {string} property
+ */
 function aDecorator(target: {}, property: string) {
 }
 

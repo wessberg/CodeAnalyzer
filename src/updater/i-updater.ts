@@ -51,6 +51,5 @@ export interface IUpdaterBase {
 
 	updateSourceFileStatements (statements: NodeArray<Statement>, sourceFile: SourceFile): SourceFile;
 	replace <T extends Node> (newNode: T, existing: T): T;
-	addStatement <T extends Statement> (node: T, sourceFile: SourceFile): T;
 
 }

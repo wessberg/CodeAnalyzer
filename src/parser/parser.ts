@@ -1,12 +1,11 @@
 import {IParser} from "./i-parser";
 import {Block, createNodeArray, createSourceFile, Expression, isExpressionStatement, isFunctionDeclaration, Node, NodeArray, ReturnStatement, ScriptTarget, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
-import {isNodeArray, isTypescriptNode} from "@wessberg/typescript-ast-util";
+import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 
 /**
  * A class that helps with parsing string expressions into proper Nodes
  */
 export class Parser implements IParser {
-
 	/**
 	 * The filename to use when generating a SourceFile from an expression
 	 * @type {string}
@@ -17,6 +16,9 @@ export class Parser implements IParser {
 	 * @type {ScriptTarget.ES2017}
 	 */
 	private static readonly SCRIPT_TARGET = ScriptTarget.Latest;
+
+	constructor (private astUtil: ITypescriptASTUtil) {
+	}
 
 	/**
 	 * Parses the provided expression string into an Expression
@@ -34,35 +36,6 @@ export class Parser implements IParser {
 		// Take the type of the generated source file (which will be equal to the given type expression)
 		const returnStatement = <ReturnStatement> firstStatement.body!.statements[0];
 		return returnStatement.expression!;
-	}
-
-	/**
-	 * Replaces all positions recursively with -1.
-	 * @param {NodeArray<T extends Node> | T} node
-	 * @param {Set<Node | NodeArray<T extends Node>>} seenNodes
-	 * @returns {T}
-	 */
-	public replacePositions <T extends Node> (node: T|NodeArray<T>, seenNodes: Set<Node|NodeArray<T>> = new Set()): T {
-		if (seenNodes.has(node)) return <T> node;
-		seenNodes.add(node);
-		node.pos = node.end = -1;
-		if (isNodeArray(node)) {
-			node.forEach(part => {
-				if (isTypescriptNode(part) || isNodeArray(part)) {
-					this.replacePositions(part, seenNodes);
-				}
-			});
-		}
-		else {
-			Object.keys(node).forEach((key: keyof T) => {
-				const value = node[key];
-				if (isTypescriptNode(value) || isNodeArray(value)) {
-					this.replacePositions(value, seenNodes);
-				}
-			});
-		}
-
-		return <T> node;
 	}
 
 	/**
@@ -111,7 +84,7 @@ export class Parser implements IParser {
 		/*tslint:disable:no-any*/
 		// Create a source file to allow the type expression to be parsed from a string
 		const sourceFile = createSourceFile(Parser.FILENAME, expression, Parser.SCRIPT_TARGET);
-		return <NodeArray<T>><any> createNodeArray(sourceFile.statements.map(statement => this.replacePositions(isExpressionStatement(statement) ? statement.expression : statement)));
+		return <NodeArray<T>><any> createNodeArray(sourceFile.statements.map(statement => this.astUtil.clearPositions(isExpressionStatement(statement) ? statement.expression : statement)));
 		/*tslint:enable:no-any*/
 	}
 

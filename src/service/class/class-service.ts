@@ -1,5 +1,5 @@
 import {IClassService} from "./i-class-service";
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
@@ -660,8 +660,8 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 		const classDeclaration = this.createClassDeclaration(options);
 
 		// Update the SourceFile to reflect the change
-		this.updater.addStatement(
-			classDeclaration,
+		this.updater.updateSourceFileStatements(
+			this.joiner.joinStatementNodeArrays(createNodeArray([classDeclaration]), sourceFile.statements),
 			sourceFile
 		);
 

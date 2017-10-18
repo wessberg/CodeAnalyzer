@@ -74,6 +74,7 @@ console.log(constructorService.getParameterTypeNames(ctor!));
 console.log("all non-initialized constructor parameter type names:");
 console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
+console.log(printer.stringify(sourceFile));
 console.log(printer.print(sourceFile));
 
 test("foo", t => {

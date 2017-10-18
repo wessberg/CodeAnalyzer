@@ -17,31 +17,33 @@ export class Joiner implements IJoinerBase {
 	 * Joins two NodeArrays of Statements
 	 * @param {NodeArray<Statement>|Statement} newStatements
 	 * @param {NodeArray<Statement>} existingStatements
+	 * @param {boolean} [suffix=true]
 	 * @returns {NodeArray<Statement>}
 	 */
-	public joinStatementNodeArrays (newStatements: NodeArray<Statement>|Statement, existingStatements: NodeArray<Statement>|undefined): NodeArray<Statement> {
+	public joinStatementNodeArrays (newStatements: NodeArray<Statement>|Statement, existingStatements: NodeArray<Statement>|undefined, suffix: boolean = true): NodeArray<Statement> {
 		const normalizedNewStatements = Array.isArray(newStatements) ? newStatements : createNodeArray([<Statement>newStatements]);
 		// If there are no existing statements clause, just use the new ones
 		if (existingStatements == null) {
 			return normalizedNewStatements;
 		}
-		return createNodeArray([...existingStatements, ...normalizedNewStatements]);
+		return createNodeArray(suffix ? [...existingStatements, ...normalizedNewStatements] : [...normalizedNewStatements, ...existingStatements]);
 	}
 
 	/**
 	 * Joins two arrays of Expressions
 	 * @param {NodeArray<Expression> | Expression} newExpressions
 	 * @param {NodeArray<Expression>} existingExpressions
+	 * @param {boolean} [suffix=true]
 	 * @returns {NodeArray<Expression>}
 	 */
-	public joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined): NodeArray<Expression> {
+	public joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined, suffix: boolean = true): NodeArray<Expression> {
 		const normalizedNewExpressions = Array.isArray(newExpressions) ? newExpressions : createNodeArray([<Expression>newExpressions]);
 
 		// If there are no existing expressions clause, just use the new ones
 		if (existingExpressions == null) {
 			return createNodeArray(normalizedNewExpressions);
 		}
-		return createNodeArray([...existingExpressions, ...normalizedNewExpressions]);
+		return createNodeArray(suffix ? [...existingExpressions, ...normalizedNewExpressions] : [...normalizedNewExpressions, ...existingExpressions]);
 	}
 
 	/**
