@@ -36,7 +36,7 @@ import {INamedImportsService} from "./service/named-imports/i-named-imports-serv
 import {NamedImportsService} from "./service/named-imports/named-imports-service";
 import {INamespaceImportService} from "./service/namespace-import/i-namespace-import-service";
 import {NamespaceImportService} from "./service/namespace-import/namespace-import-service";
-import {INodeToDictMapper} from "./node-to-dict-mapper/i-node-to-dict-mapper";
+import {INodeToDictMapperBase} from "./node-to-dict-mapper/i-node-to-dict-mapper";
 import {NodeToDictMapper} from "./node-to-dict-mapper/node-to-dict-mapper";
 import {IRemoverBase} from "./remover/i-remover";
 import {Remover} from "./remover/remover";
@@ -61,6 +61,24 @@ import {ICodeAnalyzer} from "./code-analyzer/i-code-analyzer";
 import {CodeAnalyzerBase} from "./code-analyzer/code-analyzer-base";
 import {IPropertyAccessExpressionService} from "./service/property-access-expression/i-property-access-expression-service";
 import {PropertyAccessExpressionService} from "./service/property-access-expression/property-access-expression-service";
+import {ITypeElementService} from "./service/type-element/i-type-element-service";
+import {TypeElementService} from "./service/type-element/type-element-service";
+import {ITypeNodeService} from "./service/type-node/i-type-node-service";
+import {TypeNodeService} from "./service/type-node/type-node-service";
+import {INodeToDictMapper, wrappedINodeToDictMapper} from "./node-to-dict-mapper/i-node-to-dict-mapper-getter";
+import {IPropertyNameService} from "./service/property-name/i-property-name-service";
+import {PropertyNameService} from "./service/property-name/property-name-service";
+import {IPropertySignatureService} from "./service/property-signature/i-property-signature-service";
+import {PropertySignatureService} from "./service/property-signature/property-signature-service";
+import {IMethodSignatureService} from "./service/method-signature/i-method-signature-service";
+import {MethodSignatureService} from "./service/method-signature/method-signature-service";
+import {IIndexSignatureService} from "./service/index-signature/i-index-signature-service";
+import {IndexSignatureService} from "./service/index-signature/index-signature-service";
+import {IBindingElementService} from "./service/binding-element/i-binding-element-service";
+import {BindingElementService} from "./service/binding-element/binding-element-service";
+import {INodeToCtorMapperBase} from "./node-to-ctor-mapper/i-node-to-ctor-mapper";
+import {NodeToCtorMapper} from "./node-to-ctor-mapper/node-to-ctor-mapper";
+import {INodeToCtorMapper, wrappedINodeToCtorMapper} from "./node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -78,7 +96,8 @@ DIContainer.registerSingleton<IJoinerBase, Joiner>();
 DIContainer.registerSingleton<IResolverBase, Resolver>();
 
 // Mappers
-DIContainer.registerSingleton<INodeToDictMapper, NodeToDictMapper>();
+DIContainer.registerSingleton<INodeToDictMapperBase, NodeToDictMapper>();
+DIContainer.registerSingleton<INodeToCtorMapperBase, NodeToCtorMapper>();
 
 // Provide lazy-getters because there are circular dependencies between AST services and these
 DIContainer.registerSingleton<IJoiner, IJoiner>(() => wrappedIJoiner);
@@ -86,6 +105,8 @@ DIContainer.registerSingleton<IUpdater, IUpdater>(() => wrappedIUpdater);
 DIContainer.registerSingleton<IFormatter, IFormatter>(() => wrappedIFormatter);
 DIContainer.registerSingleton<IRemover, IRemover>(() => wrappedIRemover);
 DIContainer.registerSingleton<IResolver, IResolver>(() => wrappedIResolver);
+DIContainer.registerSingleton<INodeToDictMapper, INodeToDictMapper>(() => wrappedINodeToDictMapper);
+DIContainer.registerSingleton<INodeToCtorMapper, INodeToCtorMapper>(() => wrappedINodeToCtorMapper);
 
 // Parser
 DIContainer.registerSingleton<IParser, Parser>();
@@ -120,6 +141,13 @@ DIContainer.registerSingleton<IInterfaceDeclarationService, InterfaceDeclaration
 DIContainer.registerSingleton<ITypeLiteralNodeService, TypeLiteralNodeService>();
 DIContainer.registerSingleton<ICallExpressionService, CallExpressionService>();
 DIContainer.registerSingleton<IPropertyAccessExpressionService, PropertyAccessExpressionService>();
+DIContainer.registerSingleton<ITypeElementService, TypeElementService>();
+DIContainer.registerSingleton<ITypeNodeService, TypeNodeService>();
+DIContainer.registerSingleton<IPropertyNameService, PropertyNameService>();
+DIContainer.registerSingleton<IPropertySignatureService, PropertySignatureService>();
+DIContainer.registerSingleton<IMethodSignatureService, MethodSignatureService>();
+DIContainer.registerSingleton<IIndexSignatureService, IndexSignatureService>();
+DIContainer.registerSingleton<IBindingElementService, BindingElementService>();
 
 // CodeAnalyzer
 DIContainer.registerSingleton<ICodeAnalyzer, CodeAnalyzerBase>();

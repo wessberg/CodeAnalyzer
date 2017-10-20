@@ -1,0 +1,5 @@
+export enum BindingNameKind {
+	NORMAL = "NORMAL",
+	ARRAY_BINDING = "ARRAY_BINDING",
+	OBJECT_BINDING = "OBJECT_BINDING"
+}

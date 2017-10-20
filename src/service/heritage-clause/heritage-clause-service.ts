@@ -1,6 +1,7 @@
 import {IHeritageClauseService} from "./i-heritage-clause-service";
 import {ExpressionWithTypeArguments, HeritageClause, SyntaxKind} from "typescript";
 import {IPrinter} from "@wessberg/typescript-ast-util";
+import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
 
 /**
  * A service for working with HeritageClauses
@@ -8,6 +9,36 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
 export class HeritageClauseService implements IHeritageClauseService {
 
 	constructor (private printer: IPrinter) {
+	}
+
+	/**
+	 * Gets the first type name of a HeritageClause
+	 * @param {HeritageClause} clause
+	 * @returns {string}
+	 */
+	public getFirstTypeName (clause: HeritageClause): string {
+		return this.getTypeNames(clause)[0];
+	}
+
+	/**
+	 * Gets the first type name with TypeArguments of a HeritageClause
+	 * @param {HeritageClause} clause
+	 * @returns {INameWithTypeArguments}
+	 */
+	public getFirstTypeNameWithArguments (clause: HeritageClause): INameWithTypeArguments {
+		return this.getTypeNamesWithArguments(clause)[0];
+	}
+
+	/**
+	 * Gets the Type names as well as their TypeArguments
+	 * @param {HeritageClause} clause
+	 * @returns {INameWithTypeArguments[]}
+	 */
+	public getTypeNamesWithArguments (clause: HeritageClause): INameWithTypeArguments[] {
+		return clause.types.map(type => ({
+			name: this.printer.print(type.expression),
+			typeArguments: type.typeArguments == null ? null : type.typeArguments.map(typeArgument => this.printer.print(typeArgument))
+		}));
 	}
 
 	/**

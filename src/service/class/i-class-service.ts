@@ -1,12 +1,12 @@
 import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, HeritageClause, MethodDeclaration, PropertyDeclaration, SourceFile} from "typescript";
-import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
-import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
-import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
-import {IClassMethodDict} from "../../dict/class-method/i-class-method-dict";
-import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-accessor/class-accessor-dict";
-import {IClassDict} from "../../dict/class/i-class-dict";
-import {DecoratorDict} from "../../dict/decorator/decorator-dict";
 import {INodeService} from "../node/i-node-service";
+import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
+import {IClassGetAccessorCtor, IClassSetAccessorCtor} from "../../light-ast/ctor/class-accessor/class-accessor-ctor";
+import {IClassMethodCtor} from "../../light-ast/ctor/class-method/i-class-method-ctor";
+import {IConstructorCtor} from "../../light-ast/ctor/constructor/i-constructor-ctor";
+import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
+import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
+import {IClassCtor} from "../../light-ast/ctor/class/i-class-ctor";
 
 export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
 	hasClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): boolean;
@@ -24,19 +24,19 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	getStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
 	getStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;
 
-	getMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
-	getStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
-	getPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
-	getStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
-	getMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
-	getStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
+	getMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
+	getStaticMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
+	getPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
+	getStaticPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
+	getMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
+	getStaticMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[];
 
-	removeMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	removeStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	removePropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	removeStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	removeMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	removeStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removePropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	removeStaticMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
 	removeMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	removeStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
@@ -54,17 +54,17 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	hasGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
-	createClassDeclaration (options: IClassDict): ClassDeclaration;
-	createAndAddClassDeclarationToSourceFile (options: IClassDict, sourceFile: SourceFile): ClassDeclaration;
+	createClassDeclaration (options: IClassCtor): ClassDeclaration;
+	createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile): ClassDeclaration;
 
 	setNameOfClass (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	extendClassWith (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	implementInterfaceOnClass (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	addPropertyToClass (property: IClassPropertyDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	addConstructorToClass (constructor: IConstructorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	addMethodToClass (method: IClassMethodDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	addSetterToClass (method: IClassSetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
-	addGetterToClass (method: IClassGetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	addPropertyToClass (property: IClassPropertyCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	addConstructorToClass (constructor: IConstructorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	addMethodToClass (method: IClassMethodCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	addSetterToClass (method: IClassSetAccessorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+	addGetterToClass (method: IClassGetAccessorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	appendInstructionsToMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	appendInstructionsToStaticMethod (methodName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	appendInstructionsToConstructor (instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;

@@ -1,17 +1,9 @@
 import {IClassService} from "./i-class-service";
 import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
-import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name-with-type-arguments";
-import {IClassPropertyDict} from "../../dict/class-property/i-class-property-dict";
-import {IConstructorDict} from "../../dict/constructor/i-constructor-dict";
-import {IClassMethodDict} from "../../dict/class-method/i-class-method-dict";
-import {IClassGetAccessorDict, IClassSetAccessorDict} from "../../dict/class-accessor/class-accessor-dict";
-import {IClassDict} from "../../dict/class/i-class-dict";
 import {IFormatter} from "../../formatter/i-formatter-getter";
-import {HeritageKind} from "../../dict/heritage/heritage-kind";
 import {IMethodService} from "../method/i-method-service";
 import {IConstructorService} from "../constructor/i-constructor-service";
-import {DecoratorDict} from "../../dict/decorator/decorator-dict";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IUpdater} from "../../updater/i-updater-getter";
@@ -20,6 +12,14 @@ import {NodeService} from "../node/node-service";
 import {IModifierService} from "../modifier/i-modifier-service";
 import {IResolver} from "../../resolver/i-resolver-getter";
 import {IHeritageClauseService} from "../heritage-clause/i-heritage-clause-service";
+import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
+import {IClassCtor} from "../../light-ast/ctor/class/i-class-ctor";
+import {IConstructorCtor} from "../../light-ast/ctor/constructor/i-constructor-ctor";
+import {IClassGetAccessorCtor, IClassSetAccessorCtor} from "../../light-ast/ctor/class-accessor/class-accessor-ctor";
+import {IClassMethodCtor} from "../../light-ast/ctor/class-method/i-class-method-ctor";
+import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
+import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
+import {HeritageKind} from "../../light-ast/dict/heritage/heritage-kind";
 
 /**
  * A class for working with classes
@@ -205,11 +205,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all non-static class members that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removeMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removeMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const members = this.getMembersWithDecorator(decorator, classDeclaration);
 		if (members.length === 0) return false;
 
@@ -221,11 +221,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all static class members that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removeStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removeStaticMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const members = this.getStaticMembersWithDecorator(decorator, classDeclaration);
 		if (members.length === 0) return false;
 
@@ -237,11 +237,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all non-static class properties that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removePropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removePropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const properties = this.getPropertiesWithDecorator(decorator, classDeclaration);
 		if (properties.length === 0) return false;
 
@@ -253,11 +253,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all static class properties that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removeStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removeStaticPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const properties = this.getStaticPropertiesWithDecorator(decorator, classDeclaration);
 		if (properties.length === 0) return false;
 
@@ -269,11 +269,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all non-static class methods that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removeMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removeMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const methods = this.getMethodsWithDecorator(decorator, classDeclaration);
 		if (methods.length === 0) return false;
 
@@ -285,11 +285,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Removes all static class methods that matches the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public removeStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public removeStaticMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const methods = this.getStaticMethodsWithDecorator(decorator, classDeclaration);
 		if (methods.length === 0) return false;
 
@@ -301,65 +301,65 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Returns all of the Class members that is decorated with the provided decorator
-	 * @param {string | DecoratorDict} decorator
+	 * @param {string | IDecoratorCtor} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {ClassElement[]}
 	 */
-	public getMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
+	public getMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
 		return classDeclaration.members.filter(member => this.decoratorService.hasDecoratorWithExpression(decorator, member));
 	}
 
 	/**
 	 * Returns all static members that is decorated with the provided decorator
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {ClassElement[]}
 	 */
-	public getStaticMembersWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
+	public getStaticMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[] {
 		return this.getMembersWithDecorator(decorator, classDeclaration)
 			.filter(member => this.modifierService.isStatic(member));
 	}
 
 	/**
 	 * Returns all members that are decorated with the provided decorator and are non-static PropertyDeclarations
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {PropertyDeclaration[]}
 	 */
-	public getPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
+	public getPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
 		return <PropertyDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
 			.filter(member => isPropertyDeclaration(member) && !this.modifierService.isStatic(member));
 	}
 
 	/**
 	 * Returns all members that are decorated with the provided decorator and are static PropertyDeclarations
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {PropertyDeclaration[]}
 	 */
-	public getStaticPropertiesWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
+	public getStaticPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[] {
 		return <PropertyDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
 			.filter(member => isPropertyDeclaration(member) && this.modifierService.isStatic(member));
 	}
 
 	/**
 	 * Returns all members that are decorated with the provided decorator and are non-static MethodDeclarations
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {MethodDeclaration[]}
 	 */
-	public getMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
+	public getMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
 		return <MethodDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
 			.filter(member => isMethodDeclaration(member) && !this.modifierService.isStatic(member));
 	}
 
 	/**
 	 * Returns all members that are decorated with the provided decorator and are static MethodDeclarations
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {ClassDeclaration | ClassExpression} classDeclaration
 	 * @returns {MethodDeclaration[]}
 	 */
-	public getStaticMethodsWithDecorator (decorator: string|DecoratorDict|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
+	public getStaticMethodsWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration[] {
 		return <MethodDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
 			.filter(member => isMethodDeclaration(member) && this.modifierService.isStatic(member));
 	}
@@ -643,20 +643,20 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Creates a new ClassDeclaration
-	 * @param {IClassDict} options
+	 * @param {IClassCtor} options
 	 * @returns {ClassDeclaration}
 	 */
-	public createClassDeclaration (options: IClassDict): ClassDeclaration {
+	public createClassDeclaration (options: IClassCtor): ClassDeclaration {
 		return this.formatter.formatClassDeclaration(options);
 	}
 
 	/**
 	 * Creates a ClassDeclaration and adds it to the provided SourceFile
-	 * @param {IClassDict} options
+	 * @param {IClassCtor} options
 	 * @param {SourceFile} sourceFile
 	 * @returns {ClassDeclaration}
 	 */
-	public createAndAddClassDeclarationToSourceFile (options: IClassDict, sourceFile: SourceFile): ClassDeclaration {
+	public createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile): ClassDeclaration {
 		const classDeclaration = this.createClassDeclaration(options);
 
 		// Update the SourceFile to reflect the change
@@ -733,11 +733,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Adds a new property to the given class
-	 * @param {IClassPropertyDict} property
+	 * @param {IClassPropertyCtor} property
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public addPropertyToClass (property: IClassPropertyDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+	public addPropertyToClass (property: IClassPropertyCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(property.name, classDeclaration)) return classDeclaration;
 
@@ -753,11 +753,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Adds a Constructor to the given class
-	 * @param {IConstructorDict} constructor
+	 * @param {IConstructorCtor} constructor
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public addConstructorToClass (constructor: IConstructorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+	public addConstructorToClass (constructor: IConstructorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasConstructor(classDeclaration)) return classDeclaration;
 
@@ -773,11 +773,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Adds a method to the given class
-	 * @param {IClassMethodDict} method
+	 * @param {IClassMethodCtor} method
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public addMethodToClass (method: IClassMethodDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+	public addMethodToClass (method: IClassMethodCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasMemberWithName(method.name, classDeclaration)) return classDeclaration;
 
@@ -793,11 +793,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Adds a setter to the provided class
-	 * @param {IClassSetAccessorDict} method
+	 * @param {IClassSetAccessorCtor} method
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public addSetterToClass (method: IClassSetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+	public addSetterToClass (method: IClassSetAccessorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasSetterWithName(method.name, classDeclaration)) return classDeclaration;
 
@@ -813,11 +813,11 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * Adds a getter to the provided class
-	 * @param {IClassGetAccessorDict} method
+	 * @param {IClassGetAccessorCtor} method
 	 * @param {ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {ClassDeclaration|ClassExpression}
 	 */
-	public addGetterToClass (method: IClassGetAccessorDict, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+	public addGetterToClass (method: IClassGetAccessorCtor, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already has a member with the name of the property, do nothing
 		if (this.hasGetterWithName(method.name, classDeclaration)) return classDeclaration;
 

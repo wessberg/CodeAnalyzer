@@ -20,6 +20,13 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
 import {IResolver} from "../resolver/i-resolver-getter";
 import {IPrinter} from "@wessberg/typescript-ast-util";
+import {ITypeElementService} from "../service/type-element/i-type-element-service";
+import {ITypeNodeService} from "../service/type-node/i-type-node-service";
+import {IPropertyNameService} from "../service/property-name/i-property-name-service";
+import {IPropertySignatureService} from "../service/property-signature/i-property-signature-service";
+import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
+import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
+import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -144,6 +151,48 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {ITypeLiteralNodeService}
 	 */
 	public readonly typeLiteralNodeService: ITypeLiteralNodeService;
+
+	/**
+	 * A service that helps with working with TypeElements
+	 * @type {ITypeElementService}
+	 */
+	public readonly typeElementService: ITypeElementService;
+
+	/**
+	 * A service that helps with working with PropertyNames
+	 * @type {IPropertyNameService}
+	 */
+	public readonly propertyNameService: IPropertyNameService;
+
+	/**
+	 * A service that helps with working with PropertySignatures
+	 * @type {IPropertySignatureService}
+	 */
+	public readonly propertySignatureService: IPropertySignatureService;
+
+	/**
+	 * A service that helps with working with MethodSignatures
+	 * @type {IMethodSignatureService}
+	 */
+	public readonly methodSignatureService: IMethodSignatureService;
+
+	/**
+	 * A service that helps with working with IndexSignatureDeclarations
+	 * @type {IIndexSignatureService}
+	 */
+	public readonly indexSignatureService: IIndexSignatureService;
+
+	/**
+	 * A service that helps with working with BindingElements
+	 * @type {IBindingElementService}
+	 */
+	public readonly bindingElementService: IBindingElementService;
+
+	/**
+	 * A service that helps with working with TypeNodes
+	 * @type {ITypeNodeService}
+	 */
+	public readonly typeNodeService: ITypeNodeService;
 
 	constructor () {
 		return DIContainer.get<ICodeAnalyzer>();

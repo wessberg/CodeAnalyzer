@@ -1,10 +1,10 @@
 import {INamedExportsService} from "./i-named-exports-service";
-import {INamedImportExportDict} from "../../dict/named-import-export/i-named-import-export-dict";
 import {ExportSpecifier, NamedExports} from "typescript";
-import {isINamedImportExportDict} from "../../dict/named-import-export/is-i-named-import-export-dict";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
+import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
+import {isINamedImportExportCtor} from "../../light-ast/ctor/named-import-export/is-i-named-import-export-ctor";
 
 /**
  * A service for working with NamedExports
@@ -16,13 +16,13 @@ export class NamedExportsService implements INamedExportsService {
 
 	/**
 	 * Returns true if the given NamedExports contains an export matching the provided name
-	 * @param {string | INamedImportExportDict | ExportSpecifier} name
+	 * @param {string | INamedImportExportCtor | ExportSpecifier} name
 	 * @param {NamedExports} namedExports
 	 * @returns {boolean}
 	 */
-	public hasExportWithName (name: string|INamedImportExportDict|ExportSpecifier, namedExports: NamedExports): boolean {
-		const normalizedName = typeof name === "string" ? name : isINamedImportExportDict(name) ? name.name : name.name.text;
-		const propertyName = typeof name === "string" ? undefined : isINamedImportExportDict(name) ? name.propertyName : name.propertyName == null ? undefined : name.propertyName.text;
+	public hasExportWithName (name: string|INamedImportExportCtor|ExportSpecifier, namedExports: NamedExports): boolean {
+		const normalizedName = typeof name === "string" ? name : isINamedImportExportCtor(name) ? name.name : name.name.text;
+		const propertyName = typeof name === "string" ? undefined : isINamedImportExportCtor(name) ? name.propertyName : name.propertyName == null ? undefined : name.propertyName.text;
 
 		return namedExports.elements.some(element => {
 			const matchesName = element.name.text === normalizedName;
@@ -33,11 +33,11 @@ export class NamedExportsService implements INamedExportsService {
 
 	/**
 	 * Adds an NamedExport to the provided NamedExports
-	 * @param {string | INamedImportExportDict} name
+	 * @param {string | INamedImportExportCtor} name
 	 * @param {NamedExports} namedExports
 	 * @returns {NamedExports}
 	 */
-	public addNamedExportToNamedExports (name: string|INamedImportExportDict, namedExports: NamedExports): NamedExports {
+	public addNamedExportToNamedExports (name: string|INamedImportExportCtor, namedExports: NamedExports): NamedExports {
 		// If the NamedExports already includes the provided name, return the existing one
 		if (this.hasExportWithName(name, namedExports)) {
 			return namedExports;

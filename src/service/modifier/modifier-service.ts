@@ -1,8 +1,8 @@
 import {IModifierService} from "./i-modifier-service";
 import {createNodeArray, Modifier, Node, NodeArray, SyntaxKind} from "typescript";
-import {VisibilityKind} from "../../dict/visibility/visibility-kind";
-import {ModifierKind} from "../../dict/modifier/modifier-kind";
 import {IFormatter} from "../../formatter/i-formatter-getter";
+import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
+import {ModifierKind} from "../../light-ast/dict/modifier/modifier-kind";
 
 /**
  * A service that helps with Modifiers

@@ -18,6 +18,13 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
 import {IResolver} from "../resolver/i-resolver-getter";
 import {IPrinter} from "@wessberg/typescript-ast-util";
+import {ITypeElementService} from "../service/type-element/i-type-element-service";
+import {ITypeNodeService} from "../service/type-node/i-type-node-service";
+import {IPropertyNameService} from "../service/property-name/i-property-name-service";
+import {IPropertySignatureService} from "../service/property-signature/i-property-signature-service";
+import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
+import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
+import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
 
 export interface ICodeAnalyzer {
 	readonly languageService: ITypescriptLanguageService;
@@ -40,4 +47,11 @@ export interface ICodeAnalyzer {
 	readonly parameterService: IParameterService;
 	readonly propertyService: IPropertyService;
 	readonly typeLiteralNodeService: ITypeLiteralNodeService;
+	readonly typeElementService: ITypeElementService;
+	readonly typeNodeService: ITypeNodeService;
+	readonly propertyNameService: IPropertyNameService;
+	readonly propertySignatureService: IPropertySignatureService;
+	readonly methodSignatureService: IMethodSignatureService;
+	readonly indexSignatureService: IIndexSignatureService;
+	readonly bindingElementService: IBindingElementService;
 }

@@ -1,8 +1,46 @@
-import {ExportSpecifier, ImportClause, ImportSpecifier} from "typescript";
-import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
-import {INamedImportExportDict} from "../dict/named-import-export/i-named-import-export-dict";
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {IImportClauseDict} from "../light-ast/dict/import-clause/i-import-clause-dict";
+import {INamedImportExportDict} from "../light-ast/dict/named-import-export/i-named-import-export-dict";
+import {ITypeLiteralDict} from "../light-ast/dict/type-literal/i-type-literal-dict";
+import {IInterfaceDict} from "../light-ast/dict/interface/i-interface-dict";
+import {ITypeElementDict, TypeElementDict} from "../light-ast/dict/type-element/i-type-element-dict";
+import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../light-ast/dict/heritage/i-heritage-dict";
+import {IPropertySignatureDict} from "../light-ast/dict/property-signature/i-property-signature-dict";
+import {ICallSignatureDict} from "../light-ast/dict/call-signature/i-call-signature-dict";
+import {IConstructSignatureDict} from "../light-ast/dict/construct-signature/i-construct-signature-dict";
+import {IMethodSignatureDict} from "../light-ast/dict/method-signature/i-method-signature-dict";
+import {IIndexSignatureDict} from "../light-ast/dict/index-signature/i-index-signature-dict";
+import {ISignatureDict} from "../light-ast/dict/signature/i-signature-dict";
+import {IParameterDict} from "../light-ast/dict/parameter/i-parameter-dict";
+import {BindingNameDict, IArrayBindingNameDict, INormalBindingNameDict, IObjectBindingNameDict} from "../light-ast/dict/binding-name/binding-name-dict";
+import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
+import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
+import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 
-export interface INodeToDictMapper {
-	toImportClauseDict (node: ImportClause|undefined): IImportClauseDict|undefined;
-	toNamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportDict|undefined;
+export interface INodeToDictMapperBase {
+	toIImportClauseDict (node: ImportClause|undefined): IImportClauseDict|undefined;
+	toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportDict|undefined;
+	toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined): ITypeLiteralDict|undefined;
+	toIInterfaceDict (node: InterfaceDeclaration|undefined): IInterfaceDict|undefined;
+	toITypeElementDict (node: TypeElement|undefined): ITypeElementDict|undefined;
+	toTypeElementDict (node: TypeElement|undefined): TypeElementDict|undefined;
+	toHeritageDict (node: HeritageClause|undefined): HeritageDict|undefined;
+	toIExtendsHeritageDict (node: HeritageClause|undefined): IExtendsHeritageDict|undefined;
+	toIImplementsHeritageDict (node: HeritageClause|undefined): IImplementsHeritageDict|undefined;
+	toIPropertySignatureDict (node: PropertySignature|undefined): IPropertySignatureDict|undefined;
+	toICallSignatureDict (node: CallSignatureDeclaration|undefined): ICallSignatureDict|undefined;
+	toIConstructSignatureDict (node: ConstructSignatureDeclaration|undefined): IConstructSignatureDict|undefined;
+	toIMethodSignatureDict (node: MethodSignature|undefined): IMethodSignatureDict|undefined;
+	toIIndexSignatureDict (node: IndexSignatureDeclaration|undefined): IIndexSignatureDict|undefined;
+	toISignatureDict (node: SignatureDeclaration|undefined): ISignatureDict|undefined;
+	toIParameterDict (node: ParameterDeclaration|undefined): IParameterDict|undefined;
+	toBindingNameDict (node: BindingName|undefined): BindingNameDict|undefined;
+	toINormalBindingNameDict (node: Identifier|undefined): INormalBindingNameDict|undefined;
+	toIObjectBindingNameDict (node: ObjectBindingPattern|undefined): IObjectBindingNameDict|undefined;
+	toIArrayBindingNameDict (node: ArrayBindingPattern|undefined): IArrayBindingNameDict|undefined;
+	toIObjectBindingElementDict (node: BindingElement|undefined): IObjectBindingElementDict|undefined;
+	toINormalArrayBindingElementDict (node: BindingElement|undefined): INormalArrayBindingElementDict|undefined;
+	toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined): IOmittedArrayBindingElementDict|undefined;
+	toArrayBindingElementDict (node: ArrayBindingElement|undefined): ArrayBindingElementDict|undefined;
+	toIDecoratorDict (node: Decorator|undefined): IDecoratorDict|undefined;
 }

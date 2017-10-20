@@ -1,70 +1,70 @@
 import {AccessorDeclaration, BindingName, Block, ClassDeclaration, Node, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, MethodDeclaration, Modifier, NamedImports, NamespaceImport, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration, KeywordTypeNode, NamedExports} from "typescript";
-import {IImportDict} from "../dict/import/i-import-dict";
-import {INamedImportExportDict} from "../dict/named-import-export/i-named-import-export-dict";
-import {AccessorDict, IGetAccessorDict, ISetAccessorDict} from "../dict/accessor/accessor-dict";
-import {ClassAccessorDict, IClassGetAccessorDict, IClassSetAccessorDict} from "../dict/class-accessor/class-accessor-dict";
-import {IMethodDict} from "../dict/method/i-method-dict";
-import {IClassMethodDict} from "../dict/class-method/i-class-method-dict";
-import {ClassElementDict} from "../dict/class-element/class-element-dict";
-import {IClassPropertyDict} from "../dict/class-property/i-class-property-dict";
-import {IClassDict} from "../dict/class/i-class-dict";
-import {IConstructorDict} from "../dict/constructor/i-constructor-dict";
-import {INameWithTypeArguments} from "../dict/name-with-type-arguments/i-name-with-type-arguments";
-import {ModifierKind} from "../dict/modifier/modifier-kind";
-import {IAllModifiersDict} from "../dict/modifier/i-all-modifiers-dict";
-import {BindingNameDict} from "../dict/binding-name/binding-name-dict";
-import {ParameterDict} from "../dict/parameter/parameter-dict";
-import {DecoratorDict} from "../dict/decorator/decorator-dict";
-import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../dict/heritage/i-heritage-clause-dict";
-import {IImportClauseDict} from "../dict/import-clause/i-import-clause-dict";
+import {IImportCtor} from "../light-ast/ctor/import/i-import-ctor";
+import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
+import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
+import {AccessorCtor, IGetAccessorCtor, ISetAccessorCtor} from "../light-ast/ctor/accessor/accessor-ctor";
+import {ClassAccessorCtor, IClassGetAccessorCtor, IClassSetAccessorCtor} from "../light-ast/ctor/class-accessor/class-accessor-ctor";
+import {IMethodCtor} from "../light-ast/ctor/method/i-method-ctor";
+import {IClassMethodCtor} from "../light-ast/ctor/class-method/i-class-method-ctor";
+import {ClassElementCtor} from "../light-ast/ctor/class-element/class-element-ctor";
+import {IClassPropertyCtor} from "../light-ast/ctor/class-property/i-class-property-ctor";
+import {IClassCtor} from "../light-ast/ctor/class/i-class-ctor";
+import {IConstructorCtor} from "../light-ast/ctor/constructor/i-constructor-ctor";
+import {HeritageCtor, IExtendsHeritageCtor, IImplementsHeritageCtor} from "../light-ast/ctor/heritage/i-heritage-ctor";
+import {INameWithTypeArguments} from "../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
+import {ModifierKind} from "../light-ast/dict/modifier/modifier-kind";
+import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
+import {BindingNameCtor} from "../light-ast/ctor/binding-name/binding-name-ctor";
+import {IParameterCtor} from "../light-ast/ctor/parameter/i-parameter-ctor";
+import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
 
 export interface IFormatterBase {
 	formatUndefined (): KeywordTypeNode;
-	formatImportDeclaration (options: IImportDict): ImportDeclaration;
-	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseDict): ImportClause;
-	formatNamedImports (namedImports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedImports;
-	formatNamedExports (namedExports: INamedImportExportDict|Iterable<INamedImportExportDict>): NamedExports;
+	formatImportDeclaration (options: IImportCtor): ImportDeclaration;
+	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseCtor): ImportClause;
+	formatNamedImports (namedImports: INamedImportExportCtor|Iterable<INamedImportExportCtor>): NamedImports;
+	formatNamedExports (namedExports: INamedImportExportCtor|Iterable<INamedImportExportCtor>): NamedExports;
 	formatNamespaceImport (namespaceName: string): NamespaceImport;
 	formatNodeArray <T extends Node> (nodes?: Iterable<T>|undefined): NodeArray<T>;
 
-	formatAccessor (accessor: AccessorDict): AccessorDeclaration;
-	formatGetAccessor (accessor: IGetAccessorDict): GetAccessorDeclaration;
-	formatSetAccessor (accessor: ISetAccessorDict): SetAccessorDeclaration;
+	formatAccessor (accessor: AccessorCtor): AccessorDeclaration;
+	formatGetAccessor (accessor: IGetAccessorCtor): GetAccessorDeclaration;
+	formatSetAccessor (accessor: ISetAccessorCtor): SetAccessorDeclaration;
 
-	formatClassAccessor (accessor: ClassAccessorDict): AccessorDeclaration;
-	formatClassGetAccessor (accessor: IClassGetAccessorDict): GetAccessorDeclaration;
-	formatClassSetAccessor (accessor: IClassSetAccessorDict): SetAccessorDeclaration;
+	formatClassAccessor (accessor: ClassAccessorCtor): AccessorDeclaration;
+	formatClassGetAccessor (accessor: IClassGetAccessorCtor): GetAccessorDeclaration;
+	formatClassSetAccessor (accessor: IClassSetAccessorCtor): SetAccessorDeclaration;
 
-	formatMethod (method: IMethodDict): MethodDeclaration;
-	formatClassMethod (method: IClassMethodDict): MethodDeclaration;
+	formatMethod (method: IMethodCtor): MethodDeclaration;
+	formatClassMethod (method: IClassMethodCtor): MethodDeclaration;
 
-	formatClassElement (member: ClassElementDict): ClassElement;
-	formatClassElements (members: Iterable<ClassElementDict>): NodeArray<ClassElement>;
+	formatClassElement (member: ClassElementCtor): ClassElement;
+	formatClassElements (members: Iterable<ClassElementCtor>): NodeArray<ClassElement>;
 
-	formatClassProperty (property: IClassPropertyDict): PropertyDeclaration;
+	formatClassProperty (property: IClassPropertyCtor): PropertyDeclaration;
 
-	formatClassDeclaration (classDeclaration: IClassDict): ClassDeclaration;
+	formatClassDeclaration (classDeclaration: IClassCtor): ClassDeclaration;
 
-	formatConstructor (constructor: IConstructorDict): ConstructorDeclaration;
+	formatConstructor (constructor: IConstructorCtor): ConstructorDeclaration;
 
-	formatHeritageClause (clause: HeritageDict): HeritageClause;
-	formatHeritageClauses (clauses: Iterable<HeritageDict>): NodeArray<HeritageClause>;
-	formatExtendsHeritageClause (options: IExtendsHeritageDict): HeritageClause;
-	formatImplementsHeritageClause (options: IImplementsHeritageDict): HeritageClause;
+	formatHeritageClause (clause: HeritageCtor): HeritageClause;
+	formatHeritageClauses (clauses: Iterable<HeritageCtor>): NodeArray<HeritageClause>;
+	formatExtendsHeritageClause (options: IExtendsHeritageCtor): HeritageClause;
+	formatImplementsHeritageClause (options: IImplementsHeritageCtor): HeritageClause;
 
 	formatExpressionWithTypeArguments (options: INameWithTypeArguments): ExpressionWithTypeArguments;
 
 	formatModifier (modifier: ModifierKind): Modifier;
-	formatModifiers (modifiers: Partial<IAllModifiersDict>): NodeArray<Modifier>;
+	formatModifiers (modifiers: Partial<IAllModifiersCtor>): NodeArray<Modifier>;
 
-	formatBindingName (name: BindingNameDict): BindingName;
+	formatBindingName (name: BindingNameCtor): BindingName;
 	formatIdentifier (name: string): Identifier;
 
-	formatParameter (parameter: ParameterDict): ParameterDeclaration;
-	formatParameters (parameters: Iterable<ParameterDict>): NodeArray<ParameterDeclaration>;
+	formatParameter (parameter: IParameterCtor): ParameterDeclaration;
+	formatParameters (parameters: Iterable<IParameterCtor>): NodeArray<ParameterDeclaration>;
 
-	formatDecorator (decorator: DecoratorDict): Decorator;
-	formatDecorators (decorators: Iterable<DecoratorDict>): NodeArray<Decorator>;
+	formatDecorator (decorator: IDecoratorCtor): Decorator;
+	formatDecorators (decorators: Iterable<IDecoratorCtor>): NodeArray<Decorator>;
 
 	formatDotDotDotToken (isRestSpread: boolean): Token<SyntaxKind.DotDotDotToken>|undefined;
 	formatQuestionToken (isOptional: boolean): Token<SyntaxKind.QuestionToken>|undefined;

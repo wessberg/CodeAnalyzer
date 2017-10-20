@@ -1,6 +1,6 @@
 import {Modifier, Node, NodeArray} from "typescript";
-import {VisibilityKind} from "../../dict/visibility/visibility-kind";
-import {ModifierKind} from "../../dict/modifier/modifier-kind";
+import {ModifierKind} from "../../light-ast/dict/modifier/modifier-kind";
+import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 
 export interface IModifierService {
 	getModifierName (modifier: Modifier): string;

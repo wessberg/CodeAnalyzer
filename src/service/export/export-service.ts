@@ -1,7 +1,6 @@
 import {NodeService} from "../node/node-service";
 import {ExportDeclaration, isStringLiteral, NamedExports, SourceFile, SyntaxKind} from "typescript";
 import {IExportService} from "./i-export-service";
-import {INamedImportExportDict} from "../../dict/named-import-export/i-named-import-export-dict";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IRemover} from "../../remover/i-remover-base";
 import {IUpdater} from "../../updater/i-updater-getter";
@@ -10,6 +9,7 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedExportsService} from "../named-exports/i-named-exports-service";
 import {IStringUtil} from "@wessberg/stringutil";
+import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 
 /**
  * A service for working with ExportDeclarations
@@ -54,12 +54,12 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 
 	/**
 	 * Gets the ExportDeclaration that references the given NamedExport
-	 * @param {INamedImportExportDict | string} namedExport
+	 * @param {INamedImportExportCtor | string} namedExport
 	 * @param {SourceFile} sourceFile
 	 * @param {string} path
 	 * @returns {ExportDeclaration}
 	 */
-	public getExportWithNamedExport (namedExport: INamedImportExportDict|string, sourceFile: SourceFile, path?: string): ExportDeclaration|undefined {
+	public getExportWithNamedExport (namedExport: INamedImportExportCtor|string, sourceFile: SourceFile, path?: string): ExportDeclaration|undefined {
 		const exports = path == null ? [...this.getAll(sourceFile)] : this.getExportsForPath(path, sourceFile);
 		return exports.find(exportDeclaration => this.hasNamedExport(namedExport, exportDeclaration));
 	}
@@ -103,11 +103,11 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 
 	/**
 	 * Returns true if the provided ExportDeclaration has a NamedExport matching the provided one
-	 * @param {INamedImportExportDict | string} namedExport
+	 * @param {INamedImportExportCtor | string} namedExport
 	 * @param {ExportDeclaration} exportDeclaration
 	 * @returns {boolean}
 	 */
-	public hasNamedExport (namedExport: INamedImportExportDict|string, exportDeclaration: ExportDeclaration): boolean {
+	public hasNamedExport (namedExport: INamedImportExportCtor|string, exportDeclaration: ExportDeclaration): boolean {
 		const namedExports = this.getNamedExportsForExportDeclaration(exportDeclaration);
 		return namedExports != null && this.namedExportsService.hasExportWithName(namedExport, namedExports);
 	}
@@ -132,11 +132,11 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 
 	/**
 	 * Adds the given NamedExport to the given ExportDeclaration
-	 * @param {INamedImportExportDict} namedExport
+	 * @param {INamedImportExportCtor} namedExport
 	 * @param {ExportDeclaration} exportDeclaration
 	 * @returns {ExportDeclaration}
 	 */
-	public addNamedExportToExportDeclaration (namedExport: INamedImportExportDict, exportDeclaration: ExportDeclaration): ExportDeclaration {
+	public addNamedExportToExportDeclaration (namedExport: INamedImportExportCtor, exportDeclaration: ExportDeclaration): ExportDeclaration {
 		// If the ExportDeclaration already has that NamedExport, do nothing
 		if (this.hasNamedExport(namedExport, exportDeclaration)) return exportDeclaration;
 

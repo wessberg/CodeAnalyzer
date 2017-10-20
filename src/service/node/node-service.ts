@@ -1,9 +1,9 @@
 import {INodeService} from "./i-node-service";
 import {Decorator, Node, NodeArray, SourceFile, SyntaxKind} from "typescript";
-import {DecoratorDict} from "../../dict/decorator/decorator-dict";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
 
 /**
  * An abstract Service for working with Nodes
@@ -33,11 +33,11 @@ export abstract class NodeService <T extends Node> implements INodeService<T> {
 	/**
 	 * Returns true if the node has a decorator matching the provided one
 	 * @template T
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {T} node
 	 * @returns {boolean}
 	 */
-	public hasDecorator (decorator: string|DecoratorDict|RegExp, node: T): boolean {
+	public hasDecorator (decorator: string|IDecoratorCtor|RegExp, node: T): boolean {
 		return this.decoratorService.hasDecoratorWithExpression(decorator, node);
 	}
 
@@ -45,10 +45,10 @@ export abstract class NodeService <T extends Node> implements INodeService<T> {
 	 * Removes all matching decorators from the node. If a second argument isn't provided, all decorators will be removed.
 	 * @template T
 	 * @param {T} node
-	 * @param {(string | DecoratorDict | RegExp)[]} decorators
+	 * @param {(string | IDecoratorCtor | RegExp)[]} decorators
 	 * @returns {boolean}
 	 */
-	public removeDecorators (node: T, decorators?: (string|DecoratorDict|RegExp)[]): boolean {
+	public removeDecorators (node: T, decorators?: (string|IDecoratorCtor|RegExp)[]): boolean {
 
 		return this.remover.removeDecorators(
 			node,
@@ -65,11 +65,11 @@ export abstract class NodeService <T extends Node> implements INodeService<T> {
 	/**
 	 * Removes the provided decorator from the MethodDeclaration, if it has it
 	 * @template T
-	 * @param {string | DecoratorDict | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
 	 * @param {T} node
 	 * @returns {boolean}
 	 */
-	public removeDecorator (decorator: string|DecoratorDict|RegExp, node: T): boolean {
+	public removeDecorator (decorator: string|IDecoratorCtor|RegExp, node: T): boolean {
 		return this.removeDecorators(node, [decorator]);
 	}
 }

@@ -2,7 +2,6 @@ import "../../src/services";
 import {test} from "ava";
 import {DIContainer} from "@wessberg/di";
 import {IPrinter} from "@wessberg/typescript-ast-util";
-import {DecoratorKind} from "../../src/dict/decorator/decorator-kind";
 import {CodeAnalyzer} from "../../src/code-analyzer/code-analyzer";
 
 const {classService, importService, interfaceDeclarationService, callExpressionService, constructorService, languageService} = new CodeAnalyzer();
@@ -31,8 +30,7 @@ classService.createAndAddClassDeclarationToSourceFile({
 	members: null,
 	decorators: [
 		{
-			kind: DecoratorKind.EXPRESSION,
-			expression: "foobar({})"
+			expression: "foobar"
 		}
 	],
 	isAbstract: true,
@@ -74,8 +72,9 @@ console.log(constructorService.getParameterTypeNames(ctor!));
 console.log("all non-initialized constructor parameter type names:");
 console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
-console.log(printer.stringify(sourceFile));
 console.log(printer.print(sourceFile));
+
+console.log(JSON.stringify(interfaceDeclarationService.toInterfaceDict(firstInterface), null, "  "));
 
 test("foo", t => {
 	t.true(true);

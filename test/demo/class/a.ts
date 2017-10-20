@@ -38,5 +38,7 @@ foo<string, number, C>("", 2);
 interface IFoo {
 	a?: string;
 	b: number;
+	c: Promise<boolean>;
+	d: {a?: "string"|"number"};
 }
 /*tslint:enable*/

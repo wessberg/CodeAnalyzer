@@ -9,6 +9,7 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
  * A service for working with ParameterDeclarations
  */
 export class ParameterService extends NodeService<ParameterDeclaration> implements IParameterService {
+
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -20,6 +21,15 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 							 remover: IRemover,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, remover, astUtil);
+	}
+
+	/**
+	 * Returns true if the ParameterDeclaration has a questionToken
+	 * @param {ParameterDeclaration} parameter
+	 * @returns {boolean}
+	 */
+	public isReadonly (parameter: ParameterDeclaration): boolean {
+		return parameter.questionToken != null;
 	}
 
 	/**
@@ -66,5 +76,15 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	public getTypeName (parameter: ParameterDeclaration): string|undefined {
 		if (parameter.type == null) return undefined;
 		return this.printer.print(parameter.type);
+	}
+
+	/**
+	 * Gets the initializer expression of the ParameterDeclaration
+	 * @param {ParameterDeclaration} parameter
+	 * @returns {string}
+	 */
+	public getInitializer (parameter: ParameterDeclaration): string|undefined {
+		if (parameter.initializer == null) return undefined;
+		return this.printer.print(parameter.initializer);
 	}
 }
