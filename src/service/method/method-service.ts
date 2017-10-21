@@ -6,8 +6,9 @@ import {IJoiner} from "../../joiner/i-joiner-getter";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {NodeService} from "../node/node-service";
-import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
 
 /**
  * A service that helps with working with MethodDeclarations
@@ -23,7 +24,7 @@ export class MethodService extends NodeService<MethodDeclaration> implements IMe
 	constructor (private formatter: IFormatter,
 							 private updater: IUpdater,
 							 private joiner: IJoiner,
-							 private printer: IPrinter,
+							 private typeNodeService: ITypeNodeService,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
@@ -47,7 +48,7 @@ export class MethodService extends NodeService<MethodDeclaration> implements IMe
 	 */
 	public getTypeName (method: MethodDeclaration): string|undefined {
 		if (method.type == null) return undefined;
-		return this.printer.print(method.type);
+		return this.typeNodeService.getNameOfType(method.type);
 	}
 
 	/**

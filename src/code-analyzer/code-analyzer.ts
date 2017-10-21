@@ -27,6 +27,14 @@ import {IPropertySignatureService} from "../service/property-signature/i-propert
 import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
 import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
 import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
+import {IRegularExpressionLiteralService} from "../service/regular-expression-literal/i-regular-expression-literal-service";
+import {IStringLiteralService} from "../service/string-literal/i-string-literal-service";
+import {INumericLiteralService} from "../service/numeric-literal/i-numeric-literal-service";
+import {INoSubstitutionTemplateLiteralService} from "../service/no-substitution-template-literal/i-no-substitution-template-literal-service";
+import {IIdentifierService} from "../service/identifier/i-identifier-service";
+import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
+import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
+import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -193,6 +201,54 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {ITypeNodeService}
 	 */
 	public readonly typeNodeService: ITypeNodeService;
+
+	/**
+	 * A service that helps with working with Identifiers
+	 * @type {IIdentifierService}
+	 */
+	public readonly identifierService: IIdentifierService;
+
+	/**
+	 * A service that helps with working with StringLiterals
+	 * @type {IStringLiteralService}
+	 */
+	public readonly stringLiteralService: IStringLiteralService;
+
+	/**
+	 * A service that helps with working with NumericLiterals
+	 * @type {INumericLiteralService}
+	 */
+	public readonly numericLiteralService: INumericLiteralService;
+
+	/**
+	 * A service that helps with working with NoSubstitutionTemplateLiterals
+	 * @type {INoSubstitutionTemplateLiteralService}
+	 */
+	public readonly noSubstitutionTemplateLiteralService: INoSubstitutionTemplateLiteralService;
+
+	/**
+	 * A service that helps with working with RegularExpressionLiterals
+	 * @type {IRegularExpressionLiteralService}
+	 */
+	public readonly regularExpressionLiteralService: IRegularExpressionLiteralService;
+
+	/**
+	 * A service that helps with working with ComputedPropertyNames
+	 * @type {IComputedPropertyNameService}
+	 */
+	public readonly computedPropertyNameService: IComputedPropertyNameService;
+
+	/**
+	 * A service that helps with working with BindingNames
+	 * @type {IBindingNameService}
+	 */
+	public readonly bindingNameService: IBindingNameService;
+
+	/**
+	 * A service that helps with working with BindingPatterns
+	 * @type {IBindingPatternService}
+	 */
+	public readonly bindingPatternService: IBindingPatternService;
 
 	constructor () {
 		return DIContainer.get<ICodeAnalyzer>();

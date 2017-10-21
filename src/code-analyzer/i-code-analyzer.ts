@@ -25,6 +25,14 @@ import {IPropertySignatureService} from "../service/property-signature/i-propert
 import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
 import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
 import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
+import {IRegularExpressionLiteralService} from "../service/regular-expression-literal/i-regular-expression-literal-service";
+import {IStringLiteralService} from "../service/string-literal/i-string-literal-service";
+import {INumericLiteralService} from "../service/numeric-literal/i-numeric-literal-service";
+import {INoSubstitutionTemplateLiteralService} from "../service/no-substitution-template-literal/i-no-substitution-template-literal-service";
+import {IIdentifierService} from "../service/identifier/i-identifier-service";
+import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
+import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
+import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 
 export interface ICodeAnalyzer {
 	readonly languageService: ITypescriptLanguageService;
@@ -54,4 +62,12 @@ export interface ICodeAnalyzer {
 	readonly methodSignatureService: IMethodSignatureService;
 	readonly indexSignatureService: IIndexSignatureService;
 	readonly bindingElementService: IBindingElementService;
+	readonly identifierService: IIdentifierService;
+	readonly stringLiteralService: IStringLiteralService;
+	readonly numericLiteralService: INumericLiteralService;
+	readonly noSubstitutionTemplateLiteralService: INoSubstitutionTemplateLiteralService;
+	readonly regularExpressionLiteralService: IRegularExpressionLiteralService;
+	readonly computedPropertyNameService: IComputedPropertyNameService;
+	readonly bindingNameService: IBindingNameService;
+	readonly bindingPatternService: IBindingPatternService;
 }

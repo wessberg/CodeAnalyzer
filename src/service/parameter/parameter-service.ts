@@ -5,6 +5,8 @@ import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
+import {IBindingNameService} from "../binding-name/i-binding-name-service";
 
 /**
  * A service for working with ParameterDeclarations
@@ -18,6 +20,8 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	protected readonly ALLOWED_KINDS = [SyntaxKind.Parameter];
 
 	constructor (private printer: IPrinter,
+							 private typeNodeService: ITypeNodeService,
+							 private bindingNameService: IBindingNameService,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 languageService: ITypescriptLanguageService,
@@ -49,7 +53,7 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	 * @returns {string}
 	 */
 	public getName (parameter: ParameterDeclaration): string {
-		return this.printer.print(parameter.name);
+		return this.bindingNameService.getName(parameter.name);
 	}
 
 	/**
@@ -77,7 +81,7 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	 */
 	public getTypeName (parameter: ParameterDeclaration): string|undefined {
 		if (parameter.type == null) return undefined;
-		return this.printer.print(parameter.type);
+		return this.typeNodeService.getNameOfType(parameter.type);
 	}
 
 	/**

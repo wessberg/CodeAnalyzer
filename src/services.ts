@@ -79,6 +79,22 @@ import {BindingElementService} from "./service/binding-element/binding-element-s
 import {INodeToCtorMapperBase} from "./node-to-ctor-mapper/i-node-to-ctor-mapper";
 import {NodeToCtorMapper} from "./node-to-ctor-mapper/node-to-ctor-mapper";
 import {INodeToCtorMapper, wrappedINodeToCtorMapper} from "./node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
+import {IIdentifierService} from "./service/identifier/i-identifier-service";
+import {IdentifierService} from "./service/identifier/identifier-service";
+import {IStringLiteralService} from "./service/string-literal/i-string-literal-service";
+import {StringLiteralService} from "./service/string-literal/string-literal-service";
+import {INumericLiteralService} from "./service/numeric-literal/i-numeric-literal-service";
+import {NumericLiteralService} from "./service/numeric-literal/numeric-literal-service";
+import {INoSubstitutionTemplateLiteralService} from "./service/no-substitution-template-literal/i-no-substitution-template-literal-service";
+import {NoSubstitutionTemplateLiteralService} from "./service/no-substitution-template-literal/no-substitution-template-literal-service";
+import {RegularExpressionLiteralService} from "./service/regular-expression-literal/regular-expression-literal-service";
+import {IRegularExpressionLiteralService} from "./service/regular-expression-literal/i-regular-expression-literal-service";
+import {IComputedPropertyNameService} from "./service/computed-property-name/i-computed-property-name-service";
+import {ComputedPropertyNameService} from "./service/computed-property-name/computed-property-name-service";
+import {IBindingNameService} from "./service/binding-name/i-binding-name-service";
+import {BindingNameService} from "./service/binding-name/binding-name-service";
+import {IBindingPatternService} from "./service/binding-pattern/i-binding-pattern-service";
+import {BindingPatternService} from "./service/binding-pattern/binding-pattern-service";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -148,6 +164,14 @@ DIContainer.registerSingleton<IPropertySignatureService, PropertySignatureServic
 DIContainer.registerSingleton<IMethodSignatureService, MethodSignatureService>();
 DIContainer.registerSingleton<IIndexSignatureService, IndexSignatureService>();
 DIContainer.registerSingleton<IBindingElementService, BindingElementService>();
+DIContainer.registerSingleton<IIdentifierService, IdentifierService>();
+DIContainer.registerSingleton<IStringLiteralService, StringLiteralService>();
+DIContainer.registerSingleton<INumericLiteralService, NumericLiteralService>();
+DIContainer.registerSingleton<INoSubstitutionTemplateLiteralService, NoSubstitutionTemplateLiteralService>();
+DIContainer.registerSingleton<IRegularExpressionLiteralService, RegularExpressionLiteralService>();
+DIContainer.registerSingleton<IComputedPropertyNameService, ComputedPropertyNameService>();
+DIContainer.registerSingleton<IBindingNameService, BindingNameService>();
+DIContainer.registerSingleton<IBindingPatternService, BindingPatternService>();
 
 // CodeAnalyzer
 DIContainer.registerSingleton<ICodeAnalyzer, CodeAnalyzerBase>();

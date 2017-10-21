@@ -1,12 +1,14 @@
 import {IPropertySignatureService} from "./i-property-signature-service";
 import {IPrinter} from "@wessberg/typescript-ast-util";
 import {PropertySignature} from "typescript";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
 
 /**
  * A service that helps with working with PropertySignatures
  */
 export class PropertySignatureService implements IPropertySignatureService {
-	constructor (private printer: IPrinter) {
+	constructor (private printer: IPrinter,
+							 private typeNodeService: ITypeNodeService) {
 	}
 
 	/**
@@ -24,7 +26,7 @@ export class PropertySignatureService implements IPropertySignatureService {
 	 * @returns {string}
 	 */
 	public getTypeName (propertySignature: PropertySignature): string|undefined {
-		return propertySignature.type == null ? undefined : this.printer.print(propertySignature.type);
+		return propertySignature.type == null ? undefined : this.typeNodeService.getNameOfType(propertySignature.type);
 	}
 
 }

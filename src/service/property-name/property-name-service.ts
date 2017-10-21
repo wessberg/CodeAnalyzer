@@ -1,12 +1,18 @@
 import {IPropertyNameService} from "./i-property-name-service";
-import {PropertyName} from "typescript";
-import {IPrinter} from "@wessberg/typescript-ast-util";
+import {isIdentifier, isNumericLiteral, isStringLiteral, PropertyName} from "typescript";
+import {IIdentifierService} from "../identifier/i-identifier-service";
+import {IStringLiteralService} from "../string-literal/i-string-literal-service";
+import {INumericLiteralService} from "../numeric-literal/i-numeric-literal-service";
+import {IComputedPropertyNameService} from "../computed-property-name/i-computed-property-name-service";
 
 /**
  * A service for working with PropertyNames
  */
 export class PropertyNameService implements IPropertyNameService {
-	constructor (private printer: IPrinter) {
+	constructor (private identifierService: IIdentifierService,
+							 private stringLiteralService: IStringLiteralService,
+							 private numericLiteralService: INumericLiteralService,
+							 private computedPropertyNameService: IComputedPropertyNameService) {
 	}
 
 	/**
@@ -15,7 +21,10 @@ export class PropertyNameService implements IPropertyNameService {
 	 * @returns {string}
 	 */
 	public getName (propertyName: PropertyName): string {
-		return this.printer.print(propertyName);
+		if (isIdentifier(propertyName)) return this.identifierService.getText(propertyName);
+		if (isStringLiteral(propertyName)) return this.stringLiteralService.getText(propertyName);
+		if (isNumericLiteral(propertyName)) return this.numericLiteralService.getText(propertyName);
+		return this.computedPropertyNameService.getExpression(propertyName);
 	}
 
 }

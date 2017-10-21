@@ -2,13 +2,15 @@ import {IHeritageClauseService} from "./i-heritage-clause-service";
 import {ExpressionWithTypeArguments, HeritageClause, SyntaxKind} from "typescript";
 import {IPrinter} from "@wessberg/typescript-ast-util";
 import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
 
 /**
  * A service for working with HeritageClauses
  */
 export class HeritageClauseService implements IHeritageClauseService {
 
-	constructor (private printer: IPrinter) {
+	constructor (private printer: IPrinter,
+							 private typeNodeService: ITypeNodeService) {
 	}
 
 	/**
@@ -37,7 +39,7 @@ export class HeritageClauseService implements IHeritageClauseService {
 	public getTypeNamesWithArguments (clause: HeritageClause): INameWithTypeArguments[] {
 		return clause.types.map(type => ({
 			name: this.printer.print(type.expression),
-			typeArguments: type.typeArguments == null ? null : type.typeArguments.map(typeArgument => this.printer.print(typeArgument))
+			typeArguments: type.typeArguments == null ? null : type.typeArguments.map(typeArgument => this.typeNodeService.getNameOfType(typeArgument))
 		}));
 	}
 

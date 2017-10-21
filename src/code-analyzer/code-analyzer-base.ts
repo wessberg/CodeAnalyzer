@@ -26,6 +26,14 @@ import {IPropertySignatureService} from "../service/property-signature/i-propert
 import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
 import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
 import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
+import {IRegularExpressionLiteralService} from "../service/regular-expression-literal/i-regular-expression-literal-service";
+import {IIdentifierService} from "../service/identifier/i-identifier-service";
+import {IStringLiteralService} from "../service/string-literal/i-string-literal-service";
+import {INumericLiteralService} from "../service/numeric-literal/i-numeric-literal-service";
+import {INoSubstitutionTemplateLiteralService} from "../service/no-substitution-template-literal/i-no-substitution-template-literal-service";
+import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
+import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
+import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 
 /**
  * A service that contains all underlying services
@@ -57,6 +65,14 @@ export class CodeAnalyzerBase implements ICodeAnalyzer {
 							 public readonly propertySignatureService: IPropertySignatureService,
 							 public readonly methodSignatureService: IMethodSignatureService,
 							 public readonly indexSignatureService: IIndexSignatureService,
-							 public readonly bindingElementService: IBindingElementService) {
+							 public readonly bindingElementService: IBindingElementService,
+							 public readonly identifierService: IIdentifierService,
+							 public readonly stringLiteralService: IStringLiteralService,
+							 public readonly numericLiteralService: INumericLiteralService,
+							 public readonly noSubstitutionTemplateLiteralService: INoSubstitutionTemplateLiteralService,
+							 public readonly regularExpressionLiteralService: IRegularExpressionLiteralService,
+							 public readonly computedPropertyNameService: IComputedPropertyNameService,
+							 public readonly bindingNameService: IBindingNameService,
+							 public readonly bindingPatternService: IBindingPatternService) {
 	}
 }

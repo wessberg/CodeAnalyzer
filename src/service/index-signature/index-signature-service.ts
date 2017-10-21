@@ -1,12 +1,14 @@
 import {IIndexSignatureService} from "./i-index-signature-service";
 import {IndexSignatureDeclaration} from "typescript";
-import {IPrinter} from "@wessberg/typescript-ast-util";
+import {IPropertyNameService} from "../property-name/i-property-name-service";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
 
 /**
  * A service that helps with working with IndexSignatureDeclarations
  */
 export class IndexSignatureService implements IIndexSignatureService {
-	constructor (private printer: IPrinter) {
+	constructor (private propertyNameService: IPropertyNameService,
+							 private typeNodeService: ITypeNodeService) {
 	}
 
 	/**
@@ -15,7 +17,7 @@ export class IndexSignatureService implements IIndexSignatureService {
 	 * @returns {string}
 	 */
 	public getTypeName (indexSignature: IndexSignatureDeclaration): string|undefined {
-		return indexSignature.type == null ? undefined : this.printer.print(indexSignature.type);
+		return indexSignature.type == null ? undefined : this.typeNodeService.getNameOfType(indexSignature.type);
 	}
 
 	/**
@@ -24,7 +26,7 @@ export class IndexSignatureService implements IIndexSignatureService {
 	 * @returns {string|undefined}
 	 */
 	public getName (indexSignature: IndexSignatureDeclaration): string|undefined {
-		return indexSignature.name == null ? undefined : this.printer.print(indexSignature.name);
+		return indexSignature.name == null ? undefined : this.propertyNameService.getName(indexSignature.name);
 	}
 
 }

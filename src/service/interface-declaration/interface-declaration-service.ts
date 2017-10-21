@@ -7,11 +7,28 @@ import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IInterfaceDict} from "../../light-ast/dict/interface/i-interface-dict";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {ITypeElementService} from "../type-element/i-type-element-service";
 
 /**
  * A service for working with InterfaceDeclarations
  */
 export class InterfaceDeclarationService extends TypeDeclarationService<InterfaceDeclaration> implements IInterfaceDeclarationService {
+
+	/**
+	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
+	 * @type {SyntaxKind[]}
+	 */
+	protected readonly ALLOWED_KINDS = [SyntaxKind.InterfaceDeclaration];
+
+	constructor (private nodeToDictMapper: INodeToDictMapper,
+							 private printer: IPrinter,
+							 astUtil: ITypescriptASTUtil,
+							 remover: IRemover,
+							 languageService: ITypescriptLanguageService,
+							 typeElementService: ITypeElementService,
+							 decoratorService: IDecoratorService) {
+		super(typeElementService, decoratorService, languageService, remover, astUtil);
+	}
 
 	/**
 	 * Returns true if the given SourceFile has an InterfaceDeclaration with the given name
@@ -34,20 +51,6 @@ export class InterfaceDeclarationService extends TypeDeclarationService<Interfac
 	public getInterfaceWithName (name: string, sourceFile: SourceFile, deep: boolean = false): InterfaceDeclaration|undefined {
 		return this.getAll(sourceFile, deep)
 			.find(interfaceDeclaration => this.getName(interfaceDeclaration) === name);
-	}
-	/**
-	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
-	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.InterfaceDeclaration];
-
-	constructor (private nodeToDictMapper: INodeToDictMapper,
-							 printer: IPrinter,
-							 astUtil: ITypescriptASTUtil,
-							 remover: IRemover,
-							 languageService: ITypescriptLanguageService,
-							 decoratorService: IDecoratorService) {
-		super(printer, decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

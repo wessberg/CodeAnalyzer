@@ -2,13 +2,15 @@ import {IBindingElementService} from "./i-binding-element-service";
 import {BindingElement} from "typescript";
 import {IPrinter} from "@wessberg/typescript-ast-util";
 import {IPropertyNameService} from "../property-name/i-property-name-service";
+import {IBindingNameService} from "../binding-name/i-binding-name-service";
 
 /**
  * A service for working with BindingElements
  */
 export class BindingElementService implements IBindingElementService {
 	constructor (private printer: IPrinter,
-							 private propertyNameService: IPropertyNameService) {
+							 private propertyNameService: IPropertyNameService,
+							 private bindingNameService: IBindingNameService) {
 	}
 
 	/**
@@ -17,7 +19,7 @@ export class BindingElementService implements IBindingElementService {
 	 * @returns {string}
 	 */
 	public getName (bindingElement: BindingElement): string {
-		return this.printer.print(bindingElement.name);
+		return this.bindingNameService.getName(bindingElement.name);
 	}
 
 	/**

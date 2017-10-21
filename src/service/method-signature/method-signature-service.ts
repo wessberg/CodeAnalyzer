@@ -1,12 +1,14 @@
 import {IMethodSignatureService} from "./i-method-signature-service";
-import {IPrinter} from "@wessberg/typescript-ast-util";
 import {MethodSignature} from "typescript";
+import {IPropertyNameService} from "../property-name/i-property-name-service";
+import {ITypeNodeService} from "../type-node/i-type-node-service";
 
 /**
  * A service that helps with working with MethodSignatures
  */
 export class MethodSignatureService implements IMethodSignatureService {
-	constructor (private printer: IPrinter) {
+	constructor (private propertyNameService: IPropertyNameService,
+							 private typeNodeService: ITypeNodeService) {
 	}
 
 	/**
@@ -15,7 +17,7 @@ export class MethodSignatureService implements IMethodSignatureService {
 	 * @returns {string}
 	 */
 	public getTypeName (methodSignature: MethodSignature): string|undefined {
-		return methodSignature.type == null ? undefined : this.printer.print(methodSignature.type);
+		return methodSignature.type == null ? undefined : this.typeNodeService.getNameOfType(methodSignature.type);
 	}
 
 	/**
@@ -24,7 +26,7 @@ export class MethodSignatureService implements IMethodSignatureService {
 	 * @returns {string}
 	 */
 	public getName (methodSignature: MethodSignature): string {
-		return this.printer.print(methodSignature.name);
+		return this.propertyNameService.getName(methodSignature.name);
 	}
 
 }
