@@ -72,7 +72,7 @@ console.log(constructorService.getParameterTypeNames(ctor!));
 console.log("all non-initialized constructor parameter type names:");
 console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
-methodService.appendInstructions(`console.log("foo"); console.log("bar"); return true;`, classService.getMethodWithName("aNewMethod", A)!);
+methodService.appendInstructions(`console.log("foo"); console.log("bar"); return true;`, classService.getStaticMethodWithName("aNewMethod", A)!);
 
 console.log(printer.print(sourceFile));
 

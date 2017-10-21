@@ -1,5 +1,5 @@
 import {IFormatterBase} from "./i-formatter";
-import {BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExportSpecifier, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createKeywordTypeNode, createLiteral, createMethod, createNamedExports, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExportSpecifier, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createKeywordTypeNode, createLiteral, createMethod, createNamedExports, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementCtor} from "../light-ast/ctor/class-element/class-element-ctor";
 import {isClassAccessorCtor} from "../light-ast/ctor/class-accessor/is-class-accessor-ctor";
@@ -553,7 +553,7 @@ export class Formatter implements IFormatterBase {
 	 * @param {VisibilityKind} visibility
 	 * @returns {NodeArray<Modifier>}
 	 */
-	public formatModifiers ({isAbstract, isAsync, isStatic, isReadonly, isConst, isExported, isDeclared, isDefault, visibility}: Partial<IAllModifiersCtor>): NodeArray<Modifier> {
+	public formatModifiers ({isAbstract, isAsync, isStatic, isReadonly, isConst, isExported, isDeclared, isDefault, visibility}: Partial<IAllModifiersCtor>): ModifiersArray {
 		const abstractModifier = isAbstract == null || !isAbstract ? [] : [this.formatModifier("abstract")];
 		const asyncModifier = isAsync == null || !isAsync ? [] : [this.formatModifier("async")];
 		const staticModifier = isStatic == null || !isStatic ? [] : [this.formatModifier("static")];
@@ -565,15 +565,15 @@ export class Formatter implements IFormatterBase {
 		const visibilityModifier = visibility == null ? [] : [this.formatModifier(visibility)];
 
 		return createNodeArray([
-				...abstractModifier,
-				...asyncModifier,
-				...staticModifier,
-				...readonlyModifier,
-				...constModifier,
 				...exportModifier,
-				...declareModifier,
 				...defaultModifier,
-				...visibilityModifier
+				...declareModifier,
+				...visibilityModifier,
+				...abstractModifier,
+				...staticModifier,
+				...asyncModifier,
+				...readonlyModifier,
+				...constModifier
 			]
 		);
 	}
