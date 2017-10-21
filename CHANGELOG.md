@@ -1,3 +1,12 @@
+<a name="1.0.85"></a>
+## 1.0.85 (2017-10-21)
+
+* 1.0.85 ([ba241b7](https://github.com/wessberg/CodeAnalyzer/commit/ba241b7))
+* Added support for custom content inside getAllForFile ([db9c688](https://github.com/wessberg/CodeAnalyzer/commit/db9c688))
+* Bumped version ([b4d534f](https://github.com/wessberg/CodeAnalyzer/commit/b4d534f))
+
+
+
 <a name="1.0.84"></a>
 ## 1.0.84 (2017-10-21)
 
