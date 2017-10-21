@@ -506,7 +506,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 * @param {ts.ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public doesExtendClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public isExtendingClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const extendedClass = this.getExtendedClass(classDeclaration);
 		// If the class doesn't extend anything, return false.
 		if (extendedClass == null) return false;
@@ -524,7 +524,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 * @param {ts.ClassDeclaration|ClassExpression} classDeclaration
 	 * @returns {boolean}
 	 */
-	public doesImplementInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+	public isImplementingInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		const implementedInterfaces = this.getImplements(classDeclaration);
 		if (implementedInterfaces == null) return false;
 
@@ -691,7 +691,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	public extendClassWith (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already extends something matching the provided name, return the existing class declaration
-		if (this.doesExtendClassWithName(name.name, classDeclaration)) return classDeclaration;
+		if (this.isExtendingClassWithName(name.name, classDeclaration)) return classDeclaration;
 
 		// Get the existing implements clause
 		const existing = this.getImplements(classDeclaration);
@@ -713,7 +713,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	public implementInterfaceOnClass (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
 		// If the class already implements something matching the provided name, return the existing class declaration
-		if (this.doesImplementInterfaceWithName(name.name, classDeclaration)) return classDeclaration;
+		if (this.isImplementingInterfaceWithName(name.name, classDeclaration)) return classDeclaration;
 
 		// Generate a new HeritageClause
 		const newClause = this.formatter.formatImplementsHeritageClause({kind: "IMPLEMENTS", elements: [name]});

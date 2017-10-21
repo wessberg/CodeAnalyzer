@@ -17,8 +17,8 @@ Simply do: `npm install @wessberg/codeanalyzer`.
 
 ## DISCLAIMER
 
-This a very early alpha version. Do not expect it to compute proper values for all kinds of expressions.
-
+This is an early version. More services and manipulators will be added as time passes.
+Feel free to submit an issue or a PR if CodeAnalyzer doesn't cover one or more of your use cases.
 
 ## Description
 
@@ -63,7 +63,7 @@ const myClass = classService.getClassWithName("MyClass", sourceFile);
 console.log(classService.getNameOfExtendedClass(myClass));
 
 // Prints 'true' to the console
-console.log(classService.doesImplementInterfaceWithName("AnInterface", myClass));
+console.log(classService.isImplementingInterfaceWithName("AnInterface", myClass));
 
 // Gets the MethodDeclaration with the name 'aMethod'
 classService.getMethodWithName("aMethod", myClass);

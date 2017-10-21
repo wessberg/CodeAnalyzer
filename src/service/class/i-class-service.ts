@@ -46,8 +46,8 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	removeStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
 	isBaseClass (classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	doesExtendClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
-	doesImplementInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	isExtendingClassWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	isImplementingInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasConstructor (classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
