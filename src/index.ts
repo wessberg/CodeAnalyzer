@@ -205,3 +205,7 @@ export {isITypeLiteralDict} from "./light-ast/dict/type-literal/is-i-type-litera
 
 // Types
 export {PropertyAccessCallExpression} from "./service/call-expression/property-access-call-expression";
+export {IOwnOrInheritedMethodWithNameResult} from "./service/class/i-own-or-inherited-method-with-name-result";
+export {IOwnOrInheritedPropertyWithNameResult} from "./service/class/i-own-or-inherited-property-with-name-result";
+export {IOwnOrInheritedMemberWithNameResult} from "./service/class/i-own-or-inherited-member-with-name-result";
+export {IOwnOrInheritedConstructorResult} from "./service/class/i-own-or-inherited-constructor-result";

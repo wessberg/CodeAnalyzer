@@ -7,6 +7,10 @@ import {IConstructorCtor} from "../../light-ast/ctor/constructor/i-constructor-c
 import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
 import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
 import {IClassCtor} from "../../light-ast/ctor/class/i-class-ctor";
+import {IOwnOrInheritedMemberWithNameResult} from "./i-own-or-inherited-member-with-name-result";
+import {IOwnOrInheritedPropertyWithNameResult} from "./i-own-or-inherited-property-with-name-result";
+import {IOwnOrInheritedMethodWithNameResult} from "./i-own-or-inherited-method-with-name-result";
+import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor-result";
 
 export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
 	hasClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): boolean;
@@ -23,7 +27,13 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	getStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
 	getStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
 	getStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;
-
+	getOwnOrInheritedConstructor (classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedConstructorResult|undefined;
+	getOwnOrInheritedMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMemberWithNameResult|undefined;
+	getOwnOrInheritedStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMemberWithNameResult|undefined;
+	getOwnOrInheritedPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedPropertyWithNameResult|undefined;
+	getOwnOrInheritedStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedPropertyWithNameResult|undefined;
+	getOwnOrInheritedMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMethodWithNameResult|undefined;
+	getOwnOrInheritedStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMethodWithNameResult|undefined;
 	getMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
 	getStaticMembersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): ClassElement[];
 	getPropertiesWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration[];
@@ -53,6 +63,14 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	hasStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 	hasSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+
+	hasOwnOrInheritedConstructor (classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
+	hasOwnOrInheritedStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
 	createClassDeclaration (options: IClassCtor): ClassDeclaration;
 	createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile): ClassDeclaration;

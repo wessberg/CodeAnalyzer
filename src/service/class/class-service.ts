@@ -20,12 +20,15 @@ import {IClassMethodCtor} from "../../light-ast/ctor/class-method/i-class-method
 import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
 import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IOwnOrInheritedMemberWithNameResult} from "./i-own-or-inherited-member-with-name-result";
+import {IOwnOrInheritedPropertyWithNameResult} from "./i-own-or-inherited-property-with-name-result";
+import {IOwnOrInheritedMethodWithNameResult} from "./i-own-or-inherited-method-with-name-result";
+import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor-result";
 
 /**
  * A class for working with classes
  */
 export class ClassService extends NodeService<ClassDeclaration|ClassExpression> implements IClassService {
-
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -45,6 +48,382 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, languageService, remover, astUtil);
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a constructor
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedConstructor (classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedConstructor(classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a member with the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedMemberWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a static member with the provided name
+	 * @param {string} name
+	 * @param {ts.ClassDeclaration | ts.ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedStaticMemberWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a property with the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedPropertyWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a static property with the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedStaticPropertyWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a method with the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedMethodWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the given class has or inherits a static method with the provided name
+	 * @param {string} name
+	 * @param {ts.ClassDeclaration | ts.ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedStaticMethodWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Gets the constructor of the class, if it has any. Will check up through the inheritance chain
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedConstructorResult}
+	 */
+	public getOwnOrInheritedConstructor (classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedConstructorResult|undefined {
+		// First, see if the class itself has it
+		const constructor = this.getConstructor(classDeclaration);
+
+		// If so, return it
+		if (constructor != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				constructor
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedConstructor(parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			constructor: result.constructor
+		};
+	}
+
+	/**
+	 * Gets the class member with the provided name. Will check up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedMemberWithNameResult}
+	 */
+	public getOwnOrInheritedMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMemberWithNameResult|undefined {
+		// First, see if the class itself has it
+		const member = this.getMemberWithName(name, classDeclaration);
+
+		// If so, return it
+		if (member != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				member
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedMemberWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			member: result.member
+		};
+	}
+
+	/**
+	 * Gets the static class member with the provided name. Will check up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedMemberWithNameResult}
+	 */
+	public getOwnOrInheritedStaticMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMemberWithNameResult|undefined {
+		// First, see if the class itself has it
+		const member = this.getStaticMemberWithName(name, classDeclaration);
+
+		// If so, return it
+		if (member != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				member
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedStaticMemberWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			member: result.member
+		};
+	}
+
+	/**
+	 * Gets the class property with the provided name, if any exists. Will check up through the inheritance chain.
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedPropertyWithNameResult}
+	 */
+	public getOwnOrInheritedPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedPropertyWithNameResult|undefined {
+		// First, see if the class itself has it
+		const property = this.getPropertyWithName(name, classDeclaration);
+
+		// If so, return it
+		if (property != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				property
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedPropertyWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			property: result.property
+		};
+	}
+
+	/**
+	 * Gets the static property with the provided name, if it exists. Will check up through the inheritance chain.
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedPropertyWithNameResult}
+	 */
+	public getOwnOrInheritedStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedPropertyWithNameResult|undefined {
+		// First, see if the class itself has it
+		const property = this.getStaticPropertyWithName(name, classDeclaration);
+
+		// If so, return it
+		if (property != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				property
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedStaticPropertyWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			property: result.property
+		};
+	}
+
+	/**
+	 * Gets the method with the provided name, if any exists. Will check up through the inheritance chain.
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedMethodWithNameResult}
+	 */
+	public getOwnOrInheritedMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMethodWithNameResult|undefined {
+		// First, see if the class itself has it
+		const method = this.getMethodWithName(name, classDeclaration);
+
+		// If so, return it
+		if (method != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				method
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedMethodWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			method: result.method
+		};
+	}
+
+	/**
+	 * Gets the static method with the provided name. Will check up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedMethodWithNameResult}
+	 */
+	public getOwnOrInheritedStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedMethodWithNameResult|undefined {
+		// First, see if the class itself has it
+		const method = this.getStaticMethodWithName(name, classDeclaration);
+
+		// If so, return it
+		if (method != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				method
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedStaticMethodWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			method: result.method
+		};
 	}
 
 	/**
