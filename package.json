@@ -24,9 +24,9 @@
 		"prepublishOnly": "npm run validate && npm run build",
 		"precommit": "npm run tslint && exit 0",
 		"prepush": "npm run validate && exit 0",
-		"publish:major": "npm version major && npm run commit:readme && git push && npm publish",
-		"publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
-		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish"
+		"publish:major": "NODE_ENV=production npm version major && npm run commit:readme && git push && npm publish",
+		"publish:minor": "NODE_ENV=production npm version minor && npm run commit:readme && git push && npm publish",
+		"publish:patch": "NODE_ENV=production npm version patch && npm run commit:readme && git push && npm publish"
 	},
 	"keywords": [
 		"ast",

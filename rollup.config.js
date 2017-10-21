@@ -1,7 +1,6 @@
 import typescriptPlugin from "rollup-plugin-typescript2";
 import diPlugin from "@wessberg/rollup-plugin-di";
 import packageJSON from "./package.json";
-import {Config} from "@wessberg/environment";
 
 export default {
 	input: "src/index.ts",
@@ -24,7 +23,7 @@ export default {
 			shimGlobalObject: false
 		}),
 		typescriptPlugin({
-			tsconfig: Config.PRODUCTION ? "tsconfig.dist.json" : "tsconfig.json",
+			tsconfig: process.env.NODE_ENV === "production" ? "tsconfig.dist.json" : "tsconfig.json",
 			include: ["*.ts+(|x)", "**/*.ts+(|x)"],
 			exclude: ["*.d.ts", "**/*.d.ts"],
 			cacheRoot: "/tmp",
