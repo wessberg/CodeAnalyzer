@@ -1,3 +1,12 @@
+<a name="1.0.86"></a>
+## 1.0.86 (2017-10-21)
+
+* 1.0.86 ([3a2d87b](https://github.com/wessberg/CodeAnalyzer/commit/3a2d87b))
+* Added additional methods to the ClassService ([7154b7d](https://github.com/wessberg/CodeAnalyzer/commit/7154b7d))
+* Bumped version ([ba49405](https://github.com/wessberg/CodeAnalyzer/commit/ba49405))
+
+
+
 <a name="1.0.85"></a>
 ## 1.0.85 (2017-10-21)
 
