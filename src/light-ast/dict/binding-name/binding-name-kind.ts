@@ -1,0 +1,1 @@
+export declare type BindingNameKind = "NORMAL"|"ARRAY_BINDING"|"OBJECT_BINDING";

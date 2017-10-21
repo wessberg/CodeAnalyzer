@@ -1,0 +1,46 @@
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
+import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
+import {ITypeLiteralCtor} from "../light-ast/ctor/type-literal/i-type-literal-ctor";
+import {IInterfaceCtor} from "../light-ast/ctor/interface/i-interface-ctor";
+import {ITypeElementCtor, TypeElementCtor} from "../light-ast/ctor/type-element/i-type-element-ctor";
+import {HeritageCtor, IExtendsHeritageCtor, IImplementsHeritageCtor} from "../light-ast/ctor/heritage/i-heritage-ctor";
+import {IPropertySignatureCtor} from "../light-ast/ctor/property-signature/i-property-signature-ctor";
+import {ICallSignatureCtor} from "../light-ast/ctor/call-signature/i-call-signature-ctor";
+import {IConstructSignatureCtor} from "../light-ast/ctor/construct-signature/i-construct-signature-ctor";
+import {IMethodSignatureCtor} from "../light-ast/ctor/method-signature/i-method-signature-ctor";
+import {IIndexSignatureCtor} from "../light-ast/ctor/index-signature/i-index-signature-ctor";
+import {ISignatureCtor} from "../light-ast/ctor/signature/i-signature-ctor";
+import {IParameterCtor} from "../light-ast/ctor/parameter/i-parameter-ctor";
+import {BindingNameCtor, IArrayBindingNameCtor, INormalBindingNameCtor, IObjectBindingNameCtor} from "../light-ast/ctor/binding-name/binding-name-ctor";
+import {IObjectBindingElementCtor} from "../light-ast/ctor/binding-element/i-object-binding-element-ctor";
+import {ArrayBindingElementCtor, INormalArrayBindingElementCtor, IOmittedArrayBindingElementCtor} from "../light-ast/ctor/binding-element/array-binding-element-ctor";
+import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
+
+export interface INodeToCtorMapperBase {
+	toIImportClauseCtor (node: ImportClause|undefined): IImportClauseCtor|undefined;
+	toINamedImportExportCtor (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportCtor|undefined;
+	toITypeLiteralCtor (node: TypeLiteralNode|InterfaceDeclaration|undefined): ITypeLiteralCtor|undefined;
+	toIInterfaceCtor (node: InterfaceDeclaration|undefined): IInterfaceCtor|undefined;
+	toITypeElementCtor (node: TypeElement|undefined): ITypeElementCtor|undefined;
+	toTypeElementCtor (node: TypeElement|undefined): TypeElementCtor|undefined;
+	toHeritageCtor (node: HeritageClause|undefined): HeritageCtor|undefined;
+	toIExtendsHeritageCtor (node: HeritageClause|undefined): IExtendsHeritageCtor|undefined;
+	toIImplementsHeritageCtor (node: HeritageClause|undefined): IImplementsHeritageCtor|undefined;
+	toIPropertySignatureCtor (node: PropertySignature|undefined): IPropertySignatureCtor|undefined;
+	toICallSignatureCtor (node: CallSignatureDeclaration|undefined): ICallSignatureCtor|undefined;
+	toIConstructSignatureCtor (node: ConstructSignatureDeclaration|undefined): IConstructSignatureCtor|undefined;
+	toIMethodSignatureCtor (node: MethodSignature|undefined): IMethodSignatureCtor|undefined;
+	toIIndexSignatureCtor (node: IndexSignatureDeclaration|undefined): IIndexSignatureCtor|undefined;
+	toISignatureCtor (node: SignatureDeclaration|undefined): ISignatureCtor|undefined;
+	toIParameterCtor (node: ParameterDeclaration|undefined): IParameterCtor|undefined;
+	toBindingNameCtor (node: BindingName|undefined): BindingNameCtor|undefined;
+	toINormalBindingNameCtor (node: Identifier|undefined): INormalBindingNameCtor|undefined;
+	toIObjectBindingNameCtor (node: ObjectBindingPattern|undefined): IObjectBindingNameCtor|undefined;
+	toIArrayBindingNameCtor (node: ArrayBindingPattern|undefined): IArrayBindingNameCtor|undefined;
+	toIObjectBindingElementCtor (node: BindingElement|undefined): IObjectBindingElementCtor|undefined;
+	toINormalArrayBindingElementCtor (node: BindingElement|undefined): INormalArrayBindingElementCtor|undefined;
+	toIOmittedArrayBindingElementCtor (node: ArrayBindingElement|undefined): IOmittedArrayBindingElementCtor|undefined;
+	toArrayBindingElementCtor (node: ArrayBindingElement|undefined): ArrayBindingElementCtor|undefined;
+	toIDecoratorCtor (node: Decorator|undefined): IDecoratorCtor|undefined;
+}

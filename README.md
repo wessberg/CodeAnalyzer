@@ -10,7 +10,7 @@
 
 [npm-version-image]: https://badge.fury.io/js/%40wessberg%2Fcodeanalyzer.svg
 
-> A service that can analyze your code in great detail ahead of time.
+> A service that can analyze and manipulate your code in great detail ahead of time.
 
 ## Installation
 Simply do: `npm install @wessberg/codeanalyzer`.
@@ -21,117 +21,106 @@ This a very early alpha version. Do not expect it to compute proper values for a
 
 
 ## Description
-The service is a very flexible and powerful tool for extracting metadata and state snapshots of your code and the identifiers that lives within it.
 
-It builds upon the Typescript AST and understands the entirety of the Typescript syntax.
+The service is a very flexible and powerful tool for working with a Typescript AST.
+You can extract useful information from your sourcecode as well as manipulate it in-place.
 
-Here's *some* of what CodeAnalyzer does:
+## Extracting information
 
-- It computes the initialization values of variables and return values of function calls - ahead of time.
-- It tracks the types of class fields, function/method/constructor parameters, generic call- or new expression arguments and similar.
-- It breaks code up into expressions that can be resolved at any time.
+Typescript generates a really powerful AST, but it can be somewhat difficult to extract information from it.
+CodeAnalyzer provides services that makes it a lot easier. For example, let's say we have this class:
 
-For example,
-consider the following code:
 ```typescript
-const analyzer = new CodeAnalyzer();
-const fileName = "a_file.ts";
-analyzer.addFile(fileName, `
-  function foo () {
-  		let arr = [];
-  		for (let i = 1; i <= 5; i++) {
-  			arr.push(i);
-  		}
-  		return arr;
-  	}
-  	const aVariable: number[] = foo();
-`);
+// Inside a_class.ts:
+class MyClass extends AClass implements AnInterface {
+	foo: boolean = true;
 
-const variables = analyzer.getVariableAssignmentsForFile(fileName);
-const variable = variables["aVariable"];
-console.log(variable.value.resolve()); // [1,2,3,4,5]
-console.log(variable.name); // aVariable
-console.log(variable.type.flattened); // number[]
-console.log(variable.value.expression); // [ Identifier {name: "foo"}, "(", ")"]
-```
-
-If you want to reduce the runtime cost of your code, you can replace function calls and variable initialization statements
-with the result of computing them ahead of time using the CodeAnalyzer.
-
-But more than that, it can also help you with doing a lot of the work that is usually performed at runtime (or requires some kind of runtime backing).
-For example, by extracting metadata such as type information ahead of time, there is no need for runtime reflection for many use cases (like dependency injection).
-
-The CodeAnalyzer can extract information from your code through a simple, but robust API.
-Here is the base interface, though more methods exists in the actual interface:
-```typescript
-interface CodeAnalyzer {
-	addFile (fileName: string, content: string, version?: number): NodeArray<Statement>;
-	getClassDeclarationsForFile(fileName: string, deep?: boolean): ClassIndexer;
-	getAllIdentifiersForFile(fileName: string, deep?: boolean): IIdentifierMap;
-	getVariableAssignmentsForFile(fileName: string, deep?: boolean): VariableIndexer;
-	getEnumDeclarationsForFile(fileName: string, deep?: boolean): EnumIndexer;
-	getFunctionDeclarationsForFile(fileName: string, deep?: boolean): FunctionIndexer;
-	getImportDeclarationsForFile (fileName: string, deep?: boolean): IImportDeclaration[];
-	getExportDeclarationsForFile (fileName: string, deep?: boolean): IExportDeclaration[];
-	getCallExpressionsForFile(fileName: string, deep?: boolean): ICallExpression[];
-	getNewExpressionsForFile(fileName: string, deep?: boolean): INewExpression[];
+	@foobar
+	private static bar: Set<string> = new Set();
+	
+	aMethod (): void {
+		
+	}
+	
+	constructor (arg1: number, arg2: string) {
+		super();
+	}
 }
 ```
 
-For full documentation, consult [the full interface](src/analyzer/interface/ICodeAnalyzer.ts) or [the implementation](src/analyzer/CodeAnalyzer.ts)
-
-## Usage
-
-The most likely use case will be to add a file and its raw contents to the CodeAnalyzer:
+Let's see how we can use CodeAnalyzer to extract information from it:
 
 ```typescript
-const analyzer = new CodeAnalyzer();
-const fileName = "a_file.ts";
-const contents = readFileSync(fileName).toString();
-analyzer.addFile(fileName, contents);
+const codeAnalyzer = new CodeAnalyzer();
+
+// Generate a SourceFile
+const sourceFile = codeAnalyzer.languageService.getFile({path: "a_class.ts"});
+
+// Let's get the ClassDeclaration
+const myClass = codeAnalyzer.classService.getClassWithName("MyClass", sourceFile);
+
+// Prints 'AClass' to the console
+console.log(codeAnalyzer.classService.getNameOfExtendedClass(myClass));
+
+// Prints 'true' to the console
+console.log(codeAnalyzer.classService.doesImplementInterfaceWithName("AnInterface", myClass));
+
+// Gets the MethodDeclaration with the name 'aMethod'
+codeAnalyzer.classService.getMethodWithName("aMethod", myClass);
+
+// Gets all static PropertyDeclarations that is decorated with a decorator matching the expression "foobar"
+codeAnalyzer.classService.getStaticPropertiesWithDecorator("foobar", myClass);
 ```
 
-The file and its dependencies are traversed and cached.
+There are many, many more things you can extract with CodeAnalyzer, but this was just a simple example.
 
-But, you can also just analyze a chunk of code:
+## Manipulation
+
+Typescript itself provides useful `update` methods for all nodes, but they return new Nodes, rather than updating the tree in-place.
+With CodeAnalyzer, you can mutate the tree while keeping all references. It works by generating a new AST and then recursively merging the new tree with the existing one
+to replace primitive values through the tree.
+
+For example, consider this example.
+Say you have a class declared in the file: `a_class.ts`:
 
 ```typescript
-const analyzer = new CodeAnalyzer();
-const variables = analyzer.getVariableDeclarations("const var = 2");
+// Inside a_class.ts:
+class MyClass {
+}
 ```
 
-Be aware that while this is perfectly fine, the chunk of code won't be cached for later lookups and cannot be used by other chunks of code to understand their context.
+Now we can manipulate it with the CodeAnalyzer:
 
-## Differences from [Prepack](https://prepack.io/)
-
-The `CodeAnalyzer` can resolve identifiers **to the value they are initialized to**, but it
-**doesn't track mutations**.
-
-This means that if your code gradually builds up a variable, say, an ObjectLiteral, the resolved value
-will be the one it is initialized to.
-
-Consider the following two examples:
 ```typescript
-function foo () {
-		let arr = [];
-		for (let i = 1; i <= 5; i++) {
-			arr.push(i);
-		}
-		return arr;
-	}
-	const val = foo();
-```
-The value of the variable `val` will be `[1,2,3,4,5]` since this is the return value
-of the function `foo`.
+const {languageService, classService, printer} = new CodeAnalyzer();
 
-But:
-```typescript
-const val = {};
-  ['A', 'B', 42].forEach(function(x) {
-    var name = '_' + x.toString()[0].toLowerCase();
-    var y = parseInt(x);
-    val[name] = y ? y : x;
-  });
+// Generate a SourceFile
+const sourceFile = languageService.getFile({path: "a_class.ts"});
+
+// Let's get the ClassDeclaration
+const myClass = classService.getClassWithName("MyClass", sourceFile);
+
+// Add a property to the class
+classService.addPropertyToClass({
+	decorators: null,
+  type: "boolean",
+  initializer: "true",
+  isAbstract: false,
+  isReadonly: true,
+  isOptional: false,
+  isAsync: false,
+  isStatic: false,
+  visibility: "public",
+  name: "aProp"
+}, myClass);
+
+// Let's print the SourceFile and see how it looks now:
+console.log(printer.print(sourceFile));
+
+// This is what gets printed:
+/*
+ * class MyClass {
+ * 	public readonly aProp: boolean = true;
+ * }
+ */
 ```
-Here, the value of the variable `val` will be `{}` since this is the value it is initialized to.
-The LanguageService will not track any mutations for already-initialized variables.

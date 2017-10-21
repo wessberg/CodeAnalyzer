@@ -1,3 +1,4 @@
 {
-	"extends": "./node_modules/@wessberg/ts-config/tsconfig/tsconfig.json"
+	"extends": "./node_modules/@wessberg/ts-config/tsconfig/tsconfig.json",
+	"exclude": ["test/demo/class/a.ts"]
 }

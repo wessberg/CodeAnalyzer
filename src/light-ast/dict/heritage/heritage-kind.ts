@@ -1,0 +1,1 @@
+export declare type HeritageKind = "EXTENDS"|"IMPLEMENTS";

@@ -1,255 +1,200 @@
 import {ICodeAnalyzer} from "./i-code-analyzer";
-import {FormattedExpression, FormattedFunction, IFormattedCallExpression, IFormattedClass, IFormattedExport, IFormattedIdentifier, IFormattedImport, IFormattedInterfaceType} from "@wessberg/type";
-import {ArrowFunction, CallExpression, ClassDeclaration, ClassExpression, ExportDeclaration, FunctionDeclaration, FunctionExpression, Identifier, ImportDeclaration, InterfaceDeclaration, NodeArray, Statement} from "typescript";
-import {AstNode} from "../type/ast-node/ast-node";
-import {callExpressionServiceGetter, classServiceGetter, exportServiceGetter, functionServiceGetter, identifierExpressionServiceGetter, importServiceGetter, interfaceTypeServiceGetter, languageService, resolverServiceGetter} from "../services";
+import {DIContainer} from "@wessberg/di";
+import {IClassService} from "../service/class/i-class-service";
+import {ICallExpressionService} from "../service/call-expression/i-call-expression-service";
+import {IConstructorService} from "../service/constructor/i-constructor-service";
+import {IExportService} from "../service/export/i-export-service";
+import {IDecoratorService} from "../service/decorator/i-decorator-service";
+import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
+import {IImportService} from "../service/import/i-import-service";
+import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
+import {IMethodService} from "../service/method/i-method-service";
+import {IModifierService} from "../service/modifier/i-modifier-service";
+import {INamedExportsService} from "../service/named-exports/i-named-exports-service";
+import {INamedImportsService} from "../service/named-imports/i-named-imports-service";
+import {INamespaceImportService} from "../service/namespace-import/i-namespace-import-service";
+import {IParameterService} from "../service/parameter/i-parameter-service";
+import {IPropertyService} from "../service/property/i-property-service";
+import {ITypeLiteralNodeService} from "../service/type-literal-node/i-type-literal-node-service";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IPropertyAccessExpressionService} from "../service/property-access-expression/i-property-access-expression-service";
+import {IResolver} from "../resolver/i-resolver-getter";
+import {IPrinter} from "@wessberg/typescript-ast-util";
+import {ITypeElementService} from "../service/type-element/i-type-element-service";
+import {ITypeNodeService} from "../service/type-node/i-type-node-service";
+import {IPropertyNameService} from "../service/property-name/i-property-name-service";
+import {IPropertySignatureService} from "../service/property-signature/i-property-signature-service";
+import {IMethodSignatureService} from "../service/method-signature/i-method-signature-service";
+import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
+import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
 
 /**
- * A service that can analyze your code in great detail ahead of time.
+ * A consumable class that can be used outside a dependency-injection system.
  */
 export class CodeAnalyzer implements ICodeAnalyzer {
+	/**
+	 * A service that can generate SourceFiles from code and/or retrieve them
+	 * @type {ITypescriptLanguageService}
+	 */
+	public readonly languageService: ITypescriptLanguageService;
 
 	/**
-	 * Gets all IFormattedImports for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedImport[]}
+	 * A service that can resolve Nodes from identifiers
+	 * @type {IResolver}
 	 */
-	public getImportsForFile (file: string, content?: string): IFormattedImport[] {
-		return importServiceGetter().getImportsForFile(file, content);
-	}
+	public readonly resolver: IResolver;
 
 	/**
-	 * Gets all IFormattedImports for the given statement
-	 * @param {ImportDeclaration} statement
-	 * @returns {IFormattedImport[]}
+	 * A service that can print nodes
+	 * @type {IResolver}
 	 */
-	public getImportsForStatement (statement: ImportDeclaration): IFormattedImport[] {
-		return importServiceGetter().getImportsForStatement(statement);
-	}
+	public readonly printer: IPrinter;
 
 	/**
-	 * Gets all IFormattedImports for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {IFormattedImport[]}
+	 * A service that helps with working with ClassExpressions and ClassDeclarations
+	 * @type {IClassService}
 	 */
-	public getImportsForStatements (statements: NodeArray<AstNode>): IFormattedImport[] {
-		return importServiceGetter().getImportsForStatements(statements);
-	}
+	public readonly classService: IClassService;
 
 	/**
-	 * Gets all IFormattedExports for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedExport[]}
+	 * A service that helps with working with CallExpressions
+	 * @type {ICallExpressionService}
 	 */
-	public getExportsForFile (file: string, content?: string): IFormattedExport[] {
-		return exportServiceGetter().getExportsForFile(file, content);
-	}
+	public readonly callExpressionService: ICallExpressionService;
 
 	/**
-	 * Gets all IFormattedExports for the given statement
-	 * @param {ExportDeclaration} statement
-	 * @returns {IFormattedExport[]}
+	 * A service that helps with working with PropertyAccessExpressions
+	 * @type {IPropertyAccessExpressionService}
 	 */
-	public getExportsForStatement (statement: ExportDeclaration): IFormattedExport[] {
-		return exportServiceGetter().getExportsForStatement(statement);
-	}
+	public readonly propertyAccessExpressionService: IPropertyAccessExpressionService;
 
 	/**
-	 * Gets all IFormattedExports for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {IFormattedExport[]}
+	 * A service that helps with working with ConstructorDeclarations
+	 * @type {IConstructorService}
 	 */
-	public getExportsForStatements (statements: NodeArray<AstNode>): IFormattedExport[] {
-		return exportServiceGetter().getExportsForStatements(statements);
-	}
+	public readonly constructorService: IConstructorService;
 
 	/**
-	 * Excludes files from the CodeAnalyzer that matches the provided Regular Expression(s)
-	 * @param {RegExp | Iterable<RegExp>} match
+	 * A service that helps with working with Decorators
+	 * @type {IDecoratorService}
 	 */
-	public excludeFiles (match: RegExp|Iterable<RegExp>): void {
-		languageService.excludeFiles(match);
-	}
+	public readonly decoratorService: IDecoratorService;
 
 	/**
-	 * Gets all FormattedFunctions for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {FormattedFunction[]}
+	 * A service that helps with working with ExportDeclarations
+	 * @type {IExportService}
 	 */
-	public getFunctionsForFile (file: string, content?: string): FormattedFunction[] {
-		return functionServiceGetter().getFunctionsForFile(file, content);
-	}
+	public readonly exportService: IExportService;
 
 	/**
-	 * Gets all FormattedFunctions for the given statement
-	 * @param {FunctionExpression|FunctionDeclaration|ArrowFunction} statement
-	 * @returns {FormattedFunction[]}
+	 * A service that helps with working with HeritageClauses
+	 * @type {IHeritageClauseService}
 	 */
-	public getFunctionsForStatement (statement: FunctionExpression|FunctionDeclaration|ArrowFunction): FormattedFunction[] {
-		return functionServiceGetter().getFunctionsForStatement(statement);
-	}
+	public readonly heritageClauseService: IHeritageClauseService;
 
 	/**
-	 * Gets all FormattedFunctions for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {FormattedFunction[]}
+	 * A service that helps with working with ImportDeclarations
+	 * @type {IImportService}
 	 */
-	public getFunctionsForStatements (statements: NodeArray<AstNode>): FormattedFunction[] {
-		return functionServiceGetter().getFunctionsForStatements(statements);
-	}
+	public readonly importService: IImportService;
 
 	/**
-	 * Resolves an expression from another one.
-	 * @param {FormattedExpression} expression
-	 * @returns {FormattedExpression}
+	 * A service that helps with working with InterfaceDeclarations
+	 * @type {IInterfaceDeclarationService}
 	 */
-	public getDefinitionMatchingExpression (expression: FormattedExpression): FormattedExpression|undefined {
-		return resolverServiceGetter().getDefinitionMatchingExpression(expression);
-	}
+	public readonly interfaceDeclarationService: IInterfaceDeclarationService;
 
 	/**
-	 * Gets all IFormattedClasses for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedClass[]}
+	 * A service that helps with working with MethodDeclarations
+	 * @type {IMethodService}
 	 */
-	public getClassesForFile (file: string, content?: string): IFormattedClass[] {
-		return classServiceGetter().getClassesForFile(file, content);
-	}
+	public readonly methodService: IMethodService;
 
 	/**
-	 * Gets all IFormattedClass for the given statement
-	 * @param {ClassExpression|ClassDeclaration} statement
-	 * @returns {IFormattedClass[]}
+	 * A service that helps with working with Modifiers
+	 * @type {IModifierService}
 	 */
-	public getClassesForStatement (statement: ClassExpression|ClassDeclaration): IFormattedClass[] {
-		return classServiceGetter().getClassesForStatement(statement);
-	}
+	public readonly modifierService: IModifierService;
 
 	/**
-	 * Gets all IFormattedClass for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {IFormattedClass[]}
+	 * A service that helps with working with NamedExports
+	 * @type {INamedExportsService}
 	 */
-	public getClassesForStatements (statements: NodeArray<AstNode>): IFormattedClass[] {
-		return classServiceGetter().getClassesForStatements(statements);
-	}
+	public readonly namedExportsService: INamedExportsService;
 
 	/**
-	 * Gets all IInterfaceTypes for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedInterfaceType[]}
+	 * A service that helps with working with NamedImports
+	 * @type {INamedImportsService}
 	 */
-	public getInterfacesForFile (file: string, content?: string): IFormattedInterfaceType[] {
-		return interfaceTypeServiceGetter().getInterfacesForFile(file, content);
-	}
+	public readonly namedImportsService: INamedImportsService;
 
 	/**
-	 * Gets all IInterfaceTypes for the given statement
-	 * @param {InterfaceDeclaration} statement
-	 * @returns {IFormattedInterfaceType[]}
+	 * A service that helps with working with NamespaceImports
+	 * @type {INamespaceImportService}
 	 */
-	public getInterfacesForStatement (statement: InterfaceDeclaration): IFormattedInterfaceType[] {
-		return interfaceTypeServiceGetter().getInterfacesForStatement(statement);
-	}
+	public readonly namespaceImportService: INamespaceImportService;
 
 	/**
-	 * Gets all IInterfaceTypes for the given Statements
-	 * @param {NodeArray<Statement>} statements
-	 * @returns {IFormattedInterfaceType[]}
+	 * A service that helps with working with ParameterDeclarations
+	 * @type {IParameterService}
 	 */
-	public getInterfacesForStatements (statements: NodeArray<Statement>): IFormattedInterfaceType[] {
-		return interfaceTypeServiceGetter().getInterfacesForStatements(statements);
-	}
+	public readonly parameterService: IParameterService;
 
 	/**
-	 * Gets all IFormattedCallExpressions for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with PropertyDeclarations
+	 * @type {IPropertyService}
 	 */
-	public getCallExpressionsForFile (file: string, content?: string): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().getCallExpressionsForFile(file, content);
-	}
+	public readonly propertyService: IPropertyService;
 
 	/**
-	 * Gets all IFormattedCallExpressions for the given statement
-	 * @param {CallExpression} statement
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with TypeLiteralNodes
+	 * @type {ITypeLiteralNodeService}
 	 */
-	public getCallExpressionsForStatement (statement: CallExpression): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().getCallExpressionsForStatement(statement);
-	}
+	public readonly typeLiteralNodeService: ITypeLiteralNodeService;
 
 	/**
-	 * Gets all IFormattedCallExpressions for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with TypeElements
+	 * @type {ITypeElementService}
 	 */
-	public getCallExpressionsForStatements (statements: NodeArray<AstNode>): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().getCallExpressionsForStatements(statements);
-	}
+	public readonly typeElementService: ITypeElementService;
 
 	/**
-	 * Finds all the call expressions in the provided file that matches the provided match which can be a string or a regular expression
-	 * @param {string} file
-	 * @param {string | RegExp} match
-	 * @param {string} [content]
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with PropertyNames
+	 * @type {IPropertyNameService}
 	 */
-	public findMatchingCallExpressionsForFile (file: string, match: string|RegExp, content?: string): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().findMatchingCallExpressionsForFile(file, match, content);
-	}
+	public readonly propertyNameService: IPropertyNameService;
 
 	/**
-	 * Finds all the call expressions for the provided statement that matches the provided match which can be a string or a regular expression
-	 * @param {ts.CallExpression} statement
-	 * @param {string | RegExp} match
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with PropertySignatures
+	 * @type {IPropertySignatureService}
 	 */
-	public findMatchingCallExpressionsForStatement (statement: CallExpression, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().findMatchingCallExpressionsForStatement(statement, match);
-	}
+	public readonly propertySignatureService: IPropertySignatureService;
 
 	/**
-	 * Finds all the call expressions for the provided statements that matches the provided match which can be a string or a regular expression
-	 * @param {ts.NodeArray<AstNode>} statements
-	 * @param {string | RegExp} match
-	 * @returns {IFormattedCallExpression[]}
+	 * A service that helps with working with MethodSignatures
+	 * @type {IMethodSignatureService}
 	 */
-	public findMatchingCallExpressionsForStatements (statements: NodeArray<AstNode>, match: string|RegExp): IFormattedCallExpression[] {
-		return callExpressionServiceGetter().findMatchingCallExpressionsForStatements(statements, match);
-	}
+	public readonly methodSignatureService: IMethodSignatureService;
 
 	/**
-	 * Gets all IFormattedIdentifierExpressions for the given file
-	 * @param {string} file
-	 * @param {string} [content]
-	 * @returns {IFormattedIdentifier[]}
+	 * A service that helps with working with IndexSignatureDeclarations
+	 * @type {IIndexSignatureService}
 	 */
-	public getIdentifiersForFile (file: string, content?: string): IFormattedIdentifier[] {
-		return identifierExpressionServiceGetter().getIdentifiersForFile(file, content);
-	}
+	public readonly indexSignatureService: IIndexSignatureService;
 
 	/**
-	 * Gets all IFormattedIdentifierExpressions for the given statement
-	 * @param {Identifier} statement
-	 * @returns {IFormattedIdentifier[]}
+	 * A service that helps with working with BindingElements
+	 * @type {IBindingElementService}
 	 */
-	public getIdentifiersForStatement (statement: Identifier): IFormattedIdentifier[] {
-		return identifierExpressionServiceGetter().getIdentifiersForStatement(statement);
-	}
+	public readonly bindingElementService: IBindingElementService;
 
 	/**
-	 * Gets all IFormattedIdentifierExpressions for the given Statements
-	 * @param {NodeArray<AstNode>} statements
-	 * @returns {IFormattedIdentifier[]}
+	 * A service that helps with working with TypeNodes
+	 * @type {ITypeNodeService}
 	 */
-	public getIdentifiersForStatements (statements: NodeArray<AstNode>): IFormattedIdentifier[] {
-		return identifierExpressionServiceGetter().getIdentifiersForStatements(statements);
+	public readonly typeNodeService: ITypeNodeService;
+
+	constructor () {
+		return DIContainer.get<ICodeAnalyzer>();
 	}
 }

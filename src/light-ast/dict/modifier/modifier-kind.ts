@@ -1,0 +1,1 @@
+export declare type ModifierKind = "abstract"|"async"|"static"|"readonly"|"const"|"export"|"declare"|"default"|"private"|"protected"|"public";

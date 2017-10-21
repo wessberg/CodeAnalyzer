@@ -1,0 +1,1 @@
+export declare type AccessorKind = "GET"|"SET";
