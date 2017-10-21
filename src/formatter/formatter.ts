@@ -313,7 +313,6 @@ export class Formatter implements IFormatterBase {
 	/**
 	 * Formats a GetAccessor from the provided options
 	 * @param {Iterable<IDecoratorCtor>} decorators
-	 * @param {boolean} isAsync
 	 * @param {boolean} isStatic
 	 * @param {boolean} isAbstract
 	 * @param {VisibilityKind} visibility
@@ -322,11 +321,11 @@ export class Formatter implements IFormatterBase {
 	 * @param {string} body
 	 * @returns {ts.GetAccessorDeclaration}
 	 */
-	public formatClassGetAccessor ({decorators, isAsync, isStatic, isAbstract, visibility, name, type, body}: IClassGetAccessorCtor): GetAccessorDeclaration {
+	public formatClassGetAccessor ({decorators, isStatic, isAbstract, visibility, name, type, body}: IClassGetAccessorCtor): GetAccessorDeclaration {
 
 		return createGetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
-			this.formatModifiers({isAsync, isStatic, isAbstract, visibility}),
+			this.formatModifiers({isStatic, isAbstract, visibility}),
 			name,
 			createNodeArray(),
 			this.formatType(type),
@@ -371,17 +370,16 @@ export class Formatter implements IFormatterBase {
 	/**
 	 * Formats a GetAccessor from the provided options
 	 * @param {Iterable<IDecoratorCtor>} decorators
-	 * @param {boolean} isAsync
 	 * @param {string} type
 	 * @param {string} body
 	 * @param {string} name
 	 * @returns {GetAccessorDeclaration}
 	 */
-	public formatGetAccessor ({decorators, isAsync, type, body, name}: IGetAccessorCtor): GetAccessorDeclaration {
+	public formatGetAccessor ({decorators, type, body, name}: IGetAccessorCtor): GetAccessorDeclaration {
 
 		return createGetAccessor(
 			decorators == null ? undefined : this.formatDecorators(decorators),
-			this.formatModifiers({isAsync}),
+			undefined,
 			name,
 			createNodeArray(),
 			this.formatType(type),

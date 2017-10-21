@@ -3,6 +3,7 @@ import {FunctionKind} from "../../dict/function/function-kind";
 
 export interface IFunctionCtor extends IFunctionLikeWithParametersCtor {
 	kind: FunctionKind;
+	isAsync: boolean;
 }
 
 export interface INormalFunctionCtor extends IFunctionCtor {
