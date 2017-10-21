@@ -1,3 +1,12 @@
+<a name="1.0.82"></a>
+## 1.0.82 (2017-10-21)
+
+* 1.0.82 ([4e8b28f](https://github.com/wessberg/CodeAnalyzer/commit/4e8b28f))
+* Added a 'getAllForFile' method ([f957c32](https://github.com/wessberg/CodeAnalyzer/commit/f957c32))
+* Bumped version ([07b2201](https://github.com/wessberg/CodeAnalyzer/commit/07b2201))
+
+
+
 <a name="1.0.81"></a>
 ## 1.0.81 (2017-10-21)
 
