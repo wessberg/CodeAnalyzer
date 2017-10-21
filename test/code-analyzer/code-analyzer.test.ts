@@ -4,7 +4,7 @@ import {DIContainer} from "@wessberg/di";
 import {IPrinter} from "@wessberg/typescript-ast-util";
 import {CodeAnalyzer} from "../../src/code-analyzer/code-analyzer";
 
-const {classService, importService, interfaceDeclarationService, callExpressionService, constructorService, languageService} = new CodeAnalyzer();
+const {classService, importService, interfaceDeclarationService, callExpressionService, constructorService, languageService, methodService} = new CodeAnalyzer();
 const printer = DIContainer.get<IPrinter>();
 
 const sourceFile = languageService.addFile({path: "./test/demo/class/a.ts"});
@@ -56,7 +56,7 @@ classService.addMethodToClass({
 	name: "aNewMethod",
 	isAbstract: false,
 	isAsync: false,
-	isStatic: false,
+	isStatic: true,
 	isOptional: false,
 	visibility: "private",
 	parameters: null,
@@ -72,9 +72,9 @@ console.log(constructorService.getParameterTypeNames(ctor!));
 console.log("all non-initialized constructor parameter type names:");
 console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
-console.log(printer.print(sourceFile));
+methodService.appendInstructions(`console.log("foo"); console.log("bar"); return true;`, classService.getMethodWithName("aNewMethod", A)!);
 
-console.log(JSON.stringify(interfaceDeclarationService.toLightAST(firstInterface), null, "  "));
+console.log(printer.print(sourceFile));
 
 test("foo", t => {
 	t.true(true);

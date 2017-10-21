@@ -1,5 +1,5 @@
 import {IMethodService} from "./i-method-service";
-import {MethodDeclaration, SyntaxKind} from "typescript";
+import {isReturnStatement, MethodDeclaration, ReturnStatement, SyntaxKind} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
@@ -14,6 +14,15 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
  * A service that helps with working with MethodDeclarations
  */
 export class MethodService extends NodeService<MethodDeclaration> implements IMethodService {
+
+	/**
+	 * Takes the ReturnStatement of a MethodDeclaration's body, if it has any
+	 * @param {MethodDeclaration} method
+	 * @returns {ReturnStatement}
+	 */
+	public takeReturnStatement (method: MethodDeclaration): ReturnStatement|undefined {
+		return method.body == null ? undefined : <ReturnStatement|undefined> method.body.statements.find(statement => isReturnStatement(statement));
+	}
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
