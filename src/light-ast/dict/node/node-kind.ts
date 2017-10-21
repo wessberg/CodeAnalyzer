@@ -22,4 +22,5 @@ export declare type NodeKind =
 	"IMPORT"|
 	"IMPORT_CLAUSE"|
 	"METHOD"|
+	"CALL_EXPRESSION"|
 	"PARAMETER";

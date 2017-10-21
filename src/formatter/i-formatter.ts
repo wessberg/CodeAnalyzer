@@ -1,4 +1,4 @@
-import {AccessorDeclaration, BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AccessorDeclaration, BindingName, Block, CallExpression, ClassDeclaration, ClassElement, ConstructorDeclaration, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IImportCtor} from "../light-ast/ctor/import/i-import-ctor";
 import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
@@ -17,6 +17,7 @@ import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor
 import {BindingNameCtor} from "../light-ast/ctor/binding-name/binding-name-ctor";
 import {IParameterCtor} from "../light-ast/ctor/parameter/i-parameter-ctor";
 import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
+import {ICallExpressionCtor} from "../light-ast/ctor/call-expression/i-call-expression-ctor";
 
 export interface IFormatterBase {
 	formatUndefined (): KeywordTypeNode;
@@ -74,6 +75,7 @@ export interface IFormatterBase {
 	formatTypes (types: Iterable<string>): NodeArray<TypeNode>;
 	formatTypeParameter (type: string): TypeParameterDeclaration;
 	formatTypeParameters (types: Iterable<string>): NodeArray<TypeParameterDeclaration>;
+	formatCallExpression (callExpression: ICallExpressionCtor): CallExpression;
 
 	formatBlock (block: string): Block;
 	formatStringLiteral (literal: string): StringLiteral;

@@ -39,7 +39,7 @@
 		"code quality"
 	],
 	"devDependencies": {
-		"@wessberg/rollup-plugin-di": "^1.0.69",
+		"@wessberg/rollup-plugin-di": "^1.0.71",
 		"@wessberg/ts-config": "^0.0.23",
 		"@wessberg/environment": "^1.0.1",
 		"ava": "^0.22.0",

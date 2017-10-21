@@ -74,6 +74,12 @@ console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
 methodService.appendInstructions(`console.log("foo"); console.log("bar"); return true;`, classService.getStaticMethodWithName("aNewMethod", A)!);
 
+callExpressionService.createAndAddCallExpression({
+	expression: "customElements.define",
+	typeArguments: null,
+	arguments: ["'foo'", "'bar'"]
+}, sourceFile);
+
 console.log(printer.print(sourceFile));
 
 test("foo", t => {

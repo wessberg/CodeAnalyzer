@@ -111,6 +111,8 @@ export {isITypeElementCtor} from "./light-ast/ctor/type-element/is-i-type-elemen
 export {isTypeElementCtor} from "./light-ast/ctor/type-element/is-type-element-ctor";
 export {ITypeLiteralCtor} from "./light-ast/ctor/type-literal/i-type-literal-ctor";
 export {isITypeLiteralCtor} from "./light-ast/ctor/type-literal/is-i-type-literal-ctor";
+export {ICallExpressionCtor} from "./light-ast/ctor/call-expression/i-call-expression-ctor";
+export {isICallExpressionCtor} from "./light-ast/ctor/call-expression/is-i-call-expression-ctor";
 
 // Dicts with predicates
 export {AccessorKind} from "./light-ast/dict/accessor/accessor-kind";
@@ -202,6 +204,8 @@ export {isITypeElementDict} from "./light-ast/dict/type-element/is-i-type-elemen
 export {isTypeElementDict} from "./light-ast/dict/type-element/is-type-element-dict";
 export {ITypeLiteralDict} from "./light-ast/dict/type-literal/i-type-literal-dict";
 export {isITypeLiteralDict} from "./light-ast/dict/type-literal/is-i-type-literal-dict";
+export {ICallExpressionDict} from "./light-ast/dict/call-expression/i-call-expression-dict";
+export {isICallExpressionDict} from "./light-ast/dict/call-expression/is-i-call-expression-dict";
 
 // Types
 export {PropertyAccessCallExpression} from "./service/call-expression/property-access-call-expression";

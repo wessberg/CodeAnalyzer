@@ -1,5 +1,5 @@
 import {ICallExpressionService} from "./i-call-expression-service";
-import {CallExpression, createNodeArray, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isExpressionWithTypeArguments, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {CallExpression, createNodeArray, createStatement, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isExpressionWithTypeArguments, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
@@ -9,11 +9,39 @@ import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {PropertyAccessCallExpression} from "./property-access-call-expression";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {ICallExpressionCtor} from "../../light-ast/ctor/call-expression/i-call-expression-ctor";
 
 /**
  * A class for working with CallExpressions
  */
 export class CallExpressionService extends NodeService<CallExpression> implements ICallExpressionService {
+
+	/**
+	 * Creates a new CallExpression
+	 * @param {ICallExpressionCtor} options
+	 * @returns {CallExpression}
+	 */
+	public createCallExpression (options: ICallExpressionCtor): CallExpression {
+		return this.formatter.formatCallExpression(options);
+	}
+
+	/**
+	 * Creates and adds a CallExpression to a SourceFile
+	 * @param {ICallExpressionCtor} options
+	 * @param {SourceFile} sourceFile
+	 * @returns {CallExpression}
+	 */
+	public createAndAddCallExpression (options: ICallExpressionCtor, sourceFile: SourceFile): CallExpression {
+		const callExpression = this.createCallExpression(options);
+
+		// Update the SourceFile to reflect the change
+		this.updater.updateSourceFileStatements(
+			this.joiner.joinStatementNodeArrays(createNodeArray([createStatement(callExpression)]), sourceFile.statements),
+			sourceFile
+		);
+
+		return callExpression;
+	}
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions

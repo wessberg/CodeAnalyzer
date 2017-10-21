@@ -1,5 +1,5 @@
 import {IFormatterBase} from "./i-formatter";
-import {BindingName, Block, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createClassDeclaration, createConstructor, createDecorator, createExportSpecifier, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createKeywordTypeNode, createLiteral, createMethod, createNamedExports, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
+import {BindingName, Block, CallExpression, ClassDeclaration, ClassElement, ConstructorDeclaration, createArrayBindingPattern, createBindingElement, createCall, createClassDeclaration, createConstructor, createDecorator, createExportSpecifier, createExpressionWithTypeArguments, createGetAccessor, createHeritageClause, createIdentifier, createImportClause, createImportDeclaration, createImportSpecifier, createKeywordTypeNode, createLiteral, createMethod, createNamedExports, createNamedImports, createNamespaceImport, createNodeArray, createObjectBindingPattern, createOmittedExpression, createParameter, createProperty, createSetAccessor, createToken, Decorator, Expression, ExpressionWithTypeArguments, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, KeywordTypeNode, MethodDeclaration, Modifier, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, SetAccessorDeclaration, Statement, StringLiteral, SyntaxKind, Token, TypeNode, TypeParameterDeclaration} from "typescript";
 import {IParser} from "../parser/i-parser";
 import {ClassElementCtor} from "../light-ast/ctor/class-element/class-element-ctor";
 import {isClassAccessorCtor} from "../light-ast/ctor/class-accessor/is-class-accessor-ctor";
@@ -25,12 +25,26 @@ import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor
 import {INameWithTypeArguments} from "../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
 import {isIGetAccessorCtor} from "../light-ast/ctor/accessor/is-i-get-accessor-ctor";
 import {ModifierKind} from "../light-ast/dict/modifier/modifier-kind";
+import {ICallExpressionCtor} from "../light-ast/ctor/call-expression/i-call-expression-ctor";
 
 /**
  * A class that helps with transforming simple ctor-objects into Typescript Nodes
  */
 export class Formatter implements IFormatterBase {
 	constructor (private parseService: IParser) {
+	}
+
+	/**
+	 * Formats a CallExpression from the provided ICallExpressionCtor
+	 * @param {ICallExpressionCtor} callExpression
+	 * @returns {ts.CallExpression}
+	 */
+	public formatCallExpression (callExpression: ICallExpressionCtor): CallExpression {
+		return createCall(
+			this.formatExpression(callExpression.expression),
+			callExpression.typeArguments == null ? undefined : this.formatTypes(callExpression.typeArguments),
+			callExpression.arguments == null ? createNodeArray() : [...callExpression.arguments].map(argument => this.formatExpression(argument))
+		);
 	}
 
 	/**
