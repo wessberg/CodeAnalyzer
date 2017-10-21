@@ -1,5 +1,5 @@
 import {IClassService} from "./i-class-service";
-import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SourceFile, SyntaxKind} from "typescript";
+import {ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, GetAccessorDeclaration, HeritageClause, isAccessor, isConstructorDeclaration, isGetAccessorDeclaration, isIdentifier, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, isStringLiteral, MethodDeclaration, Node, PropertyDeclaration, SetAccessorDeclaration, SourceFile, SyntaxKind} from "typescript";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IMethodService} from "../method/i-method-service";
@@ -24,11 +24,14 @@ import {IOwnOrInheritedMemberWithNameResult} from "./i-own-or-inherited-member-w
 import {IOwnOrInheritedPropertyWithNameResult} from "./i-own-or-inherited-property-with-name-result";
 import {IOwnOrInheritedMethodWithNameResult} from "./i-own-or-inherited-method-with-name-result";
 import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor-result";
+import {IOwnOrInheritedGetterWithNameResult} from "./i-own-or-inherited-getter-with-name-result";
+import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-with-name-result";
 
 /**
  * A class for working with classes
  */
 export class ClassService extends NodeService<ClassDeclaration|ClassExpression> implements IClassService {
+
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -48,6 +51,366 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, languageService, remover, astUtil);
+	}
+
+	/**
+	 * Returns the getter that matches the provided name, if it exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public getGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): GetAccessorDeclaration|undefined {
+		return <GetAccessorDeclaration|undefined> classDeclaration.members.find(member => isGetAccessorDeclaration(member) && this.matchesMemberName(name, member));
+	}
+
+	/**
+	 * Returns the setter that matches the provided name, if it exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public getSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): SetAccessorDeclaration|undefined {
+		return <SetAccessorDeclaration|undefined> classDeclaration.members.find(member => isSetAccessorDeclaration(member) && this.matchesMemberName(name, member));
+	}
+
+	/**
+	 * Returns the static getter that matches the provided name, if it exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public getStaticGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): GetAccessorDeclaration|undefined {
+		return <GetAccessorDeclaration|undefined> classDeclaration.members.find(member => isGetAccessorDeclaration(member) && this.matchesStaticMemberName(name, member));
+	}
+
+	/**
+	 * Returns the static setter that matches the provided name, if it exists
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public getStaticSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): SetAccessorDeclaration|undefined {
+		return <SetAccessorDeclaration|undefined> classDeclaration.members.find(member => isSetAccessorDeclaration(member) && this.matchesStaticMemberName(name, member));
+	}
+
+	/**
+	 * Gets the getter matching the provided name, if it exists. Will resolve up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedGetterWithNameResult}
+	 */
+	public getOwnOrInheritedGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedGetterWithNameResult|undefined {
+		// First, see if the class itself has it
+		const getter = this.getGetterWithName(name, classDeclaration);
+
+		// If so, return it
+		if (getter != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				getter
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedGetterWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			getter: result.getter
+		};
+	}
+
+	/**
+	 * Returns the getter matching the provided name, if it exists. Will resolve up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedSetterWithNameResult}
+	 */
+	public getOwnOrInheritedSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedSetterWithNameResult|undefined {
+		// First, see if the class itself has it
+		const setter = this.getSetterWithName(name, classDeclaration);
+
+		// If so, return it
+		if (setter != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				setter
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedSetterWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			setter: result.setter
+		};
+	}
+
+	/**
+	 * Returns the getter matching the provided name, if it exists. Will resolve up through the inheritance chain
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedGetterWithNameResult}
+	 */
+	public getOwnOrInheritedStaticGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedGetterWithNameResult|undefined {
+		// First, see if the class itself has it
+		const getter = this.getStaticGetterWithName(name, classDeclaration);
+
+		// If so, return it
+		if (getter != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				getter
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedStaticGetterWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			getter: result.getter
+		};
+	}
+
+	/**
+	 * Returns the setter matching the provided name, if it exists. Will resolve up through the inheritance chain.
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {IOwnOrInheritedSetterWithNameResult}
+	 */
+	public getOwnOrInheritedStaticSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): IOwnOrInheritedSetterWithNameResult|undefined {
+		// First, see if the class itself has it
+		const setter = this.getStaticSetterWithName(name, classDeclaration);
+
+		// If so, return it
+		if (setter != null) {
+			return {
+				isInherited: false,
+				classDeclaration,
+				setter
+			};
+		}
+
+		// Otherwise, check if the class extends anything. If it doesn't, return undefined
+		if (this.isBaseClass(classDeclaration)) return undefined;
+
+		// Result the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return undefined
+		if (parentClass == null) return undefined;
+
+		// Check recursively
+		const result = this.getOwnOrInheritedStaticSetterWithName(name, parentClass);
+
+		// If no parent had it either, return undefined
+		if (result == null) {
+			return undefined;
+		}
+
+		// Otherwise, return the match
+		return {
+			isInherited: true,
+			classDeclaration: result.classDeclaration,
+			setter: result.setter
+		};
+	}
+
+	/**
+	 * Returns the getters that are decorated with the given decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {GetAccessorDeclaration[]}
+	 */
+	public getGettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): GetAccessorDeclaration[] {
+		return <GetAccessorDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isGetAccessorDeclaration(member) && !this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns the setters that are decorated with the given decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {SetAccessorDeclaration[]}
+	 */
+	public getSettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): SetAccessorDeclaration[] {
+		return <SetAccessorDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isSetAccessorDeclaration(member) && !this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns the static getters that are decorated with the given decorator.
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {GetAccessorDeclaration[]}
+	 */
+	public getStaticGettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): GetAccessorDeclaration[] {
+		return <GetAccessorDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isGetAccessorDeclaration(member) && this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns the static setters that are decorated with the given decorator
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {SetAccessorDeclaration[]}
+	 */
+	public getStaticSettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): SetAccessorDeclaration[] {
+		return <SetAccessorDeclaration[]> this.getMembersWithDecorator(decorator, classDeclaration)
+			.filter(member => isSetAccessorDeclaration(member) && this.modifierService.isStatic(member));
+	}
+
+	/**
+	 * Returns true if the class has a method matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getMethodWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class has a property matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getPropertyWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class has a static method matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getStaticMethodWithName(name, classDeclaration) != null;
+	}
+	/**
+	 * Returns true if the class has a static property matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+
+	public hasStaticPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getStaticPropertyWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class has a static getter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasStaticGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getStaticGetterWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class has a static setter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasStaticSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getStaticSetterWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class or any of the classes it extends has a getter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedGetterWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class or any of the classes it extends has a setter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedSetterWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class or any of the classes it extends has a static getter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedStaticGetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedStaticGetterWithName(name, classDeclaration) != null;
+	}
+
+	/**
+	 * Returns true if the class or any of the classes it extends has a static setter matching the provided name
+	 * @param {string} name
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public hasOwnOrInheritedStaticSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		return this.getOwnOrInheritedStaticSetterWithName(name, classDeclaration) != null;
 	}
 
 	/**
@@ -485,6 +848,70 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	public getClassWithName (name: string, sourceFile: SourceFile, deep: boolean = true): ClassDeclaration|ClassExpression|undefined {
 		return this.getAll(sourceFile, deep)
 			.find(classDeclaration => this.getNameOfClass(classDeclaration) === name);
+	}
+
+	/**
+	 * Removes all getters that are decorated with the given decorator from the class.
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeGettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getGettersWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
+	}
+
+	/**
+	 * Removes all setters that are decorated with the given decorator from the class.
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeSettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getSettersWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
+	}
+
+	/**
+	 * Removes all static getters that are decorated with the given decorator from the class.
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticGettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getStaticGettersWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
+	}
+
+	/**
+	 * Removes all static setters that are decorated with the given decorator from the class.
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {boolean}
+	 */
+	public removeStaticSettersWithDecorator (decorator: string|IDecoratorCtor|RegExp, classDeclaration: ClassDeclaration|ClassExpression): boolean {
+		const properties = this.getStaticSettersWithDecorator(decorator, classDeclaration);
+		if (properties.length === 0) return false;
+
+		return this.remover.removeClassDeclarationMembers(
+			classDeclaration,
+			properties
+		);
 	}
 
 	/**

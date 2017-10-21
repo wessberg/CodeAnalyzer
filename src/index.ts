@@ -213,3 +213,5 @@ export {IOwnOrInheritedMethodWithNameResult} from "./service/class/i-own-or-inhe
 export {IOwnOrInheritedPropertyWithNameResult} from "./service/class/i-own-or-inherited-property-with-name-result";
 export {IOwnOrInheritedMemberWithNameResult} from "./service/class/i-own-or-inherited-member-with-name-result";
 export {IOwnOrInheritedConstructorResult} from "./service/class/i-own-or-inherited-constructor-result";
+export {IOwnOrInheritedGetterWithNameResult} from "./service/class/i-own-or-inherited-getter-with-name-result";
+export {IOwnOrInheritedSetterWithNameResult} from "./service/class/i-own-or-inherited-setter-with-name-result";
