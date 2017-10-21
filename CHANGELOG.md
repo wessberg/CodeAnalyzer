@@ -1,3 +1,12 @@
+<a name="1.0.92"></a>
+## 1.0.92 (2017-10-21)
+
+* 1.0.92 ([72a7f1a](https://github.com/wessberg/CodeAnalyzer/commit/72a7f1a))
+* Bumped version ([7c883d5](https://github.com/wessberg/CodeAnalyzer/commit/7c883d5))
+* Removed 'isAsync' from getters and setters ([7e5c288](https://github.com/wessberg/CodeAnalyzer/commit/7e5c288))
+
+
+
 <a name="1.0.91"></a>
 ## 1.0.91 (2017-10-21)
 
