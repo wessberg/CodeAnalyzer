@@ -1,3 +1,12 @@
+<a name="1.0.89"></a>
+## 1.0.89 (2017-10-21)
+
+* 1.0.89 ([c9b20de](https://github.com/wessberg/CodeAnalyzer/commit/c9b20de))
+* Added the possibility of creating and adding CallExpressions to SourceFiles ([e855d63](https://github.com/wessberg/CodeAnalyzer/commit/e855d63))
+* Bumped version ([e507c6e](https://github.com/wessberg/CodeAnalyzer/commit/e507c6e))
+
+
+
 <a name="1.0.88"></a>
 ## 1.0.88 (2017-10-21)
 
