@@ -5,7 +5,7 @@ import {IMethodSignatureCtor} from "../method-signature/i-method-signature-ctor"
 import {IIndexSignatureCtor} from "../index-signature/i-index-signature-ctor";
 
 export interface ITypeElementCtor {
-	name: string|null|undefined;
+	name: string|null;
 	isOptional: boolean;
 }
 

@@ -33,8 +33,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {Decorator} node
 	 * @returns {IDecoratorDict}
 	 */
-	public toIDecoratorDict (node: Decorator|undefined): IDecoratorDict|undefined {
-		if (node == null) return undefined;
+	public toIDecoratorDict (node: Decorator|undefined|null): IDecoratorDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIDecoratorCtor(node)!,
@@ -47,8 +47,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {IObjectBindingElementDict}
 	 */
-	public toIObjectBindingElementDict (node: BindingElement|undefined): IObjectBindingElementDict|undefined {
-		if (node == null) return undefined;
+	public toIObjectBindingElementDict (node: BindingElement|undefined|null): IObjectBindingElementDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIObjectBindingElementCtor(node)!,
@@ -61,8 +61,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {INormalArrayBindingElementDict}
 	 */
-	public toINormalArrayBindingElementDict (node: BindingElement|undefined): INormalArrayBindingElementDict|undefined {
-		if (node == null) return undefined;
+	public toINormalArrayBindingElementDict (node: BindingElement|undefined|null): INormalArrayBindingElementDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toINormalArrayBindingElementCtor(node)!,
@@ -75,7 +75,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ArrayBindingElement?} node
 	 * @returns {IOmittedArrayBindingElementDict}
 	 */
-	public toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined): IOmittedArrayBindingElementDict|undefined {
+	public toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementDict|null {
 		return {
 			...this.nodeToCtorMapper.toIOmittedArrayBindingElementCtor(node)!,
 			nodeKind: "ARRAY_BINDING_ELEMENT"
@@ -87,8 +87,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ArrayBindingElement} node
 	 * @returns {ArrayBindingElementDict}
 	 */
-	public toArrayBindingElementDict (node: ArrayBindingElement|undefined): ArrayBindingElementDict|undefined {
-		if (node == null) return undefined;
+	public toArrayBindingElementDict (node: ArrayBindingElement|undefined|null): ArrayBindingElementDict|null {
+		if (node == null) return null;
 
 		if (isOmittedExpression(node)) return this.toIOmittedArrayBindingElementDict(node);
 		return this.toINormalArrayBindingElementDict(node);
@@ -99,14 +99,14 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {BindingName} node
 	 * @returns {BindingNameDict}
 	 */
-	public toBindingNameDict (node: BindingName|undefined): BindingNameDict|undefined {
-		if (node == null) return undefined;
+	public toBindingNameDict (node: BindingName|undefined|null): BindingNameDict|null {
+		if (node == null) return null;
 
 		if (isIdentifier(node)) return this.toINormalBindingNameDict(node);
 		if (isArrayBindingPattern(node)) return this.toIArrayBindingNameDict(node);
 		if (isObjectBindingPattern(node)) return this.toIObjectBindingNameDict(node);
 
-		return undefined;
+		return null;
 	}
 
 	/**
@@ -114,8 +114,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {Identifier} node
 	 * @returns {INormalBindingNameDict}
 	 */
-	public toINormalBindingNameDict (node: Identifier|undefined): INormalBindingNameDict|undefined {
-		if (node == null) return undefined;
+	public toINormalBindingNameDict (node: Identifier|undefined|null): INormalBindingNameDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toINormalBindingNameCtor(node)!,
@@ -128,8 +128,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ObjectBindingPattern} node
 	 * @returns {IObjectBindingNameDict}
 	 */
-	public toIObjectBindingNameDict (node: ObjectBindingPattern|undefined): IObjectBindingNameDict|undefined {
-		if (node == null) return undefined;
+	public toIObjectBindingNameDict (node: ObjectBindingPattern|undefined|null): IObjectBindingNameDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIObjectBindingNameCtor(node)!,
@@ -143,8 +143,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ArrayBindingPattern} node
 	 * @returns {IArrayBindingNameDict}
 	 */
-	public toIArrayBindingNameDict (node: ArrayBindingPattern|undefined): IArrayBindingNameDict|undefined {
-		if (node == null) return undefined;
+	public toIArrayBindingNameDict (node: ArrayBindingPattern|undefined|null): IArrayBindingNameDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIArrayBindingNameCtor(node)!,
@@ -158,8 +158,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ParameterDeclaration} node
 	 * @returns {IParameterDict}
 	 */
-	public toIParameterDict (node: ParameterDeclaration|undefined): IParameterDict|undefined {
-		if (node == null) return undefined;
+	public toIParameterDict (node: ParameterDeclaration|undefined|null): IParameterDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toIParameterCtor(node)!,
 			nodeKind: "PARAMETER",
@@ -173,15 +173,16 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {TypeElementDict}
 	 */
-	public toTypeElementDict (node: TypeElement|undefined): TypeElementDict|undefined {
-		if (node == null) return undefined;
+	public toTypeElementDict (node: TypeElement|undefined|null): TypeElementDict|null {
+		if (node == null) return null;
 
 		if (isCallSignatureDeclaration(node)) return this.toICallSignatureDict(node);
 		if (isConstructSignatureDeclaration(node)) return this.toIConstructSignatureDict(node);
 		if (isMethodSignature(node)) return this.toIMethodSignatureDict(node);
 		if (isIndexSignatureDeclaration(node)) return this.toIIndexSignatureDict(node);
 		if (isPropertySignature(node)) return this.toIPropertySignatureDict(node);
-		return undefined;
+
+		return null;
 	}
 
 	/**
@@ -189,8 +190,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {CallSignatureDeclaration} node
 	 * @returns {ICallSignatureDict}
 	 */
-	public toICallSignatureDict (node: CallSignatureDeclaration|undefined): ICallSignatureDict|undefined {
-		if (node == null) return undefined;
+	public toICallSignatureDict (node: CallSignatureDeclaration|undefined|null): ICallSignatureDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toICallSignatureCtor(node)!,
 			nodeKind: "CALL_SIGNATURE",
@@ -203,8 +204,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ConstructSignatureDeclaration} node
 	 * @returns {IConstructSignatureDict}
 	 */
-	public toIConstructSignatureDict (node: ConstructSignatureDeclaration|undefined): IConstructSignatureDict|undefined {
-		if (node == null) return undefined;
+	public toIConstructSignatureDict (node: ConstructSignatureDeclaration|undefined|null): IConstructSignatureDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toIConstructSignatureCtor(node)!,
 			nodeKind: "CONSTRUCT_SIGNATURE",
@@ -217,8 +218,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {MethodSignature} node
 	 * @returns {IMethodSignatureDict}
 	 */
-	public toIMethodSignatureDict (node: MethodSignature|undefined): IMethodSignatureDict|undefined {
-		if (node == null) return undefined;
+	public toIMethodSignatureDict (node: MethodSignature|undefined|null): IMethodSignatureDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toIMethodSignatureCtor(node)!,
 			nodeKind: "METHOD_SIGNATURE",
@@ -231,8 +232,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {IndexSignatureDeclaration} node
 	 * @returns {IIndexSignatureDict}
 	 */
-	public toIIndexSignatureDict (node: IndexSignatureDeclaration|undefined): IIndexSignatureDict|undefined {
-		if (node == null) return undefined;
+	public toIIndexSignatureDict (node: IndexSignatureDeclaration|undefined|null): IIndexSignatureDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toIIndexSignatureCtor(node)!,
 			nodeKind: "INDEX_SIGNATURE",
@@ -245,8 +246,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {PropertySignature} node
 	 * @returns {IPropertySignatureDict}
 	 */
-	public toIPropertySignatureDict (node: PropertySignature|undefined): IPropertySignatureDict|undefined {
-		if (node == null) return undefined;
+	public toIPropertySignatureDict (node: PropertySignature|undefined|null): IPropertySignatureDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toIPropertySignatureCtor(node)!,
 			nodeKind: "PROPERTY_SIGNATURE"
@@ -258,8 +259,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {SignatureDeclaration} node
 	 * @returns {ISignatureDict}
 	 */
-	public toISignatureDict (node: SignatureDeclaration|undefined): ISignatureDict|undefined {
-		if (node == null) return undefined;
+	public toISignatureDict (node: SignatureDeclaration|undefined|null): ISignatureDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toISignatureCtor(node)!,
@@ -272,8 +273,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IExtendsHeritageDict}
 	 */
-	public toIExtendsHeritageDict (node: HeritageClause|undefined): IExtendsHeritageDict|undefined {
-		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return undefined;
+	public toIExtendsHeritageDict (node: HeritageClause|undefined|null): IExtendsHeritageDict|null {
+		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
@@ -287,8 +288,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IImplementsHeritageDict}
 	 */
-	public toIImplementsHeritageDict (node: HeritageClause|undefined): IImplementsHeritageDict|undefined {
-		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return undefined;
+	public toIImplementsHeritageDict (node: HeritageClause|undefined|null): IImplementsHeritageDict|null {
+		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
@@ -302,8 +303,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {HeritageDict}
 	 */
-	public toHeritageDict (node: HeritageClause|undefined): HeritageDict|undefined {
-		if (node == null) return undefined;
+	public toHeritageDict (node: HeritageClause|undefined|null): HeritageDict|null {
+		if (node == null) return null;
 
 		// If it is an implements clause
 		if (this.heritageClauseService.isExtendsClause(node)) {
@@ -319,8 +320,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {TypeLiteralNode|InterfaceDeclaration} node
 	 * @returns {ITypeLiteralDict}
 	 */
-	public toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined): ITypeLiteralDict|undefined {
-		if (node == null) return undefined;
+	public toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralDict|null {
+		if (node == null) return null;
 		return {
 			...this.nodeToCtorMapper.toITypeLiteralCtor(node)!,
 			nodeKind: "TYPE_LITERAL",
@@ -333,8 +334,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {InterfaceDeclaration} node
 	 * @returns {IInterfaceDict}
 	 */
-	public toIInterfaceDict (node: InterfaceDeclaration|undefined): IInterfaceDict|undefined {
-		if (node == null) return undefined;
+	public toIInterfaceDict (node: InterfaceDeclaration|undefined|null): IInterfaceDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIInterfaceCtor(node)!,
@@ -348,7 +349,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {ITypeElementDict}
 	 */
-	public toITypeElementDict (node: TypeElement|undefined): ITypeElementDict|undefined {
+	public toITypeElementDict (node: TypeElement|undefined|null): ITypeElementDict|null {
 		return this.nodeToCtorMapper.toITypeElementCtor(node);
 	}
 
@@ -357,8 +358,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ImportSpecifier|ExportSpecifier?} node
 	 * @returns {INamedImportExportDict?}
 	 */
-	public toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportDict|undefined {
-		if (node == null) return undefined;
+	public toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toINamedImportExportCtor(node)!,
@@ -371,8 +372,8 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @param {ImportClause?} node
 	 * @returns {IImportClauseDict?}
 	 */
-	public toIImportClauseDict (node: ImportClause|undefined): IImportClauseDict|undefined {
-		if (node == null) return undefined;
+	public toIImportClauseDict (node: ImportClause|undefined|null): IImportClauseDict|null {
+		if (node == null) return null;
 
 		return {
 			...this.nodeToCtorMapper.toIImportClauseCtor(node)!,

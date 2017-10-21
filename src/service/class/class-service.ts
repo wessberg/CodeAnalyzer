@@ -103,7 +103,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	public getClassWithName (name: string, sourceFile: SourceFile, deep: boolean = true): ClassDeclaration|ClassExpression|undefined {
 		return this.getAll(sourceFile, deep)
-			.find(classDeclaration => classDeclaration.name != null && classDeclaration.name.text === name);
+			.find(classDeclaration => this.getNameOfClass(classDeclaration) === name);
 	}
 
 	/**

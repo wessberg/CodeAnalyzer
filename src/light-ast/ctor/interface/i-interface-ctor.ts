@@ -4,7 +4,7 @@ import {INameWithTypeArguments} from "../../dict/name-with-type-arguments/i-name
 
 export interface IInterfaceCtor extends ITypeLiteralCtor {
 	name: string;
-	extends: INameWithTypeArguments|null|undefined;
-	typeParameters: Iterable<string>|null|undefined;
+	extends: INameWithTypeArguments|null;
+	typeParameters: Iterable<string>|null;
 	members: TypeElementCtor[];
 }

@@ -53,8 +53,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {Decorator} node
 	 * @returns {IDecoratorCtor}
 	 */
-	public toIDecoratorCtor (node: Decorator|undefined): IDecoratorCtor|undefined {
-		if (node == null) return undefined;
+	public toIDecoratorCtor (node: Decorator|undefined|null): IDecoratorCtor|null {
+		if (node == null) return null;
 
 		return {
 			expression: this.decoratorService.takeDecoratorExpression(node)
@@ -66,13 +66,13 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {IObjectBindingElementCtor}
 	 */
-	public toIObjectBindingElementCtor (node: BindingElement|undefined): IObjectBindingElementCtor|undefined {
-		if (node == null) return undefined;
+	public toIObjectBindingElementCtor (node: BindingElement|undefined|null): IObjectBindingElementCtor|null {
+		if (node == null) return null;
 
 		return {
 			name: this.bindingElementService.getName(node),
-			propertyName: this.bindingElementService.getPropertyName(node),
-			initializer: this.bindingElementService.getInitializer(node),
+			propertyName: this.fallbackToNull(this.bindingElementService.getPropertyName(node)),
+			initializer: this.fallbackToNull(this.bindingElementService.getInitializer(node)),
 			isRestSpread: this.bindingElementService.isRestSpread(node)
 		};
 	}
@@ -82,13 +82,13 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {INormalArrayBindingElementCtor}
 	 */
-	public toINormalArrayBindingElementCtor (node: BindingElement|undefined): INormalArrayBindingElementCtor|undefined {
-		if (node == null) return undefined;
+	public toINormalArrayBindingElementCtor (node: BindingElement|undefined|null): INormalArrayBindingElementCtor|null {
+		if (node == null) return null;
 
 		return {
 			kind: "NORMAL",
 			name: this.bindingElementService.getName(node),
-			initializer: this.bindingElementService.getInitializer(node),
+			initializer: this.fallbackToNull(this.bindingElementService.getInitializer(node)),
 			isRestSpread: this.bindingElementService.isRestSpread(node)
 		};
 	}
@@ -98,7 +98,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingElement} _node
 	 * @returns {IOmittedArrayBindingElementCtor}
 	 */
-	public toIOmittedArrayBindingElementCtor (_node: ArrayBindingElement|undefined): IOmittedArrayBindingElementCtor|undefined {
+	public toIOmittedArrayBindingElementCtor (_node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementCtor|null {
 		return {
 			kind: "OMITTED"
 		};
@@ -109,8 +109,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingElement} node
 	 * @returns {ArrayBindingElementCtor}
 	 */
-	public toArrayBindingElementCtor (node: ArrayBindingElement|undefined): ArrayBindingElementCtor|undefined {
-		if (node == null) return undefined;
+	public toArrayBindingElementCtor (node: ArrayBindingElement|undefined|null): ArrayBindingElementCtor|null {
+		if (node == null) return null;
 
 		if (isOmittedExpression(node)) return this.toIOmittedArrayBindingElementCtor(node);
 		return this.toINormalArrayBindingElementCtor(node);
@@ -121,14 +121,14 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingName} node
 	 * @returns {BindingNameCtor}
 	 */
-	public toBindingNameCtor (node: BindingName|undefined): BindingNameCtor|undefined {
-		if (node == null) return undefined;
+	public toBindingNameCtor (node: BindingName|undefined|null): BindingNameCtor|null {
+		if (node == null) return null;
 
 		if (isIdentifier(node)) return this.toINormalBindingNameCtor(node);
 		if (isArrayBindingPattern(node)) return this.toIArrayBindingNameCtor(node);
 		if (isObjectBindingPattern(node)) return this.toIObjectBindingNameCtor(node);
 
-		return undefined;
+		return null;
 	}
 
 	/**
@@ -136,8 +136,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {Identifier} node
 	 * @returns {INormalBindingNameCtor}
 	 */
-	public toINormalBindingNameCtor (node: Identifier|undefined): INormalBindingNameCtor|undefined {
-		if (node == null) return undefined;
+	public toINormalBindingNameCtor (node: Identifier|undefined|null): INormalBindingNameCtor|null {
+		if (node == null) return null;
 
 		return {
 			kind: "NORMAL",
@@ -150,8 +150,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ObjectBindingPattern} node
 	 * @returns {IObjectBindingNameCtor}
 	 */
-	public toIObjectBindingNameCtor (node: ObjectBindingPattern|undefined): IObjectBindingNameCtor|undefined {
-		if (node == null) return undefined;
+	public toIObjectBindingNameCtor (node: ObjectBindingPattern|undefined|null): IObjectBindingNameCtor|null {
+		if (node == null) return null;
 
 		return {
 			kind: "OBJECT_BINDING",
@@ -164,8 +164,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingPattern} node
 	 * @returns {IArrayBindingNameCtor}
 	 */
-	public toIArrayBindingNameCtor (node: ArrayBindingPattern|undefined): IArrayBindingNameCtor|undefined {
-		if (node == null) return undefined;
+	public toIArrayBindingNameCtor (node: ArrayBindingPattern|undefined|null): IArrayBindingNameCtor|null {
+		if (node == null) return null;
 
 		return {
 			kind: "ARRAY_BINDING",
@@ -178,11 +178,11 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ParameterDeclaration} node
 	 * @returns {IParameterCtor}
 	 */
-	public toIParameterCtor (node: ParameterDeclaration|undefined): IParameterCtor|undefined {
-		if (node == null) return undefined;
+	public toIParameterCtor (node: ParameterDeclaration|undefined|null): IParameterCtor|null {
+		if (node == null) return null;
 		return {
-			type: this.parameterService.getTypeName(node),
-			initializer: this.parameterService.getInitializer(node),
+			type: this.fallbackToNull(this.parameterService.getTypeName(node)),
+			initializer: this.fallbackToNull(this.parameterService.getInitializer(node)),
 			isRestSpread: this.parameterService.isRestSpread(node),
 			isOptional: this.parameterService.isOptional(node),
 			isReadonly: this.parameterService.isReadonly(node),
@@ -196,15 +196,16 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {TypeElementCtor}
 	 */
-	public toTypeElementCtor (node: TypeElement|undefined): TypeElementCtor|undefined {
-		if (node == null) return undefined;
+	public toTypeElementCtor (node: TypeElement|undefined|null): TypeElementCtor|null {
+		if (node == null) return null;
 
 		if (isCallSignatureDeclaration(node)) return this.toICallSignatureCtor(node);
 		if (isConstructSignatureDeclaration(node)) return this.toIConstructSignatureCtor(node);
 		if (isMethodSignature(node)) return this.toIMethodSignatureCtor(node);
 		if (isIndexSignatureDeclaration(node)) return this.toIIndexSignatureCtor(node);
 		if (isPropertySignature(node)) return this.toIPropertySignatureCtor(node);
-		return undefined;
+
+		return null;
 	}
 
 	/**
@@ -212,8 +213,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {CallSignatureDeclaration} node
 	 * @returns {ICallSignatureCtor}
 	 */
-	public toICallSignatureCtor (node: CallSignatureDeclaration|undefined): ICallSignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toICallSignatureCtor (node: CallSignatureDeclaration|undefined|null): ICallSignatureCtor|null {
+		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
 			...this.toISignatureCtor(node)!
@@ -225,8 +226,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ConstructSignatureDeclaration} node
 	 * @returns {IConstructSignatureCtor}
 	 */
-	public toIConstructSignatureCtor (node: ConstructSignatureDeclaration|undefined): IConstructSignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toIConstructSignatureCtor (node: ConstructSignatureDeclaration|undefined|null): IConstructSignatureCtor|null {
+		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
 			...this.toISignatureCtor(node)!
@@ -238,8 +239,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {MethodSignature} node
 	 * @returns {IMethodSignatureCtor}
 	 */
-	public toIMethodSignatureCtor (node: MethodSignature|undefined): IMethodSignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toIMethodSignatureCtor (node: MethodSignature|undefined|null): IMethodSignatureCtor|null {
+		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
 			...this.toISignatureCtor(node)!,
@@ -252,12 +253,12 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {IndexSignatureDeclaration} node
 	 * @returns {IIndexSignatureCtor}
 	 */
-	public toIIndexSignatureCtor (node: IndexSignatureDeclaration|undefined): IIndexSignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toIIndexSignatureCtor (node: IndexSignatureDeclaration|undefined|null): IIndexSignatureCtor|null {
+		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
 			...this.toISignatureCtor(node)!,
-			name: this.indexSignatureService.getName(node)
+			name: this.fallbackToNull(this.indexSignatureService.getName(node))
 		};
 	}
 
@@ -266,12 +267,12 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {PropertySignature} node
 	 * @returns {IPropertySignatureCtor}
 	 */
-	public toIPropertySignatureCtor (node: PropertySignature|undefined): IPropertySignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toIPropertySignatureCtor (node: PropertySignature|undefined|null): IPropertySignatureCtor|null {
+		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
-			type: this.propertySignatureService.getTypeName(node),
-			initializer: this.propertySignatureService.getExpression(node),
+			type: this.fallbackToNull(this.propertySignatureService.getTypeName(node)),
+			initializer: this.fallbackToNull(this.propertySignatureService.getExpression(node)),
 			isReadonly: this.modifierService.isReadonly(node)
 		};
 	}
@@ -281,8 +282,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {SignatureDeclaration} node
 	 * @returns {ISignatureCtor}
 	 */
-	public toISignatureCtor (node: SignatureDeclaration|undefined): ISignatureCtor|undefined {
-		if (node == null) return undefined;
+	public toISignatureCtor (node: SignatureDeclaration|undefined|null): ISignatureCtor|null {
+		if (node == null) return null;
 
 		return {
 			name: node.name == null ? null : this.propertyNameService.getName(node.name),
@@ -297,8 +298,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IExtendsHeritageCtor}
 	 */
-	public toIExtendsHeritageCtor (node: HeritageClause|undefined): IExtendsHeritageCtor|undefined {
-		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return undefined;
+	public toIExtendsHeritageCtor (node: HeritageClause|undefined|null): IExtendsHeritageCtor|null {
+		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
@@ -312,8 +313,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IImplementsHeritageCtor}
 	 */
-	public toIImplementsHeritageCtor (node: HeritageClause|undefined): IImplementsHeritageCtor|undefined {
-		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return undefined;
+	public toIImplementsHeritageCtor (node: HeritageClause|undefined|null): IImplementsHeritageCtor|null {
+		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
@@ -327,8 +328,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {HeritageCtor}
 	 */
-	public toHeritageCtor (node: HeritageClause|undefined): HeritageCtor|undefined {
-		if (node == null) return undefined;
+	public toHeritageCtor (node: HeritageClause|undefined|null): HeritageCtor|null {
+		if (node == null) return null;
 
 		// If it is an implements clause
 		if (this.heritageClauseService.isExtendsClause(node)) {
@@ -344,8 +345,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeLiteralNode|InterfaceDeclaration} node
 	 * @returns {ITypeLiteralCtor}
 	 */
-	public toITypeLiteralCtor (node: TypeLiteralNode|InterfaceDeclaration|undefined): ITypeLiteralCtor|undefined {
-		if (node == null) return undefined;
+	public toITypeLiteralCtor (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralCtor|null {
+		if (node == null) return null;
 		return {
 			members: node.members.map(member => this.toITypeElementCtor(member)!)
 		};
@@ -356,14 +357,14 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {InterfaceDeclaration} node
 	 * @returns {IInterfaceCtor}
 	 */
-	public toIInterfaceCtor (node: InterfaceDeclaration|undefined): IInterfaceCtor|undefined {
-		if (node == null) return undefined;
+	public toIInterfaceCtor (node: InterfaceDeclaration|undefined|null): IInterfaceCtor|null {
+		if (node == null) return null;
 
 		return {
 			members: node.members.map(member => this.toTypeElementCtor(member)!),
 			name: this.interfaceDeclarationService.getName(node),
 			extends: node.heritageClauses == null || node.heritageClauses.length < 1 ? null : this.heritageClauseService.getFirstTypeNameWithArguments(node.heritageClauses[0]),
-			typeParameters: this.interfaceDeclarationService.getTypeParameterNames(node)
+			typeParameters: this.fallbackToNull(this.interfaceDeclarationService.getTypeParameterNames(node))
 		};
 	}
 
@@ -372,8 +373,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {ITypeElementCtor}
 	 */
-	public toITypeElementCtor (node: TypeElement|undefined): ITypeElementCtor|undefined {
-		if (node == null) return undefined;
+	public toITypeElementCtor (node: TypeElement|undefined|null): ITypeElementCtor|null {
+		if (node == null) return null;
 
 		return {
 			name: node.name == null ? null : this.propertyNameService.getName(node.name),
@@ -386,8 +387,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ImportSpecifier|ExportSpecifier?} node
 	 * @returns {INamedImportExportCtor?}
 	 */
-	public toINamedImportExportCtor (node: ImportSpecifier|ExportSpecifier|undefined): INamedImportExportCtor|undefined {
-		if (node == null) return undefined;
+	public toINamedImportExportCtor (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportCtor|null {
+		if (node == null) return null;
 
 		return {
 			name: node.name.text,
@@ -400,8 +401,8 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ImportClause?} node
 	 * @returns {IImportClauseCtor?}
 	 */
-	public toIImportClauseCtor (node: ImportClause|undefined): IImportClauseCtor|undefined {
-		if (node == null) return undefined;
+	public toIImportClauseCtor (node: ImportClause|undefined|null): IImportClauseCtor|null {
+		if (node == null) return null;
 
 		return {
 			defaultName: node.name == null ? null : node.name.text,
@@ -412,6 +413,16 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 				? null
 				: node.namedBindings.elements.map(element => this.toINamedImportExportCtor(element)!)
 		};
+	}
+
+	/**
+	 * Makes sure that the provided item will fallback to null rather than undefined if it is undefined
+	 * @param {T} item
+	 * @returns {T}
+	 */
+	public fallbackToNull<T> (item: T|undefined): T|null {
+		if (item == null) return null;
+		return item;
 	}
 
 }

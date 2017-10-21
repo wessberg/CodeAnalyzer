@@ -103,15 +103,15 @@ const myClass = classService.getClassWithName("MyClass", sourceFile);
 // Add a property to the class
 classService.addPropertyToClass({
 	decorators: null,
-  type: "boolean",
-  initializer: "true",
-  isAbstract: false,
-  isReadonly: true,
-  isOptional: false,
-  isAsync: false,
-  isStatic: false,
-  visibility: "public",
-  name: "aProp"
+	type: "boolean",
+	initializer: "true",
+	isAbstract: false,
+	isReadonly: true,
+	isOptional: false,
+	isAsync: false,
+	isStatic: false,
+	visibility: "public",
+	name: "aProp"
 }, myClass);
 
 // Let's print the SourceFile and see how it looks now:
@@ -123,4 +123,107 @@ console.log(printer.print(sourceFile));
  * 	public readonly aProp: boolean = true;
  * }
  */
+```
+
+## Mapping a Typescript AST to a lighter AST representation
+
+CodeAnalyzer also comes with the possibility of transforming a Typescript AST into something
+we've called a Light AST. This is one that is easily readable and less detailed. This can be useful, for example for extracting
+type information from type declarations to have them live on runtime. In that case, the output should be as clean and tiny as possible.
+In fact, you can transform any Typescript node into its light-ast equivalent.
+
+For example, say you want to generate runtime typings from this interface declaration:
+
+```typescript
+// Inside an_interface.ts
+interface IFoo {
+	prop1: boolean;
+	readonly prop2: string;
+	prop3?: string|null;
+	method1 (arg1: string): boolean;
+	method2 (): Promise<void>;
+}
+```
+
+You can then use CodeAnalyzer to extract a light-AST from it and save it, for example as a JSON file, so it can be retrieved on runtime.
+Here's how you would get a light-AST representation of the interface with CodeAnalyzer:
+
+```typescript
+const {interfaceDeclarationService, languageService} = new CodeAnalyzer();
+
+// Generate a SourceFile
+const sourceFile = languageService.getFile({path: "an_interface.ts"});
+
+// Let's get the InterfaceDeclaration
+const iFoo = interfaceDeclarationService.getInterfaceWithName("IFoo", sourceFile);
+
+// Transform it into a light-AST
+const lightAst = interfaceDeclarationService.toLightAST(iFoo);
+```
+Here's how the generated light-AST would look for the above interface:
+
+```json
+{
+  "members": [
+    {
+      "name": "prop1",
+      "isOptional": false,
+      "type": "boolean",
+      "initializer": null,
+      "isReadonly": false,
+      "nodeKind": "PROPERTY_SIGNATURE"
+    },
+    {
+      "name": "prop2",
+      "isOptional": false,
+      "type": "string",
+      "initializer": null,
+      "isReadonly": true,
+      "nodeKind": "PROPERTY_SIGNATURE"
+    },
+    {
+      "name": "prop3",
+      "isOptional": true,
+      "type": "string | null",
+      "initializer": null,
+      "isReadonly": false,
+      "nodeKind": "PROPERTY_SIGNATURE"
+    },
+    {
+      "name": "method1",
+      "isOptional": false,
+      "type": "boolean",
+      "parameters": [
+        {
+          "type": "string",
+          "initializer": null,
+          "isRestSpread": false,
+          "isOptional": false,
+          "isReadonly": false,
+          "decorators": null,
+          "name": {
+            "kind": "NORMAL",
+            "name": "arg1",
+            "nodeKind": "BINDING_NAME"
+          },
+          "nodeKind": "PARAMETER"
+        }
+      ],
+      "typeParameters": null,
+      "nodeKind": "METHOD_SIGNATURE"
+    },
+    {
+      "name": "method2",
+      "isOptional": false,
+      "type": "Promise<void>",
+      "parameters": [],
+      "typeParameters": null,
+      "nodeKind": "METHOD_SIGNATURE"
+    }
+  ],
+  "name": "IFoo",
+  "extends": null,
+  "typeParameters": null,
+  "nodeKind": "INTERFACE"
+}
 ```

@@ -74,7 +74,7 @@ console.log(constructorService.getNonInitializedTypeNames(ctor!));
 
 console.log(printer.print(sourceFile));
 
-console.log(JSON.stringify(interfaceDeclarationService.toInterfaceDict(firstInterface), null, "  "));
+console.log(JSON.stringify(interfaceDeclarationService.toLightAST(firstInterface), null, "  "));
 
 test("foo", t => {
 	t.true(true);

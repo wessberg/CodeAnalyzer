@@ -37,9 +37,10 @@ function foo<T, U, J> (bar: T, baz: U, lolz?: J): void {
 foo<string, number, C>("", 2);
 
 interface IFoo {
-	a?: string;
-	b: number;
-	c: Promise<boolean>;
-	d: {a?: "string"|"number"};
+	prop1: boolean;
+	readonly prop2: string;
+	prop3?: string|null;
+	method1 (arg1: string): boolean;
+	method2 (): Promise<void>;
 }
 /*tslint:enable*/
