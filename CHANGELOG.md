@@ -1,3 +1,12 @@
+<a name="1.0.91"></a>
+## 1.0.91 (2017-10-21)
+
+* 1.0.91 ([f1c6bc1](https://github.com/wessberg/CodeAnalyzer/commit/f1c6bc1))
+* Added services for working with GetAccessors and SetAccessors ([9f4fd34](https://github.com/wessberg/CodeAnalyzer/commit/9f4fd34))
+* Bumped version ([097580b](https://github.com/wessberg/CodeAnalyzer/commit/097580b))
+
+
+
 <a name="1.0.90"></a>
 ## 1.0.90 (2017-10-21)
 
