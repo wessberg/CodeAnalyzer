@@ -26,11 +26,12 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	 * Gets all Nodes for the provided file
 	 * @template T
 	 * @param {string} file
-	 * @param {boolean} deep
+	 * @param {string} [content]
+	 * @param {boolean} [deep]
 	 * @returns {NodeArray<T>}
 	 */
-	public getAllForFile (file: string, deep?: boolean): NodeArray<T> {
-		const sourceFile = this.languageService.getFile({path: file});
+	public getAllForFile (file: string, content?: string, deep?: boolean): NodeArray<T> {
+		const sourceFile = this.languageService.getFile({path: file, content});
 		return this.getAll(sourceFile, deep);
 	}
 
