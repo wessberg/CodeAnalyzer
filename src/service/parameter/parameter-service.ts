@@ -4,6 +4,7 @@ import {IParameterService} from "./i-parameter-service";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service for working with ParameterDeclarations
@@ -19,8 +20,9 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	constructor (private printer: IPrinter,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

@@ -19,6 +19,7 @@ import {IClassGetAccessorCtor, IClassSetAccessorCtor} from "../../light-ast/ctor
 import {IClassMethodCtor} from "../../light-ast/ctor/class-method/i-class-method-ctor";
 import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
 import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A class for working with classes
@@ -41,8 +42,9 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 private resolver: IResolver,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

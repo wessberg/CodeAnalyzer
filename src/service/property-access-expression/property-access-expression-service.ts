@@ -4,6 +4,7 @@ import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {NodeService} from "../node/node-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service for working with PropertyAccessExpressions
@@ -18,8 +19,9 @@ export class PropertyAccessExpressionService extends NodeService<PropertyAccessE
 	constructor (private printer: IPrinter,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
+							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

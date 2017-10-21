@@ -6,6 +6,7 @@ import {IRemover} from "../../remover/i-remover-base";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IInterfaceDict} from "../../light-ast/dict/interface/i-interface-dict";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service for working with InterfaceDeclarations
@@ -44,8 +45,9 @@ export class InterfaceDeclarationService extends TypeDeclarationService<Interfac
 							 printer: IPrinter,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(printer, decoratorService, remover, astUtil);
+		super(printer, decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

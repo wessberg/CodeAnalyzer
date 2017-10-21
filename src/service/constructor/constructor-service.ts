@@ -8,6 +8,7 @@ import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IParameterService} from "../parameter/i-parameter-service";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A class that helps with working with ConstructorDeclarations
@@ -25,8 +26,9 @@ export class ConstructorService extends NodeService<ConstructorDeclaration> impl
 							 private parameterService: IParameterService,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

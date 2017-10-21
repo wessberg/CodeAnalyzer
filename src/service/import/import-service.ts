@@ -13,6 +13,7 @@ import {IStringUtil} from "@wessberg/stringutil";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportCtor} from "../../light-ast/ctor/import/i-import-ctor";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -35,8 +36,9 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 							 private joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
+							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

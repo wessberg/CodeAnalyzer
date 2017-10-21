@@ -4,6 +4,7 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * An abstract Service for working with Nodes
@@ -16,12 +17,25 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	protected abstract readonly ALLOWED_KINDS: Iterable<SyntaxKind>;
 
 	constructor (protected decoratorService: IDecoratorService,
+							 protected languageService: ITypescriptLanguageService,
 							 protected remover: IRemover,
 							 protected astUtil: ITypescriptASTUtil) {
 	}
 
 	/**
-	 * Gets all ClassDeclarations and ClassExpressions for the provided SourceFile
+	 * Gets all Nodes for the provided file
+	 * @template T
+	 * @param {string} file
+	 * @param {boolean} deep
+	 * @returns {NodeArray<T>}
+	 */
+	public getAllForFile (file: string, deep?: boolean): NodeArray<T> {
+		const sourceFile = this.languageService.getFile({path: file});
+		return this.getAll(sourceFile, deep);
+	}
+
+	/**
+	 * Gets all Nods for the provided SourceFile
 	 * @template T
 	 * @param {SourceFile} sourceFile
 	 * @param {boolean} [deep]

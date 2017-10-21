@@ -7,6 +7,7 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {NodeService} from "../node/node-service";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service that helps with working with MethodDeclarations
@@ -25,8 +26,9 @@ export class MethodService extends NodeService<MethodDeclaration> implements IMe
 							 private printer: IPrinter,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService,
+							 languageService: ITypescriptLanguageService,
 							 astUtil: ITypescriptASTUtil) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

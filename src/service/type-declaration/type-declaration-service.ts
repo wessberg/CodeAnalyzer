@@ -4,6 +4,7 @@ import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * An abstract service for working with TypeDeclarations
@@ -11,9 +12,10 @@ import {IRemover} from "../../remover/i-remover-base";
 export abstract class TypeDeclarationService<T extends InterfaceDeclaration|TypeLiteralNode> extends NodeService<T> implements ITypeDeclarationService<T> {
 	constructor (protected printer: IPrinter,
 							 protected decoratorService: IDecoratorService,
+							 languageService: ITypescriptLanguageService,
 							 protected remover: IRemover,
 							 protected astUtil: ITypescriptASTUtil) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

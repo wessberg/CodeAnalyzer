@@ -10,6 +10,7 @@ import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedExportsService} from "../named-exports/i-named-exports-service";
 import {IStringUtil} from "@wessberg/stringutil";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service for working with ExportDeclarations
@@ -29,8 +30,9 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 							 private stringUtil: IStringUtil,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
+							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

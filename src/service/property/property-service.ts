@@ -4,6 +4,7 @@ import {NodeService} from "../node/node-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorService} from "../decorator/i-decorator-service";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A service for working with PropertyDeclarations
@@ -19,8 +20,9 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 	constructor (private printer: IPrinter,
 							 remover: IRemover,
 							 astUtil: ITypescriptASTUtil,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

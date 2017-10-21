@@ -8,6 +8,7 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {PropertyAccessCallExpression} from "./property-access-call-expression";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 /**
  * A class for working with CallExpressions
@@ -25,9 +26,10 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 							 private updater: IUpdater,
 							 private joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
+							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService,
 							 remover: IRemover) {
-		super(decoratorService, remover, astUtil);
+		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**
