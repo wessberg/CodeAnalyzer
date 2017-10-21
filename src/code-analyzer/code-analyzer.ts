@@ -35,6 +35,7 @@ import {IIdentifierService} from "../service/identifier/i-identifier-service";
 import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
 import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
+import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -251,6 +252,6 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	public readonly bindingPatternService: IBindingPatternService;
 
 	constructor () {
-		return DIContainer.get<ICodeAnalyzer>();
+		return DIContainer.get<ICodeAnalyzerBase>();
 	}
 }

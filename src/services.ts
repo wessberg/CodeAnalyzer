@@ -57,7 +57,6 @@ import {ExportService} from "./service/export/export-service";
 import {INamedExportsService} from "./service/named-exports/i-named-exports-service";
 import {NamedExportsService} from "./service/named-exports/named-exports-service";
 import {IStringUtil, StringUtil} from "@wessberg/stringutil";
-import {ICodeAnalyzer} from "./code-analyzer/i-code-analyzer";
 import {CodeAnalyzerBase} from "./code-analyzer/code-analyzer-base";
 import {IPropertyAccessExpressionService} from "./service/property-access-expression/i-property-access-expression-service";
 import {PropertyAccessExpressionService} from "./service/property-access-expression/property-access-expression-service";
@@ -95,6 +94,7 @@ import {IBindingNameService} from "./service/binding-name/i-binding-name-service
 import {BindingNameService} from "./service/binding-name/binding-name-service";
 import {IBindingPatternService} from "./service/binding-pattern/i-binding-pattern-service";
 import {BindingPatternService} from "./service/binding-pattern/binding-pattern-service";
+import {ICodeAnalyzerBase} from "./code-analyzer/i-code-analyzer-base";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -174,4 +174,4 @@ DIContainer.registerSingleton<IBindingNameService, BindingNameService>();
 DIContainer.registerSingleton<IBindingPatternService, BindingPatternService>();
 
 // CodeAnalyzer
-DIContainer.registerSingleton<ICodeAnalyzer, CodeAnalyzerBase>();
+DIContainer.registerSingleton<ICodeAnalyzerBase, CodeAnalyzerBase>();

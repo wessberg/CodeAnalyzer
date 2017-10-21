@@ -1,8 +1,8 @@
 import {IClassService} from "../service/class/i-class-service";
 import {ICallExpressionService} from "../service/call-expression/i-call-expression-service";
 import {IConstructorService} from "../service/constructor/i-constructor-service";
-import {IExportService} from "../service/export/i-export-service";
 import {IDecoratorService} from "../service/decorator/i-decorator-service";
+import {IExportService} from "../service/export/i-export-service";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {IImportService} from "../service/import/i-import-service";
 import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
@@ -26,53 +26,48 @@ import {IMethodSignatureService} from "../service/method-signature/i-method-sign
 import {IIndexSignatureService} from "../service/index-signature/i-index-signature-service";
 import {IBindingElementService} from "../service/binding-element/i-binding-element-service";
 import {IRegularExpressionLiteralService} from "../service/regular-expression-literal/i-regular-expression-literal-service";
-import {IIdentifierService} from "../service/identifier/i-identifier-service";
 import {IStringLiteralService} from "../service/string-literal/i-string-literal-service";
 import {INumericLiteralService} from "../service/numeric-literal/i-numeric-literal-service";
 import {INoSubstitutionTemplateLiteralService} from "../service/no-substitution-template-literal/i-no-substitution-template-literal-service";
+import {IIdentifierService} from "../service/identifier/i-identifier-service";
 import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
 import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
-import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 
-/**
- * A service that contains all underlying services
- */
-export class CodeAnalyzerBase implements ICodeAnalyzerBase {
-	constructor (public readonly languageService: ITypescriptLanguageService,
-							 public readonly resolver: IResolver,
-							 public readonly printer: IPrinter,
-							 public readonly classService: IClassService,
-							 public readonly callExpressionService: ICallExpressionService,
-							 public readonly propertyAccessExpressionService: IPropertyAccessExpressionService,
-							 public readonly constructorService: IConstructorService,
-							 public readonly decoratorService: IDecoratorService,
-							 public readonly exportService: IExportService,
-							 public readonly heritageClauseService: IHeritageClauseService,
-							 public readonly importService: IImportService,
-							 public readonly interfaceDeclarationService: IInterfaceDeclarationService,
-							 public readonly methodService: IMethodService,
-							 public readonly modifierService: IModifierService,
-							 public readonly namedExportsService: INamedExportsService,
-							 public readonly namedImportsService: INamedImportsService,
-							 public readonly namespaceImportService: INamespaceImportService,
-							 public readonly parameterService: IParameterService,
-							 public readonly propertyService: IPropertyService,
-							 public readonly typeLiteralNodeService: ITypeLiteralNodeService,
-							 public readonly typeElementService: ITypeElementService,
-							 public readonly typeNodeService: ITypeNodeService,
-							 public readonly propertyNameService: IPropertyNameService,
-							 public readonly propertySignatureService: IPropertySignatureService,
-							 public readonly methodSignatureService: IMethodSignatureService,
-							 public readonly indexSignatureService: IIndexSignatureService,
-							 public readonly bindingElementService: IBindingElementService,
-							 public readonly identifierService: IIdentifierService,
-							 public readonly stringLiteralService: IStringLiteralService,
-							 public readonly numericLiteralService: INumericLiteralService,
-							 public readonly noSubstitutionTemplateLiteralService: INoSubstitutionTemplateLiteralService,
-							 public readonly regularExpressionLiteralService: IRegularExpressionLiteralService,
-							 public readonly computedPropertyNameService: IComputedPropertyNameService,
-							 public readonly bindingNameService: IBindingNameService,
-							 public readonly bindingPatternService: IBindingPatternService) {
-	}
+export interface ICodeAnalyzerBase {
+	readonly languageService: ITypescriptLanguageService;
+	readonly classService: IClassService;
+	readonly resolver: IResolver;
+	readonly printer: IPrinter;
+	readonly callExpressionService: ICallExpressionService;
+	readonly propertyAccessExpressionService: IPropertyAccessExpressionService;
+	readonly constructorService: IConstructorService;
+	readonly decoratorService: IDecoratorService;
+	readonly exportService: IExportService;
+	readonly heritageClauseService: IHeritageClauseService;
+	readonly importService: IImportService;
+	readonly interfaceDeclarationService: IInterfaceDeclarationService;
+	readonly methodService: IMethodService;
+	readonly modifierService: IModifierService;
+	readonly namedExportsService: INamedExportsService;
+	readonly namedImportsService: INamedImportsService;
+	readonly namespaceImportService: INamespaceImportService;
+	readonly parameterService: IParameterService;
+	readonly propertyService: IPropertyService;
+	readonly typeLiteralNodeService: ITypeLiteralNodeService;
+	readonly typeElementService: ITypeElementService;
+	readonly typeNodeService: ITypeNodeService;
+	readonly propertyNameService: IPropertyNameService;
+	readonly propertySignatureService: IPropertySignatureService;
+	readonly methodSignatureService: IMethodSignatureService;
+	readonly indexSignatureService: IIndexSignatureService;
+	readonly bindingElementService: IBindingElementService;
+	readonly identifierService: IIdentifierService;
+	readonly stringLiteralService: IStringLiteralService;
+	readonly numericLiteralService: INumericLiteralService;
+	readonly noSubstitutionTemplateLiteralService: INoSubstitutionTemplateLiteralService;
+	readonly regularExpressionLiteralService: IRegularExpressionLiteralService;
+	readonly computedPropertyNameService: IComputedPropertyNameService;
+	readonly bindingNameService: IBindingNameService;
+	readonly bindingPatternService: IBindingPatternService;
 }
