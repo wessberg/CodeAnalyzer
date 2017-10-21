@@ -14,7 +14,6 @@
 		"tsc:dist:es2015": "tsc --module es2015 --outDir dist/es2015 -p tsconfig.dist.json",
 		"rollup": "rollup -c rollup.config.js",
 		"rollup:test": "rollup -c rollup.test.config.js",
-		"rollup:watch": "rollup -c rollup.config.js --watch",
 		"prebuild": "npm run clean",
 		"build": "npm run rollup",
 		"tslint": "tslint -c tslint.json -p tsconfig.json",
@@ -47,8 +46,7 @@
 		"husky": "latest",
 		"tslint": "^5.8.0",
 		"rollup": "^0.50.0",
-		"rollup-plugin-typescript2": "^0.7.0",
-		"rollup-watch": "^4.3.1"
+		"rollup-plugin-typescript2": "^0.7.0"
 	},
 	"dependencies": {
 		"@types/node": "^8.0.46",
