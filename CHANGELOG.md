@@ -1,3 +1,12 @@
+<a name="1.0.83"></a>
+## 1.0.83 (2017-10-21)
+
+* 1.0.83 ([5a66e4b](https://github.com/wessberg/CodeAnalyzer/commit/5a66e4b))
+* Added a few methods to the TypeElement service ([9aad1ca](https://github.com/wessberg/CodeAnalyzer/commit/9aad1ca))
+* Bumped version ([8fc024c](https://github.com/wessberg/CodeAnalyzer/commit/8fc024c))
+
+
+
 <a name="1.0.82"></a>
 ## 1.0.82 (2017-10-21)
 
