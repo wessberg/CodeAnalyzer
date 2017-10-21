@@ -1,3 +1,12 @@
+<a name="1.0.90"></a>
+## 1.0.90 (2017-10-21)
+
+* 1.0.90 ([bf0a61c](https://github.com/wessberg/CodeAnalyzer/commit/bf0a61c))
+* Added more support for getters and setters on the class-service ([d88d0ae](https://github.com/wessberg/CodeAnalyzer/commit/d88d0ae))
+* Bumped version ([135fbb4](https://github.com/wessberg/CodeAnalyzer/commit/135fbb4))
+
+
+
 <a name="1.0.89"></a>
 ## 1.0.89 (2017-10-21)
 
