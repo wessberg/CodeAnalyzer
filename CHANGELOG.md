@@ -1,3 +1,12 @@
+<a name="1.0.87"></a>
+## 1.0.87 (2017-10-21)
+
+* 1.0.87 ([9b46f30](https://github.com/wessberg/CodeAnalyzer/commit/9b46f30))
+* Bumped version ([d070b7a](https://github.com/wessberg/CodeAnalyzer/commit/d070b7a))
+* Fixed services ([e269367](https://github.com/wessberg/CodeAnalyzer/commit/e269367))
+
+
+
 <a name="1.0.86"></a>
 ## 1.0.86 (2017-10-21)
 
