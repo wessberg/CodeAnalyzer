@@ -1,5 +1,5 @@
-import {IMethodService} from "./i-method-service";
-import {isReturnStatement, MethodDeclaration, ReturnStatement, SyntaxKind} from "typescript";
+import {ISetAccessorService} from "./i-set-accessor-service";
+import {SetAccessorDeclaration, SyntaxKind} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
@@ -11,15 +11,15 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {ClassFunctionLikeService} from "../class-function-like/class-function-like-service";
 
 /**
- * A service that helps with working with MethodDeclarations
+ * A service that helps with working with SetAccessorDeclarations
  */
-export class MethodService extends ClassFunctionLikeService<MethodDeclaration> implements IMethodService {
+export class SetAccessorService extends ClassFunctionLikeService<SetAccessorDeclaration> implements ISetAccessorService {
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.MethodDeclaration];
+	protected readonly ALLOWED_KINDS = [SyntaxKind.SetAccessor];
 
 	constructor (private formatter: IFormatter,
 							 private updater: IUpdater,
@@ -33,27 +33,18 @@ export class MethodService extends ClassFunctionLikeService<MethodDeclaration> i
 	}
 
 	/**
-	 * Takes the ReturnStatement of a MethodDeclaration's body, if it has any
-	 * @param {MethodDeclaration} method
-	 * @returns {ReturnStatement}
-	 */
-	public takeReturnStatement (method: MethodDeclaration): ReturnStatement|undefined {
-		return method.body == null ? undefined : <ReturnStatement|undefined> method.body.statements.find(statement => isReturnStatement(statement));
-	}
-
-	/**
-	 * Appends the provided instructions to the provided instruction
+	 * Appends the provided instructions to the given setter
 	 * @param {string} instructions
-	 * @param {MethodDeclaration} method
-	 * @returns {MethodDeclaration}
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
 	 */
-	public appendInstructions (instructions: string, method: MethodDeclaration): MethodDeclaration {
+	public appendInstructions (instructions: string, setter: SetAccessorDeclaration): SetAccessorDeclaration {
 		// Generate a new Block from the instructions
 		const newBlock = this.formatter.formatBlock(instructions);
 
-		return this.updater.updateMethodDeclarationBody(
-			this.joiner.joinBlock(method.body, newBlock),
-			method
+		return this.updater.updateSetAccessorDeclarationBody(
+			this.joiner.joinBlock(setter.body, newBlock),
+			setter
 		);
 	}
 }

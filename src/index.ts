@@ -209,6 +209,7 @@ export {isICallExpressionDict} from "./light-ast/dict/call-expression/is-i-call-
 
 // Types
 export {PropertyAccessCallExpression} from "./service/call-expression/property-access-call-expression";
+export {ClassFunctionLike} from "./service/class-function-like/class-function-like";
 export {IOwnOrInheritedMethodWithNameResult} from "./service/class/i-own-or-inherited-method-with-name-result";
 export {IOwnOrInheritedPropertyWithNameResult} from "./service/class/i-own-or-inherited-property-with-name-result";
 export {IOwnOrInheritedMemberWithNameResult} from "./service/class/i-own-or-inherited-member-with-name-result";

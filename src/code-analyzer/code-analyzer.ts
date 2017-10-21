@@ -36,6 +36,8 @@ import {IComputedPropertyNameService} from "../service/computed-property-name/i-
 import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
+import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
+import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -250,6 +252,18 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {IBindingPatternService}
 	 */
 	public readonly bindingPatternService: IBindingPatternService;
+
+	/**
+	 * A service that helps with working with GetAccessorDeclarations
+	 * @type {IGetAccessorService}
+	 */
+	public readonly getAccessorService: IGetAccessorService;
+
+	/**
+	 * A service that helps with working with SetAccessorDeclarations
+	 * @type {ISetAccessorService}
+	 */
+	public readonly setAccessorService: ISetAccessorService;
 
 	constructor () {
 		return DIContainer.get<ICodeAnalyzerBase>();

@@ -33,6 +33,8 @@ import {IIdentifierService} from "../service/identifier/i-identifier-service";
 import {IComputedPropertyNameService} from "../service/computed-property-name/i-computed-property-name-service";
 import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
+import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
+import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 
 export interface ICodeAnalyzerBase {
 	readonly languageService: ITypescriptLanguageService;
@@ -70,4 +72,6 @@ export interface ICodeAnalyzerBase {
 	readonly computedPropertyNameService: IComputedPropertyNameService;
 	readonly bindingNameService: IBindingNameService;
 	readonly bindingPatternService: IBindingPatternService;
+	readonly getAccessorService: IGetAccessorService;
+	readonly setAccessorService: ISetAccessorService;
 }

@@ -26,6 +26,8 @@ import {IOwnOrInheritedMethodWithNameResult} from "./i-own-or-inherited-method-w
 import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor-result";
 import {IOwnOrInheritedGetterWithNameResult} from "./i-own-or-inherited-getter-with-name-result";
 import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-with-name-result";
+import {IGetAccessorService} from "../get-accessor/i-get-accessor-service";
+import {ISetAccessorService} from "../set-accessor/i-set-accessor-service";
 
 /**
  * A class for working with classes
@@ -45,6 +47,8 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 private modifierService: IModifierService,
 							 private constructorService: IConstructorService,
 							 private heritageClauseService: IHeritageClauseService,
+							 private getAccessorService: IGetAccessorService,
+							 private setAccessorService: ISetAccessorService,
 							 private resolver: IResolver,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
@@ -342,6 +346,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	public hasStaticMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		return this.getStaticMethodWithName(name, classDeclaration) != null;
 	}
+
 	/**
 	 * Returns true if the class has a static property matching the provided name
 	 * @param {string} name
@@ -1387,6 +1392,46 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	public hasSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean {
 		return classDeclaration.members.find(member => isSetAccessorDeclaration(member) && (isIdentifier(member.name) || isStringLiteral(member.name)) && member.name.text === name) != null;
+	}
+
+	/**
+	 * Appends one or more instructions to the getter on the class that matches the provided name
+	 * @param {string} getterName
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public appendInstructionsToGetter (getterName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+		const getter = this.getGetterWithName(getterName, classDeclaration);
+		if (getter == null) {
+			throw new ReferenceError(`${this.constructor.name} could not find a getter with the name: ${getterName}`);
+		}
+
+		// Append the instructions
+		this.getAccessorService.appendInstructions(instructions, getter);
+
+		// Return the original ClassDeclaration
+		return classDeclaration;
+	}
+
+	/**
+	 * Appends one or more instructions to the setter on the class that matches the provided name
+	 * @param {string} setterName
+	 * @param {string} instructions
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {ClassDeclaration | ClassExpression}
+	 */
+	public appendInstructionsToSetter (setterName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression {
+		const setter = this.getSetterWithName(setterName, classDeclaration);
+		if (setter == null) {
+			throw new ReferenceError(`${this.constructor.name} could not find a setter with the name: ${setterName}`);
+		}
+
+		// Append the instructions
+		this.setAccessorService.appendInstructions(instructions, setter);
+
+		// Return the original ClassDeclaration
+		return classDeclaration;
 	}
 
 	/**

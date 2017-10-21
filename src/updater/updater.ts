@@ -1,5 +1,5 @@
 import {IUpdaterBase} from "./i-updater";
-import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, ExportDeclaration, ExportSpecifier, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExportDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateCall, updateClassDeclaration, updateClassExpression, updateConstructor, updateExportDeclaration, updateImportDeclaration, updateMethod, updateNamedExports, updateNamedImports, updateNamespaceImport, updateProperty, updateSourceFileNode} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, createNodeArray, Decorator, ExportDeclaration, ExportSpecifier, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, isClassDeclaration, isClassExpression, isConstructorDeclaration, isExportDeclaration, isGetAccessorDeclaration, isImportDeclaration, isMethodDeclaration, isPropertyDeclaration, isSetAccessorDeclaration, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SetAccessorDeclaration, SourceFile, Statement, SyntaxKind, TypeNode, TypeParameterDeclaration, updateCall, updateClassDeclaration, updateClassExpression, updateConstructor, updateExportDeclaration, updateGetAccessor, updateImportDeclaration, updateMethod, updateNamedExports, updateNamedImports, updateNamespaceImport, updateProperty, updateSetAccessor, updateSourceFileNode} from "typescript";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 
@@ -10,6 +10,96 @@ export class Updater implements IUpdaterBase {
 
 	constructor (private languageService: ITypescriptLanguageService,
 							 private nodeUpdater: INodeUpdaterUtil) {
+	}
+
+	/**
+	 * Updates the body property of a GetAccessorDeclaration
+	 * @param {Block} body
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateGetAccessorDeclarationBody (body: Block|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.updateGetAccessorDeclaration("body", body, getter);
+	}
+
+	/**
+	 * Updates the name property of a GetAccessorDeclaration
+	 * @param {PropertyName} name
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateGetAccessorDeclarationName (name: PropertyName, getter: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.updateGetAccessorDeclaration("name", name, getter);
+	}
+
+	/**
+	 * Updates the parameters property of a GetAccessorDeclaration
+	 * @param {NodeArray<ParameterDeclaration>} parameters
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateGetAccessorDeclarationParameters (parameters: NodeArray<ParameterDeclaration>, getter: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.updateGetAccessorDeclaration("parameters", parameters, getter);
+	}
+
+	/**
+	 * Updates the type property of a GetAccessorDeclaration
+	 * @param {TypeNode} type
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateGetAccessorDeclarationType (type: TypeNode|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.updateGetAccessorDeclaration("type", type, getter);
+	}
+
+	/**
+	 * Updates the modifiers property of a GetAccessorDeclaration
+	 * @param {ModifiersArray} modifiers
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	public updateGetAccessorDeclarationModifiers (modifiers: ModifiersArray|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration {
+		return this.updateGetAccessorDeclaration("modifiers", modifiers, getter);
+	}
+
+	/**
+	 * Updates the body property of a SetAccessorDeclaration
+	 * @param {Block} body
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public updateSetAccessorDeclarationBody (body: Block|undefined, setter: SetAccessorDeclaration): SetAccessorDeclaration {
+		return this.updateSetAccessorDeclaration("body", body, setter);
+	}
+
+	/**
+	 * Updates the name property of a SetAccessorDeclaration
+	 * @param {PropertyName} name
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public updateSetAccessorDeclarationName (name: PropertyName, setter: SetAccessorDeclaration): SetAccessorDeclaration {
+		return this.updateSetAccessorDeclaration("name", name, setter);
+	}
+
+	/**
+	 * Updates the parameters property of a SetAccessorDeclaration
+	 * @param {NodeArray<ParameterDeclaration>} parameters
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public updateSetAccessorDeclarationParameters (parameters: NodeArray<ParameterDeclaration>, setter: SetAccessorDeclaration): SetAccessorDeclaration {
+		return this.updateSetAccessorDeclaration("parameters", parameters, setter);
+	}
+
+	/**
+	 * Updates the modifiers property of a SetAccessorDeclaration
+	 * @param {ModifiersArray} modifiers
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
+	 */
+	public updateSetAccessorDeclarationModifiers (modifiers: ModifiersArray|undefined, setter: SetAccessorDeclaration): SetAccessorDeclaration {
+		return this.updateSetAccessorDeclaration("modifiers", modifiers, setter);
 	}
 
 	/**
@@ -139,6 +229,14 @@ export class Updater implements IUpdaterBase {
 
 		else if (isExportDeclaration(node)) {
 			return <T><any> this.updateExportDeclaration("decorators", decorators, node);
+		}
+
+		else if (isGetAccessorDeclaration(node)) {
+			return <T><any> this.updateGetAccessorDeclaration("decorators", decorators, node);
+		}
+
+		else if (isSetAccessorDeclaration(node)) {
+			return <T><any> this.updateSetAccessorDeclaration("decorators", decorators, node);
 		}
 
 		else if (isConstructorDeclaration(node)) {
@@ -511,6 +609,47 @@ export class Updater implements IUpdaterBase {
 				key === "type" ? value : method.type,
 				key === "body" ? value : method.body
 			), method, this.languageService);
+	}
+
+	/**
+	 * Updates a GetAccessorDeclaration
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {GetAccessorDeclaration} getter
+	 * @returns {GetAccessorDeclaration}
+	 */
+	private updateGetAccessorDeclaration (key: keyof GetAccessorDeclaration, value: GetAccessorDeclaration[keyof GetAccessorDeclaration], getter: GetAccessorDeclaration): GetAccessorDeclaration {
+
+		return this.nodeUpdater.updateInPlace(
+			updateGetAccessor(
+				getter,
+				key === "decorators" ? value : getter.decorators,
+				key === "modifiers" ? value : getter.modifiers,
+				key === "name" ? value : getter.name,
+				key === "parameters" ? value : getter.parameters,
+				key === "type" ? value : getter.type,
+				key === "body" ? value : getter.body
+			), getter, this.languageService);
+	}
+
+	/**
+	 * Updates a SetAccessorDeclaration
+	 * @param {string} key
+	 * @param {*} value
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {SetAccessorDeclaration}
+	 */
+	private updateSetAccessorDeclaration (key: keyof SetAccessorDeclaration, value: SetAccessorDeclaration[keyof SetAccessorDeclaration], setter: SetAccessorDeclaration): SetAccessorDeclaration {
+
+		return this.nodeUpdater.updateInPlace(
+			updateSetAccessor(
+				setter,
+				key === "decorators" ? value : setter.decorators,
+				key === "modifiers" ? value : setter.modifiers,
+				key === "name" ? value : setter.name,
+				key === "parameters" ? value : setter.parameters,
+				key === "body" ? value : setter.body
+			), setter, this.languageService);
 	}
 
 	/**

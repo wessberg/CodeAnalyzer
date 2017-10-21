@@ -1,4 +1,4 @@
-import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, ExportDeclaration, ExportSpecifier, Expression, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
+import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, Decorator, ExportDeclaration, ExportSpecifier, Expression, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportDeclaration, ImportSpecifier, LeftHandSideExpression, MethodDeclaration, ModifiersArray, NamedExports, NamedImports, NamespaceImport, Node, NodeArray, ParameterDeclaration, PropertyDeclaration, PropertyName, QuestionToken, SetAccessorDeclaration, SourceFile, Statement, TypeNode, TypeParameterDeclaration} from "typescript";
 
 export interface IUpdaterBase {
 	updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T;
@@ -20,6 +20,17 @@ export interface IUpdaterBase {
 	updateMethodDeclarationParameters (parameters: NodeArray<ParameterDeclaration>, method: MethodDeclaration): MethodDeclaration;
 	updateMethodDeclarationType (type: TypeNode|undefined, method: MethodDeclaration): MethodDeclaration;
 	updateMethodDeclarationModifiers (modifiers: ModifiersArray|undefined, method: MethodDeclaration): MethodDeclaration;
+
+	updateGetAccessorDeclarationBody (body: Block|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration;
+	updateGetAccessorDeclarationName (name: PropertyName, getter: GetAccessorDeclaration): GetAccessorDeclaration;
+	updateGetAccessorDeclarationParameters (parameters: NodeArray<ParameterDeclaration>, getter: GetAccessorDeclaration): GetAccessorDeclaration;
+	updateGetAccessorDeclarationType (type: TypeNode|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration;
+	updateGetAccessorDeclarationModifiers (modifiers: ModifiersArray|undefined, getter: GetAccessorDeclaration): GetAccessorDeclaration;
+
+	updateSetAccessorDeclarationBody (body: Block|undefined, setter: SetAccessorDeclaration): SetAccessorDeclaration;
+	updateSetAccessorDeclarationName (name: PropertyName, setter: SetAccessorDeclaration): SetAccessorDeclaration;
+	updateSetAccessorDeclarationParameters (parameters: NodeArray<ParameterDeclaration>, setter: SetAccessorDeclaration): SetAccessorDeclaration;
+	updateSetAccessorDeclarationModifiers (modifiers: ModifiersArray|undefined, setter: SetAccessorDeclaration): SetAccessorDeclaration;
 
 	updatePropertyDeclarationQuestionToken (questionToken: QuestionToken|undefined, property: PropertyDeclaration): PropertyDeclaration;
 	updatePropertyDeclarationName (name: PropertyName, property: PropertyDeclaration): PropertyDeclaration;

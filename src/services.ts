@@ -95,6 +95,10 @@ import {BindingNameService} from "./service/binding-name/binding-name-service";
 import {IBindingPatternService} from "./service/binding-pattern/i-binding-pattern-service";
 import {BindingPatternService} from "./service/binding-pattern/binding-pattern-service";
 import {ICodeAnalyzerBase} from "./code-analyzer/i-code-analyzer-base";
+import {ISetAccessorService} from "./service/set-accessor/i-set-accessor-service";
+import {SetAccessorService} from "./service/set-accessor/set-accessor-service";
+import {GetAccessorService} from "./service/get-accessor/get-accessor-service";
+import {IGetAccessorService} from "./service/get-accessor/i-get-accessor-service";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -172,6 +176,8 @@ DIContainer.registerSingleton<IRegularExpressionLiteralService, RegularExpressio
 DIContainer.registerSingleton<IComputedPropertyNameService, ComputedPropertyNameService>();
 DIContainer.registerSingleton<IBindingNameService, BindingNameService>();
 DIContainer.registerSingleton<IBindingPatternService, BindingPatternService>();
+DIContainer.registerSingleton<ISetAccessorService, SetAccessorService>();
+DIContainer.registerSingleton<IGetAccessorService, GetAccessorService>();
 
 // CodeAnalyzer
 DIContainer.registerSingleton<ICodeAnalyzerBase, CodeAnalyzerBase>();

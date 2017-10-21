@@ -34,6 +34,8 @@ import {IComputedPropertyNameService} from "../service/computed-property-name/i-
 import {IBindingNameService} from "../service/binding-name/i-binding-name-service";
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
+import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
+import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 
 /**
  * A service that contains all underlying services
@@ -73,6 +75,8 @@ export class CodeAnalyzerBase implements ICodeAnalyzerBase {
 							 public readonly regularExpressionLiteralService: IRegularExpressionLiteralService,
 							 public readonly computedPropertyNameService: IComputedPropertyNameService,
 							 public readonly bindingNameService: IBindingNameService,
-							 public readonly bindingPatternService: IBindingPatternService) {
+							 public readonly bindingPatternService: IBindingPatternService,
+							 public readonly getAccessorService: IGetAccessorService,
+							 public readonly setAccessorService: ISetAccessorService) {
 	}
 }
