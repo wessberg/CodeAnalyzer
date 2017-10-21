@@ -51,25 +51,25 @@ class MyClass extends AClass implements AnInterface {
 Let's see how we can use CodeAnalyzer to extract information from it:
 
 ```typescript
-const codeAnalyzer = new CodeAnalyzer();
+const {languageService, classService} = new CodeAnalyzer();
 
 // Generate a SourceFile
-const sourceFile = codeAnalyzer.languageService.getFile({path: "a_class.ts"});
+const sourceFile = languageService.getFile({path: "a_class.ts"});
 
 // Let's get the ClassDeclaration
-const myClass = codeAnalyzer.classService.getClassWithName("MyClass", sourceFile);
+const myClass = classService.getClassWithName("MyClass", sourceFile);
 
 // Prints 'AClass' to the console
-console.log(codeAnalyzer.classService.getNameOfExtendedClass(myClass));
+console.log(classService.getNameOfExtendedClass(myClass));
 
 // Prints 'true' to the console
-console.log(codeAnalyzer.classService.doesImplementInterfaceWithName("AnInterface", myClass));
+console.log(classService.doesImplementInterfaceWithName("AnInterface", myClass));
 
 // Gets the MethodDeclaration with the name 'aMethod'
-codeAnalyzer.classService.getMethodWithName("aMethod", myClass);
+classService.getMethodWithName("aMethod", myClass);
 
 // Gets all static PropertyDeclarations that is decorated with a decorator matching the expression "foobar"
-codeAnalyzer.classService.getStaticPropertiesWithDecorator("foobar", myClass);
+classService.getStaticPropertiesWithDecorator("foobar", myClass);
 ```
 
 There are many, many more things you can extract with CodeAnalyzer, but this was just a simple example.

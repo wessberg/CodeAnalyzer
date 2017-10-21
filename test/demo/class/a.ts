@@ -29,6 +29,7 @@ class A extends D {
 function aDecorator(target: {}, property: string) {
 }
 
+// This is a single-line comment
 function foo<T, U, J> (bar: T, baz: U, lolz?: J): void {
 	console.log(bar, baz, lolz);
 }
