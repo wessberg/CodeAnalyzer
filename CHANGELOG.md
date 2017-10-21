@@ -1,3 +1,13 @@
+<a name="1.0.88"></a>
+## 1.0.88 (2017-10-21)
+
+* 1.0.88 ([4f7b04c](https://github.com/wessberg/CodeAnalyzer/commit/4f7b04c))
+* Added a 'takeReturnStatement' method to 'MethodService' ([b3e49a4](https://github.com/wessberg/CodeAnalyzer/commit/b3e49a4))
+* Bug fixes ([0f424fa](https://github.com/wessberg/CodeAnalyzer/commit/0f424fa))
+* Bumped version ([56d2fdb](https://github.com/wessberg/CodeAnalyzer/commit/56d2fdb))
+
+
+
 <a name="1.0.87"></a>
 ## 1.0.87 (2017-10-21)
 
