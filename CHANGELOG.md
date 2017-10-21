@@ -1,3 +1,12 @@
+<a name="1.0.79"></a>
+## 1.0.79 (2017-10-21)
+
+* 1.0.79 ([3af9b72](https://github.com/wessberg/CodeAnalyzer/commit/3af9b72))
+* Bumped version ([9a04a24](https://github.com/wessberg/CodeAnalyzer/commit/9a04a24))
+* Removed an unused dependency ([b5b342a](https://github.com/wessberg/CodeAnalyzer/commit/b5b342a))
+
+
+
 <a name="1.0.78"></a>
 ## 1.0.78 (2017-10-21)
 
