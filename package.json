@@ -16,17 +16,18 @@
 		"rollup:test": "rollup -c rollup.test.config.js",
 		"prebuild": "npm run clean",
 		"build": "npm run rollup",
+		"build:prod": "NODE_ENV=production npm run rollup",
 		"tslint": "tslint -c tslint.json -p tsconfig.json",
 		"validate": "npm run tslint && npm run test",
 		"pretest": "npm run clean:compiled && npm run rollup:test",
 		"test": "NODE_ENV=TEST ava --fail-fast",
 		"posttest": "npm run clean:compiled",
-		"prepublishOnly": "npm run validate && npm run build",
+		"prepublishOnly": "npm run validate && npm run build:prod",
 		"precommit": "npm run tslint && exit 0",
 		"prepush": "npm run validate && exit 0",
-		"publish:major": "NODE_ENV=production npm version major && npm run commit:readme && git push && npm publish",
-		"publish:minor": "NODE_ENV=production npm version minor && npm run commit:readme && git push && npm publish",
-		"publish:patch": "NODE_ENV=production npm version patch && npm run commit:readme && git push && npm publish"
+		"publish:major": "npm version major && npm run commit:readme && git push && npm publish",
+		"publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
+		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish"
 	},
 	"keywords": [
 		"ast",
