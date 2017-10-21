@@ -8,7 +8,8 @@ import {IUpdater} from "../../updater/i-updater-getter";
  */
 export class NamespaceImportService implements INamespaceImportService {
 	constructor (private formatter: IFormatter,
-							 private updater: IUpdater) {}
+							 private updater: IUpdater) {
+	}
 
 	/**
 	 * Gets the name of a NamespaceImport

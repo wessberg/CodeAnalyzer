@@ -1,4 +1,1 @@
-export enum AccessorKind {
-	GET = "GET",
-	SET = "SET"
-}
+export declare type AccessorKind = "GET"|"SET";

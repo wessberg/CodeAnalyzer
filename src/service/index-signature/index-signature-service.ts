@@ -6,7 +6,8 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
  * A service that helps with working with IndexSignatureDeclarations
  */
 export class IndexSignatureService implements IIndexSignatureService {
-	constructor (private printer: IPrinter) {}
+	constructor (private printer: IPrinter) {
+	}
 
 	/**
 	 * Gets the name of the type of an IndexSignatureDeclaration

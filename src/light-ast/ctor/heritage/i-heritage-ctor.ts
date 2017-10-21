@@ -6,11 +6,11 @@ export interface IHeritageCtor {
 }
 
 export interface IExtendsHeritageCtor extends IHeritageCtor, INameWithTypeArguments {
-	kind: HeritageKind.EXTENDS;
+	kind: "EXTENDS";
 }
 
 export interface IImplementsHeritageCtor extends IHeritageCtor {
-	kind: HeritageKind.IMPLEMENTS;
+	kind: "IMPLEMENTS";
 	elements: INameWithTypeArguments[];
 }
 

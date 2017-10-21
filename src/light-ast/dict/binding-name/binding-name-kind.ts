@@ -1,5 +1,1 @@
-export enum BindingNameKind {
-	NORMAL = "NORMAL",
-	ARRAY_BINDING = "ARRAY_BINDING",
-	OBJECT_BINDING = "OBJECT_BINDING"
-}
+export declare type BindingNameKind = "NORMAL"|"ARRAY_BINDING"|"OBJECT_BINDING";

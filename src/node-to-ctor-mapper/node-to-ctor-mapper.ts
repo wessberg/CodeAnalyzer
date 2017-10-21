@@ -15,9 +15,7 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
 import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
 import {IObjectBindingElementCtor} from "../light-ast/ctor/binding-element/i-object-binding-element-ctor";
 import {ArrayBindingElementCtor, INormalArrayBindingElementCtor, IOmittedArrayBindingElementCtor} from "../light-ast/ctor/binding-element/array-binding-element-ctor";
-import {ArrayBindingElementKind} from "../light-ast/dict/binding-element/array-binding-element-kind";
 import {BindingNameCtor, IArrayBindingNameCtor, INormalBindingNameCtor, IObjectBindingNameCtor} from "../light-ast/ctor/binding-name/binding-name-ctor";
-import {BindingNameKind} from "../light-ast/dict/binding-name/binding-name-kind";
 import {IParameterCtor} from "../light-ast/ctor/parameter/i-parameter-ctor";
 import {ITypeElementCtor, TypeElementCtor} from "../light-ast/ctor/type-element/i-type-element-ctor";
 import {ICallSignatureCtor} from "../light-ast/ctor/call-signature/i-call-signature-ctor";
@@ -27,7 +25,6 @@ import {IIndexSignatureCtor} from "../light-ast/ctor/index-signature/i-index-sig
 import {IPropertySignatureCtor} from "../light-ast/ctor/property-signature/i-property-signature-ctor";
 import {ISignatureCtor} from "../light-ast/ctor/signature/i-signature-ctor";
 import {HeritageCtor, IExtendsHeritageCtor, IImplementsHeritageCtor} from "../light-ast/ctor/heritage/i-heritage-ctor";
-import {HeritageKind} from "../light-ast/dict/heritage/heritage-kind";
 import {ITypeLiteralCtor} from "../light-ast/ctor/type-literal/i-type-literal-ctor";
 import {IInterfaceCtor} from "../light-ast/ctor/interface/i-interface-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
@@ -89,7 +86,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		if (node == null) return undefined;
 
 		return {
-			kind: ArrayBindingElementKind.NORMAL,
+			kind: "NORMAL",
 			name: this.bindingElementService.getName(node),
 			initializer: this.bindingElementService.getInitializer(node),
 			isRestSpread: this.bindingElementService.isRestSpread(node)
@@ -103,7 +100,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 */
 	public toIOmittedArrayBindingElementCtor (_node: ArrayBindingElement|undefined): IOmittedArrayBindingElementCtor|undefined {
 		return {
-			kind: ArrayBindingElementKind.OMITTED
+			kind: "OMITTED"
 		};
 	}
 
@@ -143,7 +140,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		if (node == null) return undefined;
 
 		return {
-			kind: BindingNameKind.NORMAL,
+			kind: "NORMAL",
 			name: node.text
 		};
 	}
@@ -157,7 +154,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		if (node == null) return undefined;
 
 		return {
-			kind: BindingNameKind.OBJECT_BINDING,
+			kind: "OBJECT_BINDING",
 			elements: node.elements.map(element => this.toIObjectBindingElementCtor(element)!)
 		};
 	}
@@ -171,7 +168,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		if (node == null) return undefined;
 
 		return {
-			kind: BindingNameKind.ARRAY_BINDING,
+			kind: "ARRAY_BINDING",
 			elements: node.elements.map(element => this.toArrayBindingElementCtor(element)!)
 		};
 	}
@@ -305,7 +302,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 
 		// Otherwise, it is an implements clause.
 		return {
-			kind: HeritageKind.EXTENDS,
+			kind: "EXTENDS",
 			...this.heritageClauseService.getFirstTypeNameWithArguments(node)
 		};
 	}
@@ -320,7 +317,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 
 		// Otherwise, it is an implements clause.
 		return {
-			kind: HeritageKind.IMPLEMENTS,
+			kind: "IMPLEMENTS",
 			elements: this.heritageClauseService.getTypeNamesWithArguments(node)
 		};
 	}

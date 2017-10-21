@@ -8,7 +8,7 @@ import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
 /**
  * An abstract Service for working with Nodes
  */
-export abstract class NodeService <T extends Node> implements INodeService<T> {
+export abstract class NodeService<T extends Node> implements INodeService<T> {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -17,7 +17,8 @@ export abstract class NodeService <T extends Node> implements INodeService<T> {
 
 	constructor (protected decoratorService: IDecoratorService,
 							 protected remover: IRemover,
-							 protected astUtil: ITypescriptASTUtil) {}
+							 protected astUtil: ITypescriptASTUtil) {
+	}
 
 	/**
 	 * Gets all ClassDeclarations and ClassExpressions for the provided SourceFile

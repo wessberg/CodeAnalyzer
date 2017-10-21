@@ -7,17 +7,17 @@ export interface IBindingNameCtor {
 }
 
 export interface INormalBindingNameCtor extends IBindingNameCtor {
-	kind: BindingNameKind.NORMAL;
+	kind: "NORMAL";
 	name: string;
 }
 
 export interface IObjectBindingNameCtor extends IBindingNameCtor {
-	kind: BindingNameKind.OBJECT_BINDING;
+	kind: "OBJECT_BINDING";
 	elements: IObjectBindingElementCtor[];
 }
 
 export interface IArrayBindingNameCtor extends IBindingNameCtor {
-	kind: BindingNameKind.ARRAY_BINDING;
+	kind: "ARRAY_BINDING";
 	elements: ArrayBindingElementCtor[];
 }
 

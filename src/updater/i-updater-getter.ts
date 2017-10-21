@@ -14,5 +14,7 @@ export const wrappedIUpdater = <IUpdater> new Proxy({}, {
 	 * @param {string} key
 	 * @returns {IUpdater}
 	 */
-	get (_: IUpdaterBase, key: keyof IUpdaterBase) {return DIContainer.get<IUpdaterBase>()[key];}
+	get (_: IUpdaterBase, key: keyof IUpdaterBase) {
+		return DIContainer.get<IUpdaterBase>()[key];
+	}
 });

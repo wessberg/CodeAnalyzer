@@ -1,4 +1,1 @@
-export enum ArrayBindingElementKind {
-	OMITTED = "OMITTED",
-	NORMAL = "NORMAL"
-}
+export declare type ArrayBindingElementKind = "OMITTED"|"NORMAL";

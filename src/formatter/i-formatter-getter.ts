@@ -14,5 +14,7 @@ export const wrappedIFormatter = <IFormatter> new Proxy({}, {
 	 * @param {string} key
 	 * @returns {IFormatter}
 	 */
-	get (_: IFormatterBase, key: keyof IFormatterBase) {return DIContainer.get<IFormatterBase>()[key];}
+	get (_: IFormatterBase, key: keyof IFormatterBase) {
+		return DIContainer.get<IFormatterBase>()[key];
+	}
 });

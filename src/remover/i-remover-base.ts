@@ -14,5 +14,7 @@ export const wrappedIRemover = <IRemover> new Proxy({}, {
 	 * @param {string} key
 	 * @returns {IRemover}
 	 */
-	get (_: IRemoverBase, key: keyof IRemoverBase) {return DIContainer.get<IRemoverBase>()[key];}
+	get (_: IRemoverBase, key: keyof IRemoverBase) {
+		return DIContainer.get<IRemoverBase>()[key];
+	}
 });

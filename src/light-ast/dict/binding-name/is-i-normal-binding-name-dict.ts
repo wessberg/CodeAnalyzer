@@ -1,7 +1,6 @@
 import {PredicateArgument} from "../node/i-node-dict";
 import {INormalBindingNameDict} from "./binding-name-dict";
 import {isINodeDict} from "../node/is-i-node-dict";
-import {NodeKind} from "../node/node-kind";
 import {isINormalBindingNameCtor} from "../../ctor/binding-name/is-i-normal-binding-name-ctor";
 
 /**
@@ -10,5 +9,5 @@ import {isINormalBindingNameCtor} from "../../ctor/binding-name/is-i-normal-bind
  * @returns {boolean}
  */
 export function isINormalBindingNameDict (item: PredicateArgument): item is INormalBindingNameDict {
-	return isINormalBindingNameCtor(item) && isINodeDict(item) && item.nodeKind === NodeKind.BINDING_NAME;
+	return isINormalBindingNameCtor(item) && isINodeDict(item) && item.nodeKind === "BINDING_NAME";
 }

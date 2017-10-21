@@ -19,7 +19,6 @@ import {IClassGetAccessorCtor, IClassSetAccessorCtor} from "../../light-ast/ctor
 import {IClassMethodCtor} from "../../light-ast/ctor/class-method/i-class-method-ctor";
 import {IClassPropertyCtor} from "../../light-ast/ctor/class-property/i-class-property-ctor";
 import {INameWithTypeArguments} from "../../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
-import {HeritageKind} from "../../light-ast/dict/heritage/heritage-kind";
 
 /**
  * A class for working with classes
@@ -699,7 +698,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 		return this.updater.updateClassDeclarationHeritageClauses(
 			this.joiner.joinHeritageClauses(
-				this.formatter.formatExtendsHeritageClause({...name, kind: HeritageKind.EXTENDS}),
+				this.formatter.formatExtendsHeritageClause({...name, kind: "EXTENDS"}),
 				existing
 			),
 			classDeclaration
@@ -717,7 +716,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 		if (this.doesImplementInterfaceWithName(name.name, classDeclaration)) return classDeclaration;
 
 		// Generate a new HeritageClause
-		const newClause = this.formatter.formatImplementsHeritageClause({kind: HeritageKind.IMPLEMENTS, elements: [name]});
+		const newClause = this.formatter.formatImplementsHeritageClause({kind: "IMPLEMENTS", elements: [name]});
 
 		// Update the heritage clauses on the class
 		return this.updater.updateClassDeclarationHeritageClauses(

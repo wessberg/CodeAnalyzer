@@ -6,7 +6,8 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
  * A service for working with PropertyNames
  */
 export class PropertyNameService implements IPropertyNameService {
-	constructor (private printer: IPrinter) {}
+	constructor (private printer: IPrinter) {
+	}
 
 	/**
 	 * Gets the name of a PropertyName

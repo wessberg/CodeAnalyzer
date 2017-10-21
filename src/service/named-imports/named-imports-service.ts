@@ -12,7 +12,8 @@ import {isINamedImportExportCtor} from "../../light-ast/ctor/named-import-export
 export class NamedImportsService implements INamedImportsService {
 	constructor (private formatter: IFormatter,
 							 private updater: IUpdater,
-							 private joiner: IJoiner) {}
+							 private joiner: IJoiner) {
+	}
 
 	/**
 	 * Returns true if the given NamedImports has an import with the provided name

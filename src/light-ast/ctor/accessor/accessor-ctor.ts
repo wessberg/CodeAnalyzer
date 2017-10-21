@@ -9,11 +9,11 @@ export interface IAccessorCtor {
 }
 
 export interface IGetAccessorCtor extends IAccessorCtor, IFunctionLikeCtor {
-	kind: AccessorKind.GET;
+	kind: "GET";
 }
 
 export interface ISetAccessorCtor extends IAccessorCtor {
-	kind: AccessorKind.SET;
+	kind: "SET";
 	decorators: Iterable<IDecoratorCtor>|null;
 	body: string|null;
 	parameters: Iterable<IParameterCtor>|null;

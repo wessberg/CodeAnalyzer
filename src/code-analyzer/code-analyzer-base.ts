@@ -57,5 +57,6 @@ export class CodeAnalyzerBase implements ICodeAnalyzer {
 							 public readonly propertySignatureService: IPropertySignatureService,
 							 public readonly methodSignatureService: IMethodSignatureService,
 							 public readonly indexSignatureService: IIndexSignatureService,
-							 public readonly bindingElementService: IBindingElementService) {}
+							 public readonly bindingElementService: IBindingElementService) {
+	}
 }

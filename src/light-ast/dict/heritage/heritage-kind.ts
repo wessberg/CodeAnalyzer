@@ -1,4 +1,1 @@
-export enum HeritageKind {
-	EXTENDS = "EXTENDS",
-	IMPLEMENTS = "IMPLEMENTS"
-}
+export declare type HeritageKind = "EXTENDS"|"IMPLEMENTS";

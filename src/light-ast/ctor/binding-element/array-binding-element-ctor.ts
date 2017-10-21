@@ -1,11 +1,9 @@
-import {ArrayBindingElementKind} from "../../dict/binding-element/array-binding-element-kind";
-
 export interface IOmittedArrayBindingElementCtor {
-	kind: ArrayBindingElementKind.OMITTED;
+	kind: "OMITTED";
 }
 
 export interface INormalArrayBindingElementCtor {
-	kind: ArrayBindingElementKind.NORMAL;
+	kind: "NORMAL";
 	name: string;
 	isRestSpread: boolean;
 	initializer: string|null|undefined;

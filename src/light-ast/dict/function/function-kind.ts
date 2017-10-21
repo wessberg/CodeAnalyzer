@@ -1,4 +1,1 @@
-export enum FunctionKind {
-	NORMAL = "NORMAL",
-	ARROW = "ARROW"
-}
+export declare type FunctionKind = "NORMAL"|"ARROW";

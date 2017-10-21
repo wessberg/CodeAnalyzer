@@ -1,3 +1,3 @@
 import {CallExpression, PropertyAccessExpression} from "typescript";
 
-export declare type PropertyAccessCallExpression = CallExpression & {expression: PropertyAccessExpression};
+export declare type PropertyAccessCallExpression = CallExpression&{ expression: PropertyAccessExpression };

@@ -2,7 +2,6 @@ import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
 import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
-import {NodeKind} from "../light-ast/dict/node/node-kind";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
 import {BindingNameDict, IArrayBindingNameDict, INormalBindingNameDict, IObjectBindingNameDict} from "../light-ast/dict/binding-name/binding-name-dict";
 import {IParameterDict} from "../light-ast/dict/parameter/i-parameter-dict";
@@ -39,7 +38,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIDecoratorCtor(node)!,
-			nodeKind: NodeKind.DECORATOR
+			nodeKind: "DECORATOR"
 		};
 	}
 
@@ -53,7 +52,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIObjectBindingElementCtor(node)!,
-			nodeKind: NodeKind.OBJECT_BINDING_ELEMENT
+			nodeKind: "OBJECT_BINDING_ELEMENT"
 		};
 	}
 
@@ -67,7 +66,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toINormalArrayBindingElementCtor(node)!,
-			nodeKind: NodeKind.ARRAY_BINDING_ELEMENT
+			nodeKind: "ARRAY_BINDING_ELEMENT"
 		};
 	}
 
@@ -79,7 +78,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	public toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined): IOmittedArrayBindingElementDict|undefined {
 		return {
 			...this.nodeToCtorMapper.toIOmittedArrayBindingElementCtor(node)!,
-			nodeKind: NodeKind.ARRAY_BINDING_ELEMENT
+			nodeKind: "ARRAY_BINDING_ELEMENT"
 		};
 	}
 
@@ -120,7 +119,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toINormalBindingNameCtor(node)!,
-			nodeKind: NodeKind.BINDING_NAME
+			nodeKind: "BINDING_NAME"
 		};
 	}
 
@@ -134,7 +133,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIObjectBindingNameCtor(node)!,
-			nodeKind: NodeKind.BINDING_NAME,
+			nodeKind: "BINDING_NAME",
 			elements: node.elements.map(element => this.toIObjectBindingElementDict(element)!)
 		};
 	}
@@ -149,7 +148,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIArrayBindingNameCtor(node)!,
-			nodeKind: NodeKind.BINDING_NAME,
+			nodeKind: "BINDING_NAME",
 			elements: node.elements.map(element => this.toArrayBindingElementDict(element)!)
 		};
 	}
@@ -163,7 +162,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toIParameterCtor(node)!,
-			nodeKind: NodeKind.PARAMETER,
+			nodeKind: "PARAMETER",
 			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
 			name: this.toBindingNameDict(node.name)!
 		};
@@ -194,7 +193,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toICallSignatureCtor(node)!,
-			nodeKind: NodeKind.CALL_SIGNATURE,
+			nodeKind: "CALL_SIGNATURE",
 			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
 		};
 	}
@@ -208,7 +207,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toIConstructSignatureCtor(node)!,
-			nodeKind: NodeKind.CONSTRUCT_SIGNATURE,
+			nodeKind: "CONSTRUCT_SIGNATURE",
 			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
 		};
 	}
@@ -222,7 +221,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toIMethodSignatureCtor(node)!,
-			nodeKind: NodeKind.METHOD_SIGNATURE,
+			nodeKind: "METHOD_SIGNATURE",
 			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
 		};
 	}
@@ -236,7 +235,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toIIndexSignatureCtor(node)!,
-			nodeKind: NodeKind.INDEX_SIGNATURE,
+			nodeKind: "INDEX_SIGNATURE",
 			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
 		};
 	}
@@ -250,7 +249,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toIPropertySignatureCtor(node)!,
-			nodeKind: NodeKind.PROPERTY_SIGNATURE
+			nodeKind: "PROPERTY_SIGNATURE"
 		};
 	}
 
@@ -279,7 +278,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		// Otherwise, it is an implements clause.
 		return {
 			...this.nodeToCtorMapper.toIExtendsHeritageCtor(node)!,
-			nodeKind: NodeKind.HERITAGE
+			nodeKind: "HERITAGE"
 		};
 	}
 
@@ -294,7 +293,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		// Otherwise, it is an implements clause.
 		return {
 			...this.nodeToCtorMapper.toIImplementsHeritageCtor(node)!,
-			nodeKind: NodeKind.HERITAGE
+			nodeKind: "HERITAGE"
 		};
 	}
 
@@ -324,7 +323,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return undefined;
 		return {
 			...this.nodeToCtorMapper.toITypeLiteralCtor(node)!,
-			nodeKind: NodeKind.TYPE_LITERAL,
+			nodeKind: "TYPE_LITERAL",
 			members: node.members.map(member => this.toITypeElementDict(member)!)
 		};
 	}
@@ -339,7 +338,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIInterfaceCtor(node)!,
-			nodeKind: NodeKind.INTERFACE,
+			nodeKind: "INTERFACE",
 			members: node.members.map(member => this.toTypeElementDict(member)!)
 		};
 	}
@@ -363,7 +362,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toINamedImportExportCtor(node)!,
-			nodeKind: NodeKind.NAMED_IMPORT_EXPORT
+			nodeKind: "NAMED_IMPORT_EXPORT"
 		};
 	}
 
@@ -377,7 +376,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 
 		return {
 			...this.nodeToCtorMapper.toIImportClauseCtor(node)!,
-			nodeKind: NodeKind.IMPORT_CLAUSE,
+			nodeKind: "IMPORT_CLAUSE",
 			namedImports: node.namedBindings == null || isNamespaceImport(node.namedBindings)
 				? null
 				: node.namedBindings.elements.map(element => this.toINamedImportExportDict(element)!)

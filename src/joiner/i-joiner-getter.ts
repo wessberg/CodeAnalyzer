@@ -14,5 +14,7 @@ export const wrappedIJoiner = <IJoiner> new Proxy({}, {
 	 * @param {string} key
 	 * @returns {IJoiner}
 	 */
-	get (_: IJoinerBase, key: keyof IJoinerBase) {return DIContainer.get<IJoinerBase>()[key];}
+	get (_: IJoinerBase, key: keyof IJoinerBase) {
+		return DIContainer.get<IJoinerBase>()[key];
+	}
 });

@@ -23,10 +23,7 @@ import {BindingNameCtor} from "../light-ast/ctor/binding-name/binding-name-ctor"
 import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
 import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
 import {INameWithTypeArguments} from "../light-ast/dict/name-with-type-arguments/i-name-with-type-arguments";
-import {AccessorKind} from "../light-ast/dict/accessor/accessor-kind";
 import {isIGetAccessorCtor} from "../light-ast/ctor/accessor/is-i-get-accessor-ctor";
-import {ArrayBindingElementKind} from "../light-ast/dict/binding-element/array-binding-element-kind";
-import {BindingNameKind} from "../light-ast/dict/binding-name/binding-name-kind";
 import {ModifierKind} from "../light-ast/dict/modifier/modifier-kind";
 
 /**
@@ -292,7 +289,7 @@ export class Formatter implements IFormatterBase {
 	 * @returns {GetAccessorDeclaration | SetAccessorDeclaration}
 	 */
 	public formatClassAccessor (accessor: ClassAccessorCtor): GetAccessorDeclaration|SetAccessorDeclaration {
-		if (accessor.kind === AccessorKind.GET) {
+		if (accessor.kind === "GET") {
 			return this.formatGetAccessor(accessor);
 		} else {
 			return this.formatClassSetAccessor(accessor);
@@ -644,13 +641,13 @@ export class Formatter implements IFormatterBase {
 	 */
 	public formatBindingName (name: BindingNameCtor): BindingName {
 
-		if (name.kind === BindingNameKind.NORMAL) {
+		if (name.kind === "NORMAL") {
 			return createIdentifier(name.name);
 		}
 
-		else if (name.kind === BindingNameKind.ARRAY_BINDING) {
+		else if (name.kind === "ARRAY_BINDING") {
 			return createArrayBindingPattern(
-				createNodeArray(name.elements.map(element => element.kind === ArrayBindingElementKind.OMITTED
+				createNodeArray(name.elements.map(element => element.kind === "OMITTED"
 					? createOmittedExpression()
 					: createBindingElement(
 						this.formatDotDotDotToken(element.isRestSpread),

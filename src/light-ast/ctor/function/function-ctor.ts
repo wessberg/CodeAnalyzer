@@ -6,12 +6,12 @@ export interface IFunctionCtor extends IFunctionLikeWithParametersCtor {
 }
 
 export interface INormalFunctionCtor extends IFunctionCtor {
-	kind: FunctionKind.NORMAL;
+	kind: "NORMAL";
 	name: string;
 }
 
 export interface IArrowFunctionCtor extends IFunctionCtor {
-	kind: FunctionKind.ARROW;
+	kind: "ARROW";
 	name: string;
 }
 

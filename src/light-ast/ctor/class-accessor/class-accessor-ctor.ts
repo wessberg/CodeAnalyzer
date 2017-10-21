@@ -3,7 +3,6 @@ import {IAccessorCtor} from "../accessor/accessor-ctor";
 import {IDecoratorCtor} from "../decorator/i-decorator-ctor";
 import {IParameterCtor} from "../parameter/i-parameter-ctor";
 import {VisibilityKind} from "../../dict/visibility/visibility-kind";
-import {AccessorKind} from "../../dict/accessor/accessor-kind";
 
 export interface IClassAccessorCtor extends IAccessorCtor {
 	isStatic: boolean;
@@ -12,11 +11,11 @@ export interface IClassAccessorCtor extends IAccessorCtor {
 }
 
 export interface IClassGetAccessorCtor extends IClassAccessorCtor, IFunctionLikeCtor {
-	kind: AccessorKind.GET;
+	kind: "GET";
 }
 
 export interface IClassSetAccessorCtor extends IClassAccessorCtor {
-	kind: AccessorKind.SET;
+	kind: "SET";
 	decorators: Iterable<IDecoratorCtor>|null;
 	body: string|null;
 	parameters: Iterable<IParameterCtor>|null;

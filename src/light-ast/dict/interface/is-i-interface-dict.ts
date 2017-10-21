@@ -2,7 +2,6 @@ import {PredicateArgument} from "../node/i-node-dict";
 import {IInterfaceDict} from "./i-interface-dict";
 import {isIInterfaceCtor} from "../../ctor/interface/is-i-interface-ctor";
 import {isINodeDict} from "../node/is-i-node-dict";
-import {NodeKind} from "../node/node-kind";
 
 /**
  * Checks if the provided item is an IInterfaceDict
@@ -10,5 +9,5 @@ import {NodeKind} from "../node/node-kind";
  * @returns {boolean}
  */
 export function isIInterfaceDict (item: PredicateArgument): item is IInterfaceDict {
-	return isIInterfaceCtor(item) && isINodeDict(item) && item.nodeKind === NodeKind.INTERFACE;
+	return isIInterfaceCtor(item) && isINodeDict(item) && item.nodeKind === "INTERFACE";
 }

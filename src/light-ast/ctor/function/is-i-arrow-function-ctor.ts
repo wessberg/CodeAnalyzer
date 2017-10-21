@@ -1,7 +1,6 @@
 import {IArrowFunctionCtor} from "./function-ctor";
 import {isIFunctionCtor} from "./is-i-function-ctor";
 import {PredicateArgument} from "../../dict/node/i-node-dict";
-import {FunctionKind} from "../../dict/function/function-kind";
 
 /**
  * Checks if the provided item is an IArrowFunctionCtor
@@ -10,7 +9,7 @@ import {FunctionKind} from "../../dict/function/function-kind";
  */
 export function isIArrowFunctionCtor (item: PredicateArgument): item is IArrowFunctionCtor {
 	return isIFunctionCtor(item) && (
-		item.kind === FunctionKind.ARROW &&
+		item.kind === "ARROW" &&
 		"name" in item
 	);
 }

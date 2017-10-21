@@ -1,7 +1,6 @@
 import {IClassSetAccessorCtor} from "./class-accessor-ctor";
 import {isIClassAccessorCtor} from "./is-i-class-accessor-ctor";
 import {PredicateArgument} from "../../dict/node/i-node-dict";
-import {AccessorKind} from "../../dict/accessor/accessor-kind";
 
 /**
  * Checks if the provided item is an IClassSetAccessorCtor
@@ -10,7 +9,7 @@ import {AccessorKind} from "../../dict/accessor/accessor-kind";
  */
 export function isIClassSetAccessorCtor (item: PredicateArgument): item is IClassSetAccessorCtor {
 	return isIClassAccessorCtor(item) && (
-		item.kind === AccessorKind.SET &&
+		item.kind === "SET" &&
 		"decorators" in item &&
 		"body" in item &&
 		"parameters" in item
