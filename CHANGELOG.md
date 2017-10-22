@@ -1,3 +1,12 @@
+<a name="1.0.93"></a>
+## 1.0.93 (2017-10-22)
+
+* 1.0.93 ([0839096](https://github.com/wessberg/CodeAnalyzer/commit/0839096))
+* Added a 'getDecorator' method to the NodeService ([11a6403](https://github.com/wessberg/CodeAnalyzer/commit/11a6403))
+* Bumped version ([e7ba2ae](https://github.com/wessberg/CodeAnalyzer/commit/e7ba2ae))
+
+
+
 <a name="1.0.92"></a>
 ## 1.0.92 (2017-10-21)
 
