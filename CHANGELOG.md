@@ -1,3 +1,12 @@
+<a name="1.0.97"></a>
+## 1.0.97 (2017-10-22)
+
+* 1.0.97 ([5205a85](https://github.com/wessberg/CodeAnalyzer/commit/5205a85))
+* Bumped deps. Allowed providing the position of nodes when adding new nodes to an existing array of n ([5255700](https://github.com/wessberg/CodeAnalyzer/commit/5255700))
+* Bumped version ([2f539fc](https://github.com/wessberg/CodeAnalyzer/commit/2f539fc))
+
+
+
 <a name="1.0.96"></a>
 ## 1.0.96 (2017-10-22)
 
