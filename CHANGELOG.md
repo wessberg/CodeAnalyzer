@@ -1,3 +1,12 @@
+<a name="1.0.95"></a>
+## 1.0.95 (2017-10-22)
+
+* 1.0.95 ([6da7bb7](https://github.com/wessberg/CodeAnalyzer/commit/6da7bb7))
+* Allowed giving a proper Decorator to 'removeDecorator(s) ([743d179](https://github.com/wessberg/CodeAnalyzer/commit/743d179))
+* Bumped version ([d083fdf](https://github.com/wessberg/CodeAnalyzer/commit/d083fdf))
+
+
+
 <a name="1.0.94"></a>
 ## 1.0.94 (2017-10-22)
 
