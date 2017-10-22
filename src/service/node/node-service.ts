@@ -58,6 +58,17 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	}
 
 	/**
+	 * Returns the decorator matching the provided one on the Node
+	 * @template T
+	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {T} node
+	 * @returns {Decorator|undefined}
+	 */
+	public getDecorator (decorator: string|IDecoratorCtor|RegExp, node: T): Decorator|undefined {
+		return this.decoratorService.getDecoratorWithExpression(decorator, node);
+	}
+
+	/**
 	 * Removes all matching decorators from the node. If a second argument isn't provided, all decorators will be removed.
 	 * @template T
 	 * @param {T} node
