@@ -24,6 +24,7 @@ export interface IImportService extends INodeService<ImportDeclaration> {
 
 	createImportDeclaration (options: IImportCtor): ImportDeclaration;
 	createAndAddImportDeclarationToSourceFile (options: IImportCtor, sourceFile: SourceFile): ImportDeclaration;
+	removeImportDeclaration (importDeclaration: ImportDeclaration): boolean;
 
 	changePathOfImportDeclaration (path: string, importDeclaration: ImportDeclaration): ImportDeclaration;
 	addNameToImportDeclaration (name: string, importDeclaration: ImportDeclaration): ImportDeclaration;

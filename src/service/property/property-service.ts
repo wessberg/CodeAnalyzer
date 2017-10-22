@@ -6,6 +6,7 @@ import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeNodeService} from "../type-node/i-type-node-service";
+import {IModifierService} from "../modifier/i-modifier-service";
 
 /**
  * A service for working with PropertyDeclarations
@@ -22,6 +23,7 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 							 remover: IRemover,
 							 astUtil: ITypescriptASTUtil,
 							 languageService: ITypescriptLanguageService,
+							 private modifierService: IModifierService,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, languageService, remover, astUtil);
 	}
@@ -33,6 +35,15 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 	 */
 	public isOptional (property: PropertyDeclaration): boolean {
 		return property.questionToken != null;
+	}
+
+	/**
+	 * Returns true if the PropertyDeclaration is optional
+	 * @param {PropertyDeclaration} property
+	 * @returns {boolean}
+	 */
+	public isStatic (property: PropertyDeclaration): boolean {
+		return this.modifierService.isStatic(property);
 	}
 
 	/**
