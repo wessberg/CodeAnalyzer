@@ -297,6 +297,24 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	}
 
 	/**
+	 * Removes all ImportDeclarations with the given path in the given SourceFile
+	 * @param {string} path
+	 * @param {SourceFile} sourceFile
+	 * @returns {boolean}
+	 */
+	public removeImportDeclarationsWithPath (path: string, sourceFile: SourceFile): boolean {
+		const importDeclarations = this.getImportsForPath(path, sourceFile);
+		// If none were matched, return false
+		if (importDeclarations.length < 1) return false;
+
+		// Otherwise, call removeImportDeclaration for each of them and store their results
+		const results = importDeclarations.map(importDeclaration => this.removeImportDeclaration(importDeclaration));
+
+		// Return true if at least 1 of the results were equal to true
+		return results.some(result => result === true);
+	}
+
+	/**
 	 * Creates a new ImportDeclaration
 	 * @param {IImportCtor} options
 	 * @returns {ImportDeclaration}
