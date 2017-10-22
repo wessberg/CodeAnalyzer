@@ -15,6 +15,14 @@ import {ICallExpressionCtor} from "../../light-ast/ctor/call-expression/i-call-e
  * A class for working with CallExpressions
  */
 export class CallExpressionService extends NodeService<CallExpression> implements ICallExpressionService {
+	/**
+	 * Returns an iterable of the stringified argument expressions
+	 * @param {CallExpression} callExpression
+	 * @returns {Iterable<string>}
+	 */
+	public getArguments (callExpression: CallExpression): Iterable<string> {
+		return callExpression.arguments.map(arg => this.printer.print(arg));
+	}
 
 	/**
 	 * Creates a new CallExpression

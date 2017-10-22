@@ -9,6 +9,7 @@ export interface ICallExpressionService extends INodeService<CallExpression> {
 	getTypeArgumentNames (callExpression: CallExpression): string[];
 	setArgumentExpressionOnArgumentIndex (argumentIndex: number, expression: string, callExpression: CallExpression): CallExpression;
 	hasArgumentOnIndex (index: number, callExpression: CallExpression): boolean;
+	getArguments (callExpression: CallExpression): Iterable<string>;
 	createAndAddCallExpression (options: ICallExpressionCtor, sourceFile: SourceFile): CallExpression;
 	createCallExpression (options: ICallExpressionCtor): CallExpression;
 }
