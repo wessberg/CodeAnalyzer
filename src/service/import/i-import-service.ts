@@ -2,6 +2,7 @@ import {Identifier, ImportDeclaration, NamedImportBindings, NamedImports, Namesp
 import {INodeService} from "../node/i-node-service";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportCtor} from "../../light-ast/ctor/import/i-import-ctor";
+import {IPlacement} from "../../placement/i-placement";
 
 export interface IImportService extends INodeService<ImportDeclaration> {
 	getImportWithNamedImport (namedImport: INamedImportExportCtor, sourceFile: SourceFile, path?: string): ImportDeclaration|undefined;
@@ -23,7 +24,7 @@ export interface IImportService extends INodeService<ImportDeclaration> {
 	hasNamespaceImportWithName (namespaceName: string, importDeclaration: ImportDeclaration): boolean;
 
 	createImportDeclaration (options: IImportCtor): ImportDeclaration;
-	createAndAddImportDeclarationToSourceFile (options: IImportCtor, sourceFile: SourceFile): ImportDeclaration;
+	createAndAddImportDeclarationToSourceFile (options: IImportCtor, sourceFile: SourceFile, placement?: IPlacement): ImportDeclaration;
 	removeImportDeclaration (importDeclaration: ImportDeclaration): boolean;
 	removeImportDeclarationsWithPath (path: string, sourceFile: SourceFile): boolean;
 

@@ -28,6 +28,7 @@ import {IOwnOrInheritedGetterWithNameResult} from "./i-own-or-inherited-getter-w
 import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-with-name-result";
 import {IGetAccessorService} from "../get-accessor/i-get-accessor-service";
 import {ISetAccessorService} from "../set-accessor/i-set-accessor-service";
+import {IPlacement} from "../../placement/i-placement";
 
 /**
  * A class for working with classes
@@ -1506,14 +1507,15 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 * Creates a ClassDeclaration and adds it to the provided SourceFile
 	 * @param {IClassCtor} options
 	 * @param {SourceFile} sourceFile
+	 * @param {IPlacement} [placement]
 	 * @returns {ClassDeclaration}
 	 */
-	public createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile): ClassDeclaration {
+	public createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile, placement: IPlacement = {position: "AFTER"}): ClassDeclaration {
 		const classDeclaration = this.createClassDeclaration(options);
 
 		// Update the SourceFile to reflect the change
 		this.updater.updateSourceFileStatements(
-			this.joiner.joinStatementNodeArrays(createNodeArray([classDeclaration]), sourceFile.statements),
+			this.joiner.joinStatementNodeArrays(createNodeArray([classDeclaration]), sourceFile.statements, placement),
 			sourceFile
 		);
 

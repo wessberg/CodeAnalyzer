@@ -78,7 +78,7 @@ callExpressionService.createAndAddCallExpression({
 	expression: "customElements.define",
 	typeArguments: null,
 	arguments: ["'foo'", "'bar'"]
-}, sourceFile);
+}, sourceFile, {node: firstInterface, position: "BEFORE"});
 
 console.log(printer.print(sourceFile));
 

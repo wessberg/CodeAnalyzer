@@ -3,6 +3,7 @@ import {Block, ClassElement, createBlock, createHeritageClause, createNamedExpor
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {INamedImportsService} from "../service/named-imports/i-named-imports-service";
 import {INamedExportsService} from "../service/named-exports/i-named-exports-service";
+import {IPlacement} from "../placement/i-placement";
 
 /**
  * A class for joining multiple different Nodes together to form new ones
@@ -17,33 +18,85 @@ export class Joiner implements IJoinerBase {
 	 * Joins two NodeArrays of Statements
 	 * @param {NodeArray<Statement>|Statement} newStatements
 	 * @param {NodeArray<Statement>} existingStatements
-	 * @param {boolean} [suffix=true]
+	 * @param {IPlacement} [placement]
 	 * @returns {NodeArray<Statement>}
 	 */
-	public joinStatementNodeArrays (newStatements: NodeArray<Statement>|Statement, existingStatements: NodeArray<Statement>|undefined, suffix: boolean = true): NodeArray<Statement> {
+	public joinStatementNodeArrays (newStatements: NodeArray<Statement>|Statement, existingStatements: NodeArray<Statement>|undefined, placement?: IPlacement): NodeArray<Statement> {
 		const normalizedNewStatements = Array.isArray(newStatements) ? newStatements : createNodeArray([<Statement>newStatements]);
 		// If there are no existing statements clause, just use the new ones
 		if (existingStatements == null) {
 			return normalizedNewStatements;
 		}
-		return createNodeArray(suffix ? [...existingStatements, ...normalizedNewStatements] : [...normalizedNewStatements, ...existingStatements]);
+
+		// If no placement is given, add the statement(s) after the existing ones
+		if (placement == null) {
+			return createNodeArray([...existingStatements, ...normalizedNewStatements]);
+		}
+
+		// Otherwise, if no node is given within the placement, either place the new statement(s) before or after the existing ones
+		if (placement.node == null) {
+			return createNodeArray(placement.position === "BEFORE" ? [...normalizedNewStatements, ...existingStatements] : [...existingStatements, ...normalizedNewStatements]);
+		}
+
+		// Otherwise, start with taking the index of the given node within the existing statements
+		const indexOfNode = existingStatements.indexOf(<Statement> placement.node);
+
+		// If the Node is not contained within the existing statements, just use the placement
+		if (indexOfNode === -1) {
+			return createNodeArray(placement.position === "BEFORE" ? [...normalizedNewStatements, ...existingStatements] : [...existingStatements, ...normalizedNewStatements]);
+		}
+
+		// Otherwise, first generate a mutable array from the existing statements
+		const mutableExistingExpressions = [...existingStatements];
+
+		// Now, splice it to add the new expressions, either before or after the matched Node
+		mutableExistingExpressions.splice(placement.position === "BEFORE" ? indexOfNode : indexOfNode + 1, 0, ...normalizedNewStatements);
+
+		// Return a new NodeArray
+		return createNodeArray(mutableExistingExpressions);
 	}
 
 	/**
 	 * Joins two arrays of Expressions
 	 * @param {NodeArray<Expression> | Expression} newExpressions
 	 * @param {NodeArray<Expression>} existingExpressions
-	 * @param {boolean} [suffix=true]
+	 * @param {IPlacement} [placement]
 	 * @returns {NodeArray<Expression>}
 	 */
-	public joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined, suffix: boolean = true): NodeArray<Expression> {
+	public joinExpressionNodeArrays (newExpressions: NodeArray<Expression>|Expression, existingExpressions: NodeArray<Expression>|undefined, placement?: IPlacement): NodeArray<Expression> {
 		const normalizedNewExpressions = Array.isArray(newExpressions) ? newExpressions : createNodeArray([<Expression>newExpressions]);
 
 		// If there are no existing expressions clause, just use the new ones
 		if (existingExpressions == null) {
 			return createNodeArray(normalizedNewExpressions);
 		}
-		return createNodeArray(suffix ? [...existingExpressions, ...normalizedNewExpressions] : [...normalizedNewExpressions, ...existingExpressions]);
+
+		// If no placement is given, add the expression(s) after the existing ones
+		if (placement == null) {
+			return createNodeArray([...existingExpressions, ...normalizedNewExpressions]);
+		}
+
+		// Otherwise, if no node is given within the placement, either place the new expression(s) before or after the existing ones
+		if (placement.node == null) {
+			return createNodeArray(placement.position === "BEFORE" ? [...normalizedNewExpressions, ...existingExpressions] : [...existingExpressions, ...normalizedNewExpressions]);
+		}
+
+		// Otherwise, start with taking the index of the given node within the existing expressions
+		const indexOfNode = existingExpressions.indexOf(<Expression> placement.node);
+
+		// If the Node is not contained within the existing expressions, just use the placement
+		if (indexOfNode === -1) {
+			return createNodeArray(placement.position === "BEFORE" ? [...normalizedNewExpressions, ...existingExpressions] : [...existingExpressions, ...normalizedNewExpressions]);
+		}
+
+		// Otherwise, first generate a mutable array from the existing expressions
+		const mutableExistingExpressions = [...existingExpressions];
+
+		// Now, splice it to add the new expressions, either before or after the matched Node
+		mutableExistingExpressions.splice(placement.position === "BEFORE" ? indexOfNode : indexOfNode + 1, 0, ...normalizedNewExpressions);
+
+		// Return a new NodeArray
+		return createNodeArray(mutableExistingExpressions);
 	}
 
 	/**

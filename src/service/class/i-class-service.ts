@@ -13,6 +13,7 @@ import {IOwnOrInheritedMethodWithNameResult} from "./i-own-or-inherited-method-w
 import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor-result";
 import {IOwnOrInheritedGetterWithNameResult} from "./i-own-or-inherited-getter-with-name-result";
 import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-with-name-result";
+import {IPlacement} from "../../placement/i-placement";
 
 export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
 	hasClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): boolean;
@@ -114,7 +115,7 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	isImplementingInterfaceWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): boolean;
 
 	createClassDeclaration (options: IClassCtor): ClassDeclaration;
-	createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile): ClassDeclaration;
+	createAndAddClassDeclarationToSourceFile (options: IClassCtor, sourceFile: SourceFile, placement?: IPlacement): ClassDeclaration;
 
 	setNameOfClass (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	extendClassWith (name: INameWithTypeArguments, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;

@@ -216,3 +216,4 @@ export {IOwnOrInheritedMemberWithNameResult} from "./service/class/i-own-or-inhe
 export {IOwnOrInheritedConstructorResult} from "./service/class/i-own-or-inherited-constructor-result";
 export {IOwnOrInheritedGetterWithNameResult} from "./service/class/i-own-or-inherited-getter-with-name-result";
 export {IOwnOrInheritedSetterWithNameResult} from "./service/class/i-own-or-inherited-setter-with-name-result";
+export {IPlacement} from "./placement/i-placement";

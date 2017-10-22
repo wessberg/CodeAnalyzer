@@ -14,6 +14,7 @@ import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportCtor} from "../../light-ast/ctor/import/i-import-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IPlacement} from "../../placement/i-placement";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -259,14 +260,15 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	 * Creates an ImportDeclaration and adds it to the provided SourceFile
 	 * @param {IImportCtor} options
 	 * @param {SourceFile} sourceFile
+	 * @param {IPlacement} [placement]
 	 * @returns {ImportDeclaration}
 	 */
-	public createAndAddImportDeclarationToSourceFile (options: IImportCtor, sourceFile: SourceFile): ImportDeclaration {
+	public createAndAddImportDeclarationToSourceFile (options: IImportCtor, sourceFile: SourceFile, placement: IPlacement = {position: "BEFORE"}): ImportDeclaration {
 		const importDeclaration = this.createImportDeclaration(options);
 
 		// Update the SourceFile to reflect the change
 		this.updater.updateSourceFileStatements(
-			this.joiner.joinStatementNodeArrays(createNodeArray([importDeclaration]), sourceFile.statements, false),
+			this.joiner.joinStatementNodeArrays(createNodeArray([importDeclaration]), sourceFile.statements, placement),
 			sourceFile
 		);
 

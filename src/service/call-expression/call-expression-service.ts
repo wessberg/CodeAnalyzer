@@ -10,6 +10,7 @@ import {IJoiner} from "../../joiner/i-joiner-getter";
 import {PropertyAccessCallExpression} from "./property-access-call-expression";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ICallExpressionCtor} from "../../light-ast/ctor/call-expression/i-call-expression-ctor";
+import {IPlacement} from "../../placement/i-placement";
 
 /**
  * A class for working with CallExpressions
@@ -37,14 +38,15 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 	 * Creates and adds a CallExpression to a SourceFile
 	 * @param {ICallExpressionCtor} options
 	 * @param {SourceFile} sourceFile
+	 * @param {IPlacement} [placement]
 	 * @returns {CallExpression}
 	 */
-	public createAndAddCallExpression (options: ICallExpressionCtor, sourceFile: SourceFile): CallExpression {
+	public createAndAddCallExpression (options: ICallExpressionCtor, sourceFile: SourceFile, placement?: IPlacement): CallExpression {
 		const callExpression = this.createCallExpression(options);
 
 		// Update the SourceFile to reflect the change
 		this.updater.updateSourceFileStatements(
-			this.joiner.joinStatementNodeArrays(createNodeArray([createStatement(callExpression)]), sourceFile.statements),
+			this.joiner.joinStatementNodeArrays(createNodeArray([createStatement(callExpression)]), sourceFile.statements, placement),
 			sourceFile
 		);
 
