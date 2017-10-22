@@ -1,3 +1,13 @@
+<a name="1.0.96"></a>
+## 1.0.96 (2017-10-22)
+
+* 1.0.96 ([df9cfc5](https://github.com/wessberg/CodeAnalyzer/commit/df9cfc5))
+* Added a 'removeImportDeclaration' method to the import-service ([7bc54da](https://github.com/wessberg/CodeAnalyzer/commit/7bc54da))
+* Added a 'removeImportDeclarationsWithPath' method to the import-service ([0e4a9be](https://github.com/wessberg/CodeAnalyzer/commit/0e4a9be))
+* Bumped version ([764c7df](https://github.com/wessberg/CodeAnalyzer/commit/764c7df))
+
+
+
 <a name="1.0.95"></a>
 ## 1.0.95 (2017-10-22)
 
