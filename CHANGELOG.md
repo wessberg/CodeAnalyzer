@@ -1,3 +1,12 @@
+<a name="1.0.94"></a>
+## 1.0.94 (2017-10-22)
+
+* 1.0.94 ([1a07bbf](https://github.com/wessberg/CodeAnalyzer/commit/1a07bbf))
+* Added a 'getArguments' method to the CallExpressionService ([507a1f8](https://github.com/wessberg/CodeAnalyzer/commit/507a1f8))
+* Bumped version ([fa418f5](https://github.com/wessberg/CodeAnalyzer/commit/fa418f5))
+
+
+
 <a name="1.0.93"></a>
 ## 1.0.93 (2017-10-22)
 
