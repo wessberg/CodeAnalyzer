@@ -5,6 +5,7 @@ import {IRemover} from "../../remover/i-remover-base";
 import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {isIDecoratorCtor} from "../../light-ast/ctor/decorator/is-i-decorator-ctor";
 
 /**
  * An abstract Service for working with Nodes
@@ -72,10 +73,10 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	 * Removes all matching decorators from the node. If a second argument isn't provided, all decorators will be removed.
 	 * @template T
 	 * @param {T} node
-	 * @param {(string | IDecoratorCtor | RegExp)[]} decorators
+	 * @param {(string | IDecoratorCtor | RegExp | Decorator)[]} decorators
 	 * @returns {boolean}
 	 */
-	public removeDecorators (node: T, decorators?: (string|IDecoratorCtor|RegExp)[]): boolean {
+	public removeDecorators (node: T, decorators?: (string|IDecoratorCtor|RegExp|Decorator)[]): boolean {
 
 		return this.remover.removeDecorators(
 			node,
@@ -84,7 +85,7 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 				? undefined
 				// Otherwise, take all matching Decorator Nodes and filter out undefined values
 				: <Decorator[]> decorators
-					.map(decorator => this.decoratorService.getDecoratorWithExpression(decorator, node))
+					.map(decorator => typeof decorator === "string" || decorator instanceof RegExp || isIDecoratorCtor(decorator) ? this.decoratorService.getDecoratorWithExpression(decorator, node) : decorator)
 					.filter(decorator => decorator != null)
 		);
 	}
@@ -92,11 +93,11 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	/**
 	 * Removes the provided decorator from the MethodDeclaration, if it has it
 	 * @template T
-	 * @param {string | IDecoratorCtor | RegExp} decorator
+	 * @param {string | IDecoratorCtor | RegExp | Decorator} decorator
 	 * @param {T} node
 	 * @returns {boolean}
 	 */
-	public removeDecorator (decorator: string|IDecoratorCtor|RegExp, node: T): boolean {
+	public removeDecorator (decorator: string|IDecoratorCtor|RegExp|Decorator, node: T): boolean {
 		return this.removeDecorators(node, [decorator]);
 	}
 }
