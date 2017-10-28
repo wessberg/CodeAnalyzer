@@ -1,3 +1,12 @@
+<a name="1.0.98"></a>
+## 1.0.98 (2017-10-28)
+
+* 1.0.98 ([ecf02d8](https://github.com/wessberg/CodeAnalyzer/commit/ecf02d8))
+* Bumped dependencies ([500c564](https://github.com/wessberg/CodeAnalyzer/commit/500c564))
+* Bumped version ([c7341f3](https://github.com/wessberg/CodeAnalyzer/commit/c7341f3))
+
+
+
 <a name="1.0.97"></a>
 ## 1.0.97 (2017-10-22)
 
