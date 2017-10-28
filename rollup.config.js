@@ -18,6 +18,16 @@ export default {
 		},
 	],
 	treeshake: true,
+	globals: {
+		"@wessberg/di": "di",
+		"@wessberg/stringutil": "stringUtil",
+		"@wessberg/moduleutil": "moduleUtil",
+		"@wessberg/fileloader": "fileloader",
+		"@wessberg/typescript-language-service": "typescriptLanguageService",
+		"@wessberg/typescript-ast-util": "typescriptAstUtil",
+		"@wessberg/typescript-package-reassembler": "typescriptPackageReassembler",
+		"typescript": "typescript"
+	},
 	plugins: [
 		diPlugin({
 			shimGlobalObject: false
