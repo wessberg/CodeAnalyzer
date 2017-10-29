@@ -36,6 +36,7 @@ import {IBindingPatternService} from "../service/binding-pattern/i-binding-patte
 import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
+import {IParser} from "../parser/i-parser";
 
 /**
  * A service that contains all underlying services
@@ -44,6 +45,7 @@ export class CodeAnalyzerBase implements ICodeAnalyzerBase {
 	constructor (public readonly languageService: ITypescriptLanguageService,
 							 public readonly resolver: IResolver,
 							 public readonly printer: IPrinter,
+							 public readonly parser: IParser,
 							 public readonly classService: IClassService,
 							 public readonly callExpressionService: ICallExpressionService,
 							 public readonly propertyAccessExpressionService: IPropertyAccessExpressionService,

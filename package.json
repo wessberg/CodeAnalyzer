@@ -47,7 +47,7 @@
 		"husky": "latest",
 		"tslint": "^5.8.0",
 		"rollup": "^0.50.0",
-		"rollup-plugin-typescript2": "^0.7.0"
+		"rollup-plugin-typescript2": "^0.8.0"
 	},
 	"dependencies": {
 		"@types/node": "^8.0.47",

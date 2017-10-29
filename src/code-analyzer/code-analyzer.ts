@@ -38,6 +38,7 @@ import {IBindingPatternService} from "../service/binding-pattern/i-binding-patte
 import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
+import {IParser} from "../parser/i-parser";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -60,6 +61,12 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {IResolver}
 	 */
 	public readonly printer: IPrinter;
+
+	/**
+	 * A service that can parse nodes
+	 * @type {IParser}
+	 */
+	public readonly parser: IParser;
 
 	/**
 	 * A service that helps with working with ClassExpressions and ClassDeclarations

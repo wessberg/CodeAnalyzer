@@ -35,12 +35,14 @@ import {IBindingNameService} from "../service/binding-name/i-binding-name-servic
 import {IBindingPatternService} from "../service/binding-pattern/i-binding-pattern-service";
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
+import {IParser} from "../parser/i-parser";
 
 export interface ICodeAnalyzerBase {
 	readonly languageService: ITypescriptLanguageService;
 	readonly classService: IClassService;
 	readonly resolver: IResolver;
 	readonly printer: IPrinter;
+	readonly parser: IParser;
 	readonly callExpressionService: ICallExpressionService;
 	readonly propertyAccessExpressionService: IPropertyAccessExpressionService;
 	readonly constructorService: IConstructorService;
