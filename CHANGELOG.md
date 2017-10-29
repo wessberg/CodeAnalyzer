@@ -1,3 +1,12 @@
+<a name="1.0.99"></a>
+## 1.0.99 (2017-10-29)
+
+* 1.0.99 ([8ef179e](https://github.com/wessberg/CodeAnalyzer/commit/8ef179e))
+* Bumped version ([1b084e2](https://github.com/wessberg/CodeAnalyzer/commit/1b084e2))
+* Made the parser available as a service ([6706f89](https://github.com/wessberg/CodeAnalyzer/commit/6706f89))
+
+
+
 <a name="1.0.98"></a>
 ## 1.0.98 (2017-10-28)
 
