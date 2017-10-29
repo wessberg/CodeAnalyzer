@@ -1,8 +1,8 @@
 import {INodeService} from "./i-node-service";
-import {Decorator, Node, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {createNodeArray, Decorator, isSourceFile, Node, NodeArray, SourceFile, Statement, SyntaxKind} from "typescript";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
-import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {isNodeArray, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {isIDecoratorCtor} from "../../light-ast/ctor/decorator/is-i-decorator-ctor";
@@ -39,12 +39,13 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	/**
 	 * Gets all Nods for the provided SourceFile
 	 * @template T
-	 * @param {SourceFile} sourceFile
+	 * @param {SourceFile|Statement[]|NodeArray<Statement>|Statement} sourceFile
 	 * @param {boolean} [deep]
 	 * @returns {NodeArray<T>}
 	 */
-	public getAll (sourceFile: SourceFile, deep?: boolean): NodeArray<T> {
-		return this.astUtil.getFilteredStatements(sourceFile.statements, this.ALLOWED_KINDS, deep);
+	public getAll (sourceFile: SourceFile|Statement[]|NodeArray<Statement>|Statement, deep?: boolean): NodeArray<T> {
+		const normalizedStatements = isNodeArray(sourceFile) ? sourceFile : Array.isArray(sourceFile) ? createNodeArray(sourceFile) : !isSourceFile(sourceFile) ? createNodeArray([sourceFile]) : sourceFile.statements;
+		return this.astUtil.getFilteredStatements(normalizedStatements, this.ALLOWED_KINDS, deep);
 	}
 
 	/**
