@@ -1,3 +1,12 @@
+<a name="1.0.101"></a>
+## 1.0.101 (2017-10-29)
+
+* 1.0.101 ([f1cead8](https://github.com/wessberg/CodeAnalyzer/commit/f1cead8))
+* Bumped version ([bc8d936](https://github.com/wessberg/CodeAnalyzer/commit/bc8d936))
+* Refined signature for getAll ([0e2c633](https://github.com/wessberg/CodeAnalyzer/commit/0e2c633))
+
+
+
 <a name="1.0.100"></a>
 ## 1.0.100 (2017-10-29)
 
