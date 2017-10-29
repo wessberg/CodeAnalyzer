@@ -22,6 +22,7 @@ export default {
 		"@wessberg/di": "di",
 		"@wessberg/stringutil": "stringUtil",
 		"@wessberg/moduleutil": "moduleUtil",
+		"@wessberg/pathutil": "pathUtil",
 		"@wessberg/fileloader": "fileloader",
 		"@wessberg/typescript-language-service": "typescriptLanguageService",
 		"@wessberg/typescript-ast-util": "typescriptAstUtil",
