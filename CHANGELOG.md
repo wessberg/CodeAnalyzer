@@ -1,3 +1,12 @@
+<a name="1.0.100"></a>
+## 1.0.100 (2017-10-29)
+
+* 1.0.100 ([6f75d74](https://github.com/wessberg/CodeAnalyzer/commit/6f75d74))
+* Bumped version ([4fbb940](https://github.com/wessberg/CodeAnalyzer/commit/4fbb940))
+* Made the IdentifierService extend NodeService ([f0875bc](https://github.com/wessberg/CodeAnalyzer/commit/f0875bc))
+
+
+
 <a name="1.0.99"></a>
 ## 1.0.99 (2017-10-29)
 
