@@ -56,11 +56,11 @@
 		"@wessberg/moduleutil": "0.0.20",
 		"@wessberg/pathutil": "0.0.7",
 		"@wessberg/stringutil": "^1.0.13",
-		"@wessberg/typescript-ast-util": "0.0.29",
-		"@wessberg/typescript-language-service": "0.0.31",
+		"@wessberg/typescript-ast-util": "0.0.38",
+		"@wessberg/typescript-language-service": "0.0.32",
 		"@wessberg/typescript-package-reassembler": "0.0.6",
 		"tslib": "^1.8.0",
-		"typescript": "^2.5.3"
+		"typescript": "^2.6.1"
 	},
 	"main": "./dist/umd/index.js",
 	"module": "./dist/es2015/index.js",
