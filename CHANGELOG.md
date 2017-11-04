@@ -1,3 +1,12 @@
+<a name="1.0.104"></a>
+## 1.0.104 (2017-11-04)
+
+* 1.0.104 ([ddbf5e2](https://github.com/wessberg/CodeAnalyzer/commit/ddbf5e2))
+* Added a check for an undefined SourceFile in 'getAllForFile' ([07a08ca](https://github.com/wessberg/CodeAnalyzer/commit/07a08ca))
+* Bumped version ([a4b6d29](https://github.com/wessberg/CodeAnalyzer/commit/a4b6d29))
+
+
+
 <a name="1.0.103"></a>
 ## 1.0.103 (2017-11-02)
 
