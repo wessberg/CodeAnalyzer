@@ -33,6 +33,9 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	 */
 	public getAllForFile (file: string, content?: string, deep?: boolean): NodeArray<T> {
 		const sourceFile = this.languageService.getFile({path: file, content});
+
+		// If no SourceFile could be retrieved for the file, return an empty NodeArray
+		if (sourceFile == null) return createNodeArray([]);
 		return this.getAll(sourceFile, deep);
 	}
 
