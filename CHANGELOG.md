@@ -1,3 +1,12 @@
+<a name="1.0.106"></a>
+## 1.0.106 (2017-11-05)
+
+* 1.0.106 ([bfd6606](https://github.com/wessberg/CodeAnalyzer/commit/bfd6606))
+* Added a helper to change the access modifier of properties and ClassLikes ([7103877](https://github.com/wessberg/CodeAnalyzer/commit/7103877))
+* Bumped version ([84e6aae](https://github.com/wessberg/CodeAnalyzer/commit/84e6aae))
+
+
+
 <a name="1.0.105"></a>
 ## 1.0.105 (2017-11-05)
 
