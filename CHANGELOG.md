@@ -1,3 +1,12 @@
+<a name="1.0.105"></a>
+## 1.0.105 (2017-11-05)
+
+* 1.0.105 ([121cb27](https://github.com/wessberg/CodeAnalyzer/commit/121cb27))
+* Added new methods for getting the names of class members as well as getting the names of all class e ([77807d6](https://github.com/wessberg/CodeAnalyzer/commit/77807d6))
+* Bumped version ([3f16dd2](https://github.com/wessberg/CodeAnalyzer/commit/3f16dd2))
+
+
+
 <a name="1.0.104"></a>
 ## 1.0.104 (2017-11-04)
 
