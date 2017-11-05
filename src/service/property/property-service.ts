@@ -7,6 +7,7 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {IModifierService} from "../modifier/i-modifier-service";
+import {IPropertyNameService} from "../property-name/i-property-name-service";
 
 /**
  * A service for working with PropertyDeclarations
@@ -20,12 +21,22 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyDeclaration];
 
 	constructor (private typeNodeService: ITypeNodeService,
+							 private modifierService: IModifierService,
+							 private propertyNameService: IPropertyNameService,
 							 remover: IRemover,
 							 astUtil: ITypescriptASTUtil,
 							 languageService: ITypescriptLanguageService,
-							 private modifierService: IModifierService,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, languageService, remover, astUtil);
+	}
+
+	/**
+	 * Gets the name of the given PropertyDeclaration
+	 * @param {PropertyDeclaration} property
+	 * @returns {string}
+	 */
+	public getName (property: PropertyDeclaration): string {
+		return this.propertyNameService.getName(property.name);
 	}
 
 	/**

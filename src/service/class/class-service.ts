@@ -29,6 +29,7 @@ import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-w
 import {IGetAccessorService} from "../get-accessor/i-get-accessor-service";
 import {ISetAccessorService} from "../set-accessor/i-set-accessor-service";
 import {IPlacement} from "../../placement/i-placement";
+import {IPropertyService} from "../property/i-property-service";
 
 /**
  * A class for working with classes
@@ -45,6 +46,7 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 private updater: IUpdater,
 							 private joiner: IJoiner,
 							 private methodService: IMethodService,
+							 private propertyService: IPropertyService,
 							 private modifierService: IModifierService,
 							 private constructorService: IConstructorService,
 							 private heritageClauseService: IHeritageClauseService,
@@ -96,6 +98,122 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	public getStaticSetterWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): SetAccessorDeclaration|undefined {
 		return <SetAccessorDeclaration|undefined> classDeclaration.members.find(member => isSetAccessorDeclaration(member) && this.matchesStaticMemberName(name, member));
+	}
+
+	/**
+	 * Gets all names of class members for the class - also those it inherits from its' parents
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {Set<string>}
+	 */
+	public getOwnOrInheritedMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string> {
+		// Start with getting it's own member names
+		const names = this.getMemberNames(classDeclaration);
+
+		// If it is a base class, return the given names
+		if (this.isBaseClass(classDeclaration)) return names;
+
+		// Otherwise, resolve the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return its own names
+		if (parentClass == null) return names;
+
+		// Check recursively
+		return new Set([...names, ...this.getOwnOrInheritedMemberNames(parentClass)]);
+	}
+
+	/**
+	 * Gets all names of static class members for the class - also those it inherits from its' parents
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {Set<string>}
+	 */
+	public getOwnOrInheritedStaticMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string> {
+		// Start with getting it's own member names
+		const names = this.getStaticMemberNames(classDeclaration);
+
+		// If it is a base class, return the given names
+		if (this.isBaseClass(classDeclaration)) return names;
+
+		// Otherwise, resolve the parent class
+		const parentClass = this.resolveExtendedClass(classDeclaration);
+
+		// If the parent class couldn't be resolved somehow, return its own names
+		if (parentClass == null) return names;
+
+		// Check recursively
+		return new Set([...names, ...this.getOwnOrInheritedStaticMemberNames(parentClass)]);
+	}
+
+	/**
+	 * Gets all member names of the given ClassDeclaration
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {Set<string>}
+	 */
+	public getMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string> {
+		const names: Set<string> = new Set();
+
+		classDeclaration.members.forEach(member => {
+			// If it is static, return immediately
+			if (this.modifierService.isStatic(member)) return;
+
+			// Get the name
+			const name = this.getNameOfMember(member);
+
+			// Add it if it has one
+			if (name != null) names.add(name);
+		});
+
+		// Return the names
+		return names;
+	}
+
+	/**
+	 * Gets all member names of the given ClassDeclaration
+	 * @param {ClassDeclaration | ClassExpression} classDeclaration
+	 * @returns {Set<string>}
+	 */
+	public getStaticMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string> {
+		const names: Set<string> = new Set();
+
+		classDeclaration.members.forEach(member => {
+			// If it is NOT static, return immediately
+			if (!this.modifierService.isStatic(member)) return;
+
+			// Get the name
+			const name = this.getNameOfMember(member);
+
+			// Add it if it has one
+			if (name != null) names.add(name);
+		});
+
+		// Return the names
+		return names;
+	}
+
+	/**
+	 * Gets the name of the given member
+	 * @param {ClassElement} member
+	 * @returns {string|undefined}
+	 */
+	public getNameOfMember (member: ClassElement): string|undefined {
+		if (isMethodDeclaration(member)) {
+			return this.methodService.getName(member);
+		}
+
+		else if (isPropertyDeclaration(member)) {
+			return this.propertyService.getName(member);
+		}
+
+		else if (isGetAccessorDeclaration(member)) {
+			return this.getAccessorService.getName(member);
+		}
+
+		else if (isSetAccessorDeclaration(member)) {
+			return this.setAccessorService.getName(member);
+		}
+
+		// Fall back to undefined
+		return undefined;
 	}
 
 	/**

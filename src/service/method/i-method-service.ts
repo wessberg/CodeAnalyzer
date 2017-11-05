@@ -3,4 +3,5 @@ import {IClassFunctionLikeService} from "../class-function-like/i-class-function
 
 export interface IMethodService extends IClassFunctionLikeService<MethodDeclaration> {
 	takeReturnStatement (method: MethodDeclaration): ReturnStatement|undefined;
+	getName (method: MethodDeclaration): string;
 }

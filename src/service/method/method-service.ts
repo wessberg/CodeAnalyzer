@@ -9,12 +9,12 @@ import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {ClassFunctionLikeService} from "../class-function-like/class-function-like-service";
+import {IPropertyNameService} from "../property-name/i-property-name-service";
 
 /**
  * A service that helps with working with MethodDeclarations
  */
 export class MethodService extends ClassFunctionLikeService<MethodDeclaration> implements IMethodService {
-
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
 	 * @type {SyntaxKind[]}
@@ -24,12 +24,22 @@ export class MethodService extends ClassFunctionLikeService<MethodDeclaration> i
 	constructor (private formatter: IFormatter,
 							 private updater: IUpdater,
 							 private joiner: IJoiner,
+							 private propertyNameService: IPropertyNameService,
 							 typeNodeService: ITypeNodeService,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 astUtil: ITypescriptASTUtil) {
 		super(typeNodeService, remover, decoratorService, languageService, astUtil);
+	}
+
+	/**
+	 * Gets the name of the given MethodDeclaration
+	 * @param {MethodDeclaration} method
+	 * @returns {string}
+	 */
+	public getName (method: MethodDeclaration): string {
+		return this.propertyNameService.getName(method.name);
 	}
 
 	/**

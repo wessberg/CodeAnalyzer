@@ -25,6 +25,12 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	getImplements (classDeclaration: ClassDeclaration|ClassExpression): HeritageClause|undefined;
 	getConstructor (classDeclaration: ClassDeclaration|ClassExpression): ConstructorDeclaration|undefined;
 
+	getNameOfMember (member: ClassElement): string|undefined;
+	getMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string>;
+	getOwnOrInheritedMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string>;
+	getOwnOrInheritedStaticMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string>;
+	getStaticMemberNames (classDeclaration: ClassDeclaration|ClassExpression): Set<string>;
+
 	getMemberWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): ClassElement|undefined;
 	getMethodWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): MethodDeclaration|undefined;
 	getPropertyWithName (name: string, classDeclaration: ClassDeclaration|ClassExpression): PropertyDeclaration|undefined;

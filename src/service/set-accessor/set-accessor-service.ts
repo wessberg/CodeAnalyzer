@@ -9,6 +9,7 @@ import {ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {ClassFunctionLikeService} from "../class-function-like/class-function-like-service";
+import {IPropertyNameService} from "../property-name/i-property-name-service";
 
 /**
  * A service that helps with working with SetAccessorDeclarations
@@ -24,12 +25,22 @@ export class SetAccessorService extends ClassFunctionLikeService<SetAccessorDecl
 	constructor (private formatter: IFormatter,
 							 private updater: IUpdater,
 							 private joiner: IJoiner,
+							 private propertyNameService: IPropertyNameService,
 							 typeNodeService: ITypeNodeService,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 astUtil: ITypescriptASTUtil) {
 		super(typeNodeService, remover, decoratorService, languageService, astUtil);
+	}
+
+	/**
+	 * Gets the name of the given SetAccessorDeclaration
+	 * @param {SetAccessorDeclaration} setter
+	 * @returns {string}
+	 */
+	public getName (setter: SetAccessorDeclaration): string {
+		return this.propertyNameService.getName(setter.name);
 	}
 
 	/**
