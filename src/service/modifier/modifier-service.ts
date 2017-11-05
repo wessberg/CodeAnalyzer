@@ -1,122 +1,136 @@
 import {IModifierService} from "./i-modifier-service";
-import {createNodeArray, Modifier, Node, NodeArray, SyntaxKind} from "typescript";
+import {createNodeArray, Modifier, ModifiersArray, Node, NodeArray, SyntaxKind} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 import {ModifierKind} from "../../light-ast/dict/modifier/modifier-kind";
+import {isNodeArray} from "@wessberg/typescript-ast-util";
 
 /**
  * A service that helps with Modifiers
  */
 export class ModifierService implements IModifierService {
 
+	/**
+	 * Gets the AccessModifier of the given node, if it has any
+	 * @param {Node|ModifiersArray} node
+	 * @returns {VisibilityKind | undefined}
+	 */
+	public getAccessModifier (node: Node|ModifiersArray): VisibilityKind|undefined {
+		if (this.hasModifierWithName("public", node)) return "public";
+		if (this.hasModifierWithName("protected", node)) return "protected";
+		if (this.hasModifierWithName("private", node)) return "private";
+
+		return undefined;
+	}
+
 	constructor (private formatter: IFormatter) {
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'async' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isAsync (node: Node): boolean {
+	public isAsync (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("async", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'declare' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isDeclared (node: Node): boolean {
+	public isDeclared (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("declare", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'default' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isDefault (node: Node): boolean {
+	public isDefault (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("default", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'private' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isPrivate (node: Node): boolean {
+	public isPrivate (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("private", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'protected' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isProtected (node: Node): boolean {
+	public isProtected (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("protected", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'public' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isPublic (node: Node): boolean {
+	public isPublic (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("public", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'static' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isStatic (node: Node): boolean {
+	public isStatic (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("static", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'abstract' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isAbstract (node: Node): boolean {
+	public isAbstract (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("abstract", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'readonly' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isReadonly (node: Node): boolean {
+	public isReadonly (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("readonly", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'const' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isConst (node: Node): boolean {
+	public isConst (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("const", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'export' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isExported (node: Node): boolean {
+	public isExported (node: Node|ModifiersArray): boolean {
 		return this.hasModifierWithName("export", node);
 	}
 
 	/**
 	 * Returns true if the provided Node has a 'default' and 'export' modifier
-	 * @param {Node} node
+	 * @param {Node|ModifiersArray} node
 	 * @returns {boolean}
 	 */
-	public isDefaultExported (node: Node): boolean {
+	public isDefaultExported (node: Node|ModifiersArray): boolean {
 		return this.isDefault(node) && this.isExported(node);
 	}
 
@@ -145,8 +159,43 @@ export class ModifierService implements IModifierService {
 	 * @param {Node} node
 	 * @returns {boolean}
 	 */
-	public hasModifierWithName (name: string, node: Node): boolean {
+	public hasModifierWithName (name: string, node: Node|ModifiersArray): boolean {
+		// If it is an array of Modifiers already
+		if (isNodeArray(node)) {
+			return node.some(modifier => this.getModifierName(modifier) === name);
+		}
+
+		// Otherwise, check the modifiers of the node
 		return node.modifiers != null && node.modifiers.some(modifier => this.getModifierName(modifier) === name);
+	}
+
+	/**
+	 * Sorts the given ModifiersArray and returns a new one
+	 * @param {ModifiersArray} modifiers
+	 * @returns {ts.ModifiersArray}
+	 */
+	public sortModifiers (modifiers: ModifiersArray): ModifiersArray {
+		const exportModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.ExportKeyword);
+		const defaultModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.DefaultKeyword);
+		const constModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.ConstKeyword);
+		const declareModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.DeclareKeyword);
+		const readonlyModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.ReadonlyKeyword);
+		const visibilityModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.PrivateKeyword || modifier.kind === SyntaxKind.ProtectedKeyword || modifier.kind === SyntaxKind.PublicKeyword);
+		const asyncModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.AsyncKeyword);
+		const staticModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.StaticKeyword);
+		const abstractModifier = modifiers.find(modifier => modifier.kind === SyntaxKind.AbstractKeyword);
+
+		return createNodeArray([
+			...(exportModifier == null ? [] : [exportModifier]),
+			...(defaultModifier == null ? [] : [defaultModifier]),
+			...(declareModifier == null ? [] : [declareModifier]),
+			...(visibilityModifier == null ? [] : [visibilityModifier]),
+			...(abstractModifier == null ? [] : [abstractModifier]),
+			...(staticModifier == null ? [] : [staticModifier]),
+			...(asyncModifier == null ? [] : [asyncModifier]),
+			...(readonlyModifier == null ? [] : [readonlyModifier]),
+			...(constModifier == null ? [] : [constModifier])
+		]);
 	}
 
 	/**

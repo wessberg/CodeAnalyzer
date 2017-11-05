@@ -2,6 +2,7 @@ import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, Cl
 
 export interface IUpdaterBase {
 	updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T;
+	updateNodeModifiers<T extends Node> (modifiers: ModifiersArray|undefined, node: T): T;
 	updateClassDeclarationName <T extends ClassDeclaration|ClassExpression> (name: Identifier|undefined, classDeclaration: T): T;
 	updateClassDeclarationHeritageClauses <T extends ClassDeclaration|ClassExpression> (heritageClauses: NodeArray<HeritageClause>|undefined, classDeclaration: T): T;
 	updateClassDeclarationModifiers <T extends ClassDeclaration|ClassExpression> (modifiers: ModifiersArray|undefined, classDeclaration: T): T;

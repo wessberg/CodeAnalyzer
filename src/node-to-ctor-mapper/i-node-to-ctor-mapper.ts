@@ -1,4 +1,4 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {ITypeLiteralCtor} from "../light-ast/ctor/type-literal/i-type-literal-ctor";
@@ -16,6 +16,7 @@ import {BindingNameCtor, IArrayBindingNameCtor, INormalBindingNameCtor, IObjectB
 import {IObjectBindingElementCtor} from "../light-ast/ctor/binding-element/i-object-binding-element-ctor";
 import {ArrayBindingElementCtor, INormalArrayBindingElementCtor, IOmittedArrayBindingElementCtor} from "../light-ast/ctor/binding-element/array-binding-element-ctor";
 import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
+import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
 
 export interface INodeToCtorMapperBase {
 	toIImportClauseCtor (node: ImportClause|undefined|null): IImportClauseCtor|null;
@@ -25,6 +26,7 @@ export interface INodeToCtorMapperBase {
 	toITypeElementCtor (node: TypeElement|undefined|null): ITypeElementCtor|null;
 	toTypeElementCtor (node: TypeElement|undefined|null): TypeElementCtor|null;
 	toHeritageCtor (node: HeritageClause|undefined|null): HeritageCtor|null;
+	toIAllModifiersCtor (modifiers: ModifiersArray|undefined|null): IAllModifiersCtor|null;
 	toIExtendsHeritageCtor (node: HeritageClause|undefined|null): IExtendsHeritageCtor|null;
 	toIImplementsHeritageCtor (node: HeritageClause|undefined|null): IImplementsHeritageCtor|null;
 	toIPropertySignatureCtor (node: PropertySignature|undefined|null): IPropertySignatureCtor|null;

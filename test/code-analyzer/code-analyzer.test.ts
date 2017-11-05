@@ -80,6 +80,8 @@ callExpressionService.createAndAddCallExpression({
 	arguments: ["'foo'", "'bar'"]
 }, sourceFile, {node: firstInterface, position: "BEFORE"});
 
+methodService.changeVisibility("public", classService.getStaticMethodWithName("aNewMethod", A)!);
+
 console.log(printer.print(sourceFile));
 
 test("foo", t => {

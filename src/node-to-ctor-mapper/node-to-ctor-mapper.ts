@@ -1,4 +1,4 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {INodeToCtorMapperBase} from "./i-node-to-ctor-mapper";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
@@ -29,6 +29,7 @@ import {ITypeLiteralCtor} from "../light-ast/ctor/type-literal/i-type-literal-ct
 import {IInterfaceCtor} from "../light-ast/ctor/interface/i-interface-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
+import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
 
 /**
  * A class that can map nodes to ctor's
@@ -58,6 +59,28 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 
 		return {
 			expression: this.decoratorService.takeDecoratorExpression(node)
+		};
+	}
+
+	/**
+	 * Maps a ModifiersArray to an IAllModifiersCtor
+	 * @param {ModifiersArray | null | undefined} modifiers
+	 * @returns {IAllModifiersCtor | null}
+	 */
+	public toIAllModifiersCtor (modifiers: ModifiersArray|undefined|null): IAllModifiersCtor|null {
+		if (modifiers == null) return null;
+		const visibility = this.modifierService.getAccessModifier(modifiers);
+
+		return {
+			isAbstract: this.modifierService.isAbstract(modifiers),
+			isAsync: this.modifierService.isAsync(modifiers),
+			isConst: this.modifierService.isConst(modifiers),
+			isDeclared: this.modifierService.isDeclared(modifiers),
+			isDefault: this.modifierService.isDefault(modifiers),
+			isExported: this.modifierService.isExported(modifiers),
+			isReadonly: this.modifierService.isReadonly(modifiers),
+			isStatic: this.modifierService.isStatic(modifiers),
+			visibility: visibility == null ? "public" : visibility
 		};
 	}
 

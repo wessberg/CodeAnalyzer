@@ -10,6 +10,8 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {ClassFunctionLikeService} from "../class-function-like/class-function-like-service";
 import {IPropertyNameService} from "../property-name/i-property-name-service";
+import {IModifierService} from "../modifier/i-modifier-service";
+import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 
 /**
  * A service that helps with working with GetAccessorDeclarations
@@ -22,16 +24,18 @@ export class GetAccessorService extends ClassFunctionLikeService<GetAccessorDecl
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.GetAccessor];
 
-	constructor (private formatter: IFormatter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
-							 private propertyNameService: IPropertyNameService,
+	constructor (private joiner: IJoiner,
+							 propertyNameService: IPropertyNameService,
 							 typeNodeService: ITypeNodeService,
+							 modifierService: IModifierService,
+							 nodeToCtorMapper: INodeToCtorMapper,
 							 remover: IRemover,
+							 formatter: IFormatter,
+							 updater: IUpdater,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 astUtil: ITypescriptASTUtil) {
-		super(typeNodeService, remover, decoratorService, languageService, astUtil);
+		super(typeNodeService, propertyNameService, modifierService, updater, formatter, nodeToCtorMapper, remover, decoratorService, languageService, astUtil);
 	}
 
 	/**

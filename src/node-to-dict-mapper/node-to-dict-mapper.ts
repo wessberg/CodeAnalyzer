@@ -1,5 +1,5 @@
 import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
@@ -19,6 +19,7 @@ import {INamedImportExportDict} from "../light-ast/dict/named-import-export/i-na
 import {IImportClauseDict} from "../light-ast/dict/import-clause/i-import-clause-dict";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {INodeToCtorMapper} from "../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
+import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict";
 
 /**
  * A class that can map nodes to dicts
@@ -351,6 +352,15 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 */
 	public toITypeElementDict (node: TypeElement|undefined|null): ITypeElementDict|null {
 		return this.nodeToCtorMapper.toITypeElementCtor(node);
+	}
+
+	/**
+	 * Maps a ModifiersArray to an IAllModifiersDict
+	 * @param {ModifiersArray | null | undefined} modifiers
+	 * @returns {IAllModifiersDict | null}
+	 */
+	public toIAllModifiersDict (modifiers: ModifiersArray|undefined|null): IAllModifiersDict|null {
+		return this.nodeToCtorMapper.toIAllModifiersCtor(modifiers);
 	}
 
 	/**

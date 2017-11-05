@@ -1,4 +1,4 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {IImportClauseDict} from "../light-ast/dict/import-clause/i-import-clause-dict";
 import {INamedImportExportDict} from "../light-ast/dict/named-import-export/i-named-import-export-dict";
 import {ITypeLiteralDict} from "../light-ast/dict/type-literal/i-type-literal-dict";
@@ -16,6 +16,7 @@ import {BindingNameDict, IArrayBindingNameDict, INormalBindingNameDict, IObjectB
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
+import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict";
 
 export interface INodeToDictMapperBase {
 	toIImportClauseDict (node: ImportClause|undefined|null): IImportClauseDict|null;
@@ -25,6 +26,7 @@ export interface INodeToDictMapperBase {
 	toITypeElementDict (node: TypeElement|undefined|null): ITypeElementDict|null;
 	toTypeElementDict (node: TypeElement|undefined|null): TypeElementDict|null;
 	toHeritageDict (node: HeritageClause|undefined|null): HeritageDict|null;
+	toIAllModifiersDict (modifiers: ModifiersArray|undefined|null): IAllModifiersDict|null;
 	toIExtendsHeritageDict (node: HeritageClause|undefined|null): IExtendsHeritageDict|null;
 	toIImplementsHeritageDict (node: HeritageClause|undefined|null): IImplementsHeritageDict|null;
 	toIPropertySignatureDict (node: PropertySignature|undefined|null): IPropertySignatureDict|null;

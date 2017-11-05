@@ -248,6 +248,51 @@ export class Updater implements IUpdaterBase {
 	}
 
 	/**
+	 * Updates the modifiers property of the given Node
+	 * @param {ModifiersArray} modifiers
+	 * @param {T} node
+	 * @returns {T}
+	 */
+	public updateNodeModifiers<T extends Node> (modifiers: ModifiersArray|undefined, node: T): T {
+		/*tslint:disable:no-any*/
+
+		if (isPropertyDeclaration(node)) {
+			return <T><any> this.updatePropertyDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isMethodDeclaration(node)) {
+			return <T><any> this.updateMethodDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isClassDeclaration(node) || isClassExpression(node)) {
+			return <T><any> this.updateClassDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isImportDeclaration(node)) {
+			return <T><any> this.updateImportDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isExportDeclaration(node)) {
+			return <T><any> this.updateExportDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isGetAccessorDeclaration(node)) {
+			return <T><any> this.updateGetAccessorDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isSetAccessorDeclaration(node)) {
+			return <T><any> this.updateSetAccessorDeclarationModifiers(modifiers, node);
+		}
+
+		else if (isConstructorDeclaration(node)) {
+			return <T><any> this.updateConstructorDeclarationModifiers(modifiers, node);
+		}
+
+		/*tslint:enable:no-any*/
+		throw new TypeError(`${this.constructor.name} could not update modifiers on a node of kind: ${SyntaxKind[node.kind]}: It wasn't handled!`);
+	}
+
+	/**
 	 * Updates the modifiers property of a PropertyDeclaration
 	 * @param {ModifiersArray} modifiers
 	 * @param {PropertyDeclaration} property

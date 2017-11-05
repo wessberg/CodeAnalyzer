@@ -1,10 +1,12 @@
-import {Modifier, Node, NodeArray} from "typescript";
+import {Modifier, ModifiersArray, Node, NodeArray} from "typescript";
 import {ModifierKind} from "../../light-ast/dict/modifier/modifier-kind";
 import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 
 export interface IModifierService {
 	getModifierName (modifier: Modifier): string;
-	hasModifierWithName (name: string, node: Node): boolean;
+	hasModifierWithName (name: string, node: Node|ModifiersArray): boolean;
+	sortModifiers (modifiers: ModifiersArray): ModifiersArray;
+	getAccessModifier (node: Node|ModifiersArray): VisibilityKind|undefined;
 	createModifierFromString (modifier: ModifierKind): Modifier;
 	createModifiersFromStrings (modifiers: Iterable<ModifierKind>): NodeArray<Modifier>;
 	createVisibilityModifier (modifier: VisibilityKind): Modifier;
@@ -19,16 +21,16 @@ export interface IModifierService {
 	createAsyncModifier (): Modifier;
 	createStaticModifier (): Modifier;
 	createAbstractModifier (): Modifier;
-	isStatic (node: Node): boolean;
-	isAsync (node: Node): boolean;
-	isAbstract (node: Node): boolean;
-	isReadonly (node: Node): boolean;
-	isConst (node: Node): boolean;
-	isExported (node: Node): boolean;
-	isDefaultExported (node: Node): boolean;
-	isPrivate (node: Node): boolean;
-	isProtected (node: Node): boolean;
-	isPublic (node: Node): boolean;
-	isDeclared (node: Node): boolean;
-	isDefault (node: Node): boolean;
+	isStatic (node: Node|ModifiersArray): boolean;
+	isAsync (node: Node|ModifiersArray): boolean;
+	isAbstract (node: Node|ModifiersArray): boolean;
+	isReadonly (node: Node|ModifiersArray): boolean;
+	isConst (node: Node|ModifiersArray): boolean;
+	isExported (node: Node|ModifiersArray): boolean;
+	isDefaultExported (node: Node|ModifiersArray): boolean;
+	isPrivate (node: Node|ModifiersArray): boolean;
+	isProtected (node: Node|ModifiersArray): boolean;
+	isPublic (node: Node|ModifiersArray): boolean;
+	isDeclared (node: Node|ModifiersArray): boolean;
+	isDefault (node: Node|ModifiersArray): boolean;
 }

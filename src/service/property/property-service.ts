@@ -8,6 +8,10 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {IModifierService} from "../modifier/i-modifier-service";
 import {IPropertyNameService} from "../property-name/i-property-name-service";
+import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
+import {IUpdater} from "../../updater/i-updater-getter";
+import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
+import {IFormatter} from "../../formatter/i-formatter-getter";
 
 /**
  * A service for working with PropertyDeclarations
@@ -21,13 +25,37 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyDeclaration];
 
 	constructor (private typeNodeService: ITypeNodeService,
+							 private formatter: IFormatter,
 							 private modifierService: IModifierService,
 							 private propertyNameService: IPropertyNameService,
+							 private nodeToCtorMapper: INodeToCtorMapper,
+							 private updater: IUpdater,
 							 remover: IRemover,
 							 astUtil: ITypescriptASTUtil,
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
 		super(decoratorService, languageService, remover, astUtil);
+	}
+
+	/**
+	 * Changes the visibility of the given PropertyDeclaration
+	 * @param {VisibilityKind} visibility
+	 * @param {PropertyDeclaration} property
+	 * @returns {PropertyDeclaration}
+	 */
+	public changeVisibility (visibility: VisibilityKind, property: PropertyDeclaration): PropertyDeclaration {
+		// First, see if it has an access modifier already
+		const existingModifier = this.modifierService.getAccessModifier(property);
+
+		// If it already has the requested modifier, return immediately
+		if (existingModifier === visibility) return property;
+
+		return this.updater.updatePropertyDeclarationModifiers(
+			this.formatter.formatModifiers({
+				...this.nodeToCtorMapper.toIAllModifiersCtor(property.modifiers),
+				visibility
+			}), property
+		);
 	}
 
 	/**
