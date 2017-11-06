@@ -1,5 +1,5 @@
 import {IJoinerBase} from "./i-joiner";
-import {Block, ClassElement, createBlock, createHeritageClause, createNamedExports, createNamedImports, createNodeArray, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
+import {Block, ClassElement, createBlock, createHeritageClause, createNamedExports, createNamedImports, createNodeArray, Decorator, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement, SyntaxKind} from "typescript";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {INamedImportsService} from "../service/named-imports/i-named-imports-service";
 import {INamedExportsService} from "../service/named-exports/i-named-exports-service";
@@ -97,6 +97,17 @@ export class Joiner implements IJoinerBase {
 
 		// Return a new NodeArray
 		return createNodeArray(mutableExistingExpressions);
+	}
+
+	/**
+	 * Joins the provided Decorators
+	 * @param {Decorator | undefined} decorators
+	 * @returns {ts.NodeArray<Decorator>}
+	 */
+	public joinDecorators (...decorators: (Decorator|undefined)[]): NodeArray<Decorator> {
+		const filtered = <Decorator[]> decorators.filter(decorator => decorator != null);
+
+		return createNodeArray(filtered);
 	}
 
 	/**

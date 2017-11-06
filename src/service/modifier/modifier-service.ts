@@ -10,6 +10,9 @@ import {isNodeArray} from "@wessberg/typescript-ast-util";
  */
 export class ModifierService implements IModifierService {
 
+	constructor (private formatter: IFormatter) {
+	}
+
 	/**
 	 * Gets the AccessModifier of the given node, if it has any
 	 * @param {Node|ModifiersArray} node
@@ -21,9 +24,6 @@ export class ModifierService implements IModifierService {
 		if (this.hasModifierWithName("private", node)) return "private";
 
 		return undefined;
-	}
-
-	constructor (private formatter: IFormatter) {
 	}
 
 	/**

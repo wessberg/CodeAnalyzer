@@ -21,14 +21,14 @@ export class ConstructorService extends NodeService<ConstructorDeclaration> impl
 	protected readonly ALLOWED_KINDS = [SyntaxKind.Constructor];
 
 	constructor (private formatter: IFormatter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
 							 private parameterService: IParameterService,
+							 updater: IUpdater,
+							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

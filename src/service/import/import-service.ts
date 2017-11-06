@@ -33,13 +33,13 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 							 private formatter: IFormatter,
 							 private printer: IPrinter,
 							 private stringUtil: IStringUtil,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
+							 updater: IUpdater,
+							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

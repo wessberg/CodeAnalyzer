@@ -4,7 +4,7 @@ import {DIContainer} from "@wessberg/di";
 import {IPrinter} from "@wessberg/typescript-ast-util";
 import {CodeAnalyzer} from "../../src/code-analyzer/code-analyzer";
 
-const {classService, importService, interfaceDeclarationService, callExpressionService, constructorService, languageService, methodService} = new CodeAnalyzer();
+const {classService, importService, interfaceDeclarationService, callExpressionService, constructorService, languageService, methodService, propertyService} = new CodeAnalyzer();
 const printer = DIContainer.get<IPrinter>();
 
 const sourceFile = languageService.addFile({path: "./test/demo/class/a.ts"});
@@ -81,6 +81,9 @@ callExpressionService.createAndAddCallExpression({
 }, sourceFile, {node: firstInterface, position: "BEFORE"});
 
 methodService.changeVisibility("public", classService.getStaticMethodWithName("aNewMethod", A)!);
+
+// Add a @prop decorator the property with the name 'aProp'
+propertyService.addDecorator("prop", classService.getPropertyWithName("aProp", A)!);
 
 console.log(printer.print(sourceFile));
 

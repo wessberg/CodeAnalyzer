@@ -6,6 +6,8 @@ import {isNodeArray, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {isIDecoratorCtor} from "../../light-ast/ctor/decorator/is-i-decorator-ctor";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * An abstract Service for working with Nodes
@@ -19,6 +21,8 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 
 	constructor (protected decoratorService: IDecoratorService,
 							 protected languageService: ITypescriptLanguageService,
+							 protected joiner: IJoiner,
+							 protected updater: IUpdater,
 							 protected remover: IRemover,
 							 protected astUtil: ITypescriptASTUtil) {
 	}
@@ -49,6 +53,38 @@ export abstract class NodeService<T extends Node> implements INodeService<T> {
 	public getAll (sourceFile: SourceFile|Statement[]|NodeArray<Statement>|Statement, deep?: boolean): NodeArray<T> {
 		const normalizedStatements = isNodeArray(sourceFile) ? sourceFile : Array.isArray(sourceFile) ? createNodeArray(sourceFile) : !isSourceFile(sourceFile) ? createNodeArray([sourceFile]) : sourceFile.statements;
 		return this.astUtil.getFilteredStatements(normalizedStatements, this.ALLOWED_KINDS, deep);
+	}
+
+	/**
+	 * Adds the given decorator to the given node
+	 * @template T
+	 * @param {string | IDecoratorCtor | Decorator} decorator
+	 * @param {T} node
+	 * @returns {T}
+	 */
+	public addDecorator (decorator: string|IDecoratorCtor|Decorator, node: T): T {
+		let formattedDecorator: Decorator;
+
+		if (typeof decorator === "string") {
+			const ctor: IDecoratorCtor = {expression: decorator};
+			formattedDecorator = this.decoratorService.createDecorator(ctor);
+		}
+
+		else if (isIDecoratorCtor(decorator)) {
+			formattedDecorator = this.decoratorService.createDecorator(decorator);
+		}
+
+		else {
+			formattedDecorator = decorator;
+		}
+
+		// Update the decorators of the node with the result of joining the new decorator with the existing ones
+		return this.updater.updateNodeDecorators(
+			this.joiner.joinDecorators(
+				formattedDecorator, ...(node.decorators == null ? [] : node.decorators)
+			),
+			node
+		);
 	}
 
 	/**

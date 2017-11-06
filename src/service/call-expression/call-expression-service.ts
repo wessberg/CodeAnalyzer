@@ -17,6 +17,23 @@ import {IPlacement} from "../../placement/i-placement";
  */
 export class CallExpressionService extends NodeService<CallExpression> implements ICallExpressionService {
 	/**
+	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
+	 * @type {SyntaxKind[]}
+	 */
+	protected readonly ALLOWED_KINDS = [SyntaxKind.CallExpression];
+
+	constructor (private printer: IPrinter,
+							 private formatter: IFormatter,
+							 updater: IUpdater,
+							 joiner: IJoiner,
+							 astUtil: ITypescriptASTUtil,
+							 languageService: ITypescriptLanguageService,
+							 decoratorService: IDecoratorService,
+							 remover: IRemover) {
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
+	}
+
+	/**
 	 * Returns an iterable of the stringified argument expressions
 	 * @param {CallExpression} callExpression
 	 * @returns {Iterable<string>}
@@ -51,23 +68,6 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 		);
 
 		return callExpression;
-	}
-
-	/**
-	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
-	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.CallExpression];
-
-	constructor (private printer: IPrinter,
-							 private formatter: IFormatter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
-							 astUtil: ITypescriptASTUtil,
-							 languageService: ITypescriptLanguageService,
-							 decoratorService: IDecoratorService,
-							 remover: IRemover) {
-		super(decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

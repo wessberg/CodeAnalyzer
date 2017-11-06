@@ -1,7 +1,8 @@
-import {Block, ClassElement, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement} from "typescript";
+import {Block, ClassElement, Decorator, Expression, HeritageClause, NamedExports, NamedImports, NodeArray, Statement} from "typescript";
 import {IPlacement} from "../placement/i-placement";
 
 export interface IJoinerBase {
+	joinDecorators (...decorators: (Decorator|undefined)[]): NodeArray<Decorator>;
 	joinHeritageClauses (...clauses: (HeritageClause|undefined)[]): NodeArray<HeritageClause>;
 	joinImplementsHeritageClause (newImplementsClause: HeritageClause, existingImplementsClause: HeritageClause|undefined): HeritageClause;
 	joinClassElements (...elements: (ClassElement|undefined)[]): NodeArray<ClassElement>;

@@ -6,6 +6,7 @@ import {B, C, D} from "./b";
  */
 @aDecorator
 class A extends D {
+	aProp: string = "hello";
 	constructor (foo: string, bar: number = 2, baz: Promise<void>) {
 		super();
 		console.log(true);

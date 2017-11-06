@@ -7,6 +7,8 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeNodeService} from "../type-node/i-type-node-service";
 import {IBindingNameService} from "../binding-name/i-binding-name-service";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * A service for working with ParameterDeclarations
@@ -22,11 +24,13 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	constructor (private printer: IPrinter,
 							 private typeNodeService: ITypeNodeService,
 							 private bindingNameService: IBindingNameService,
+							 joiner: IJoiner,
+							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

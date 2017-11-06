@@ -43,8 +43,6 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	protected readonly ALLOWED_KINDS = [SyntaxKind.ClassExpression, SyntaxKind.ClassDeclaration];
 
 	constructor (private formatter: IFormatter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
 							 private methodService: IMethodService,
 							 private propertyService: IPropertyService,
 							 private modifierService: IModifierService,
@@ -53,11 +51,13 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 							 private getAccessorService: IGetAccessorService,
 							 private setAccessorService: ISetAccessorService,
 							 private resolver: IResolver,
+							 updater: IUpdater,
+							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

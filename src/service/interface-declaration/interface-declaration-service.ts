@@ -8,6 +8,8 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IInterfaceDict} from "../../light-ast/dict/interface/i-interface-dict";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {ITypeElementService} from "../type-element/i-type-element-service";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * A service for working with InterfaceDeclarations
@@ -22,12 +24,14 @@ export class InterfaceDeclarationService extends TypeDeclarationService<Interfac
 
 	constructor (private nodeToDictMapper: INodeToDictMapper,
 							 private printer: IPrinter,
+							 joiner: IJoiner,
+							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,
 							 remover: IRemover,
 							 languageService: ITypescriptLanguageService,
 							 typeElementService: ITypeElementService,
 							 decoratorService: IDecoratorService) {
-		super(typeElementService, decoratorService, languageService, remover, astUtil);
+		super(typeElementService, joiner, updater, decoratorService, languageService, remover, astUtil);
 	}
 
 	/**

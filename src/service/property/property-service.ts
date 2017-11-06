@@ -12,6 +12,7 @@ import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";
+import {IJoiner} from "../../joiner/i-joiner-getter";
 
 /**
  * A service for working with PropertyDeclarations
@@ -29,12 +30,13 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 							 private modifierService: IModifierService,
 							 private propertyNameService: IPropertyNameService,
 							 private nodeToCtorMapper: INodeToCtorMapper,
-							 private updater: IUpdater,
+							 joiner: IJoiner,
+							 updater: IUpdater,
 							 remover: IRemover,
 							 astUtil: ITypescriptASTUtil,
 							 languageService: ITypescriptLanguageService,
 							 decoratorService: IDecoratorService) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

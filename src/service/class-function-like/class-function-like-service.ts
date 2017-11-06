@@ -12,6 +12,7 @@ import {IModifierService} from "../modifier/i-modifier-service";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
+import {IJoiner} from "../../joiner/i-joiner-getter";
 
 /**
  * An abstract service for working with ClassFunctionLikes
@@ -20,14 +21,15 @@ export abstract class ClassFunctionLikeService<T extends ClassFunctionLike> exte
 	constructor (protected typeNodeService: ITypeNodeService,
 							 protected propertyNameService: IPropertyNameService,
 							 protected modifierService: IModifierService,
-							 protected updater: IUpdater,
 							 protected formatter: IFormatter,
 							 protected nodeToCtorMapper: INodeToCtorMapper,
+							 joiner: IJoiner,
+							 updater: IUpdater,
 							 remover: IRemover,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 astUtil: ITypescriptASTUtil) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

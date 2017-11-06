@@ -25,14 +25,14 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 	constructor (private namedExportsService: INamedExportsService,
 							 private formatter: IFormatter,
 							 private printer: IPrinter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner,
 							 private stringUtil: IStringUtil,
+							 updater: IUpdater,
+							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**

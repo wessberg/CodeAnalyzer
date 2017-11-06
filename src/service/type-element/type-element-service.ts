@@ -6,7 +6,8 @@ import {IPropertyNameService} from "../property-name/i-property-name-service";
  * A service for working with TypeElements
  */
 export class TypeElementService implements ITypeElementService {
-	constructor (private propertyNameService: IPropertyNameService) {}
+	constructor (private propertyNameService: IPropertyNameService) {
+	}
 
 	/**
 	 * Returns true if the provided TypeElement has a questionToken

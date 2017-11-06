@@ -5,6 +5,8 @@ import {NodeService} from "../node/node-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * A service for working with PropertyAccessExpressions
@@ -17,11 +19,13 @@ export class PropertyAccessExpressionService extends NodeService<PropertyAccessE
 	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyAccessExpression];
 
 	constructor (private printer: IPrinter,
+							 joiner: IJoiner,
+							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,
 							 decoratorService: IDecoratorService,
 							 languageService: ITypescriptLanguageService,
 							 remover: IRemover) {
-		super(decoratorService, languageService, remover, astUtil);
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
 	}
 
 	/**
