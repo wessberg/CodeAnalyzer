@@ -1,3 +1,12 @@
+<a name="1.0.107"></a>
+## 1.0.107 (2017-11-06)
+
+* 1.0.107 ([8bd53d9](https://github.com/wessberg/CodeAnalyzer/commit/8bd53d9))
+* Added a method to the NodeService: 'addDecorator' ([38ada0c](https://github.com/wessberg/CodeAnalyzer/commit/38ada0c))
+* Bumped version ([7c0bb01](https://github.com/wessberg/CodeAnalyzer/commit/7c0bb01))
+
+
+
 <a name="1.0.106"></a>
 ## 1.0.106 (2017-11-05)
 
