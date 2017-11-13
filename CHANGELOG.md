@@ -1,3 +1,12 @@
+<a name="1.0.108"></a>
+## 1.0.108 (2017-11-13)
+
+* 1.0.108 ([99d96e9](https://github.com/wessberg/CodeAnalyzer/commit/99d96e9))
+* Added a 'prependInstructions' method to the ConstructorService. Will place new instructions immediat ([e4d3d59](https://github.com/wessberg/CodeAnalyzer/commit/e4d3d59))
+* Bumped version ([c79f924](https://github.com/wessberg/CodeAnalyzer/commit/c79f924))
+
+
+
 <a name="1.0.107"></a>
 ## 1.0.107 (2017-11-06)
 
