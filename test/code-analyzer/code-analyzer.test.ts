@@ -85,6 +85,8 @@ methodService.changeVisibility("public", classService.getStaticMethodWithName("a
 // Add a @prop decorator the property with the name 'aProp'
 propertyService.addDecorator("prop", classService.getPropertyWithName("aProp", A)!);
 
+constructorService.prependInstructions("console.log(2+2", classService.getConstructor(A)!);
+
 console.log(printer.print(sourceFile));
 
 test("foo", t => {
