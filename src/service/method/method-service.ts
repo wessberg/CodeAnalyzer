@@ -1,6 +1,8 @@
 import {IMethodService} from "./i-method-service";
-import {isReturnStatement, MethodDeclaration, ReturnStatement, SyntaxKind} from "typescript";
+import {isReturnStatement, MethodDeclaration, NodeArray, ParameterDeclaration, ReturnStatement, SyntaxKind} from "typescript";
 import {ClassFunctionLikeService} from "../class-function-like/class-function-like-service";
+import {IPlacement} from "../../placement/i-placement";
+import {IParameterCtor} from "../../light-ast/ctor/parameter/i-parameter-ctor";
 
 /**
  * A service that helps with working with MethodDeclarations
@@ -33,6 +35,21 @@ export class MethodService extends ClassFunctionLikeService<MethodDeclaration> i
 
 		return this.updater.updateMethodDeclarationBody(
 			this.joiner.joinBlock(method.body, newBlock),
+			method
+		);
+	}
+
+	/**
+	 * Adds a Parameter to the provided MethodDeclaration
+	 * @param {IParameterCtor} parameter
+	 * @param {MethodDeclaration} method
+	 * @param {IPlacement} [placement]
+	 * @returns {MethodDeclaration}
+	 */
+	public addParameter (parameter: IParameterCtor, method: MethodDeclaration, placement?: IPlacement): MethodDeclaration {
+		const formatted = this.formatter.formatParameter(parameter);
+		return this.updater.updateMethodDeclarationParameters(
+			<NodeArray<ParameterDeclaration>> this.joiner.joinDeclarationNodeArrays(formatted, method.parameters, placement),
 			method
 		);
 	}

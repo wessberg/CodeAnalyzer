@@ -87,6 +87,19 @@ propertyService.addDecorator("prop", classService.getPropertyWithName("aProp", A
 
 constructorService.prependInstructions("console.log(2+2", classService.getConstructor(A)!);
 
+constructorService.addParameter({
+	name: {
+		kind: "NORMAL",
+		name: "hostElement"
+	},
+	type: "Element",
+	initializer: null,
+	isRestSpread: false,
+	isOptional: false,
+	isReadonly: false,
+	decorators: null
+}, ctor!, {position: "BEFORE", node: ctor!.parameters[0]});
+
 console.log(printer.print(sourceFile));
 
 test("foo", t => {

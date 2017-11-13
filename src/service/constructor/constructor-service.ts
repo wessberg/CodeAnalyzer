@@ -1,5 +1,5 @@
 import {IConstructorService} from "./i-constructor-service";
-import {Block, ConstructorDeclaration, createBlock, isCallExpression, isExpressionStatement, SyntaxKind} from "typescript";
+import {Block, ConstructorDeclaration, createBlock, isCallExpression, isExpressionStatement, NodeArray, ParameterDeclaration, SyntaxKind} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {IUpdater} from "../../updater/i-updater-getter";
@@ -9,6 +9,8 @@ import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IParameterService} from "../parameter/i-parameter-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IParameterCtor} from "../../light-ast/ctor/parameter/i-parameter-ctor";
+import {IPlacement} from "../../placement/i-placement";
 
 /**
  * A class that helps with working with ConstructorDeclarations
@@ -101,6 +103,21 @@ export class ConstructorService extends NodeService<ConstructorDeclaration> impl
 
 		return this.updater.updateConstructorDeclarationBody(
 			combinedBlock,
+			constructor
+		);
+	}
+
+	/**
+	 * Adds a Parameter to the provided ConstructorDeclaration
+	 * @param {IParameterCtor} parameter
+	 * @param {ConstructorDeclaration} constructor
+	 * @param {IPlacement} [placement]
+	 * @returns {ConstructorDeclaration}
+	 */
+	public addParameter (parameter: IParameterCtor, constructor: ConstructorDeclaration, placement?: IPlacement): ConstructorDeclaration {
+		const formatted = this.formatter.formatParameter(parameter);
+		return this.updater.updateConstructorDeclarationParameters(
+			<NodeArray<ParameterDeclaration>> this.joiner.joinDeclarationNodeArrays(formatted, constructor.parameters, placement),
 			constructor
 		);
 	}
