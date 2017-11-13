@@ -1,3 +1,12 @@
+<a name="1.0.109"></a>
+## 1.0.109 (2017-11-13)
+
+* 1.0.109 ([62a610c](https://github.com/wessberg/CodeAnalyzer/commit/62a610c))
+* Added the possibility of adding parameters to constructors and methods ([0d12106](https://github.com/wessberg/CodeAnalyzer/commit/0d12106))
+* Bumped version ([2039970](https://github.com/wessberg/CodeAnalyzer/commit/2039970))
+
+
+
 <a name="1.0.108"></a>
 ## 1.0.108 (2017-11-13)
 
