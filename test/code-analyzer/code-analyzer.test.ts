@@ -86,6 +86,7 @@ methodService.changeVisibility("public", classService.getStaticMethodWithName("a
 propertyService.addDecorator("prop", classService.getPropertyWithName("aProp", A)!);
 
 constructorService.prependInstructions("console.log(2+2", classService.getConstructor(A)!);
+methodService.prependInstructions("console.log(true)", classService.getStaticMethodWithName("aNewMethod", A)!);
 
 constructorService.addParameter({
 	name: {
