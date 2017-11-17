@@ -1,3 +1,12 @@
+<a name="1.0.110"></a>
+## 1.0.110 (2017-11-17)
+
+* 1.0.110 ([4272da5](https://github.com/wessberg/CodeAnalyzer/commit/4272da5))
+* Added 'prependInstructions' to the MethodService ([45ad2fb](https://github.com/wessberg/CodeAnalyzer/commit/45ad2fb))
+* Bumped version ([d5ef8b3](https://github.com/wessberg/CodeAnalyzer/commit/d5ef8b3))
+
+
+
 <a name="1.0.109"></a>
 ## 1.0.109 (2017-11-13)
 
