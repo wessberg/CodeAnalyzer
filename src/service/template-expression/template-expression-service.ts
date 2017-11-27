@@ -1,5 +1,5 @@
 import {NodeService} from "../node/node-service";
-import {isNoSubstitutionTemplateLiteral, isStringLiteral, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
+import {isNoSubstitutionTemplateLiteral, isStringLiteral, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
 import {ITemplateExpressionService} from "./i-template-expression-service";
 
 /**
@@ -15,10 +15,10 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 
 	/**
 	 * Stringifies the provided TemplateExpression
-	 * @param {TemplateExpression} node
+	 * @param {TemplateExpression|NoSubstitutionTemplateLiteral|LiteralExpression} node
 	 * @returns {string}
 	 */
-	public stringify (node: TemplateExpression|NoSubstitutionTemplateLiteral|StringLiteral): string {
+	public stringify (node: TemplateExpression|NoSubstitutionTemplateLiteral|StringLiteral|LiteralExpression): string {
 		// If it is a simple template string with substitutions, everything is available on the "text" property
 		if (isNoSubstitutionTemplateLiteral(node) || isStringLiteral(node)) {
 			return node.text;
