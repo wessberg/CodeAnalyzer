@@ -37,6 +37,7 @@ import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 import {IParser} from "../parser/i-parser";
+import {ITemplateExpressionService} from "../service/template-expression/i-template-expression-service";
 
 /**
  * A service that contains all underlying services
@@ -79,6 +80,7 @@ export class CodeAnalyzerBase implements ICodeAnalyzerBase {
 							 public readonly bindingNameService: IBindingNameService,
 							 public readonly bindingPatternService: IBindingPatternService,
 							 public readonly getAccessorService: IGetAccessorService,
-							 public readonly setAccessorService: ISetAccessorService) {
+							 public readonly setAccessorService: ISetAccessorService,
+							 public readonly templateExpressionService: ITemplateExpressionService) {
 	}
 }

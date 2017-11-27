@@ -36,6 +36,7 @@ import {IBindingPatternService} from "../service/binding-pattern/i-binding-patte
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 import {IParser} from "../parser/i-parser";
+import {ITemplateExpressionService} from "../service/template-expression/i-template-expression-service";
 
 export interface ICodeAnalyzerBase {
 	readonly languageService: ITypescriptLanguageService;
@@ -76,4 +77,5 @@ export interface ICodeAnalyzerBase {
 	readonly bindingPatternService: IBindingPatternService;
 	readonly getAccessorService: IGetAccessorService;
 	readonly setAccessorService: ISetAccessorService;
+	readonly templateExpressionService: ITemplateExpressionService;
 }

@@ -31,6 +31,7 @@ export {ITypeDeclarationService} from "./service/type-declaration/i-type-declara
 export {ITypeElementService} from "./service/type-element/i-type-element-service";
 export {ITypeLiteralNodeService} from "./service/type-literal-node/i-type-literal-node-service";
 export {ITypeNodeService} from "./service/type-node/i-type-node-service";
+export {ITemplateExpressionService} from "./service/template-expression/i-template-expression-service";
 export {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 
 // Ctors with predicates

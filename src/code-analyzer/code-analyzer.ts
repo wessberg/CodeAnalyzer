@@ -39,6 +39,7 @@ import {ICodeAnalyzerBase} from "./i-code-analyzer-base";
 import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
 import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
 import {IParser} from "../parser/i-parser";
+import {ITemplateExpressionService} from "../service/template-expression/i-template-expression-service";
 
 /**
  * A consumable class that can be used outside a dependency-injection system.
@@ -271,6 +272,12 @@ export class CodeAnalyzer implements ICodeAnalyzer {
 	 * @type {ISetAccessorService}
 	 */
 	public readonly setAccessorService: ISetAccessorService;
+
+	/**
+	 * A service that helps with working with TemplateExpressions
+	 * @type {ISetAccessorService}
+	 */
+	public readonly templateExpressionService: ITemplateExpressionService;
 
 	constructor () {
 		return DIContainer.get<ICodeAnalyzerBase>();

@@ -99,6 +99,8 @@ import {ISetAccessorService} from "./service/set-accessor/i-set-accessor-service
 import {SetAccessorService} from "./service/set-accessor/set-accessor-service";
 import {GetAccessorService} from "./service/get-accessor/get-accessor-service";
 import {IGetAccessorService} from "./service/get-accessor/i-get-accessor-service";
+import {ITemplateExpressionService} from "./service/template-expression/i-template-expression-service";
+import {TemplateExpressionService} from "./service/template-expression/template-expression-service";
 
 // Formatter
 DIContainer.registerSingleton<IFormatterBase, Formatter>();
@@ -178,6 +180,7 @@ DIContainer.registerSingleton<IBindingNameService, BindingNameService>();
 DIContainer.registerSingleton<IBindingPatternService, BindingPatternService>();
 DIContainer.registerSingleton<ISetAccessorService, SetAccessorService>();
 DIContainer.registerSingleton<IGetAccessorService, GetAccessorService>();
+DIContainer.registerSingleton<ITemplateExpressionService, TemplateExpressionService>();
 
 // CodeAnalyzer
 DIContainer.registerSingleton<ICodeAnalyzerBase, CodeAnalyzerBase>();
