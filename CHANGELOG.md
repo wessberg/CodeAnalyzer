@@ -1,3 +1,12 @@
+<a name="1.0.112"></a>
+## 1.0.112 (2017-11-27)
+
+* 1.0.112 ([8ec37fa](https://github.com/wessberg/CodeAnalyzer/commit/8ec37fa))
+* Bumped version ([7d70f19](https://github.com/wessberg/CodeAnalyzer/commit/7d70f19))
+* Changed signature of stringify inside TemplateExpessionService to allow LiteralExpressions ([5754d36](https://github.com/wessberg/CodeAnalyzer/commit/5754d36))
+
+
+
 <a name="1.0.111"></a>
 ## 1.0.111 (2017-11-27)
 
