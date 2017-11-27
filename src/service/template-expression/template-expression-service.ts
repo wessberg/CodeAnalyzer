@@ -1,6 +1,12 @@
 import {NodeService} from "../node/node-service";
 import {isNoSubstitutionTemplateLiteral, isStringLiteral, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
 import {ITemplateExpressionService} from "./i-template-expression-service";
+import {IJoiner} from "../../joiner/i-joiner-getter";
+import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
+import {IRemover} from "../../remover/i-remover-base";
+import {IDecoratorService} from "../decorator/i-decorator-service";
+import {IUpdater} from "../../updater/i-updater-getter";
 
 /**
  * A service for working with TemplateExpressions
@@ -12,6 +18,16 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 	 * @type {SyntaxKind[]}
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.TemplateExpression, SyntaxKind.NoSubstitutionTemplateLiteral];
+
+	constructor (private printer: IPrinter,
+							 protected decoratorService: IDecoratorService,
+							 protected languageService: ITypescriptLanguageService,
+							 protected joiner: IJoiner,
+							 protected updater: IUpdater,
+							 protected remover: IRemover,
+							 protected astUtil: ITypescriptASTUtil) {
+		super(decoratorService, languageService, joiner, updater, remover, astUtil);
+	}
 
 	/**
 	 * Stringifies the provided TemplateExpression
@@ -34,7 +50,7 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 	 * @returns {string}
 	 */
 	private stringifyTemplateSpan (node: TemplateSpan): string {
-		return `\${${node.expression.getFullText()}}${node.literal.kind === SyntaxKind.TemplateTail ? this.stringifyTemplateTail(node.literal) : this.stringifyTemplateMiddle(node.literal)}`;
+		return `\${${this.printer.print(node.expression)}}${node.literal.kind === SyntaxKind.TemplateTail ? this.stringifyTemplateTail(node.literal) : this.stringifyTemplateMiddle(node.literal)}`;
 	}
 
 	/**
