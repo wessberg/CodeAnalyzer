@@ -1,3 +1,13 @@
+<a name="1.0.111"></a>
+## 1.0.111 (2017-11-27)
+
+* 1.0.111 ([069ac48](https://github.com/wessberg/CodeAnalyzer/commit/069ac48))
+* Added a TemplateExpressionService ([8eb284e](https://github.com/wessberg/CodeAnalyzer/commit/8eb284e))
+* Bumped deps. ([b563c64](https://github.com/wessberg/CodeAnalyzer/commit/b563c64))
+* Bumped version ([ed5db02](https://github.com/wessberg/CodeAnalyzer/commit/ed5db02))
+
+
+
 <a name="1.0.110"></a>
 ## 1.0.110 (2017-11-17)
 
