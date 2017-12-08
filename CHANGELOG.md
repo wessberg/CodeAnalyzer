@@ -1,3 +1,12 @@
+<a name="1.0.114"></a>
+## 1.0.114 (2017-12-08)
+
+* 1.0.114 ([421d994](https://github.com/wessberg/CodeAnalyzer/commit/421d994))
+* Bumped deps ([d3cfc68](https://github.com/wessberg/CodeAnalyzer/commit/d3cfc68))
+* Bumped version ([ba2563a](https://github.com/wessberg/CodeAnalyzer/commit/ba2563a))
+
+
+
 <a name="1.0.113"></a>
 ## 1.0.113 (2017-11-27)
 
