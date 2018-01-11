@@ -4,6 +4,7 @@ import {IClassService} from "../service/class/i-class-service";
 import {IImportService} from "../service/import/i-import-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IExportService} from "../service/export/i-export-service";
+import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
 
 /**
  * A service that can resolve nodes from Identifiers
@@ -11,6 +12,7 @@ import {IExportService} from "../service/export/i-export-service";
 export class Resolver implements IResolverBase {
 	constructor (private languageService: ITypescriptLanguageService,
 							 private classService: IClassService,
+							 private interfaceDeclarationService: IInterfaceDeclarationService,
 							 private importService: IImportService,
 							 private exportService: IExportService) {
 	}
@@ -164,7 +166,9 @@ export class Resolver implements IResolverBase {
 	private locateInSourceFile (identifier: string, sourceFile: SourceFile): Node|undefined {
 		// Check if it is a class
 		const classMatch = this.classService.getClassWithName(identifier, sourceFile, true);
+		const interfaceMatch = this.interfaceDeclarationService.getInterfaceWithName(identifier, sourceFile, true);
 		if (classMatch != null) return classMatch;
+		if (interfaceMatch != null) return interfaceMatch;
 
 		return undefined;
 	}
