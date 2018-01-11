@@ -1,3 +1,12 @@
+<a name="1.0.116"></a>
+## 1.0.116 (2018-01-11)
+
+* 1.0.116 ([9a57a14](https://github.com/wessberg/CodeAnalyzer/commit/9a57a14))
+* Bumped version ([76ea5f4](https://github.com/wessberg/CodeAnalyzer/commit/76ea5f4))
+* Extended resolver ([dba0356](https://github.com/wessberg/CodeAnalyzer/commit/dba0356))
+
+
+
 <a name="1.0.115"></a>
 ## 1.0.115 (2018-01-10)
 
