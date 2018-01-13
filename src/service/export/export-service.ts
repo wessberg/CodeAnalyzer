@@ -1,5 +1,5 @@
 import {NodeService} from "../node/node-service";
-import {ExportDeclaration, isStringLiteral, NamedExports, SourceFile, SyntaxKind} from "typescript";
+import {ExportAssignment, ExportDeclaration, isStringLiteral, NamedExports, SourceFile, SyntaxKind} from "typescript";
 import {IExportService} from "./i-export-service";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {IRemover} from "../../remover/i-remover-base";
@@ -75,6 +75,16 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 	public getExportsForPath (path: string, sourceFile: SourceFile): ExportDeclaration[] {
 		const exports = this.getAll(sourceFile);
 		return exports.filter(exportDeclaration => exportDeclaration.moduleSpecifier != null && isStringLiteral(exportDeclaration.moduleSpecifier) && exportDeclaration.moduleSpecifier.text === path);
+	}
+
+	/**
+	 * Gets the default ExportAssignment of a module (such as export default Foo).
+	 * @param {SourceFile} sourceFile
+	 * @returns {ExportAssignment | undefined}
+	 */
+	public getDefaultExportAssignment (sourceFile: SourceFile): ExportAssignment|undefined {
+		const [first] = this.astUtil.getFilteredStatements(sourceFile.statements, [SyntaxKind.ExportAssignment], false);
+		return <ExportAssignment|undefined> first;
 	}
 
 	/**

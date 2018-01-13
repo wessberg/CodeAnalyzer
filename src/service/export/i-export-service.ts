@@ -1,8 +1,9 @@
 import {INodeService} from "../node/i-node-service";
-import {ExportDeclaration, NamedExports, SourceFile} from "typescript";
+import {ExportAssignment, ExportDeclaration, NamedExports, SourceFile} from "typescript";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 
 export interface IExportService extends INodeService<ExportDeclaration> {
+	getDefaultExportAssignment (sourceFile: SourceFile): ExportAssignment|undefined;
 	getExportWithNamedExport (namedExport: INamedImportExportCtor|string, sourceFile: SourceFile, path?: string): ExportDeclaration|undefined;
 	getExportsForPath (path: string, sourceFile: SourceFile): (ExportDeclaration)[];
 	getNamespaceExports (sourceFile: SourceFile, deep?: boolean): ExportDeclaration[];
