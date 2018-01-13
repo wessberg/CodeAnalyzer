@@ -1,6 +1,6 @@
 {
 	"name": "@wessberg/codeanalyzer",
-	"version": "1.0.116",
+	"version": "1.0.117",
 	"description": "A service that can analyze your code in great detail ahead of time.",
 	"scripts": {
 		"changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
