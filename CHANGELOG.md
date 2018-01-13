@@ -1,3 +1,12 @@
+<a name="1.0.119"></a>
+## 1.0.119 (2018-01-13)
+
+* 1.0.119 ([0de6305](https://github.com/wessberg/CodeAnalyzer/commit/0de6305))
+* Bumped version ([a53ac02](https://github.com/wessberg/CodeAnalyzer/commit/a53ac02))
+* Fixed a bug where a default export couldn't be added to an import that had no ImportClause ([86bee34](https://github.com/wessberg/CodeAnalyzer/commit/86bee34))
+
+
+
 <a name="1.0.118"></a>
 ## 1.0.118 (2018-01-13)
 
