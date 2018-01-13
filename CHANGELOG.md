@@ -1,3 +1,12 @@
+<a name="1.0.117"></a>
+## 1.0.117 (2018-01-13)
+
+* 1.0.117 ([08ca414](https://github.com/wessberg/CodeAnalyzer/commit/08ca414))
+* Added a new method  to the export service ([7b830f7](https://github.com/wessberg/CodeAnalyzer/commit/7b830f7))
+* Bumped version ([51277a7](https://github.com/wessberg/CodeAnalyzer/commit/51277a7))
+
+
+
 <a name="1.0.116"></a>
 ## 1.0.116 (2018-01-11)
 
