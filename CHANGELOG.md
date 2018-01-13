@@ -1,3 +1,13 @@
+<a name="1.0.118"></a>
+## 1.0.118 (2018-01-13)
+
+* 1.0.118 ([b450549](https://github.com/wessberg/CodeAnalyzer/commit/b450549))
+* Bumped version ([5cf04d4](https://github.com/wessberg/CodeAnalyzer/commit/5cf04d4))
+* made returning an ImportClause optional ([329d8ef](https://github.com/wessberg/CodeAnalyzer/commit/329d8ef))
+* Refined 'getImportsForPath' ([c865fac](https://github.com/wessberg/CodeAnalyzer/commit/c865fac))
+
+
+
 <a name="1.0.117"></a>
 ## 1.0.117 (2018-01-13)
 
