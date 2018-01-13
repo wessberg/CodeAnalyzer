@@ -15,6 +15,9 @@ import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i
 import {IImportCtor} from "../../light-ast/ctor/import/i-import-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IPlacement} from "../../placement/i-placement";
+import {IModuleUtil} from "@wessberg/moduleutil";
+import {join} from "path";
+import {IPathUtil} from "@wessberg/pathutil";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -30,8 +33,10 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	constructor (private namedImportsService: INamedImportsService,
 							 private namespaceImportService: INamespaceImportService,
 							 private nodeToCtorMapper: INodeToCtorMapperBase,
+							 private moduleUtil: IModuleUtil,
 							 private formatter: IFormatter,
 							 private printer: IPrinter,
+							 private pathUtil: IPathUtil,
 							 private stringUtil: IStringUtil,
 							 updater: IUpdater,
 							 joiner: IJoiner,
@@ -61,7 +66,18 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	 */
 	public getImportsForPath (path: string, sourceFile: SourceFile): ImportDeclaration[] {
 		const imports = this.getAll(sourceFile);
-		return imports.filter(importDeclaration => isStringLiteral(importDeclaration.moduleSpecifier) && importDeclaration.moduleSpecifier.text === path);
+		return imports.filter(importDeclaration => {
+			if (!isStringLiteral(importDeclaration.moduleSpecifier)) return false;
+			const text = importDeclaration.moduleSpecifier.text;
+			if (text === path) return true;
+			try {
+				const resolvedModule = this.moduleUtil.resolvePath(text, join(sourceFile.fileName, "../"));
+				if (resolvedModule === path) return true;
+				return path === resolvedModule || this.pathUtil.clearExtension(path) === this.pathUtil.clearExtension(resolvedModule);
+			} catch {
+				return false;
+			}
+		});
 	}
 
 	/**
