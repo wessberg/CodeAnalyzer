@@ -22,7 +22,7 @@ import {ICallExpressionCtor} from "../light-ast/ctor/call-expression/i-call-expr
 export interface IFormatterBase {
 	formatUndefined (): KeywordTypeNode;
 	formatImportDeclaration (options: IImportCtor): ImportDeclaration;
-	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseCtor): ImportClause;
+	formatImportClause ({namedImports, namespace, defaultName}: IImportClauseCtor): ImportClause|undefined;
 	formatNamedImports (namedImports: INamedImportExportCtor|Iterable<INamedImportExportCtor>): NamedImports;
 	formatNamedExports (namedExports: INamedImportExportCtor|Iterable<INamedImportExportCtor>): NamedExports;
 	formatNamespaceImport (namespaceName: string): NamespaceImport;

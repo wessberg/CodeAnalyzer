@@ -420,9 +420,11 @@ export class Formatter implements IFormatterBase {
 	 * @param {Iterable<INamedImportExportCtor>} namedImports
 	 * @param {string} namespace
 	 * @param {string} defaultName
-	 * @returns {ImportClause}
+	 * @returns {ImportClause?}
 	 */
-	public formatImportClause ({namedImports, namespace, defaultName}: IImportClauseCtor): ImportClause {
+	public formatImportClause ({namedImports, namespace, defaultName}: IImportClauseCtor): ImportClause|undefined {
+		if (namedImports == null && namespace == null && defaultName == null) return undefined;
+
 		// Create an identifier for the default name. The default name may already be an identifier
 		const nameIdentifier = defaultName == null ? undefined : createIdentifier(defaultName);
 
