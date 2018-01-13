@@ -370,7 +370,16 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 		if (this.hasSpecificName(name, importDeclaration)) return importDeclaration;
 
 		// Map the ImportClause back to a dict
-		const mappedImportClauseCtor = this.nodeToCtorMapper.toIImportClauseCtor(importDeclaration.importClause);
+		let mappedImportClauseCtor = this.nodeToCtorMapper.toIImportClauseCtor(importDeclaration.importClause);
+
+		// If it couldn't be, the import was initially empty
+		if (mappedImportClauseCtor == null) {
+			mappedImportClauseCtor = {
+				defaultName: name,
+				namedImports: null,
+				namespace: null
+			};
+		}
 
 		return this.updater.updateImportDeclarationImportClause(
 			mappedImportClauseCtor == null
