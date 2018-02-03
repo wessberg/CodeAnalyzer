@@ -1,5 +1,14 @@
+<a name="1.0.120"></a>
+## <small>1.0.120 (2018-02-03)</small>
+
+* 1.0.120 ([cd1be66](https://github.com/wessberg/CodeAnalyzer/commit/cd1be66))
+* Bumped deps. Updated to reflect new Typescript version ([a36514b](https://github.com/wessberg/CodeAnalyzer/commit/a36514b))
+* Bumped version ([3aa70d1](https://github.com/wessberg/CodeAnalyzer/commit/3aa70d1))
+
+
+
 <a name="1.0.119"></a>
-## 1.0.119 (2018-01-13)
+## <small>1.0.119 (2018-01-13)</small>
 
 * 1.0.119 ([0de6305](https://github.com/wessberg/CodeAnalyzer/commit/0de6305))
 * Bumped version ([a53ac02](https://github.com/wessberg/CodeAnalyzer/commit/a53ac02))
@@ -8,7 +17,7 @@
 
 
 <a name="1.0.118"></a>
-## 1.0.118 (2018-01-13)
+## <small>1.0.118 (2018-01-13)</small>
 
 * 1.0.118 ([b450549](https://github.com/wessberg/CodeAnalyzer/commit/b450549))
 * Bumped version ([5cf04d4](https://github.com/wessberg/CodeAnalyzer/commit/5cf04d4))
@@ -18,7 +27,7 @@
 
 
 <a name="1.0.117"></a>
-## 1.0.117 (2018-01-13)
+## <small>1.0.117 (2018-01-13)</small>
 
 * 1.0.117 ([08ca414](https://github.com/wessberg/CodeAnalyzer/commit/08ca414))
 * Added a new method  to the export service ([7b830f7](https://github.com/wessberg/CodeAnalyzer/commit/7b830f7))
@@ -27,7 +36,7 @@
 
 
 <a name="1.0.116"></a>
-## 1.0.116 (2018-01-11)
+## <small>1.0.116 (2018-01-11)</small>
 
 * 1.0.116 ([9a57a14](https://github.com/wessberg/CodeAnalyzer/commit/9a57a14))
 * Bumped version ([76ea5f4](https://github.com/wessberg/CodeAnalyzer/commit/76ea5f4))
@@ -36,7 +45,7 @@
 
 
 <a name="1.0.115"></a>
-## 1.0.115 (2018-01-10)
+## <small>1.0.115 (2018-01-10)</small>
 
 * 1.0.115 ([9ab4fd9](https://github.com/wessberg/CodeAnalyzer/commit/9ab4fd9))
 * Bumped deps ([edd440c](https://github.com/wessberg/CodeAnalyzer/commit/edd440c))
@@ -45,7 +54,7 @@
 
 
 <a name="1.0.114"></a>
-## 1.0.114 (2017-12-08)
+## <small>1.0.114 (2017-12-08)</small>
 
 * 1.0.114 ([421d994](https://github.com/wessberg/CodeAnalyzer/commit/421d994))
 * Bumped deps ([d3cfc68](https://github.com/wessberg/CodeAnalyzer/commit/d3cfc68))
@@ -54,7 +63,7 @@
 
 
 <a name="1.0.113"></a>
-## 1.0.113 (2017-11-27)
+## <small>1.0.113 (2017-11-27)</small>
 
 * 1.0.113 ([885a42b](https://github.com/wessberg/CodeAnalyzer/commit/885a42b))
 * Bumped deps. ([d2ff2c6](https://github.com/wessberg/CodeAnalyzer/commit/d2ff2c6))
@@ -63,7 +72,7 @@
 
 
 <a name="1.0.112"></a>
-## 1.0.112 (2017-11-27)
+## <small>1.0.112 (2017-11-27)</small>
 
 * 1.0.112 ([8ec37fa](https://github.com/wessberg/CodeAnalyzer/commit/8ec37fa))
 * Bumped version ([7d70f19](https://github.com/wessberg/CodeAnalyzer/commit/7d70f19))
@@ -72,7 +81,7 @@
 
 
 <a name="1.0.111"></a>
-## 1.0.111 (2017-11-27)
+## <small>1.0.111 (2017-11-27)</small>
 
 * 1.0.111 ([069ac48](https://github.com/wessberg/CodeAnalyzer/commit/069ac48))
 * Added a TemplateExpressionService ([8eb284e](https://github.com/wessberg/CodeAnalyzer/commit/8eb284e))
@@ -82,7 +91,7 @@
 
 
 <a name="1.0.110"></a>
-## 1.0.110 (2017-11-17)
+## <small>1.0.110 (2017-11-17)</small>
 
 * 1.0.110 ([4272da5](https://github.com/wessberg/CodeAnalyzer/commit/4272da5))
 * Added 'prependInstructions' to the MethodService ([45ad2fb](https://github.com/wessberg/CodeAnalyzer/commit/45ad2fb))
@@ -91,7 +100,7 @@
 
 
 <a name="1.0.109"></a>
-## 1.0.109 (2017-11-13)
+## <small>1.0.109 (2017-11-13)</small>
 
 * 1.0.109 ([62a610c](https://github.com/wessberg/CodeAnalyzer/commit/62a610c))
 * Added the possibility of adding parameters to constructors and methods ([0d12106](https://github.com/wessberg/CodeAnalyzer/commit/0d12106))
@@ -100,7 +109,7 @@
 
 
 <a name="1.0.108"></a>
-## 1.0.108 (2017-11-13)
+## <small>1.0.108 (2017-11-13)</small>
 
 * 1.0.108 ([99d96e9](https://github.com/wessberg/CodeAnalyzer/commit/99d96e9))
 * Added a 'prependInstructions' method to the ConstructorService. Will place new instructions immediat ([e4d3d59](https://github.com/wessberg/CodeAnalyzer/commit/e4d3d59))
@@ -109,7 +118,7 @@
 
 
 <a name="1.0.107"></a>
-## 1.0.107 (2017-11-06)
+## <small>1.0.107 (2017-11-06)</small>
 
 * 1.0.107 ([8bd53d9](https://github.com/wessberg/CodeAnalyzer/commit/8bd53d9))
 * Added a method to the NodeService: 'addDecorator' ([38ada0c](https://github.com/wessberg/CodeAnalyzer/commit/38ada0c))
@@ -118,7 +127,7 @@
 
 
 <a name="1.0.106"></a>
-## 1.0.106 (2017-11-05)
+## <small>1.0.106 (2017-11-05)</small>
 
 * 1.0.106 ([bfd6606](https://github.com/wessberg/CodeAnalyzer/commit/bfd6606))
 * Added a helper to change the access modifier of properties and ClassLikes ([7103877](https://github.com/wessberg/CodeAnalyzer/commit/7103877))
@@ -127,7 +136,7 @@
 
 
 <a name="1.0.105"></a>
-## 1.0.105 (2017-11-05)
+## <small>1.0.105 (2017-11-05)</small>
 
 * 1.0.105 ([121cb27](https://github.com/wessberg/CodeAnalyzer/commit/121cb27))
 * Added new methods for getting the names of class members as well as getting the names of all class e ([77807d6](https://github.com/wessberg/CodeAnalyzer/commit/77807d6))
@@ -136,7 +145,7 @@
 
 
 <a name="1.0.104"></a>
-## 1.0.104 (2017-11-04)
+## <small>1.0.104 (2017-11-04)</small>
 
 * 1.0.104 ([ddbf5e2](https://github.com/wessberg/CodeAnalyzer/commit/ddbf5e2))
 * Added a check for an undefined SourceFile in 'getAllForFile' ([07a08ca](https://github.com/wessberg/CodeAnalyzer/commit/07a08ca))
@@ -145,7 +154,7 @@
 
 
 <a name="1.0.103"></a>
-## 1.0.103 (2017-11-02)
+## <small>1.0.103 (2017-11-02)</small>
 
 * 1.0.103 ([d9bf6da](https://github.com/wessberg/CodeAnalyzer/commit/d9bf6da))
 * Bumped deps. ([976c9af](https://github.com/wessberg/CodeAnalyzer/commit/976c9af))
@@ -154,7 +163,7 @@
 
 
 <a name="1.0.102"></a>
-## 1.0.102 (2017-10-29)
+## <small>1.0.102 (2017-10-29)</small>
 
 * 1.0.102 ([723900e](https://github.com/wessberg/CodeAnalyzer/commit/723900e))
 * Bumped deps ([9c9a452](https://github.com/wessberg/CodeAnalyzer/commit/9c9a452))
@@ -164,7 +173,7 @@
 
 
 <a name="1.0.101"></a>
-## 1.0.101 (2017-10-29)
+## <small>1.0.101 (2017-10-29)</small>
 
 * 1.0.101 ([f1cead8](https://github.com/wessberg/CodeAnalyzer/commit/f1cead8))
 * Bumped version ([bc8d936](https://github.com/wessberg/CodeAnalyzer/commit/bc8d936))
@@ -173,7 +182,7 @@
 
 
 <a name="1.0.100"></a>
-## 1.0.100 (2017-10-29)
+## <small>1.0.100 (2017-10-29)</small>
 
 * 1.0.100 ([6f75d74](https://github.com/wessberg/CodeAnalyzer/commit/6f75d74))
 * Bumped version ([4fbb940](https://github.com/wessberg/CodeAnalyzer/commit/4fbb940))
@@ -182,7 +191,7 @@
 
 
 <a name="1.0.99"></a>
-## 1.0.99 (2017-10-29)
+## <small>1.0.99 (2017-10-29)</small>
 
 * 1.0.99 ([8ef179e](https://github.com/wessberg/CodeAnalyzer/commit/8ef179e))
 * Bumped version ([1b084e2](https://github.com/wessberg/CodeAnalyzer/commit/1b084e2))
@@ -191,7 +200,7 @@
 
 
 <a name="1.0.98"></a>
-## 1.0.98 (2017-10-28)
+## <small>1.0.98 (2017-10-28)</small>
 
 * 1.0.98 ([ecf02d8](https://github.com/wessberg/CodeAnalyzer/commit/ecf02d8))
 * Bumped dependencies ([500c564](https://github.com/wessberg/CodeAnalyzer/commit/500c564))
@@ -200,7 +209,7 @@
 
 
 <a name="1.0.97"></a>
-## 1.0.97 (2017-10-22)
+## <small>1.0.97 (2017-10-22)</small>
 
 * 1.0.97 ([5205a85](https://github.com/wessberg/CodeAnalyzer/commit/5205a85))
 * Bumped deps. Allowed providing the position of nodes when adding new nodes to an existing array of n ([5255700](https://github.com/wessberg/CodeAnalyzer/commit/5255700))
@@ -209,7 +218,7 @@
 
 
 <a name="1.0.96"></a>
-## 1.0.96 (2017-10-22)
+## <small>1.0.96 (2017-10-22)</small>
 
 * 1.0.96 ([df9cfc5](https://github.com/wessberg/CodeAnalyzer/commit/df9cfc5))
 * Added a 'removeImportDeclaration' method to the import-service ([7bc54da](https://github.com/wessberg/CodeAnalyzer/commit/7bc54da))
@@ -219,7 +228,7 @@
 
 
 <a name="1.0.95"></a>
-## 1.0.95 (2017-10-22)
+## <small>1.0.95 (2017-10-22)</small>
 
 * 1.0.95 ([6da7bb7](https://github.com/wessberg/CodeAnalyzer/commit/6da7bb7))
 * Allowed giving a proper Decorator to 'removeDecorator(s) ([743d179](https://github.com/wessberg/CodeAnalyzer/commit/743d179))
@@ -228,7 +237,7 @@
 
 
 <a name="1.0.94"></a>
-## 1.0.94 (2017-10-22)
+## <small>1.0.94 (2017-10-22)</small>
 
 * 1.0.94 ([1a07bbf](https://github.com/wessberg/CodeAnalyzer/commit/1a07bbf))
 * Added a 'getArguments' method to the CallExpressionService ([507a1f8](https://github.com/wessberg/CodeAnalyzer/commit/507a1f8))
@@ -237,7 +246,7 @@
 
 
 <a name="1.0.93"></a>
-## 1.0.93 (2017-10-22)
+## <small>1.0.93 (2017-10-22)</small>
 
 * 1.0.93 ([0839096](https://github.com/wessberg/CodeAnalyzer/commit/0839096))
 * Added a 'getDecorator' method to the NodeService ([11a6403](https://github.com/wessberg/CodeAnalyzer/commit/11a6403))
@@ -246,7 +255,7 @@
 
 
 <a name="1.0.92"></a>
-## 1.0.92 (2017-10-21)
+## <small>1.0.92 (2017-10-21)</small>
 
 * 1.0.92 ([72a7f1a](https://github.com/wessberg/CodeAnalyzer/commit/72a7f1a))
 * Bumped version ([7c883d5](https://github.com/wessberg/CodeAnalyzer/commit/7c883d5))
@@ -255,7 +264,7 @@
 
 
 <a name="1.0.91"></a>
-## 1.0.91 (2017-10-21)
+## <small>1.0.91 (2017-10-21)</small>
 
 * 1.0.91 ([f1c6bc1](https://github.com/wessberg/CodeAnalyzer/commit/f1c6bc1))
 * Added services for working with GetAccessors and SetAccessors ([9f4fd34](https://github.com/wessberg/CodeAnalyzer/commit/9f4fd34))
@@ -264,7 +273,7 @@
 
 
 <a name="1.0.90"></a>
-## 1.0.90 (2017-10-21)
+## <small>1.0.90 (2017-10-21)</small>
 
 * 1.0.90 ([bf0a61c](https://github.com/wessberg/CodeAnalyzer/commit/bf0a61c))
 * Added more support for getters and setters on the class-service ([d88d0ae](https://github.com/wessberg/CodeAnalyzer/commit/d88d0ae))
@@ -273,7 +282,7 @@
 
 
 <a name="1.0.89"></a>
-## 1.0.89 (2017-10-21)
+## <small>1.0.89 (2017-10-21)</small>
 
 * 1.0.89 ([c9b20de](https://github.com/wessberg/CodeAnalyzer/commit/c9b20de))
 * Added the possibility of creating and adding CallExpressions to SourceFiles ([e855d63](https://github.com/wessberg/CodeAnalyzer/commit/e855d63))
@@ -282,7 +291,7 @@
 
 
 <a name="1.0.88"></a>
-## 1.0.88 (2017-10-21)
+## <small>1.0.88 (2017-10-21)</small>
 
 * 1.0.88 ([4f7b04c](https://github.com/wessberg/CodeAnalyzer/commit/4f7b04c))
 * Added a 'takeReturnStatement' method to 'MethodService' ([b3e49a4](https://github.com/wessberg/CodeAnalyzer/commit/b3e49a4))
@@ -292,7 +301,7 @@
 
 
 <a name="1.0.87"></a>
-## 1.0.87 (2017-10-21)
+## <small>1.0.87 (2017-10-21)</small>
 
 * 1.0.87 ([9b46f30](https://github.com/wessberg/CodeAnalyzer/commit/9b46f30))
 * Bumped version ([d070b7a](https://github.com/wessberg/CodeAnalyzer/commit/d070b7a))
@@ -301,7 +310,7 @@
 
 
 <a name="1.0.86"></a>
-## 1.0.86 (2017-10-21)
+## <small>1.0.86 (2017-10-21)</small>
 
 * 1.0.86 ([3a2d87b](https://github.com/wessberg/CodeAnalyzer/commit/3a2d87b))
 * Added additional methods to the ClassService ([7154b7d](https://github.com/wessberg/CodeAnalyzer/commit/7154b7d))
@@ -310,7 +319,7 @@
 
 
 <a name="1.0.85"></a>
-## 1.0.85 (2017-10-21)
+## <small>1.0.85 (2017-10-21)</small>
 
 * 1.0.85 ([ba241b7](https://github.com/wessberg/CodeAnalyzer/commit/ba241b7))
 * Added support for custom content inside getAllForFile ([db9c688](https://github.com/wessberg/CodeAnalyzer/commit/db9c688))
@@ -319,7 +328,7 @@
 
 
 <a name="1.0.84"></a>
-## 1.0.84 (2017-10-21)
+## <small>1.0.84 (2017-10-21)</small>
 
 * 1.0.84 ([b38c426](https://github.com/wessberg/CodeAnalyzer/commit/b38c426))
 * Bumped version ([2c7b163](https://github.com/wessberg/CodeAnalyzer/commit/2c7b163))
@@ -328,7 +337,7 @@
 
 
 <a name="1.0.83"></a>
-## 1.0.83 (2017-10-21)
+## <small>1.0.83 (2017-10-21)</small>
 
 * 1.0.83 ([5a66e4b](https://github.com/wessberg/CodeAnalyzer/commit/5a66e4b))
 * Added a few methods to the TypeElement service ([9aad1ca](https://github.com/wessberg/CodeAnalyzer/commit/9aad1ca))
@@ -337,7 +346,7 @@
 
 
 <a name="1.0.82"></a>
-## 1.0.82 (2017-10-21)
+## <small>1.0.82 (2017-10-21)</small>
 
 * 1.0.82 ([4e8b28f](https://github.com/wessberg/CodeAnalyzer/commit/4e8b28f))
 * Added a 'getAllForFile' method ([f957c32](https://github.com/wessberg/CodeAnalyzer/commit/f957c32))
@@ -346,7 +355,7 @@
 
 
 <a name="1.0.81"></a>
-## 1.0.81 (2017-10-21)
+## <small>1.0.81 (2017-10-21)</small>
 
 * 1.0.81 ([9c6d417](https://github.com/wessberg/CodeAnalyzer/commit/9c6d417))
 * Bumped version ([495ba39](https://github.com/wessberg/CodeAnalyzer/commit/495ba39))
@@ -355,7 +364,7 @@
 
 
 <a name="1.0.80"></a>
-## 1.0.80 (2017-10-21)
+## <small>1.0.80 (2017-10-21)</small>
 
 * 1.0.80 ([b6de6b9](https://github.com/wessberg/CodeAnalyzer/commit/b6de6b9))
 * Bumped version ([ed46006](https://github.com/wessberg/CodeAnalyzer/commit/ed46006))
@@ -365,7 +374,7 @@
 
 
 <a name="1.0.79"></a>
-## 1.0.79 (2017-10-21)
+## <small>1.0.79 (2017-10-21)</small>
 
 * 1.0.79 ([3af9b72](https://github.com/wessberg/CodeAnalyzer/commit/3af9b72))
 * Bumped version ([9a04a24](https://github.com/wessberg/CodeAnalyzer/commit/9a04a24))
@@ -374,7 +383,7 @@
 
 
 <a name="1.0.78"></a>
-## 1.0.78 (2017-10-21)
+## <small>1.0.78 (2017-10-21)</small>
 
 * 1.0.78 ([386b687](https://github.com/wessberg/CodeAnalyzer/commit/386b687))
 * Bumped deps ([6cc95d7](https://github.com/wessberg/CodeAnalyzer/commit/6cc95d7))
@@ -383,7 +392,7 @@
 
 
 <a name="1.0.77"></a>
-## 1.0.77 (2017-10-21)
+## <small>1.0.77 (2017-10-21)</small>
 
 * 1.0.77 ([f248487](https://github.com/wessberg/CodeAnalyzer/commit/f248487))
 * A bunch of more expressions ([48263ae](https://github.com/wessberg/CodeAnalyzer/commit/48263ae))
@@ -426,7 +435,7 @@
 
 
 <a name="1.0.76"></a>
-## 1.0.76 (2017-09-18)
+## <small>1.0.76 (2017-09-18)</small>
 
 * 1.0.76 ([f4ad778](https://github.com/wessberg/CodeAnalyzer/commit/f4ad778))
 * Bumped deps ([497fd59](https://github.com/wessberg/CodeAnalyzer/commit/497fd59))
@@ -435,7 +444,7 @@
 
 
 <a name="1.0.75"></a>
-## 1.0.75 (2017-09-10)
+## <small>1.0.75 (2017-09-10)</small>
 
 * 1.0.75 ([e7ea0c2](https://github.com/wessberg/CodeAnalyzer/commit/e7ea0c2))
 * Bumped version ([1172f25](https://github.com/wessberg/CodeAnalyzer/commit/1172f25))
@@ -444,7 +453,7 @@
 
 
 <a name="1.0.74"></a>
-## 1.0.74 (2017-09-10)
+## <small>1.0.74 (2017-09-10)</small>
 
 * . ([040e108](https://github.com/wessberg/CodeAnalyzer/commit/040e108))
 * 1.0.74 ([8853abb](https://github.com/wessberg/CodeAnalyzer/commit/8853abb))
@@ -453,7 +462,7 @@
 
 
 <a name="1.0.73"></a>
-## 1.0.73 (2017-09-10)
+## <small>1.0.73 (2017-09-10)</small>
 
 * 1.0.73 ([6ae8721](https://github.com/wessberg/CodeAnalyzer/commit/6ae8721))
 * Bumped version ([685599e](https://github.com/wessberg/CodeAnalyzer/commit/685599e))
@@ -462,7 +471,7 @@
 
 
 <a name="1.0.72"></a>
-## 1.0.72 (2017-09-10)
+## <small>1.0.72 (2017-09-10)</small>
 
 * 1.0.72 ([3afeb26](https://github.com/wessberg/CodeAnalyzer/commit/3afeb26))
 * Bumped version ([503a752](https://github.com/wessberg/CodeAnalyzer/commit/503a752))
@@ -471,7 +480,7 @@
 
 
 <a name="1.0.71"></a>
-## 1.0.71 (2017-09-10)
+## <small>1.0.71 (2017-09-10)</small>
 
 * 1.0.71 ([33dedcb](https://github.com/wessberg/CodeAnalyzer/commit/33dedcb))
 * Bumped version ([2b12a72](https://github.com/wessberg/CodeAnalyzer/commit/2b12a72))
@@ -480,7 +489,7 @@
 
 
 <a name="1.0.70"></a>
-## 1.0.70 (2017-09-10)
+## <small>1.0.70 (2017-09-10)</small>
 
 * 1.0.70 ([91a4715](https://github.com/wessberg/CodeAnalyzer/commit/91a4715))
 * Bumped version ([5d0d1f8](https://github.com/wessberg/CodeAnalyzer/commit/5d0d1f8))
@@ -490,7 +499,7 @@
 
 
 <a name="1.0.69"></a>
-## 1.0.69 (2017-09-04)
+## <small>1.0.69 (2017-09-04)</small>
 
 * 1.0.69 ([f0a736d](https://github.com/wessberg/CodeAnalyzer/commit/f0a736d))
 * Bumped deps ([7bb09b2](https://github.com/wessberg/CodeAnalyzer/commit/7bb09b2))
@@ -499,7 +508,7 @@
 
 
 <a name="1.0.68"></a>
-## 1.0.68 (2017-09-04)
+## <small>1.0.68 (2017-09-04)</small>
 
 * 1.0.68 ([4959307](https://github.com/wessberg/CodeAnalyzer/commit/4959307))
 * Added type formatting to expression formatter ([7e16c47](https://github.com/wessberg/CodeAnalyzer/commit/7e16c47))
@@ -508,7 +517,7 @@
 
 
 <a name="1.0.67"></a>
-## 1.0.67 (2017-09-04)
+## <small>1.0.67 (2017-09-04)</small>
 
 * 1.0.67 ([77faea6](https://github.com/wessberg/CodeAnalyzer/commit/77faea6))
 * Bumped deps ([3d24755](https://github.com/wessberg/CodeAnalyzer/commit/3d24755))
@@ -517,7 +526,7 @@
 
 
 <a name="1.0.66"></a>
-## 1.0.66 (2017-09-04)
+## <small>1.0.66 (2017-09-04)</small>
 
 * 1.0.66 ([b46219d](https://github.com/wessberg/CodeAnalyzer/commit/b46219d))
 * Bumped version ([6e6fa2e](https://github.com/wessberg/CodeAnalyzer/commit/6e6fa2e))
@@ -526,7 +535,7 @@
 
 
 <a name="1.0.65"></a>
-## 1.0.65 (2017-09-03)
+## <small>1.0.65 (2017-09-03)</small>
 
 * 1.0.65 ([fcc2eff](https://github.com/wessberg/CodeAnalyzer/commit/fcc2eff))
 * Bumped version ([b8eed2d](https://github.com/wessberg/CodeAnalyzer/commit/b8eed2d))
@@ -535,7 +544,7 @@
 
 
 <a name="1.0.64"></a>
-## 1.0.64 (2017-09-03)
+## <small>1.0.64 (2017-09-03)</small>
 
 * 1.0.64 ([ce1c0f9](https://github.com/wessberg/CodeAnalyzer/commit/ce1c0f9))
 * Added caching and loop-detection ([46eaa4d](https://github.com/wessberg/CodeAnalyzer/commit/46eaa4d))
@@ -544,7 +553,7 @@
 
 
 <a name="1.0.63"></a>
-## 1.0.63 (2017-09-03)
+## <small>1.0.63 (2017-09-03)</small>
 
 * 1.0.63 ([511dbde](https://github.com/wessberg/CodeAnalyzer/commit/511dbde))
 * Bumped version ([e8e61f0](https://github.com/wessberg/CodeAnalyzer/commit/e8e61f0))
@@ -553,7 +562,7 @@
 
 
 <a name="1.0.62"></a>
-## 1.0.62 (2017-09-03)
+## <small>1.0.62 (2017-09-03)</small>
 
 * 1.0.62 ([968a935](https://github.com/wessberg/CodeAnalyzer/commit/968a935))
 * Bumped version ([0e59ba9](https://github.com/wessberg/CodeAnalyzer/commit/0e59ba9))
@@ -562,7 +571,7 @@
 
 
 <a name="1.0.61"></a>
-## 1.0.61 (2017-08-28)
+## <small>1.0.61 (2017-08-28)</small>
 
 * 1.0.61 ([66c0153](https://github.com/wessberg/CodeAnalyzer/commit/66c0153))
 * Bumped version ([3642226](https://github.com/wessberg/CodeAnalyzer/commit/3642226))
@@ -571,7 +580,7 @@
 
 
 <a name="1.0.60"></a>
-## 1.0.60 (2017-08-28)
+## <small>1.0.60 (2017-08-28)</small>
 
 * 1.0.60 ([d790d6a](https://github.com/wessberg/CodeAnalyzer/commit/d790d6a))
 * Bumped deps ([f016490](https://github.com/wessberg/CodeAnalyzer/commit/f016490))
@@ -581,7 +590,7 @@
 
 
 <a name="1.0.59"></a>
-## 1.0.59 (2017-08-28)
+## <small>1.0.59 (2017-08-28)</small>
 
 * 1.0.59 ([1f8d781](https://github.com/wessberg/CodeAnalyzer/commit/1f8d781))
 * Bumped version ([4b339ab](https://github.com/wessberg/CodeAnalyzer/commit/4b339ab))
@@ -590,7 +599,7 @@
 
 
 <a name="1.0.58"></a>
-## 1.0.58 (2017-08-28)
+## <small>1.0.58 (2017-08-28)</small>
 
 * 1.0.58 ([f9cbee3](https://github.com/wessberg/CodeAnalyzer/commit/f9cbee3))
 * Added handling for predicate types and indexed access types ([2723751](https://github.com/wessberg/CodeAnalyzer/commit/2723751))
@@ -601,7 +610,7 @@
 
 
 <a name="1.0.57"></a>
-## 1.0.57 (2017-08-28)
+## <small>1.0.57 (2017-08-28)</small>
 
 * 1.0.57 ([98c6656](https://github.com/wessberg/CodeAnalyzer/commit/98c6656))
 * Added the possibility of excluding files ([a7716ca](https://github.com/wessberg/CodeAnalyzer/commit/a7716ca))
@@ -610,7 +619,7 @@
 
 
 <a name="1.0.56"></a>
-## 1.0.56 (2017-08-28)
+## <small>1.0.56 (2017-08-28)</small>
 
 * 1.0.56 ([7e2b563](https://github.com/wessberg/CodeAnalyzer/commit/7e2b563))
 * Bumped deps ([f8cf6da](https://github.com/wessberg/CodeAnalyzer/commit/f8cf6da))
@@ -619,7 +628,7 @@
 
 
 <a name="1.0.55"></a>
-## 1.0.55 (2017-08-28)
+## <small>1.0.55 (2017-08-28)</small>
 
 * 1.0.55 ([f4676c5](https://github.com/wessberg/CodeAnalyzer/commit/f4676c5))
 * Bumped version ([25ae4e2](https://github.com/wessberg/CodeAnalyzer/commit/25ae4e2))
@@ -628,7 +637,7 @@
 
 
 <a name="1.0.54"></a>
-## 1.0.54 (2017-08-28)
+## <small>1.0.54 (2017-08-28)</small>
 
 * 1.0.54 ([b3b9788](https://github.com/wessberg/CodeAnalyzer/commit/b3b9788))
 * Bumped version ([bb401da](https://github.com/wessberg/CodeAnalyzer/commit/bb401da))
@@ -637,7 +646,7 @@
 
 
 <a name="1.0.53"></a>
-## 1.0.53 (2017-08-28)
+## <small>1.0.53 (2017-08-28)</small>
 
 * 1.0.53 ([b48a510](https://github.com/wessberg/CodeAnalyzer/commit/b48a510))
 * Bumped version ([86bc0bd](https://github.com/wessberg/CodeAnalyzer/commit/86bc0bd))
@@ -646,7 +655,7 @@
 
 
 <a name="1.0.52"></a>
-## 1.0.52 (2017-08-28)
+## <small>1.0.52 (2017-08-28)</small>
 
 * 1.0.52 ([86b92df](https://github.com/wessberg/CodeAnalyzer/commit/86b92df))
 * Bumped version ([9b70b34](https://github.com/wessberg/CodeAnalyzer/commit/9b70b34))
@@ -655,7 +664,7 @@
 
 
 <a name="1.0.51"></a>
-## 1.0.51 (2017-08-27)
+## <small>1.0.51 (2017-08-27)</small>
 
 * 1.0.51 ([8ec279a](https://github.com/wessberg/CodeAnalyzer/commit/8ec279a))
 * Added an import service ([f7ec193](https://github.com/wessberg/CodeAnalyzer/commit/f7ec193))
@@ -664,7 +673,7 @@
 
 
 <a name="1.0.50"></a>
-## 1.0.50 (2017-08-27)
+## <small>1.0.50 (2017-08-27)</small>
 
 * 1.0.50 ([e8438b5](https://github.com/wessberg/CodeAnalyzer/commit/e8438b5))
 * Added a few extra methods ([7e52845](https://github.com/wessberg/CodeAnalyzer/commit/7e52845))
@@ -685,7 +694,7 @@
 
 
 <a name="1.0.49"></a>
-## 1.0.49 (2017-08-03)
+## <small>1.0.49 (2017-08-03)</small>
 
 * - Added support for NonNullExpressions. This fixes #12. ([3ef11d6](https://github.com/wessberg/CodeAnalyzer/commit/3ef11d6)), closes [#12](https://github.com/wessberg/CodeAnalyzer/issues/12) [#13](https://github.com/wessberg/CodeAnalyzer/issues/13)
 * 1.0.49 ([0640f36](https://github.com/wessberg/CodeAnalyzer/commit/0640f36))
@@ -694,7 +703,7 @@
 
 
 <a name="1.0.48"></a>
-## 1.0.48 (2017-07-28)
+## <small>1.0.48 (2017-07-28)</small>
 
 * . ([dd33f4c](https://github.com/wessberg/CodeAnalyzer/commit/dd33f4c))
 * 1.0.48 ([8586038](https://github.com/wessberg/CodeAnalyzer/commit/8586038))
@@ -704,7 +713,7 @@
 
 
 <a name="1.0.46"></a>
-## 1.0.46 (2017-07-19)
+## <small>1.0.46 (2017-07-19)</small>
 
 * 1.0.46 ([4804a66](https://github.com/wessberg/CodeAnalyzer/commit/4804a66))
 * Bumped version ([5bd6045](https://github.com/wessberg/CodeAnalyzer/commit/5bd6045))
@@ -713,7 +722,7 @@
 
 
 <a name="1.0.45"></a>
-## 1.0.45 (2017-07-19)
+## <small>1.0.45 (2017-07-19)</small>
 
 * 1.0.45 ([c8dc168](https://github.com/wessberg/CodeAnalyzer/commit/c8dc168))
 * Bumped version ([a16c02a](https://github.com/wessberg/CodeAnalyzer/commit/a16c02a))
@@ -722,20 +731,20 @@
 
 
 <a name="1.0.44"></a>
-## 1.0.44 (2017-07-19)
+## <small>1.0.44 (2017-07-19)</small>
 
 * 1.0.44 ([8b92dfd](https://github.com/wessberg/CodeAnalyzer/commit/8b92dfd))
 * Added support for handling expressions of kinds TypeQuery and LastTypeNode. Fixes #9. Fixes #21 ([6719e65](https://github.com/wessberg/CodeAnalyzer/commit/6719e65)), closes [#9](https://github.com/wessberg/CodeAnalyzer/issues/9) [#21](https://github.com/wessberg/CodeAnalyzer/issues/21)
 * Bumped version ([d571e0b](https://github.com/wessberg/CodeAnalyzer/commit/d571e0b))
 * Fixed an issue where expression bodies of CallExpressions wouldn't be parsed when 'deep' is true. Fi ([c9f28b0](https://github.com/wessberg/CodeAnalyzer/commit/c9f28b0)), closes [#10](https://github.com/wessberg/CodeAnalyzer/issues/10)
 * Made the MutationFormatter use the IValuableFormatter. Fixes #11 ([6e30987](https://github.com/wessberg/CodeAnalyzer/commit/6e30987)), closes [#11](https://github.com/wessberg/CodeAnalyzer/issues/11)
-* Made the ParametersFormatter use the IValuableFormatter. #11 ([2ccc736](https://github.com/wessberg/CodeAnalyzer/commit/2ccc736))
-* Made the PropFormatter use the IValuableFormatter. #11 ([dbcc74b](https://github.com/wessberg/CodeAnalyzer/commit/dbcc74b))
+* Made the ParametersFormatter use the IValuableFormatter. #11 ([2ccc736](https://github.com/wessberg/CodeAnalyzer/commit/2ccc736)), closes [#11](https://github.com/wessberg/CodeAnalyzer/issues/11)
+* Made the PropFormatter use the IValuableFormatter. #11 ([dbcc74b](https://github.com/wessberg/CodeAnalyzer/commit/dbcc74b)), closes [#11](https://github.com/wessberg/CodeAnalyzer/issues/11)
 
 
 
 <a name="1.0.43"></a>
-## 1.0.43 (2017-07-19)
+## <small>1.0.43 (2017-07-19)</small>
 
 * 1.0.43 ([da6dd9d](https://github.com/wessberg/CodeAnalyzer/commit/da6dd9d))
 * Fixed all lint errors ([61133bc](https://github.com/wessberg/CodeAnalyzer/commit/61133bc))
@@ -747,7 +756,7 @@
 
 
 <a name="1.0.42"></a>
-## 1.0.42 (2017-07-10)
+## <small>1.0.42 (2017-07-10)</small>
 
 * 1.0.42 ([861c824](https://github.com/wessberg/CodeAnalyzer/commit/861c824))
 * Auto-generated filenames for chunks of code will no longer be removed from the AST. ([7e8f34a](https://github.com/wessberg/CodeAnalyzer/commit/7e8f34a))
@@ -755,7 +764,7 @@
 
 
 <a name="1.0.41"></a>
-## 1.0.41 (2017-07-10)
+## <small>1.0.41 (2017-07-10)</small>
 
 * 1.0.41 ([8991b26](https://github.com/wessberg/CodeAnalyzer/commit/8991b26))
 * Added the possibility of providing a raw string of code to all *get* methods (such as 'getClassDecla ([58b596c](https://github.com/wessberg/CodeAnalyzer/commit/58b596c))
@@ -763,7 +772,7 @@
 
 
 <a name="1.0.40"></a>
-## 1.0.40 (2017-07-10)
+## <small>1.0.40 (2017-07-10)</small>
 
 * - Fixed some tslint errors. ([22695e7](https://github.com/wessberg/CodeAnalyzer/commit/22695e7))
 * 1.0.40 ([381c163](https://github.com/wessberg/CodeAnalyzer/commit/381c163))
@@ -772,7 +781,7 @@
 
 
 <a name="1.0.39"></a>
-## 1.0.39 (2017-07-09)
+## <small>1.0.39 (2017-07-09)</small>
 
 * 1.0.39 ([a63e1fb](https://github.com/wessberg/CodeAnalyzer/commit/a63e1fb))
 * Fixed a bug where TemplateHeads, TemplateMiddles or TemplateTails would be unmarshalled incorrectly. ([cf87adb](https://github.com/wessberg/CodeAnalyzer/commit/cf87adb))
@@ -780,7 +789,7 @@
 
 
 <a name="1.0.38"></a>
-## 1.0.38 (2017-07-06)
+## <small>1.0.38 (2017-07-06)</small>
 
 * 1.0.38 ([219f18b](https://github.com/wessberg/CodeAnalyzer/commit/219f18b))
 * Added the possibility of setting excluded files lazily. ([3b6e004](https://github.com/wessberg/CodeAnalyzer/commit/3b6e004))
@@ -788,7 +797,7 @@
 
 
 <a name="1.0.37"></a>
-## 1.0.37 (2017-07-06)
+## <small>1.0.37 (2017-07-06)</small>
 
 * 1.0.37 ([8b83e34](https://github.com/wessberg/CodeAnalyzer/commit/8b83e34))
 * Added the possibility of adding one or more regular expressions that matches filepaths that should b ([2a220cb](https://github.com/wessberg/CodeAnalyzer/commit/2a220cb))
@@ -796,7 +805,7 @@
 
 
 <a name="1.0.36"></a>
-## 1.0.36 (2017-07-06)
+## <small>1.0.36 (2017-07-06)</small>
 
 * 1.0.36 ([0c1d9b2](https://github.com/wessberg/CodeAnalyzer/commit/0c1d9b2))
 * Large update. Details in commit text. ([c5e22bf](https://github.com/wessberg/CodeAnalyzer/commit/c5e22bf))
@@ -804,7 +813,7 @@
 
 
 <a name="1.0.35"></a>
-## 1.0.35 (2017-07-05)
+## <small>1.0.35 (2017-07-05)</small>
 
 * 1.0.35 ([df28f77](https://github.com/wessberg/CodeAnalyzer/commit/df28f77))
 * Better resolving of files in node_modules. Bumped dependencies and refactored. ([2b157cb](https://github.com/wessberg/CodeAnalyzer/commit/2b157cb))
@@ -812,7 +821,7 @@
 
 
 <a name="1.0.34"></a>
-## 1.0.34 (2017-07-05)
+## <small>1.0.34 (2017-07-05)</small>
 
 * 1.0.34 ([f3f63fa](https://github.com/wessberg/CodeAnalyzer/commit/f3f63fa))
 * Identifiers for CallExpressions are now arrays of tokens. ([794ae53](https://github.com/wessberg/CodeAnalyzer/commit/794ae53))
@@ -820,7 +829,7 @@
 
 
 <a name="1.0.33"></a>
-## 1.0.33 (2017-07-05)
+## <small>1.0.33 (2017-07-05)</small>
 
 * 1.0.33 ([254487c](https://github.com/wessberg/CodeAnalyzer/commit/254487c))
 * Added support for CallExpressions that are BinaryExpressions. ([a934457](https://github.com/wessberg/CodeAnalyzer/commit/a934457))
@@ -828,7 +837,7 @@
 
 
 <a name="1.0.32"></a>
-## 1.0.32 (2017-07-05)
+## <small>1.0.32 (2017-07-05)</small>
 
 * 1.0.32 ([b8da643](https://github.com/wessberg/CodeAnalyzer/commit/b8da643))
 * Parsing package.json files will now skip browser fields if it contains multiple paths. ([501847e](https://github.com/wessberg/CodeAnalyzer/commit/501847e))
@@ -836,7 +845,7 @@
 
 
 <a name="1.0.31"></a>
-## 1.0.31 (2017-07-05)
+## <small>1.0.31 (2017-07-05)</small>
 
 * 1.0.31 ([40d94ba](https://github.com/wessberg/CodeAnalyzer/commit/40d94ba))
 * Fixed a bug with the previous version. ([36a0c34](https://github.com/wessberg/CodeAnalyzer/commit/36a0c34))
@@ -844,7 +853,7 @@
 
 
 <a name="1.0.30"></a>
-## 1.0.30 (2017-07-05)
+## <small>1.0.30 (2017-07-05)</small>
 
 * 1.0.30 ([868d7ff](https://github.com/wessberg/CodeAnalyzer/commit/868d7ff))
 * Added a fallback path to modules with  files without any value for the main field. ([679baf5](https://github.com/wessberg/CodeAnalyzer/commit/679baf5))
@@ -852,7 +861,7 @@
 
 
 <a name="1.0.29"></a>
-## 1.0.29 (2017-06-12)
+## <small>1.0.29 (2017-06-12)</small>
 
 * 1.0.29 ([ed02cab](https://github.com/wessberg/CodeAnalyzer/commit/ed02cab))
 * Added a disclaimer to the README ([678b6f4](https://github.com/wessberg/CodeAnalyzer/commit/678b6f4))
@@ -860,7 +869,7 @@
 
 
 <a name="1.0.28"></a>
-## 1.0.28 (2017-06-08)
+## <small>1.0.28 (2017-06-08)</small>
 
 * 1.0.28 ([016f723](https://github.com/wessberg/CodeAnalyzer/commit/016f723))
 * Added handling for evaluating declarations of kind 'FirstNode' ([3a647c9](https://github.com/wessberg/CodeAnalyzer/commit/3a647c9))
@@ -868,7 +877,7 @@
 
 
 <a name="1.0.27"></a>
-## 1.0.27 (2017-06-08)
+## <small>1.0.27 (2017-06-08)</small>
 
 * 1.0.27 ([343c6ec](https://github.com/wessberg/CodeAnalyzer/commit/343c6ec))
 * Added handling for evaluating declarations of kinds 'GetAccessorDeclaration' and 'SetAccessorDeclara ([a8df6d6](https://github.com/wessberg/CodeAnalyzer/commit/a8df6d6))
@@ -876,7 +885,7 @@
 
 
 <a name="1.0.26"></a>
-## 1.0.26 (2017-05-31)
+## <small>1.0.26 (2017-05-31)</small>
 
 * 1.0.26 ([6d61a91](https://github.com/wessberg/CodeAnalyzer/commit/6d61a91))
 * Added handling for finding ValueExpressions of s. ([e1f0587](https://github.com/wessberg/CodeAnalyzer/commit/e1f0587))
@@ -884,7 +893,7 @@
 
 
 <a name="1.0.25"></a>
-## 1.0.25 (2017-05-31)
+## <small>1.0.25 (2017-05-31)</small>
 
 * 1.0.25 ([4103910](https://github.com/wessberg/CodeAnalyzer/commit/4103910))
 * Added handling for finding child statements of s. ([6b2d826](https://github.com/wessberg/CodeAnalyzer/commit/6b2d826))
@@ -892,7 +901,7 @@
 
 
 <a name="1.0.24"></a>
-## 1.0.24 (2017-05-31)
+## <small>1.0.24 (2017-05-31)</small>
 
 * 1.0.24 ([012ab38](https://github.com/wessberg/CodeAnalyzer/commit/012ab38))
 * Bumped dependency on @wessberg/GlobalObject to v1.0.5. ([12dc731](https://github.com/wessberg/CodeAnalyzer/commit/12dc731))
@@ -900,7 +909,7 @@
 
 
 <a name="1.0.23"></a>
-## 1.0.23 (2017-05-31)
+## <small>1.0.23 (2017-05-31)</small>
 
 * 1.0.23 ([ceb4c8d](https://github.com/wessberg/CodeAnalyzer/commit/ceb4c8d))
 * Added handling for formatting type expressions of kind 'ThisType' ([12cc539](https://github.com/wessberg/CodeAnalyzer/commit/12cc539))
@@ -908,7 +917,7 @@
 
 
 <a name="1.0.22"></a>
-## 1.0.22 (2017-05-31)
+## <small>1.0.22 (2017-05-31)</small>
 
 * 1.0.22 ([6d61e64](https://github.com/wessberg/CodeAnalyzer/commit/6d61e64))
 * Added handling for finding child statements of s. ([2ba6419](https://github.com/wessberg/CodeAnalyzer/commit/2ba6419))
@@ -916,7 +925,7 @@
 
 
 <a name="1.0.21"></a>
-## 1.0.21 (2017-05-31)
+## <small>1.0.21 (2017-05-31)</small>
 
 * - Parsing for expressions with "deep" wouldn't find all expressions. ([4335561](https://github.com/wessberg/CodeAnalyzer/commit/4335561))
 * 1.0.21 ([91a632e](https://github.com/wessberg/CodeAnalyzer/commit/91a632e))
@@ -924,7 +933,7 @@
 
 
 <a name="1.0.20"></a>
-## 1.0.20 (2017-05-31)
+## <small>1.0.20 (2017-05-31)</small>
 
 * 1.0.20 ([0d7eb80](https://github.com/wessberg/CodeAnalyzer/commit/0d7eb80))
 * Moved some logic into a separate module ('compiler-common') to instead depend on that one. ([8fde2e2](https://github.com/wessberg/CodeAnalyzer/commit/8fde2e2))
@@ -932,7 +941,7 @@
 
 
 <a name="1.0.19"></a>
-## 1.0.19 (2017-05-31)
+## <small>1.0.19 (2017-05-31)</small>
 
 * 1.0.19 ([c81c032](https://github.com/wessberg/CodeAnalyzer/commit/c81c032))
 * Fixed bugs. Fixes #4 ([d2423d4](https://github.com/wessberg/CodeAnalyzer/commit/d2423d4)), closes [#4](https://github.com/wessberg/CodeAnalyzer/issues/4)
@@ -940,7 +949,7 @@
 
 
 <a name="1.0.18"></a>
-## 1.0.18 (2017-05-30)
+## <small>1.0.18 (2017-05-30)</small>
 
 * 1.0.18 ([5aee9e9](https://github.com/wessberg/CodeAnalyzer/commit/5aee9e9))
 * Fixed an issue where getting names of anonymous functions would sometimes crash. ([a0ea63a](https://github.com/wessberg/CodeAnalyzer/commit/a0ea63a))
@@ -948,7 +957,7 @@
 
 
 <a name="1.0.17"></a>
-## 1.0.17 (2017-05-30)
+## <small>1.0.17 (2017-05-30)</small>
 
 * 1.0.17 ([0144a62](https://github.com/wessberg/CodeAnalyzer/commit/0144a62))
 * Added lots of more interfaces to the exports of the module. ([09c400f](https://github.com/wessberg/CodeAnalyzer/commit/09c400f))
@@ -956,7 +965,7 @@
 
 
 <a name="1.0.16"></a>
-## 1.0.16 (2017-05-30)
+## <small>1.0.16 (2017-05-30)</small>
 
 * 1.0.16 ([0cd0f59](https://github.com/wessberg/CodeAnalyzer/commit/0cd0f59))
 * Removed Typescript as a constructor argument to instead use the one that is located in node_modules. ([daf7772](https://github.com/wessberg/CodeAnalyzer/commit/daf7772))
@@ -964,7 +973,7 @@
 
 
 <a name="1.0.15"></a>
-## 1.0.15 (2017-05-26)
+## <small>1.0.15 (2017-05-26)</small>
 
 * 1.0.15 ([e029d2f](https://github.com/wessberg/CodeAnalyzer/commit/e029d2f))
 * Added a blacklist filter for specific file names (such as tslib.ts or rollup plugins.) ([3c60109](https://github.com/wessberg/CodeAnalyzer/commit/3c60109))
@@ -972,7 +981,7 @@
 
 
 <a name="1.0.14"></a>
-## 1.0.14 (2017-05-26)
+## <small>1.0.14 (2017-05-26)</small>
 
 * 1.0.14 ([e84a11c](https://github.com/wessberg/CodeAnalyzer/commit/e84a11c))
 * Loads of improvements. ([b22f8e0](https://github.com/wessberg/CodeAnalyzer/commit/b22f8e0))
@@ -980,7 +989,7 @@
 
 
 <a name="1.0.13"></a>
-## 1.0.13 (2017-05-25)
+## <small>1.0.13 (2017-05-25)</small>
 
 * 1.0.13 ([a85063f](https://github.com/wessberg/CodeAnalyzer/commit/a85063f))
 * Derived classes can now inherit methods, props and constructors from their parents up through the in ([02417c8](https://github.com/wessberg/CodeAnalyzer/commit/02417c8))
@@ -988,7 +997,7 @@
 
 
 <a name="1.0.12"></a>
-## 1.0.12 (2017-05-25)
+## <small>1.0.12 (2017-05-25)</small>
 
 * 1.0.12 ([a3533d2](https://github.com/wessberg/CodeAnalyzer/commit/a3533d2))
 * The 'ArbitraryValue', 'IValueable' and 'INonNullableValueable' interfaces are now exported for publi ([a9e73b3](https://github.com/wessberg/CodeAnalyzer/commit/a9e73b3))
@@ -996,7 +1005,7 @@
 
 
 <a name="1.0.11"></a>
-## 1.0.11 (2017-05-25)
+## <small>1.0.11 (2017-05-25)</small>
 
 * 1.0.11 ([2ce23d4](https://github.com/wessberg/CodeAnalyzer/commit/2ce23d4))
 * Major overhaul in regards to serialization and value resolving ([c8db56a](https://github.com/wessberg/CodeAnalyzer/commit/c8db56a))
@@ -1005,7 +1014,7 @@
 
 
 <a name="1.0.10"></a>
-## 1.0.10 (2017-05-25)
+## <small>1.0.10 (2017-05-25)</small>
 
 * 1.0.10 ([2eb6000](https://github.com/wessberg/CodeAnalyzer/commit/2eb6000))
 * Return statements of methods and functions can now also be broken up into expressions and resolved i ([feeb14c](https://github.com/wessberg/CodeAnalyzer/commit/feeb14c))
@@ -1013,7 +1022,7 @@
 
 
 <a name="1.0.9"></a>
-## 1.0.9 (2017-05-24)
+## <small>1.0.9 (2017-05-24)</small>
 
 * 1.0.9 ([23ee928](https://github.com/wessberg/CodeAnalyzer/commit/23ee928))
 * Added support for getting all identifiers and the values that they are initialized to in a map. ([434d8f6](https://github.com/wessberg/CodeAnalyzer/commit/434d8f6))
@@ -1024,7 +1033,7 @@
 
 
 <a name="1.0.8"></a>
-## 1.0.8 (2017-05-24)
+## <small>1.0.8 (2017-05-24)</small>
 
 * 1.0.8 ([65b57da](https://github.com/wessberg/CodeAnalyzer/commit/65b57da))
 * Added support for 'super()' expressions from class methods. ([0fd32c2](https://github.com/wessberg/CodeAnalyzer/commit/0fd32c2))
@@ -1032,7 +1041,7 @@
 
 
 <a name="1.0.7"></a>
-## 1.0.7 (2017-05-19)
+## <small>1.0.7 (2017-05-19)</small>
 
 * 1.0.7 ([7bd3e1e](https://github.com/wessberg/CodeAnalyzer/commit/7bd3e1e))
 * More caching, better performance, better resolving of values, other bug fixes. ([878afb7](https://github.com/wessberg/CodeAnalyzer/commit/878afb7))
@@ -1042,7 +1051,7 @@
 
 
 <a name="1.0.6"></a>
-## 1.0.6 (2017-05-18)
+## <small>1.0.6 (2017-05-18)</small>
 
 * 1.0.6 ([ff80b74](https://github.com/wessberg/CodeAnalyzer/commit/ff80b74))
 * Added a blacklist filter for specific statement kinds that doesn't live on runtime (such as namespac ([bbb6ea3](https://github.com/wessberg/CodeAnalyzer/commit/bbb6ea3))
@@ -1050,7 +1059,7 @@
 
 
 <a name="1.0.5"></a>
-## 1.0.5 (2017-05-18)
+## <small>1.0.5 (2017-05-18)</small>
 
 * 1.0.5 ([7f26c72](https://github.com/wessberg/CodeAnalyzer/commit/7f26c72))
 * Fixed bugs with infinite recursion and optimized performance. ([559b43e](https://github.com/wessberg/CodeAnalyzer/commit/559b43e))
@@ -1058,7 +1067,7 @@
 
 
 <a name="1.0.4"></a>
-## 1.0.4 (2017-05-18)
+## <small>1.0.4 (2017-05-18)</small>
 
 * 1.0.4 ([cb16202](https://github.com/wessberg/CodeAnalyzer/commit/cb16202))
 * More resolved values can now be correctly computed. ([427e4c9](https://github.com/wessberg/CodeAnalyzer/commit/427e4c9))
@@ -1066,7 +1075,7 @@
 
 
 <a name="1.0.3"></a>
-## 1.0.3 (2017-05-18)
+## <small>1.0.3 (2017-05-18)</small>
 
 * 1.0.3 ([d3d59da](https://github.com/wessberg/CodeAnalyzer/commit/d3d59da))
 * Bug fixes ([e48e11e](https://github.com/wessberg/CodeAnalyzer/commit/e48e11e))
@@ -1076,7 +1085,7 @@
 
 
 <a name="1.0.2"></a>
-## 1.0.2 (2017-05-16)
+## <small>1.0.2 (2017-05-16)</small>
 
 * 1.0.2 ([df61ccc](https://github.com/wessberg/CodeAnalyzer/commit/df61ccc))
 * Object-/Array destructuring now also works for function/method parameters and arguments. ([52538dd](https://github.com/wessberg/CodeAnalyzer/commit/52538dd))
@@ -1084,7 +1093,7 @@
 
 
 <a name="1.0.1"></a>
-## 1.0.1 (2017-05-16)
+## <small>1.0.1 (2017-05-16)</small>
 
 * 1.0.1 ([a369d4a](https://github.com/wessberg/CodeAnalyzer/commit/a369d4a))
 * 1.0.1 ([2f33b8f](https://github.com/wessberg/CodeAnalyzer/commit/2f33b8f))
