@@ -3,13 +3,15 @@ import {AsteriskToken, Block, CallExpression, ClassDeclaration, ClassElement, Cl
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {INodeUpdaterUtil} from "@wessberg/typescript-ast-util";
 
+/*tslint:disable:no-any*/
+
 /**
  * A class for updating nodes
  */
 export class Updater implements IUpdaterBase {
 
-	constructor (private languageService: ITypescriptLanguageService,
-							 private nodeUpdater: INodeUpdaterUtil) {
+	constructor (private readonly languageService: ITypescriptLanguageService,
+							 private readonly nodeUpdater: INodeUpdaterUtil) {
 	}
 
 	/**
@@ -209,7 +211,6 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateNodeDecorators<T extends Node> (decorators: NodeArray<Decorator>|undefined, node: T): T {
-		/*tslint:disable:no-any*/
 
 		if (isPropertyDeclaration(node)) {
 			return <T><any> this.updatePropertyDeclaration("decorators", decorators, node);
@@ -220,7 +221,7 @@ export class Updater implements IUpdaterBase {
 		}
 
 		else if (isClassDeclaration(node) || isClassExpression(node)) {
-			return <T><any> this.updateClassDeclaration("decorators", decorators, node);
+			return <T><any> this.updateClassDeclaration("decorators", <T[keyof T]><any> decorators, node);
 		}
 
 		else if (isImportDeclaration(node)) {
@@ -243,7 +244,6 @@ export class Updater implements IUpdaterBase {
 			return <T><any> this.updateConstructorDeclaration("decorators", decorators, node);
 		}
 
-		/*tslint:enable:no-any*/
 		throw new TypeError(`${this.constructor.name} could not update decorators on a node of kind: ${SyntaxKind[node.kind]}: It wasn't handled!`);
 	}
 
@@ -254,7 +254,6 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateNodeModifiers<T extends Node> (modifiers: ModifiersArray|undefined, node: T): T {
-		/*tslint:disable:no-any*/
 
 		if (isPropertyDeclaration(node)) {
 			return <T><any> this.updatePropertyDeclarationModifiers(modifiers, node);
@@ -288,7 +287,6 @@ export class Updater implements IUpdaterBase {
 			return <T><any> this.updateConstructorDeclarationModifiers(modifiers, node);
 		}
 
-		/*tslint:enable:no-any*/
 		throw new TypeError(`${this.constructor.name} could not update modifiers on a node of kind: ${SyntaxKind[node.kind]}: It wasn't handled!`);
 	}
 
@@ -549,7 +547,7 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateClassDeclarationTypeParameters<T extends ClassDeclaration|ClassExpression> (typeParameters: NodeArray<TypeParameterDeclaration>|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("typeParameters", typeParameters, classDeclaration);
+		return this.updateClassDeclaration("typeParameters", <T[keyof T]><any> typeParameters, classDeclaration);
 	}
 
 	/**
@@ -559,7 +557,7 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateClassDeclarationMembers<T extends ClassDeclaration|ClassExpression> (members: NodeArray<ClassElement>|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("members", members == null ? createNodeArray() : members, classDeclaration);
+		return this.updateClassDeclaration("members", <T[keyof T]><any> (members == null ? createNodeArray<ClassElement>() : members), classDeclaration);
 	}
 
 	/**
@@ -569,7 +567,7 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateClassDeclarationName<T extends ClassDeclaration|ClassExpression> (name: Identifier|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("name", name, classDeclaration);
+		return this.updateClassDeclaration("name", <T[keyof T]><any> name, classDeclaration);
 	}
 
 	/**
@@ -579,7 +577,7 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateClassDeclarationHeritageClauses<T extends ClassDeclaration|ClassExpression> (heritageClauses: NodeArray<HeritageClause>|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("heritageClauses", heritageClauses, classDeclaration);
+		return this.updateClassDeclaration("heritageClauses", <T[keyof T]><any> heritageClauses, classDeclaration);
 	}
 
 	/**
@@ -589,7 +587,7 @@ export class Updater implements IUpdaterBase {
 	 * @returns {T}
 	 */
 	public updateClassDeclarationModifiers<T extends ClassDeclaration|ClassExpression> (modifiers: ModifiersArray|undefined, classDeclaration: T): T {
-		return this.updateClassDeclaration("modifiers", modifiers, classDeclaration);
+		return this.updateClassDeclaration("modifiers", <T[keyof T]><any> modifiers, classDeclaration);
 	}
 
 	/**
@@ -599,16 +597,16 @@ export class Updater implements IUpdaterBase {
 	 * @param {T} classDeclaration
 	 * @returns {T}
 	 */
-	private updateClassDeclaration<T extends ClassDeclaration|ClassExpression> (key: keyof T, value: T[keyof T], classDeclaration: T): T {
+	private updateClassDeclaration<T extends ClassDeclaration|ClassExpression> (key: keyof T, value: T[keyof T]|undefined, classDeclaration: T): T {
 		// If we're having to do with an expression
 		if (isClassExpression(classDeclaration)) {
 			const classExpressionUpdated = updateClassExpression(
 				classDeclaration,
-				key === "modifiers" ? value : classDeclaration.modifiers,
-				key === "name" ? value : classDeclaration.name,
-				key === "typeParameters" ? value : classDeclaration.typeParameters,
-				key === "heritageClauses" ? value : classDeclaration.heritageClauses,
-				key === "members" ? value : classDeclaration.members
+				key === "modifiers" ? <any>value : classDeclaration.modifiers,
+				key === "name" ? <any> value : classDeclaration.name,
+				key === "typeParameters" ? <any> value : classDeclaration.typeParameters,
+				key === "heritageClauses" ? <any> value : classDeclaration.heritageClauses,
+				key === "members" ? <any> value : classDeclaration.members
 			);
 
 			// Force-set heritageClauses to undefined if they have none
@@ -619,12 +617,12 @@ export class Updater implements IUpdaterBase {
 		// If we're having to do with a declaration
 		const updated = updateClassDeclaration(
 			<ClassDeclaration> classDeclaration,
-			key === "decorators" ? value : classDeclaration.decorators,
-			key === "modifiers" ? value : classDeclaration.modifiers,
-			key === "name" ? value : classDeclaration.name,
-			key === "typeParameters" ? value : classDeclaration.typeParameters,
-			key === "heritageClauses" ? value : classDeclaration.heritageClauses,
-			key === "members" ? value : classDeclaration.members
+			key === "decorators" ? <any> value : classDeclaration.decorators,
+			key === "modifiers" ? <any> value : classDeclaration.modifiers,
+			key === "name" ? <any> value : classDeclaration.name,
+			key === "typeParameters" ? <any> value : classDeclaration.typeParameters,
+			key === "heritageClauses" ? <any> value : classDeclaration.heritageClauses,
+			key === "members" ? <any> value : classDeclaration.members
 		);
 
 		// Force-set heritageClauses to undefined if they have none

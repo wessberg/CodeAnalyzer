@@ -8,8 +8,8 @@ import {IDecoratorCtor} from "../../light-ast/ctor/decorator/i-decorator-ctor";
  * A service for working with Decorators
  */
 export class DecoratorService implements IDecoratorService {
-	constructor (private formatter: IFormatter,
-							 private printer: IPrinter) {
+	constructor (private readonly formatter: IFormatter,
+							 private readonly printer: IPrinter) {
 	}
 
 	/**

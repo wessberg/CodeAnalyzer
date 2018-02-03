@@ -6,7 +6,7 @@ import {IPrinter} from "@wessberg/typescript-ast-util";
  * A service for working with BindingPatterns
  */
 export class BindingPatternService implements IBindingPatternService {
-	constructor (private printer: IPrinter) {
+	constructor (private readonly printer: IPrinter) {
 	}
 
 	/**

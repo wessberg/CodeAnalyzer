@@ -30,14 +30,14 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.ImportDeclaration];
 
-	constructor (private namedImportsService: INamedImportsService,
-							 private namespaceImportService: INamespaceImportService,
-							 private nodeToCtorMapper: INodeToCtorMapperBase,
-							 private moduleUtil: IModuleUtil,
-							 private formatter: IFormatter,
-							 private printer: IPrinter,
-							 private pathUtil: IPathUtil,
-							 private stringUtil: IStringUtil,
+	constructor (private readonly namedImportsService: INamedImportsService,
+							 private readonly namespaceImportService: INamespaceImportService,
+							 private readonly nodeToCtorMapper: INodeToCtorMapperBase,
+							 private readonly moduleUtil: IModuleUtil,
+							 private readonly formatter: IFormatter,
+							 private readonly printer: IPrinter,
+							 private readonly pathUtil: IPathUtil,
+							 private readonly stringUtil: IStringUtil,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,

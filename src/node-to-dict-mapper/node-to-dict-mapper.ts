@@ -25,8 +25,8 @@ import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict
  * A class that can map nodes to dicts
  */
 export class NodeToDictMapper implements INodeToDictMapperBase {
-	constructor (private nodeToCtorMapper: INodeToCtorMapper,
-							 private heritageClauseService: IHeritageClauseService) {
+	constructor (private readonly nodeToCtorMapper: INodeToCtorMapper,
+							 private readonly heritageClauseService: IHeritageClauseService) {
 	}
 
 	/**

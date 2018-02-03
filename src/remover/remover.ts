@@ -8,8 +8,8 @@ import {IFormatter} from "../formatter/i-formatter-getter";
  */
 export class Remover implements IRemoverBase {
 
-	constructor (private formatter: IFormatter,
-							 private updater: IUpdater) {
+	constructor (private readonly formatter: IFormatter,
+							 private readonly updater: IUpdater) {
 	}
 
 	/**

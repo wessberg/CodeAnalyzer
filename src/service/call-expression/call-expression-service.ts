@@ -22,8 +22,8 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.CallExpression];
 
-	constructor (private printer: IPrinter,
-							 private formatter: IFormatter,
+	constructor (private readonly printer: IPrinter,
+							 private readonly formatter: IFormatter,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,

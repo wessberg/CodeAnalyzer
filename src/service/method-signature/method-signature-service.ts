@@ -7,8 +7,8 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
  * A service that helps with working with MethodSignatures
  */
 export class MethodSignatureService implements IMethodSignatureService {
-	constructor (private propertyNameService: IPropertyNameService,
-							 private typeNodeService: ITypeNodeService) {
+	constructor (private readonly propertyNameService: IPropertyNameService,
+							 private readonly typeNodeService: ITypeNodeService) {
 	}
 
 	/**

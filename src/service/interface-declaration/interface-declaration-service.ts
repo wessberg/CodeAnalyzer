@@ -22,8 +22,8 @@ export class InterfaceDeclarationService extends TypeDeclarationService<Interfac
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.InterfaceDeclaration];
 
-	constructor (private nodeToDictMapper: INodeToDictMapper,
-							 private printer: IPrinter,
+	constructor (private readonly nodeToDictMapper: INodeToDictMapper,
+							 private readonly printer: IPrinter,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,

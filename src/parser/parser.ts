@@ -17,7 +17,7 @@ export class Parser implements IParser {
 	 */
 	private static readonly SCRIPT_TARGET = ScriptTarget.Latest;
 
-	constructor (private astUtil: ITypescriptASTUtil) {
+	constructor (private readonly astUtil: ITypescriptASTUtil) {
 	}
 
 	/**

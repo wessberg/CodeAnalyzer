@@ -10,7 +10,7 @@ import {isNodeArray} from "@wessberg/typescript-ast-util";
  */
 export class ModifierService implements IModifierService {
 
-	constructor (private formatter: IFormatter) {
+	constructor (private readonly formatter: IFormatter) {
 	}
 
 	/**

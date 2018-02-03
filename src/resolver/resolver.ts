@@ -10,11 +10,11 @@ import {IInterfaceDeclarationService} from "../service/interface-declaration/i-i
  * A service that can resolve nodes from Identifiers
  */
 export class Resolver implements IResolverBase {
-	constructor (private languageService: ITypescriptLanguageService,
-							 private classService: IClassService,
-							 private interfaceDeclarationService: IInterfaceDeclarationService,
-							 private importService: IImportService,
-							 private exportService: IExportService) {
+	constructor (private readonly languageService: ITypescriptLanguageService,
+							 private readonly classService: IClassService,
+							 private readonly interfaceDeclarationService: IInterfaceDeclarationService,
+							 private readonly importService: IImportService,
+							 private readonly exportService: IExportService) {
 	}
 
 	/**

@@ -22,8 +22,8 @@ export class ConstructorService extends NodeService<ConstructorDeclaration> impl
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.Constructor];
 
-	constructor (private formatter: IFormatter,
-							 private parameterService: IParameterService,
+	constructor (private readonly formatter: IFormatter,
+							 private readonly parameterService: IParameterService,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,

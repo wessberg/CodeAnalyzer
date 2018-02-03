@@ -9,8 +9,8 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
  */
 export class HeritageClauseService implements IHeritageClauseService {
 
-	constructor (private printer: IPrinter,
-							 private typeNodeService: ITypeNodeService) {
+	constructor (private readonly printer: IPrinter,
+							 private readonly typeNodeService: ITypeNodeService) {
 	}
 
 	/**

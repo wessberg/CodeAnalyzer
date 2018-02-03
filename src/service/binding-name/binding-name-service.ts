@@ -7,8 +7,8 @@ import {IBindingPatternService} from "../binding-pattern/i-binding-pattern-servi
  * A service for working with BindingNames
  */
 export class BindingNameService implements IBindingNameService {
-	constructor (private identifierService: IIdentifierService,
-							 private bindingPatternService: IBindingPatternService) {
+	constructor (private readonly identifierService: IIdentifierService,
+							 private readonly bindingPatternService: IBindingPatternService) {
 	}
 
 	/**

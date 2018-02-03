@@ -18,7 +18,7 @@ export class PropertyAccessExpressionService extends NodeService<PropertyAccessE
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyAccessExpression];
 
-	constructor (private printer: IPrinter,
+	constructor (private readonly printer: IPrinter,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,

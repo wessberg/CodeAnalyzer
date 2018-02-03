@@ -22,10 +22,10 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.ExportDeclaration];
 
-	constructor (private namedExportsService: INamedExportsService,
-							 private formatter: IFormatter,
-							 private printer: IPrinter,
-							 private stringUtil: IStringUtil,
+	constructor (private readonly namedExportsService: INamedExportsService,
+							 private readonly formatter: IFormatter,
+							 private readonly printer: IPrinter,
+							 private readonly stringUtil: IStringUtil,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,

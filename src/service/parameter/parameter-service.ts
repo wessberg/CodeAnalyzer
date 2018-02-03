@@ -21,9 +21,9 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.Parameter];
 
-	constructor (private printer: IPrinter,
-							 private typeNodeService: ITypeNodeService,
-							 private bindingNameService: IBindingNameService,
+	constructor (private readonly printer: IPrinter,
+							 private readonly typeNodeService: ITypeNodeService,
+							 private readonly bindingNameService: IBindingNameService,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 astUtil: ITypescriptASTUtil,

@@ -9,9 +9,9 @@ import {IPlacement} from "../placement/i-placement";
  * A class for joining multiple different Nodes together to form new ones
  */
 export class Joiner implements IJoinerBase {
-	constructor (private heritageClauseService: IHeritageClauseService,
-							 private namedImportsService: INamedImportsService,
-							 private namedExportsService: INamedExportsService) {
+	constructor (private readonly heritageClauseService: IHeritageClauseService,
+							 private readonly namedImportsService: INamedImportsService,
+							 private readonly namedExportsService: INamedExportsService) {
 	}
 
 	/**

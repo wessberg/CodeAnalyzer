@@ -31,7 +31,7 @@ import {ICallExpressionCtor} from "../light-ast/ctor/call-expression/i-call-expr
  * A class that helps with transforming simple ctor-objects into Typescript Nodes
  */
 export class Formatter implements IFormatterBase {
-	constructor (private parseService: IParser) {
+	constructor (private readonly parseService: IParser) {
 	}
 
 	/**

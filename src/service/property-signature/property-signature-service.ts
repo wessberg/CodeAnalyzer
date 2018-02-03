@@ -7,8 +7,8 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
  * A service that helps with working with PropertySignatures
  */
 export class PropertySignatureService implements IPropertySignatureService {
-	constructor (private printer: IPrinter,
-							 private typeNodeService: ITypeNodeService) {
+	constructor (private readonly printer: IPrinter,
+							 private readonly typeNodeService: ITypeNodeService) {
 	}
 
 	/**

@@ -35,18 +35,18 @@ import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor
  * A class that can map nodes to ctor's
  */
 export class NodeToCtorMapper implements INodeToCtorMapperBase {
-	constructor (private heritageClauseService: IHeritageClauseService,
-							 private interfaceDeclarationService: IInterfaceDeclarationService,
-							 private propertyNameService: IPropertyNameService,
-							 private propertySignatureService: IPropertySignatureService,
-							 private methodSignatureService: IMethodSignatureService,
-							 private indexSignatureService: IIndexSignatureService,
-							 private modifierService: IModifierService,
-							 private typeNodeService: ITypeNodeService,
-							 private parameterService: IParameterService,
-							 private bindingElementService: IBindingElementService,
-							 private decoratorService: IDecoratorService,
-							 private printer: IPrinter) {
+	constructor (private readonly heritageClauseService: IHeritageClauseService,
+							 private readonly interfaceDeclarationService: IInterfaceDeclarationService,
+							 private readonly propertyNameService: IPropertyNameService,
+							 private readonly propertySignatureService: IPropertySignatureService,
+							 private readonly methodSignatureService: IMethodSignatureService,
+							 private readonly indexSignatureService: IIndexSignatureService,
+							 private readonly modifierService: IModifierService,
+							 private readonly typeNodeService: ITypeNodeService,
+							 private readonly parameterService: IParameterService,
+							 private readonly bindingElementService: IBindingElementService,
+							 private readonly decoratorService: IDecoratorService,
+							 private readonly printer: IPrinter) {
 	}
 
 	/**

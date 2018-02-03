@@ -8,9 +8,9 @@ import {IBindingNameService} from "../binding-name/i-binding-name-service";
  * A service for working with BindingElements
  */
 export class BindingElementService implements IBindingElementService {
-	constructor (private printer: IPrinter,
-							 private propertyNameService: IPropertyNameService,
-							 private bindingNameService: IBindingNameService) {
+	constructor (private readonly printer: IPrinter,
+							 private readonly propertyNameService: IPropertyNameService,
+							 private readonly bindingNameService: IBindingNameService) {
 	}
 
 	/**

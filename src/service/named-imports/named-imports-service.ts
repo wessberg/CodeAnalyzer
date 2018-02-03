@@ -10,9 +10,9 @@ import {isINamedImportExportCtor} from "../../light-ast/ctor/named-import-export
  * A service for working with NamedImports
  */
 export class NamedImportsService implements INamedImportsService {
-	constructor (private formatter: IFormatter,
-							 private updater: IUpdater,
-							 private joiner: IJoiner) {
+	constructor (private readonly formatter: IFormatter,
+							 private readonly updater: IUpdater,
+							 private readonly joiner: IJoiner) {
 	}
 
 	/**

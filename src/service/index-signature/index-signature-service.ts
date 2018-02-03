@@ -7,8 +7,8 @@ import {ITypeNodeService} from "../type-node/i-type-node-service";
  * A service that helps with working with IndexSignatureDeclarations
  */
 export class IndexSignatureService implements IIndexSignatureService {
-	constructor (private propertyNameService: IPropertyNameService,
-							 private typeNodeService: ITypeNodeService) {
+	constructor (private readonly propertyNameService: IPropertyNameService,
+							 private readonly typeNodeService: ITypeNodeService) {
 	}
 
 	/**

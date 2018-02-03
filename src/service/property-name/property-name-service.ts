@@ -9,10 +9,10 @@ import {IComputedPropertyNameService} from "../computed-property-name/i-computed
  * A service for working with PropertyNames
  */
 export class PropertyNameService implements IPropertyNameService {
-	constructor (private identifierService: IIdentifierService,
-							 private stringLiteralService: IStringLiteralService,
-							 private numericLiteralService: INumericLiteralService,
-							 private computedPropertyNameService: IComputedPropertyNameService) {
+	constructor (private readonly identifierService: IIdentifierService,
+							 private readonly stringLiteralService: IStringLiteralService,
+							 private readonly numericLiteralService: INumericLiteralService,
+							 private readonly computedPropertyNameService: IComputedPropertyNameService) {
 	}
 
 	/**

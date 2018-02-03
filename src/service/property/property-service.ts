@@ -25,11 +25,11 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyDeclaration];
 
-	constructor (private typeNodeService: ITypeNodeService,
-							 private formatter: IFormatter,
-							 private modifierService: IModifierService,
-							 private propertyNameService: IPropertyNameService,
-							 private nodeToCtorMapper: INodeToCtorMapper,
+	constructor (private readonly typeNodeService: ITypeNodeService,
+							 private readonly formatter: IFormatter,
+							 private readonly modifierService: IModifierService,
+							 private readonly propertyNameService: IPropertyNameService,
+							 private readonly nodeToCtorMapper: INodeToCtorMapper,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 remover: IRemover,

@@ -7,7 +7,7 @@ import {ComputedPropertyName} from "typescript";
  */
 export class ComputedPropertyNameService implements IComputedPropertyNameService {
 
-	constructor (private printer: IPrinter) {
+	constructor (private readonly printer: IPrinter) {
 	}
 
 	/**

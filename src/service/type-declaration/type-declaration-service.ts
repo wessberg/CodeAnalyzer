@@ -13,7 +13,7 @@ import {IUpdater} from "../../updater/i-updater-getter";
  * An abstract service for working with TypeDeclarations
  */
 export abstract class TypeDeclarationService<T extends InterfaceDeclaration|TypeLiteralNode> extends NodeService<T> implements ITypeDeclarationService<T> {
-	constructor (private typeElementService: ITypeElementService,
+	constructor (private readonly typeElementService: ITypeElementService,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 decoratorService: IDecoratorService,

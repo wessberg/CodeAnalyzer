@@ -1,5 +1,5 @@
 import {NodeService} from "../node/node-service";
-import {isNoSubstitutionTemplateLiteral, isStringLiteral, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
+import {isNoSubstitutionTemplateLiteral, isNumericLiteral, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
 import {ITemplateExpressionService} from "./i-template-expression-service";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
@@ -19,7 +19,7 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.TemplateExpression, SyntaxKind.NoSubstitutionTemplateLiteral];
 
-	constructor (private printer: IPrinter,
+	constructor (private readonly printer: IPrinter,
 							 protected decoratorService: IDecoratorService,
 							 protected languageService: ITypescriptLanguageService,
 							 protected joiner: IJoiner,
@@ -36,12 +36,16 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 	 */
 	public stringify (node: TemplateExpression|NoSubstitutionTemplateLiteral|StringLiteral|LiteralExpression): string {
 		// If it is a simple template string with substitutions, everything is available on the "text" property
-		if (isNoSubstitutionTemplateLiteral(node) || isStringLiteral(node)) {
+		if (isNoSubstitutionTemplateLiteral(node) || isStringLiteral(node) || isRegularExpressionLiteral(node) || isNumericLiteral(node)) {
 			return node.text;
 		}
 
-		// Otherwise, build up the string
-		return `${this.stringifyTemplateHead(node.head)}${node.templateSpans.map(span => this.stringifyTemplateSpan(span)).join("")}`;
+		else if (isTemplateExpression(node)) {
+			// Otherwise, build up the string
+			return `${this.stringifyTemplateHead(node.head)}${node.templateSpans.map(span => this.stringifyTemplateSpan(span)).join("")}`;
+		}
+
+		else return this.printer.stringify(node);
 	}
 
 	/**
