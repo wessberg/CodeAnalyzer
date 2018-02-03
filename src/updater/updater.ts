@@ -610,7 +610,9 @@ export class Updater implements IUpdaterBase {
 			);
 
 			// Force-set heritageClauses to undefined if they have none
-			if (classExpressionUpdated.heritageClauses!.length === 0) classExpressionUpdated.heritageClauses = undefined;
+			if (classExpressionUpdated.heritageClauses != null && classExpressionUpdated.heritageClauses.length === 0) {
+				classExpressionUpdated.heritageClauses = undefined;
+			}
 			return <T> this.nodeUpdater.updateInPlace(classExpressionUpdated, classDeclaration, this.languageService);
 		}
 
@@ -626,7 +628,9 @@ export class Updater implements IUpdaterBase {
 		);
 
 		// Force-set heritageClauses to undefined if they have none
-		if (updated.heritageClauses!.length === 0) updated.heritageClauses = undefined;
+		if (updated.heritageClauses != null && updated.heritageClauses.length === 0) {
+			updated.heritageClauses = undefined;
+		}
 		return <T> this.nodeUpdater.updateInPlace(updated, <ClassDeclaration> classDeclaration, this.languageService);
 	}
 
