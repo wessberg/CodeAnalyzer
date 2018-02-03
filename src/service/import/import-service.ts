@@ -5,7 +5,6 @@ import {IFormatter} from "../../formatter/i-formatter-getter";
 import {INamedImportsService} from "../named-imports/i-named-imports-service";
 import {INamespaceImportService} from "../namespace-import/i-namespace-import-service";
 import {IUpdater} from "../../updater/i-updater-getter";
-import {INodeToCtorMapperBase} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
@@ -18,6 +17,7 @@ import {IPlacement} from "../../placement/i-placement";
 import {IModuleUtil} from "@wessberg/moduleutil";
 import {join} from "path";
 import {IPathUtil} from "@wessberg/pathutil";
+import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -32,7 +32,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 
 	constructor (private readonly namedImportsService: INamedImportsService,
 							 private readonly namespaceImportService: INamespaceImportService,
-							 private readonly nodeToCtorMapper: INodeToCtorMapperBase,
+							 private readonly nodeToDictMapper: INodeToDictMapper,
 							 private readonly moduleUtil: IModuleUtil,
 							 private readonly formatter: IFormatter,
 							 private readonly printer: IPrinter,
@@ -370,7 +370,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 		if (this.hasSpecificName(name, importDeclaration)) return importDeclaration;
 
 		// Map the ImportClause back to a dict
-		let mappedImportClauseCtor = this.nodeToCtorMapper.toIImportClauseCtor(importDeclaration.importClause);
+		let mappedImportClauseCtor = this.nodeToDictMapper.toIImportClauseCtor(importDeclaration.importClause);
 
 		// If it couldn't be, the import was initially empty
 		if (mappedImportClauseCtor == null) {
@@ -400,7 +400,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 		if (this.hasNamespaceImportWithName(namespaceName, importDeclaration)) return importDeclaration;
 
 		// Map the ImportClause back to a dict
-		const mappedImportClauseCtor = this.nodeToCtorMapper.toIImportClauseCtor(importDeclaration.importClause);
+		const mappedImportClauseCtor = this.nodeToDictMapper.toIImportClauseCtor(importDeclaration.importClause);
 
 		// Format a new ImportClause
 		const formatted = this.formatter.formatImportClause(
@@ -437,7 +437,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 
 		// Otherwise, format a new ImportClause and set it on the ImportDeclaration
 		// Map the ImportClause back to a dict
-		const mappedImportClauseCtor = this.nodeToCtorMapper.toIImportClauseCtor(importDeclaration.importClause);
+		const mappedImportClauseCtor = this.nodeToDictMapper.toIImportClauseCtor(importDeclaration.importClause);
 
 		// Format a new ImportClause
 		const formatted = this.formatter.formatImportClause(

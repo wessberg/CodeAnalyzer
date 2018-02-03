@@ -10,9 +10,9 @@ import {IModifierService} from "../modifier/i-modifier-service";
 import {IPropertyNameService} from "../property-name/i-property-name-service";
 import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 import {IUpdater} from "../../updater/i-updater-getter";
-import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
+import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
 
 /**
  * A service for working with PropertyDeclarations
@@ -29,7 +29,7 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 							 private readonly formatter: IFormatter,
 							 private readonly modifierService: IModifierService,
 							 private readonly propertyNameService: IPropertyNameService,
-							 private readonly nodeToCtorMapper: INodeToCtorMapper,
+							 private readonly nodeToDictMapper: INodeToDictMapper,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 remover: IRemover,
@@ -54,7 +54,7 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 
 		return this.updater.updatePropertyDeclarationModifiers(
 			this.formatter.formatModifiers({
-				...this.nodeToCtorMapper.toIAllModifiersCtor(property.modifiers),
+				...this.nodeToDictMapper.toIAllModifiersCtor(property.modifiers),
 				visibility
 			}), property
 		);

@@ -11,8 +11,8 @@ import {VisibilityKind} from "../../light-ast/dict/visibility/visibility-kind";
 import {IModifierService} from "../modifier/i-modifier-service";
 import {IUpdater} from "../../updater/i-updater-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";
-import {INodeToCtorMapper} from "../../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
+import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
 
 /**
  * An abstract service for working with ClassFunctionLikes
@@ -22,7 +22,7 @@ export abstract class ClassFunctionLikeService<T extends ClassFunctionLike> exte
 							 protected propertyNameService: IPropertyNameService,
 							 protected modifierService: IModifierService,
 							 protected formatter: IFormatter,
-							 protected nodeToCtorMapper: INodeToCtorMapper,
+							 protected nodeToDictMapper: INodeToDictMapper,
 							 joiner: IJoiner,
 							 updater: IUpdater,
 							 remover: IRemover,
@@ -48,7 +48,7 @@ export abstract class ClassFunctionLikeService<T extends ClassFunctionLike> exte
 
 		return this.updater.updateNodeModifiers(
 			this.formatter.formatModifiers({
-				...this.nodeToCtorMapper.toIAllModifiersCtor(member.modifiers),
+				...this.nodeToDictMapper.toIAllModifiersCtor(member.modifiers),
 				visibility
 			}), member
 		);

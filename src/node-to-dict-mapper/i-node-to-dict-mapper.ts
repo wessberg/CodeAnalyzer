@@ -1,10 +1,11 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {IClassDict} from "../light-ast/dict/class/i-class-dict";
 import {IImportClauseDict} from "../light-ast/dict/import-clause/i-import-clause-dict";
 import {INamedImportExportDict} from "../light-ast/dict/named-import-export/i-named-import-export-dict";
 import {ITypeLiteralDict} from "../light-ast/dict/type-literal/i-type-literal-dict";
-import {IInterfaceDict} from "../light-ast/dict/interface/i-interface-dict";
 import {ITypeElementDict, TypeElementDict} from "../light-ast/dict/type-element/i-type-element-dict";
 import {HeritageDict, IExtendsHeritageDict, IImplementsHeritageDict} from "../light-ast/dict/heritage/i-heritage-dict";
+import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict";
 import {IPropertySignatureDict} from "../light-ast/dict/property-signature/i-property-signature-dict";
 import {ICallSignatureDict} from "../light-ast/dict/call-signature/i-call-signature-dict";
 import {IConstructSignatureDict} from "../light-ast/dict/construct-signature/i-construct-signature-dict";
@@ -13,12 +14,23 @@ import {IIndexSignatureDict} from "../light-ast/dict/index-signature/i-index-sig
 import {ISignatureDict} from "../light-ast/dict/signature/i-signature-dict";
 import {IParameterDict} from "../light-ast/dict/parameter/i-parameter-dict";
 import {BindingNameDict, IArrayBindingNameDict, INormalBindingNameDict, IObjectBindingNameDict} from "../light-ast/dict/binding-name/binding-name-dict";
-import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
-import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict";
+import {ClassAccessorDict} from "../light-ast/dict/class-accessor/class-accessor-dict";
+import {AccessorDict, IAccessorDict, IGetAccessorDict, ISetAccessorDict} from "../light-ast/dict/accessor/accessor-dict";
+import {IFunctionLikeDict} from "../light-ast/dict/function-like/i-function-like-dict";
+import {IClassPropertyDict} from "../light-ast/dict/class-property/i-class-property-dict";
+import {IClassMethodDict} from "../light-ast/dict/class-method/i-class-method-dict";
+import {IMethodDict} from "../light-ast/dict/method/i-method-dict";
+import {IFunctionLikeWithParametersDict} from "../light-ast/dict/function-like-with-parameters/i-function-like-with-parameters-dict";
+import {ClassElementDict} from "../light-ast/dict/class-element/class-element-dict";
+import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
+import {IInterfaceDict} from "../light-ast/dict/interface/i-interface-dict";
+import {IConstructorDict} from "../light-ast/dict/constructor/i-constructor-dict";
+import {INodeToCtorMapperBase} from "../node-to-ctor-mapper/i-node-to-ctor-mapper";
 
-export interface INodeToDictMapperBase {
+export interface INodeToDictMapperBase extends INodeToCtorMapperBase {
+	toIClassDict (node: ClassDeclaration|ClassExpression|undefined|null): IClassDict|null;
 	toIImportClauseDict (node: ImportClause|undefined|null): IImportClauseDict|null;
 	toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportDict|null;
 	toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralDict|null;
@@ -45,4 +57,16 @@ export interface INodeToDictMapperBase {
 	toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementDict|null;
 	toArrayBindingElementDict (node: ArrayBindingElement|undefined|null): ArrayBindingElementDict|null;
 	toIDecoratorDict (node: Decorator|undefined|null): IDecoratorDict|null;
+	toClassElementDict (node: ClassElement|undefined|null): ClassElementDict|null;
+	toClassAccessorDict (node: AccessorDeclaration|undefined|null): ClassAccessorDict|null;
+	toAccessorDict (node: AccessorDeclaration|undefined|null): AccessorDict|null;
+	toIFunctionLikeDict (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeDict|null;
+	toIGetAccessorDict (node: GetAccessorDeclaration|undefined|null): IGetAccessorDict|null;
+	toISetAccessorDict (node: SetAccessorDeclaration|undefined|null): ISetAccessorDict|null;
+	toIAccessorDict (node: AccessorDeclaration|undefined|null): IAccessorDict|null;
+	toIClassPropertyDict (node: PropertyDeclaration|undefined|null): IClassPropertyDict|null;
+	toIClassMethodDict (node: MethodDeclaration|undefined|null): IClassMethodDict|null;
+	toIMethodDict (node: MethodDeclaration|undefined|null): IMethodDict|null;
+	toIFunctionLikeWithParametersDict (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeWithParametersDict|null;
+	toIConstructorDict (node: ConstructorDeclaration|undefined|null): IConstructorDict|null;
 }

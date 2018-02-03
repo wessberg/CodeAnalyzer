@@ -75,9 +75,6 @@ import {IIndexSignatureService} from "./service/index-signature/i-index-signatur
 import {IndexSignatureService} from "./service/index-signature/index-signature-service";
 import {IBindingElementService} from "./service/binding-element/i-binding-element-service";
 import {BindingElementService} from "./service/binding-element/binding-element-service";
-import {INodeToCtorMapperBase} from "./node-to-ctor-mapper/i-node-to-ctor-mapper";
-import {NodeToCtorMapper} from "./node-to-ctor-mapper/node-to-ctor-mapper";
-import {INodeToCtorMapper, wrappedINodeToCtorMapper} from "./node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 import {IIdentifierService} from "./service/identifier/i-identifier-service";
 import {IdentifierService} from "./service/identifier/identifier-service";
 import {IStringLiteralService} from "./service/string-literal/i-string-literal-service";
@@ -119,7 +116,6 @@ DIContainer.registerSingleton<IResolverBase, Resolver>();
 
 // Mappers
 DIContainer.registerSingleton<INodeToDictMapperBase, NodeToDictMapper>();
-DIContainer.registerSingleton<INodeToCtorMapperBase, NodeToCtorMapper>();
 
 // Provide lazy-getters because there are circular dependencies between AST services and these
 DIContainer.registerSingleton<IJoiner, IJoiner>(() => wrappedIJoiner);
@@ -128,7 +124,6 @@ DIContainer.registerSingleton<IFormatter, IFormatter>(() => wrappedIFormatter);
 DIContainer.registerSingleton<IRemover, IRemover>(() => wrappedIRemover);
 DIContainer.registerSingleton<IResolver, IResolver>(() => wrappedIResolver);
 DIContainer.registerSingleton<INodeToDictMapper, INodeToDictMapper>(() => wrappedINodeToDictMapper);
-DIContainer.registerSingleton<INodeToCtorMapper, INodeToCtorMapper>(() => wrappedINodeToCtorMapper);
 
 // Parser
 DIContainer.registerSingleton<IParser, Parser>();

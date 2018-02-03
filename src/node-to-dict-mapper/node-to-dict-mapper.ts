@@ -1,5 +1,5 @@
 import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
@@ -17,17 +17,23 @@ import {ITypeLiteralDict} from "../light-ast/dict/type-literal/i-type-literal-di
 import {IInterfaceDict} from "../light-ast/dict/interface/i-interface-dict";
 import {INamedImportExportDict} from "../light-ast/dict/named-import-export/i-named-import-export-dict";
 import {IImportClauseDict} from "../light-ast/dict/import-clause/i-import-clause-dict";
-import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
-import {INodeToCtorMapper} from "../node-to-ctor-mapper/i-node-to-ctor-mapper-getter";
 import {IAllModifiersDict} from "../light-ast/dict/modifier/i-all-modifiers-dict";
+import {IClassDict} from "../light-ast/dict/class/i-class-dict";
+import {ClassElementDict} from "../light-ast/dict/class-element/class-element-dict";
+import {ClassAccessorDict} from "../light-ast/dict/class-accessor/class-accessor-dict";
+import {NodeToCtorMapper} from "../node-to-ctor-mapper/node-to-ctor-mapper";
+import {AccessorDict, IAccessorDict, IGetAccessorDict, ISetAccessorDict} from "../light-ast/dict/accessor/accessor-dict";
+import {IClassMethodDict} from "../light-ast/dict/class-method/i-class-method-dict";
+import {IClassPropertyDict} from "../light-ast/dict/class-property/i-class-property-dict";
+import {IFunctionLikeDict} from "../light-ast/dict/function-like/i-function-like-dict";
+import {IFunctionLikeWithParametersDict} from "../light-ast/dict/function-like-with-parameters/i-function-like-with-parameters-dict";
+import {IMethodDict} from "../light-ast/dict/method/i-method-dict";
+import {IConstructorDict} from "../light-ast/dict/constructor/i-constructor-dict";
 
 /**
  * A class that can map nodes to dicts
  */
-export class NodeToDictMapper implements INodeToDictMapperBase {
-	constructor (private readonly nodeToCtorMapper: INodeToCtorMapper,
-							 private readonly heritageClauseService: IHeritageClauseService) {
-	}
+export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMapperBase {
 
 	/**
 	 * Maps a Decorator to an IDecoratorDict
@@ -35,10 +41,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IDecoratorDict}
 	 */
 	public toIDecoratorDict (node: Decorator|undefined|null): IDecoratorDict|null {
-		if (node == null) return null;
+		const result = this.toIDecoratorCtor(node);
+		if (result == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIDecoratorCtor(node)!,
+			...result,
 			nodeKind: "DECORATOR"
 		};
 	}
@@ -49,10 +56,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IObjectBindingElementDict}
 	 */
 	public toIObjectBindingElementDict (node: BindingElement|undefined|null): IObjectBindingElementDict|null {
-		if (node == null) return null;
+		const result = this.toIObjectBindingElementCtor(node);
+		if (result == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIObjectBindingElementCtor(node)!,
+			...result,
 			nodeKind: "OBJECT_BINDING_ELEMENT"
 		};
 	}
@@ -63,10 +71,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {INormalArrayBindingElementDict}
 	 */
 	public toINormalArrayBindingElementDict (node: BindingElement|undefined|null): INormalArrayBindingElementDict|null {
-		if (node == null) return null;
+		const result = this.toINormalArrayBindingElementCtor(node);
+		if (result == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toINormalArrayBindingElementCtor(node)!,
+			...result,
 			nodeKind: "ARRAY_BINDING_ELEMENT"
 		};
 	}
@@ -77,8 +86,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IOmittedArrayBindingElementDict}
 	 */
 	public toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementDict|null {
+		const result = this.toIOmittedArrayBindingElementCtor(node);
+		if (result == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIOmittedArrayBindingElementCtor(node)!,
+			...result,
 			nodeKind: "ARRAY_BINDING_ELEMENT"
 		};
 	}
@@ -89,10 +101,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {ArrayBindingElementDict}
 	 */
 	public toArrayBindingElementDict (node: ArrayBindingElement|undefined|null): ArrayBindingElementDict|null {
-		if (node == null) return null;
+		const result = this.toArrayBindingElementCtor(node);
+		if (result == null) return null;
 
-		if (isOmittedExpression(node)) return this.toIOmittedArrayBindingElementDict(node);
-		return this.toINormalArrayBindingElementDict(node);
+		return {
+			...result,
+			nodeKind: "ARRAY_BINDING_ELEMENT"
+		};
 	}
 
 	/**
@@ -101,13 +116,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {BindingNameDict}
 	 */
 	public toBindingNameDict (node: BindingName|undefined|null): BindingNameDict|null {
-		if (node == null) return null;
+		const result = this.toBindingNameCtor(node);
+		if (result == null) return null;
 
-		if (isIdentifier(node)) return this.toINormalBindingNameDict(node);
-		if (isArrayBindingPattern(node)) return this.toIArrayBindingNameDict(node);
-		if (isObjectBindingPattern(node)) return this.toIObjectBindingNameDict(node);
-
-		return null;
+		return {
+			...result,
+			nodeKind: "BINDING_NAME"
+		};
 	}
 
 	/**
@@ -116,10 +131,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {INormalBindingNameDict}
 	 */
 	public toINormalBindingNameDict (node: Identifier|undefined|null): INormalBindingNameDict|null {
-		if (node == null) return null;
+		const result = this.toINormalBindingNameCtor(node);
+		if (result == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toINormalBindingNameCtor(node)!,
+			...result,
 			nodeKind: "BINDING_NAME"
 		};
 	}
@@ -130,12 +146,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IObjectBindingNameDict}
 	 */
 	public toIObjectBindingNameDict (node: ObjectBindingPattern|undefined|null): IObjectBindingNameDict|null {
-		if (node == null) return null;
+		const result = this.toIObjectBindingNameCtor(node);
+		if (result == null || node == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIObjectBindingNameCtor(node)!,
-			nodeKind: "BINDING_NAME",
-			elements: node.elements.map(element => this.toIObjectBindingElementDict(element)!)
+			...result,
+			elements: node.elements.map(element => this.toIObjectBindingElementDict(element)!),
+			nodeKind: "BINDING_NAME"
 		};
 	}
 
@@ -145,12 +162,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IArrayBindingNameDict}
 	 */
 	public toIArrayBindingNameDict (node: ArrayBindingPattern|undefined|null): IArrayBindingNameDict|null {
-		if (node == null) return null;
+		const result = this.toIArrayBindingNameCtor(node);
+		if (result == null || node == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIArrayBindingNameCtor(node)!,
-			nodeKind: "BINDING_NAME",
-			elements: node.elements.map(element => this.toArrayBindingElementDict(element)!)
+			...result,
+			elements: node.elements.map(element => this.toArrayBindingElementDict(element)!),
+			nodeKind: "BINDING_NAME"
 		};
 	}
 
@@ -160,12 +178,14 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IParameterDict}
 	 */
 	public toIParameterDict (node: ParameterDeclaration|undefined|null): IParameterDict|null {
-		if (node == null) return null;
+		const result = this.toIParameterCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIParameterCtor(node)!,
-			nodeKind: "PARAMETER",
+			...result,
 			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
-			name: this.toBindingNameDict(node.name)!
+			name: this.toBindingNameDict(node.name)!,
+			nodeKind: "PARAMETER"
 		};
 	}
 
@@ -192,11 +212,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {ICallSignatureDict}
 	 */
 	public toICallSignatureDict (node: CallSignatureDeclaration|undefined|null): ICallSignatureDict|null {
-		if (node == null) return null;
+		const result = this.toICallSignatureCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toICallSignatureCtor(node)!,
-			nodeKind: "CALL_SIGNATURE",
-			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "CALL_SIGNATURE"
 		};
 	}
 
@@ -206,11 +228,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IConstructSignatureDict}
 	 */
 	public toIConstructSignatureDict (node: ConstructSignatureDeclaration|undefined|null): IConstructSignatureDict|null {
-		if (node == null) return null;
+		const result = this.toIConstructSignatureCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIConstructSignatureCtor(node)!,
-			nodeKind: "CONSTRUCT_SIGNATURE",
-			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "CONSTRUCT_SIGNATURE"
 		};
 	}
 
@@ -220,11 +244,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IMethodSignatureDict}
 	 */
 	public toIMethodSignatureDict (node: MethodSignature|undefined|null): IMethodSignatureDict|null {
-		if (node == null) return null;
+		const result = this.toIMethodSignatureCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIMethodSignatureCtor(node)!,
-			nodeKind: "METHOD_SIGNATURE",
-			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "METHOD_SIGNATURE"
 		};
 	}
 
@@ -234,11 +260,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IIndexSignatureDict}
 	 */
 	public toIIndexSignatureDict (node: IndexSignatureDeclaration|undefined|null): IIndexSignatureDict|null {
-		if (node == null) return null;
+		const result = this.toIIndexSignatureCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIIndexSignatureCtor(node)!,
-			nodeKind: "INDEX_SIGNATURE",
-			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "INDEX_SIGNATURE"
 		};
 	}
 
@@ -248,9 +276,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IPropertySignatureDict}
 	 */
 	public toIPropertySignatureDict (node: PropertySignature|undefined|null): IPropertySignatureDict|null {
-		if (node == null) return null;
+		const result = this.toIPropertySignatureCtor(node);
+		if (result == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toIPropertySignatureCtor(node)!,
+			...result,
 			nodeKind: "PROPERTY_SIGNATURE"
 		};
 	}
@@ -261,10 +291,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {ISignatureDict}
 	 */
 	public toISignatureDict (node: SignatureDeclaration|undefined|null): ISignatureDict|null {
-		if (node == null) return null;
+		const result = this.toISignatureCtor(node);
+		if (result == null || node == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toISignatureCtor(node)!,
+			...result,
 			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!)
 		};
 	}
@@ -275,11 +306,12 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IExtendsHeritageDict}
 	 */
 	public toIExtendsHeritageDict (node: HeritageClause|undefined|null): IExtendsHeritageDict|null {
-		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return null;
+		const result = this.toIExtendsHeritageCtor(node);
+		if (result == null) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
-			...this.nodeToCtorMapper.toIExtendsHeritageCtor(node)!,
+			...result,
 			nodeKind: "HERITAGE"
 		};
 	}
@@ -290,11 +322,12 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IImplementsHeritageDict}
 	 */
 	public toIImplementsHeritageDict (node: HeritageClause|undefined|null): IImplementsHeritageDict|null {
-		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return null;
+		const result = this.toIImplementsHeritageCtor(node);
+		if (result == null) return null;
 
 		// Otherwise, it is an implements clause.
 		return {
-			...this.nodeToCtorMapper.toIImplementsHeritageCtor(node)!,
+			...result,
 			nodeKind: "HERITAGE"
 		};
 	}
@@ -305,15 +338,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {HeritageDict}
 	 */
 	public toHeritageDict (node: HeritageClause|undefined|null): HeritageDict|null {
-		if (node == null) return null;
+		const result = this.toHeritageCtor(node);
+		if (result == null) return null;
 
-		// If it is an implements clause
-		if (this.heritageClauseService.isExtendsClause(node)) {
-			return this.toIExtendsHeritageDict(node);
-		}
-
-		// Otherwise, it is an implements clause
-		return this.toIImplementsHeritageDict(node);
+		return {
+			...result,
+			nodeKind: "HERITAGE"
+		};
 	}
 
 	/**
@@ -322,11 +353,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {ITypeLiteralDict}
 	 */
 	public toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralDict|null {
-		if (node == null) return null;
+		const result = this.toITypeLiteralCtor(node);
+		if (result == null || node == null) return null;
+
 		return {
-			...this.nodeToCtorMapper.toITypeLiteralCtor(node)!,
-			nodeKind: "TYPE_LITERAL",
-			members: node.members.map(member => this.toITypeElementDict(member)!)
+			...result,
+			members: node.members.map(member => this.toITypeElementDict(member)!),
+			nodeKind: "TYPE_LITERAL"
 		};
 	}
 
@@ -336,12 +369,13 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IInterfaceDict}
 	 */
 	public toIInterfaceDict (node: InterfaceDeclaration|undefined|null): IInterfaceDict|null {
-		if (node == null) return null;
+		const result = this.toIInterfaceCtor(node);
+		if (result == null || node == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIInterfaceCtor(node)!,
-			nodeKind: "INTERFACE",
-			members: node.members.map(member => this.toTypeElementDict(member)!)
+			...result,
+			members: node.members.map(member => this.toTypeElementDict(member)!),
+			nodeKind: "INTERFACE"
 		};
 	}
 
@@ -351,7 +385,7 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {ITypeElementDict}
 	 */
 	public toITypeElementDict (node: TypeElement|undefined|null): ITypeElementDict|null {
-		return this.nodeToCtorMapper.toITypeElementCtor(node);
+		return this.toITypeElementCtor(node);
 	}
 
 	/**
@@ -360,7 +394,239 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {IAllModifiersDict | null}
 	 */
 	public toIAllModifiersDict (modifiers: ModifiersArray|undefined|null): IAllModifiersDict|null {
-		return this.nodeToCtorMapper.toIAllModifiersCtor(modifiers);
+		return this.toIAllModifiersCtor(modifiers);
+	}
+
+	/**
+	 * Maps a Class to an IClassDict
+	 * @param {ClassDeclaration | ClassExpression | null | undefined} node
+	 * @returns {IClassDict | null}
+	 */
+	public toIClassDict (node: ClassDeclaration|ClassExpression|undefined|null): IClassDict|null {
+		const result = this.toIClassCtor(node);
+		if (result == null || node == null) return null;
+
+		const extendsHeritageClause = this.classService.getExtendedClass(node);
+		const implementsHeritageClause = this.classService.getImplements(node);
+
+		return {
+			...result,
+			extendsClass: extendsHeritageClause == null ? null : this.toIExtendsHeritageDict(extendsHeritageClause),
+			implementsInterfaces: implementsHeritageClause == null ? null : this.toIImplementsHeritageDict(implementsHeritageClause),
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
+			members: node.members == null ? null : node.members.map(member => this.toClassElementDict(member)!),
+			nodeKind: "CLASS"
+		};
+	}
+
+	/**
+	 * Maps a ClassElement to an ClassElementDict
+	 * @param {ClassElement | null | undefined} node
+	 * @returns {ClassElementDict | null}
+	 */
+	public toClassElementDict (node: ClassElement|undefined|null): ClassElementDict|null {
+		if (node == null) return null;
+
+		if (isAccessor(node)) {
+			return this.toClassAccessorDict(node);
+		}
+
+		else if (isPropertyDeclaration(node)) {
+			return this.toIClassPropertyDict(node);
+		}
+
+		else if (isMethodDeclaration(node)) {
+			return this.toIClassMethodDict(node);
+		}
+
+		else if (isConstructorDeclaration(node)) {
+			return this.toIConstructorDict(node);
+		}
+
+		else {
+			throw new TypeError(`Could not map a node of kind: "${SyntaxKind[node.kind]}" to a ClassElementDict`);
+		}
+	}
+
+	/**
+	 * Maps a AccessorDeclaration to an ClassAccessorDict
+	 * @param {AccessorDeclaration | null | undefined} node
+	 * @returns {ClassAccessorDict | null}
+	 */
+	public toClassAccessorDict (node: AccessorDeclaration|undefined|null): ClassAccessorDict|null {
+		const result = this.toClassAccessorCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			// tslint:disable
+			...<any>this.toAccessorDict(node)!,
+			// tslint:enable
+			nodeKind: "CLASS_ACCESSOR"
+		};
+
+	}
+
+	/**
+	 * Maps a ConstructorDeclaration to an IConstructorDict
+	 * @param {ts.ConstructorDeclaration | null | undefined} node
+	 * @returns {IConstructorDict | null}
+	 */
+	public toIConstructorDict (node: ConstructorDeclaration|null|undefined): IConstructorDict|null {
+		const result = this.toIConstructorCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "CONSTRUCTOR"
+		};
+	}
+
+	/**
+	 * Maps a MethodDeclaration to an IClassMethodDict
+	 * @param {MethodDeclaration | null | undefined} node
+	 * @returns {IClassMethodDict | null}
+	 */
+	public toIClassMethodDict (node: MethodDeclaration|null|undefined): IClassMethodDict|null {
+		const result = this.toIClassMethodCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
+			nodeKind: "CLASS_METHOD"
+		};
+	}
+
+	/**
+	 * Maps an PropertyDeclaration to an IClassPropertyDict
+	 * @param {PropertyDeclaration | null | undefined} node
+	 * @returns {IClassPropertyDict | null}
+	 */
+	public toIClassPropertyDict (node: PropertyDeclaration|null|undefined): IClassPropertyDict|null {
+		const result = this.toIClassPropertyCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
+			nodeKind: "CLASS_PROPERTY"
+		};
+	}
+
+	/**
+	 * Maps a MethodDeclaration to an IMethodDict
+	 * @param {ts.MethodDeclaration | null | undefined} node
+	 * @returns {IMethodDict | null}
+	 */
+	public toIMethodDict (node: MethodDeclaration|null|undefined): IMethodDict|null {
+		const result = this.toIMethodCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
+			nodeKind: "METHOD"
+		};
+	}
+
+	/**
+	 * Maps an FunctionLikeDeclaration to an IFunctionLikeDict
+	 * @param {FunctionLikeDeclaration | null | undefined} node
+	 * @returns {IFunctionLikeDict | null}
+	 */
+	public toIFunctionLikeDict (node: FunctionLikeDeclaration|null|undefined): IFunctionLikeDict|null {
+		const result = this.toIFunctionLikeCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!)
+		};
+	}
+
+	/**
+	 * Maps a FunctionLikeDeclaration to an IFunctionLikeWithParametersDict
+	 * @param {FunctionLikeDeclaration | null | undefined} node
+	 * @returns {IFunctionLikeWithParametersDict | null}
+	 */
+	public toIFunctionLikeWithParametersDict (node: FunctionLikeDeclaration|null|undefined): IFunctionLikeWithParametersDict|null {
+		const result = this.toIFunctionLikeWithParametersCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!)
+		};
+	}
+
+	/**
+	 * Maps an AccessorDeclaration to an AccessorDict
+	 * @param {AccessorDeclaration | null | undefined} node
+	 * @returns {AccessorDict | null}
+	 */
+	public toAccessorDict (node: AccessorDeclaration|null|undefined): AccessorDict|null {
+		if (node == null) return null;
+
+		if (isGetAccessorDeclaration(node)) {
+			return this.toIGetAccessorDict(node);
+		}
+
+		else {
+			return this.toISetAccessorDict(node);
+		}
+	}
+
+	/**
+	 * Maps an AccessorDeclaration to an IAccessorDict
+	 * @param {AccessorDeclaration | null | undefined} node
+	 * @returns {IAccessorDict | null}
+	 */
+	public toIAccessorDict (node: AccessorDeclaration|null|undefined): IAccessorDict|null {
+		const result = this.toIAccessorCtor(node);
+		if (result == null) return null;
+
+		return {
+			...result,
+			nodeKind: "ACCESSOR"
+		};
+	}
+
+	/**
+	 * Maps a GetAccessorDeclaration to an IGetAccessorDict
+	 * @param {GetAccessorDeclaration | null | undefined} node
+	 * @returns {IGetAccessorDict | null}
+	 */
+	public toIGetAccessorDict (node: GetAccessorDeclaration|null|undefined): IGetAccessorDict|null {
+		const result = this.toIGetAccessorCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			...this.toIFunctionLikeDict(node)!,
+			nodeKind: "ACCESSOR"
+		};
+	}
+
+	/**
+	 * Maps a SetAccessorDeclaration to an ISetAccessorDict
+	 * @param {SetAccessorDeclaration | null | undefined} node
+	 * @returns {ISetAccessorDict | null}
+	 */
+	public toISetAccessorDict (node: SetAccessorDeclaration|null|undefined): ISetAccessorDict|null {
+		const result = this.toISetAccessorCtor(node);
+		if (result == null || node == null) return null;
+
+		return {
+			...result,
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
+			parameters: node.parameters.map(parameter => this.toIParameterDict(parameter)!),
+			nodeKind: "ACCESSOR"
+		};
 	}
 
 	/**
@@ -369,10 +635,11 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 	 * @returns {INamedImportExportDict?}
 	 */
 	public toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportDict|null {
-		if (node == null) return null;
+		const result = this.toINamedImportExportCtor(node);
+		if (result == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toINamedImportExportCtor(node)!,
+			...result,
 			nodeKind: "NAMED_IMPORT_EXPORT"
 		};
 	}
@@ -386,12 +653,14 @@ export class NodeToDictMapper implements INodeToDictMapperBase {
 		if (node == null) return null;
 
 		return {
-			...this.nodeToCtorMapper.toIImportClauseCtor(node)!,
-			nodeKind: "IMPORT_CLAUSE",
+			defaultName: node.name == null ? null : node.name.text,
+			namespace: node.namedBindings == null || !isNamespaceImport(node.namedBindings)
+				? null
+				: node.namedBindings.name.text,
 			namedImports: node.namedBindings == null || isNamespaceImport(node.namedBindings)
 				? null
-				: node.namedBindings.elements.map(element => this.toINamedImportExportDict(element)!)
+				: node.namedBindings.elements.map(element => this.toINamedImportExportDict(element)!),
+			nodeKind: "IMPORT_CLAUSE"
 		};
 	}
-
 }

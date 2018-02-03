@@ -30,6 +30,8 @@ import {IGetAccessorService} from "../get-accessor/i-get-accessor-service";
 import {ISetAccessorService} from "../set-accessor/i-set-accessor-service";
 import {IPlacement} from "../../placement/i-placement";
 import {IPropertyService} from "../property/i-property-service";
+import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
+import {IClassDict} from "../../light-ast/dict/class/i-class-dict";
 
 /**
  * A class for working with classes
@@ -42,7 +44,8 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 	 */
 	protected readonly ALLOWED_KINDS = [SyntaxKind.ClassExpression, SyntaxKind.ClassDeclaration];
 
-	constructor (private readonly formatter: IFormatter,
+	constructor (private readonly nodeToDictMapper: INodeToDictMapper,
+							 private readonly formatter: IFormatter,
 							 private readonly methodService: IMethodService,
 							 private readonly propertyService: IPropertyService,
 							 private readonly modifierService: IModifierService,
@@ -1801,6 +1804,15 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 			this.joiner.joinClassElements(formatted, ...classDeclaration.members),
 			classDeclaration
 		);
+	}
+
+	/**
+	 * Maps the provided class to an IClassDict
+	 * @param {ClassDeclaration|ClassExpression} node
+	 * @returns {IClassDict}
+	 */
+	public toLightAST (node: ClassDeclaration|ClassExpression): IClassDict {
+		return this.nodeToDictMapper.toIClassDict(node)!;
 	}
 
 	/**

@@ -1,4 +1,4 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
 import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {ITypeLiteralCtor} from "../light-ast/ctor/type-literal/i-type-literal-ctor";
@@ -17,8 +17,19 @@ import {IObjectBindingElementCtor} from "../light-ast/ctor/binding-element/i-obj
 import {ArrayBindingElementCtor, INormalArrayBindingElementCtor, IOmittedArrayBindingElementCtor} from "../light-ast/ctor/binding-element/array-binding-element-ctor";
 import {IDecoratorCtor} from "../light-ast/ctor/decorator/i-decorator-ctor";
 import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
+import {IClassCtor} from "../light-ast/ctor/class/i-class-ctor";
+import {ClassElementCtor} from "../light-ast/ctor/class-element/class-element-ctor";
+import {ClassAccessorCtor} from "../light-ast/ctor/class-accessor/class-accessor-ctor";
+import {IFunctionLikeCtor} from "../light-ast/ctor/function-like/i-function-like-ctor";
+import {AccessorCtor, IAccessorCtor, IGetAccessorCtor, ISetAccessorCtor} from "../light-ast/ctor/accessor/accessor-ctor";
+import {IClassPropertyCtor} from "../light-ast/ctor/class-property/i-class-property-ctor";
+import {IClassMethodCtor} from "../light-ast/ctor/class-method/i-class-method-ctor";
+import {IMethodCtor} from "../light-ast/ctor/method/i-method-ctor";
+import {IFunctionLikeWithParametersCtor} from "../light-ast/ctor/function-like-with-parameters/i-function-like-with-parameters-ctor";
+import {IConstructorCtor} from "../light-ast/ctor/constructor/i-constructor-ctor";
 
 export interface INodeToCtorMapperBase {
+	toIClassCtor (node: ClassDeclaration|ClassExpression|undefined|null): IClassCtor|null;
 	toIImportClauseCtor (node: ImportClause|undefined|null): IImportClauseCtor|null;
 	toINamedImportExportCtor (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportCtor|null;
 	toITypeLiteralCtor (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralCtor|null;
@@ -45,5 +56,17 @@ export interface INodeToCtorMapperBase {
 	toIOmittedArrayBindingElementCtor (node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementCtor|null;
 	toArrayBindingElementCtor (node: ArrayBindingElement|undefined|null): ArrayBindingElementCtor|null;
 	toIDecoratorCtor (node: Decorator|undefined|null): IDecoratorCtor|null;
+	toClassElementCtor (node: ClassElement|undefined|null): ClassElementCtor|null;
+	toClassAccessorCtor (node: AccessorDeclaration|undefined|null): ClassAccessorCtor|null;
+	toAccessorCtor (node: AccessorDeclaration|undefined|null): AccessorCtor|null;
+	toIFunctionLikeCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeCtor|null;
+	toIGetAccessorCtor (node: GetAccessorDeclaration|undefined|null): IGetAccessorCtor|null;
+	toISetAccessorCtor (node: SetAccessorDeclaration|undefined|null): ISetAccessorCtor|null;
+	toIAccessorCtor (node: AccessorDeclaration|undefined|null): IAccessorCtor|null;
+	toIClassPropertyCtor (node: PropertyDeclaration|undefined|null): IClassPropertyCtor|null;
+	toIClassMethodCtor (node: MethodDeclaration|undefined|null): IClassMethodCtor|null;
+	toIMethodCtor (node: MethodDeclaration|undefined|null): IMethodCtor|null;
+	toIFunctionLikeWithParametersCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeWithParametersCtor|null;
+	toIConstructorCtor (node: ConstructorDeclaration|undefined|null): IConstructorCtor|null;
 	fallbackToNull<T> (item: T|undefined): T|null;
 }

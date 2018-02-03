@@ -103,6 +103,8 @@ constructorService.addParameter({
 
 console.log(printer.print(sourceFile));
 
+console.log(JSON.stringify(classService.toLightAST(A), null, "  "));
+
 test("foo", t => {
 	t.true(true);
 });

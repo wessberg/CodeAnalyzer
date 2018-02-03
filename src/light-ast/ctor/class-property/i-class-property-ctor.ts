@@ -4,7 +4,7 @@ import {VisibilityKind} from "../../dict/visibility/visibility-kind";
 export interface IClassPropertyCtor {
 	name: string;
 	decorators: Iterable<IDecoratorCtor>|null;
-	type: string;
+	type: string|null;
 	initializer: string|null;
 	isAbstract: boolean;
 	isReadonly: boolean;

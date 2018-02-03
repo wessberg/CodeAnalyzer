@@ -14,6 +14,7 @@ import {IOwnOrInheritedConstructorResult} from "./i-own-or-inherited-constructor
 import {IOwnOrInheritedGetterWithNameResult} from "./i-own-or-inherited-getter-with-name-result";
 import {IOwnOrInheritedSetterWithNameResult} from "./i-own-or-inherited-setter-with-name-result";
 import {IPlacement} from "../../placement/i-placement";
+import {IClassDict} from "../../light-ast/dict/class/i-class-dict";
 
 export interface IClassService extends INodeService<ClassDeclaration|ClassExpression> {
 	hasClassWithName (name: string, sourceFile: SourceFile, deep?: boolean): boolean;
@@ -137,4 +138,6 @@ export interface IClassService extends INodeService<ClassDeclaration|ClassExpres
 	appendInstructionsToConstructor (instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	appendInstructionsToGetter (getterName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
 	appendInstructionsToSetter (setterName: string, instructions: string, classDeclaration: ClassDeclaration|ClassExpression): ClassDeclaration|ClassExpression;
+
+	toLightAST (node: ClassDeclaration|ClassExpression): IClassDict;
 }

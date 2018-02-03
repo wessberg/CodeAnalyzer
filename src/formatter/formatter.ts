@@ -236,7 +236,7 @@ export class Formatter implements IFormatterBase {
 			this.formatModifiers({isStatic, isAbstract, visibility, isAsync, isReadonly}),
 			name,
 			this.formatQuestionToken(isOptional),
-			this.formatType(type),
+			type == null ? undefined : this.formatType(type),
 			initializer == null ? undefined : this.formatExpression(initializer)
 		);
 	}
@@ -262,7 +262,7 @@ export class Formatter implements IFormatterBase {
 			undefined,
 			typeParameters == null ? undefined : this.formatTypeParameters(typeParameters),
 			parameters == null ? createNodeArray() : this.formatParameters(parameters),
-			this.formatType(type),
+			type == null ? undefined : this.formatType(type),
 			body == null ? undefined : this.formatBlock(body)
 		);
 	}
@@ -292,7 +292,7 @@ export class Formatter implements IFormatterBase {
 			this.formatQuestionToken(isOptional),
 			typeParameters == null ? undefined : this.formatTypeParameters(typeParameters),
 			parameters == null ? createNodeArray() : this.formatParameters(parameters),
-			this.formatType(type),
+			type == null ? undefined : this.formatType(type),
 			body == null ? undefined : this.formatBlock(body)
 		);
 	}
@@ -328,7 +328,7 @@ export class Formatter implements IFormatterBase {
 			this.formatModifiers({isStatic, isAbstract, visibility}),
 			name,
 			createNodeArray(),
-			this.formatType(type),
+			type == null ? undefined : this.formatType(type),
 			body == null ? undefined : this.formatBlock(body)
 		);
 	}
@@ -382,7 +382,7 @@ export class Formatter implements IFormatterBase {
 			undefined,
 			name,
 			createNodeArray(),
-			this.formatType(type),
+			type == null ? undefined : this.formatType(type),
 			body == null ? undefined : this.formatBlock(body)
 		);
 	}

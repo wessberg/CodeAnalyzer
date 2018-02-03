@@ -1,4 +1,4 @@
-import {ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isArrayBindingPattern, isCallSignatureDeclaration, isConstructSignatureDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertySignature, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertySignature, SignatureDeclaration, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {INodeToCtorMapperBase} from "./i-node-to-ctor-mapper";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
@@ -30,23 +30,41 @@ import {IInterfaceCtor} from "../light-ast/ctor/interface/i-interface-ctor";
 import {INamedImportExportCtor} from "../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportClauseCtor} from "../light-ast/ctor/import-clause/i-import-clause-ctor";
 import {IAllModifiersCtor} from "../light-ast/ctor/modifier/i-all-modifiers-ctor";
+import {IClassCtor} from "../light-ast/ctor/class/i-class-ctor";
+import {IClassService} from "../service/class/i-class-service";
+import {ClassElementCtor} from "../light-ast/ctor/class-element/class-element-ctor";
+import {ClassAccessorCtor} from "../light-ast/ctor/class-accessor/class-accessor-ctor";
+import {AccessorCtor, IAccessorCtor, IGetAccessorCtor, ISetAccessorCtor} from "../light-ast/ctor/accessor/accessor-ctor";
+import {IGetAccessorService} from "../service/get-accessor/i-get-accessor-service";
+import {ISetAccessorService} from "../service/set-accessor/i-set-accessor-service";
+import {IFunctionLikeCtor} from "../light-ast/ctor/function-like/i-function-like-ctor";
+import {IClassPropertyCtor} from "../light-ast/ctor/class-property/i-class-property-ctor";
+import {IClassMethodCtor} from "../light-ast/ctor/class-method/i-class-method-ctor";
+import {IMethodCtor} from "../light-ast/ctor/method/i-method-ctor";
+import {IMethodService} from "../service/method/i-method-service";
+import {IFunctionLikeWithParametersCtor} from "../light-ast/ctor/function-like-with-parameters/i-function-like-with-parameters-ctor";
+import {IConstructorCtor} from "../light-ast/ctor/constructor/i-constructor-ctor";
 
 /**
  * A class that can map nodes to ctor's
  */
 export class NodeToCtorMapper implements INodeToCtorMapperBase {
-	constructor (private readonly heritageClauseService: IHeritageClauseService,
-							 private readonly interfaceDeclarationService: IInterfaceDeclarationService,
-							 private readonly propertyNameService: IPropertyNameService,
-							 private readonly propertySignatureService: IPropertySignatureService,
-							 private readonly methodSignatureService: IMethodSignatureService,
-							 private readonly indexSignatureService: IIndexSignatureService,
-							 private readonly modifierService: IModifierService,
-							 private readonly typeNodeService: ITypeNodeService,
-							 private readonly parameterService: IParameterService,
-							 private readonly bindingElementService: IBindingElementService,
-							 private readonly decoratorService: IDecoratorService,
-							 private readonly printer: IPrinter) {
+	constructor (protected readonly heritageClauseService: IHeritageClauseService,
+							 protected readonly interfaceDeclarationService: IInterfaceDeclarationService,
+							 protected readonly propertyNameService: IPropertyNameService,
+							 protected readonly methodService: IMethodService,
+							 protected readonly propertySignatureService: IPropertySignatureService,
+							 protected readonly methodSignatureService: IMethodSignatureService,
+							 protected readonly indexSignatureService: IIndexSignatureService,
+							 protected readonly getAccessorService: IGetAccessorService,
+							 protected readonly setAccessorService: ISetAccessorService,
+							 protected readonly classService: IClassService,
+							 protected readonly modifierService: IModifierService,
+							 protected readonly typeNodeService: ITypeNodeService,
+							 protected readonly parameterService: IParameterService,
+							 protected readonly bindingElementService: IBindingElementService,
+							 protected readonly decoratorService: IDecoratorService,
+							 protected readonly printer: IPrinter) {
 	}
 
 	/**
@@ -402,6 +420,250 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		return {
 			name: node.name == null ? null : this.propertyNameService.getName(node.name),
 			isOptional: node.questionToken != null
+		};
+	}
+
+	/**
+	 * Maps a Class to an IClassCtor
+	 * @param {ClassDeclaration | ClassExpression | null | undefined} node
+	 * @returns {IClassCtor | null}
+	 */
+	public toIClassCtor (node: ClassDeclaration|ClassExpression|undefined|null): IClassCtor|null {
+		if (node == null) return null;
+
+		// Get the name of the class
+		const className = this.classService.getNameOfClass(node);
+		const extendsHeritageClause = this.classService.getExtendedClass(node);
+		const implementsHeritageClause = this.classService.getImplements(node);
+		const name = className == null ? null : className;
+		const extendsClass = extendsHeritageClause == null ? null : this.toIExtendsHeritageCtor(extendsHeritageClause);
+		const implementsInterfaces = implementsHeritageClause == null ? null : this.toIImplementsHeritageCtor(implementsHeritageClause);
+		const decorators = node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorCtor(decorator)!);
+		const isAbstract = this.modifierService.hasModifierWithName("abstract", node);
+		const typeParameters = node.typeParameters == null ? null : node.typeParameters.map(typeParameter => this.printer.print(typeParameter));
+		const members = node.members == null ? null : node.members.map(member => this.toClassElementCtor(member)!);
+
+		return {
+			name, isAbstract, decorators, extendsClass, implementsInterfaces, typeParameters, members
+		};
+	}
+
+	/**
+	 * Maps a ClassElement to a ClassElementCtor
+	 * @param {ClassElement|null|?} node
+	 * @returns {ClassElementCtor|null}
+	 */
+	public toClassElementCtor (node: ClassElement|undefined|null): ClassElementCtor|null {
+		if (node == null) return null;
+
+		if (isAccessor(node)) {
+			return this.toClassAccessorCtor(node);
+		}
+
+		else if (isPropertyDeclaration(node)) {
+			return this.toIClassPropertyCtor(node);
+		}
+
+		else if (isMethodDeclaration(node)) {
+			return this.toIClassMethodCtor(node);
+		}
+
+		else if (isConstructorDeclaration(node)) {
+			return this.toIConstructorCtor(node);
+		}
+
+		else {
+			throw new TypeError(`Could not map a node of kind: "${SyntaxKind[node.kind]}" to a ClassElementCtor`);
+		}
+	}
+
+	/**
+	 * Maps a AccessorDeclaration to a ClassAccessorCtor
+	 * @param {AccessorDeclaration| null | undefined} node
+	 * @returns {ClassAccessorCtor | null}
+	 */
+	public toClassAccessorCtor (node: AccessorDeclaration|undefined|null): ClassAccessorCtor|null {
+		if (node == null) return null;
+
+		const visibility = this.modifierService.getAccessModifier(node);
+
+		return {
+			...this.toAccessorCtor(node)!,
+			isStatic: this.modifierService.isStatic(node),
+			isAbstract: this.modifierService.isAbstract(node),
+			visibility: visibility == null ? "public" : visibility
+		};
+	}
+
+	/**
+	 * Maps a ConstructorDeclaration to a IConstructorCtor
+	 * @param {ConstructorDeclaration | null | undefined} node
+	 * @returns {IConstructorCtor | null}
+	 */
+	public toIConstructorCtor (node: ConstructorDeclaration|undefined|null): IConstructorCtor|null {
+		if (node == null) return null;
+
+		return {
+			body: node.body == null ? null : node.body.statements.map(statement => this.printer.print(statement)).join("\n"),
+			parameters: node.parameters.map(parameter => this.toIParameterCtor(parameter)!)
+		};
+	}
+
+	/**
+	 * Maps a MethodDeclaration to a IClassMethodCtor
+	 * @param {MethodDeclaration| null | undefined} node
+	 * @returns {IClassMethodCtor | null}
+	 */
+	public toIClassMethodCtor (node: MethodDeclaration|undefined|null): IClassMethodCtor|null {
+		if (node == null) return null;
+
+		const visibility = this.modifierService.getAccessModifier(node);
+
+		return {
+			...this.toIMethodCtor(node)!,
+			isAbstract: this.modifierService.isAbstract(node),
+			isOptional: node.questionToken != null,
+			isStatic: this.modifierService.isStatic(node),
+			visibility: visibility == null ? "public" : visibility
+		};
+	}
+
+	/**
+	 * Maps a PropertyDeclaration to a IClassPropertyCtor
+	 * @param {AccessorDeclaration| null | undefined} node
+	 * @returns {IClassPropertyCtor | null}
+	 */
+	public toIClassPropertyCtor (node: PropertyDeclaration|undefined|null): IClassPropertyCtor|null {
+		if (node == null) return null;
+
+		const visibility = this.modifierService.getAccessModifier(node);
+
+		return {
+			name: this.propertyNameService.getName(node.name),
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorCtor(decorator)!),
+			type: node.type == null ? null : this.typeNodeService.getNameOfType(node.type),
+			initializer: node.initializer == null ? null : this.printer.print(node.initializer),
+			visibility: visibility == null ? "public" : visibility,
+			isAbstract: this.modifierService.isAbstract(node),
+			isReadonly: this.modifierService.isReadonly(node),
+			isOptional: node.questionToken != null,
+			isAsync: this.modifierService.isAsync(node),
+			isStatic: this.modifierService.isStatic(node)
+		};
+	}
+
+	/**
+	 * Maps a MethodDeclaration to a IMethodCtor
+	 * @param {MethodDeclaration| null | undefined} node
+	 * @returns {IMethodCtor | null}
+	 */
+	public toIMethodCtor (node: MethodDeclaration|undefined|null): IMethodCtor|null {
+		if (node == null) return null;
+
+		return {
+			...this.toIFunctionLikeWithParametersCtor(node)!,
+			name: this.methodService.getName(node),
+			isAsync: this.modifierService.isAsync(node)
+		};
+	}
+
+	/**
+	 * Maps a FunctionLikeDeclaration to an IFunctionLikeCtor
+	 * @param {FunctionLikeDeclaration | null | undefined} node
+	 * @returns {IFunctionLikeCtor | null}
+	 */
+	public toIFunctionLikeCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeCtor|null {
+		if (node == null) return null;
+
+		return {
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorCtor(decorator)!),
+			type: node.type == null ? null : this.typeNodeService.getNameOfType(node.type),
+			body: node.body == null ? null : "statements" in node.body ? node.body.statements.map(statement => this.printer.print(statement)).join("\n") : this.printer.print(node.body)
+		};
+	}
+
+	/**
+	 * Maps a FunctionLikeDeclaration to a IFunctionLikeWithParametersCtor
+	 * @param {FunctionLikeDeclaration| null | undefined} node
+	 * @returns {IMethodCtor | null}
+	 */
+	public toIFunctionLikeWithParametersCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeWithParametersCtor|null {
+		if (node == null) return null;
+
+		return {
+			...this.toIFunctionLikeCtor(node)!,
+			parameters: node.parameters.map(parameter => this.toIParameterCtor(parameter)!),
+			typeParameters: node.typeParameters == null ? null : node.typeParameters.map(typeParameter => this.printer.print(typeParameter))
+		};
+	}
+
+	/**
+	 * Maps a AccessorDeclaration to a AccessorCtor
+	 * @param {AccessorDeclaration| null | undefined} node
+	 * @returns {AccessorCtor | null}
+	 */
+	public toAccessorCtor (node: AccessorDeclaration|undefined|null): AccessorCtor|null {
+		if (node == null) return null;
+
+		if (isGetAccessorDeclaration(node)) {
+			return this.toIGetAccessorCtor(node);
+		}
+
+		else {
+			return this.toISetAccessorCtor(node);
+		}
+	}
+
+	/**
+	 * Maps a AccessorDeclaration to an IAccessorCtor
+	 * @param {AccessorDeclaration| null | undefined} node
+	 * @returns {IAccessorCtor | null}
+	 */
+	public toIAccessorCtor (node: AccessorDeclaration|undefined|null): IAccessorCtor|null {
+		if (node == null) return null;
+
+		if (isGetAccessorDeclaration(node)) {
+			return {
+				kind: "GET",
+				name: this.getAccessorService.getName(node)
+			};
+		}
+
+		return {
+			kind: "SET",
+			name: this.setAccessorService.getName(node)
+		};
+	}
+
+	/**
+	 * Maps a GetAccessorDeclaration to an IGetAccessorCtor
+	 * @param {GetAccessorDeclaration | null | undefined} node
+	 * @returns {IGetAccessorCtor | null}
+	 */
+	public toIGetAccessorCtor (node: GetAccessorDeclaration|undefined|null): IGetAccessorCtor|null {
+		if (node == null) return null;
+
+		return {
+			...this.toIAccessorCtor(node)!,
+			...this.toIFunctionLikeCtor(node)!,
+			kind: "GET"
+		};
+	}
+
+	/**
+	 * Maps a SetAccessorDeclaration to an ISetAccessorCtor
+	 * @param {SetAccessorDeclaration | null | undefined} node
+	 * @returns {ISetAccessorCtor | null}
+	 */
+	public toISetAccessorCtor (node: SetAccessorDeclaration|undefined|null): ISetAccessorCtor|null {
+		if (node == null) return null;
+
+		return {
+			...this.toIAccessorCtor(node)!,
+			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorCtor(decorator)!),
+			parameters: node.parameters.map(parameter => this.toIParameterCtor(parameter)!),
+			body: node.body == null ? null : node.body.statements.map(statement => this.printer.print(statement)).join("\n"),
+			kind: "SET"
 		};
 	}
 
