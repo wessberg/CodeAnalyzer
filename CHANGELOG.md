@@ -1,3 +1,13 @@
+<a name="1.0.122"></a>
+## <small>1.0.122 (2018-02-03)</small>
+
+* 1.0.122 ([7b77f3a](https://github.com/wessberg/CodeAnalyzer/commit/7b77f3a))
+* Added  support for stringifying class declarations and class expressions into a light AST representa ([d4dbcae](https://github.com/wessberg/CodeAnalyzer/commit/d4dbcae)), closes [#17](https://github.com/wessberg/CodeAnalyzer/issues/17)
+* Bumped version ([0204146](https://github.com/wessberg/CodeAnalyzer/commit/0204146))
+* Fixed an issue where base classes couldn't be updated if they had no HeritageClauses. Fixes #18 ([f3814bd](https://github.com/wessberg/CodeAnalyzer/commit/f3814bd)), closes [#18](https://github.com/wessberg/CodeAnalyzer/issues/18)
+
+
+
 <a name="1.0.121"></a>
 ## <small>1.0.121 (2018-02-03)</small>
 
