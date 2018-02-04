@@ -4,10 +4,10 @@ import {IDecoratorCtor} from "../decorator/i-decorator-ctor";
 
 export interface IClassCtor {
 	name: string|null;
-	members: Iterable<ClassElementCtor>|null;
-	decorators: Iterable<IDecoratorCtor>|null;
+	members: ClassElementCtor[]|null;
+	decorators: IDecoratorCtor[]|null;
 	isAbstract: boolean;
 	extendsClass: IExtendsHeritageCtor|null;
 	implementsInterfaces: IImplementsHeritageCtor|null;
-	typeParameters: Iterable<string>|null;
+	typeParameters: string[]|null;
 }

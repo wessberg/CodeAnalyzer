@@ -1,5 +1,5 @@
 import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
@@ -116,13 +116,13 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @returns {BindingNameDict}
 	 */
 	public toBindingNameDict (node: BindingName|undefined|null): BindingNameDict|null {
-		const result = this.toBindingNameCtor(node);
-		if (result == null) return null;
+		if (node == null) return null;
 
-		return {
-			...result,
-			nodeKind: "BINDING_NAME"
-		};
+		if (isIdentifier(node)) return this.toINormalBindingNameDict(node);
+		if (isArrayBindingPattern(node)) return this.toIArrayBindingNameDict(node);
+		if (isObjectBindingPattern(node)) return this.toIObjectBindingNameDict(node);
+
+		return null;
 	}
 
 	/**

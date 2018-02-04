@@ -14,9 +14,9 @@ export interface IGetAccessorCtor extends IAccessorCtor, IFunctionLikeCtor {
 
 export interface ISetAccessorCtor extends IAccessorCtor {
 	kind: "SET";
-	decorators: Iterable<IDecoratorCtor>|null;
+	decorators: IDecoratorCtor[]|null;
 	body: string|null;
-	parameters: Iterable<IParameterCtor>|null;
+	parameters: IParameterCtor[]|null;
 }
 
 export declare type AccessorCtor = IGetAccessorCtor|ISetAccessorCtor;

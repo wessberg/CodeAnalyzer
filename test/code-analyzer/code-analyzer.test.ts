@@ -102,7 +102,6 @@ constructorService.addParameter({
 }, ctor!, {position: "BEFORE", node: ctor!.parameters[0]});
 
 console.log(printer.print(sourceFile));
-
 console.log(JSON.stringify(classService.toLightAST(A), null, "  "));
 
 test("foo", t => {

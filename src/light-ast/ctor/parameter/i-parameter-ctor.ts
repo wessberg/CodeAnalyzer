@@ -7,6 +7,6 @@ export interface IParameterCtor {
 	isRestSpread: boolean;
 	isOptional: boolean;
 	isReadonly: boolean;
-	decorators: Iterable<IDecoratorCtor>|null;
+	decorators: IDecoratorCtor[]|null;
 	name: BindingNameCtor;
 }
