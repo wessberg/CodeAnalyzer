@@ -1,3 +1,13 @@
+<a name="1.0.124"></a>
+## <small>1.0.124 (2018-02-04)</small>
+
+* 1.0.124 ([3a64904](https://github.com/wessberg/CodeAnalyzer/commit/3a64904))
+* Allowed taking the return statement of any ClassLike node ([b92eae5](https://github.com/wessberg/CodeAnalyzer/commit/b92eae5))
+* Bumped version ([728a73d](https://github.com/wessberg/CodeAnalyzer/commit/728a73d))
+* Fixed an issue with Dict objects without nodeKinds ([ebe3915](https://github.com/wessberg/CodeAnalyzer/commit/ebe3915))
+
+
+
 <a name="1.0.123"></a>
 ## <small>1.0.123 (2018-02-03)</small>
 
