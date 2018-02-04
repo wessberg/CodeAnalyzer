@@ -13,6 +13,7 @@ import {IUpdater} from "../../updater/i-updater-getter";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
+import {isReturnStatement, ReturnStatement} from "typescript";
 
 /**
  * An abstract service for working with ClassFunctionLikes
@@ -93,4 +94,14 @@ export abstract class ClassFunctionLikeService<T extends ClassFunctionLike> exte
 	 * @returns {T}
 	 */
 	public abstract appendInstructions (instructions: string, member: T): T;
+
+	/**
+	 * Takes the ReturnStatement of the member's body, if it has any
+	 * @template T
+	 * @param {T} method
+	 * @returns {ReturnStatement}
+	 */
+	public takeReturnStatement (method: T): ReturnStatement|undefined {
+		return method.body == null ? undefined : <ReturnStatement|undefined> method.body.statements.find(statement => isReturnStatement(statement));
+	}
 }

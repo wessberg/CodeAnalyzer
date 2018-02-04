@@ -1,8 +1,8 @@
 import {NodeService} from "../node/node-service";
-import {isNoSubstitutionTemplateLiteral, isNumericLiteral, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
+import {BooleanLiteral, isNoSubstitutionTemplateLiteral, isNumericLiteral, isRegularExpressionLiteral, isStringLiteral, isTemplateExpression, LiteralExpression, NoSubstitutionTemplateLiteral, StringLiteral, SyntaxKind, TemplateExpression, TemplateHead, TemplateMiddle, TemplateSpan, TemplateTail} from "typescript";
 import {ITemplateExpressionService} from "./i-template-expression-service";
 import {IJoiner} from "../../joiner/i-joiner-getter";
-import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
+import {IPrinter, isBooleanLiteral, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IRemover} from "../../remover/i-remover-base";
 import {IDecoratorService} from "../decorator/i-decorator-service";
@@ -31,13 +31,17 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 
 	/**
 	 * Stringifies the provided TemplateExpression
-	 * @param {TemplateExpression|NoSubstitutionTemplateLiteral|LiteralExpression} node
+	 * @param {TemplateExpression|NoSubstitutionTemplateLiteral|LiteralExpression|BooleanLiteral} node
 	 * @returns {string}
 	 */
-	public stringify (node: TemplateExpression|NoSubstitutionTemplateLiteral|StringLiteral|LiteralExpression): string {
+	public stringify (node: TemplateExpression|NoSubstitutionTemplateLiteral|StringLiteral|LiteralExpression|BooleanLiteral): string {
 		// If it is a simple template string with substitutions, everything is available on the "text" property
 		if (isNoSubstitutionTemplateLiteral(node) || isStringLiteral(node) || isRegularExpressionLiteral(node) || isNumericLiteral(node)) {
 			return node.text;
+		}
+
+		else if (isBooleanLiteral(node)) {
+			return node.kind === SyntaxKind.TrueKeyword ? "true" : "false";
 		}
 
 		else if (isTemplateExpression(node)) {
