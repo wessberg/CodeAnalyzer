@@ -19,7 +19,7 @@ class A extends D {
 	@aDecorator
 	public aMethod (): void {
 
-	}
+	};
 }
 
 /**

@@ -26,6 +26,7 @@ export default {
 	],
 	external: [
 		...Object.keys(packageJSON.dependencies),
-		...Object.keys(packageJSON.devDependencies)
+		...Object.keys(packageJSON.devDependencies),
+		"path"
 	]
 };

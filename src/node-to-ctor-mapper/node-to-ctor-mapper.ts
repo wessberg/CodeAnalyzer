@@ -1,4 +1,4 @@
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isOmittedExpression, isPropertyDeclaration, isPropertySignature, isSemicolonClassElement, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {INodeToCtorMapperBase} from "./i-node-to-ctor-mapper";
 import {IHeritageClauseService} from "../service/heritage-clause/i-heritage-clause-service";
 import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
@@ -441,7 +441,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		const decorators = node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorCtor(decorator)!);
 		const isAbstract = this.modifierService.hasModifierWithName("abstract", node);
 		const typeParameters = node.typeParameters == null ? null : node.typeParameters.map(typeParameter => this.printer.print(typeParameter));
-		const members = node.members == null ? null : node.members.map(member => this.toClassElementCtor(member)!);
+		const members = node.members == null ? null : node.members.map(member => this.toClassElementCtor(member)!).filter(member => member != null);
 
 		return {
 			name, isAbstract, decorators, extendsClass, implementsInterfaces, typeParameters, members
@@ -454,7 +454,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @returns {ClassElementCtor|null}
 	 */
 	public toClassElementCtor (node: ClassElement|undefined|null): ClassElementCtor|null {
-		if (node == null) return null;
+		if (node == null || isSemicolonClassElement(node)) return null;
 
 		if (isAccessor(node)) {
 			return this.toClassAccessorCtor(node);

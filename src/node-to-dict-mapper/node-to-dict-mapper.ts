@@ -1,5 +1,5 @@
 import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isPropertyDeclaration, isPropertySignature, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isPropertyDeclaration, isPropertySignature, isSemicolonClassElement, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
@@ -414,7 +414,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 			extendsClass: extendsHeritageClause == null ? null : this.toIExtendsHeritageDict(extendsHeritageClause),
 			implementsInterfaces: implementsHeritageClause == null ? null : this.toIImplementsHeritageDict(implementsHeritageClause),
 			decorators: node.decorators == null ? null : node.decorators.map(decorator => this.toIDecoratorDict(decorator)!),
-			members: node.members == null ? null : node.members.map(member => this.toClassElementDict(member)!),
+			members: node.members == null ? null : node.members.map(member => this.toClassElementDict(member)!).filter(member => member != null),
 			nodeKind: "CLASS"
 		};
 	}
@@ -425,7 +425,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @returns {ClassElementDict | null}
 	 */
 	public toClassElementDict (node: ClassElement|undefined|null): ClassElementDict|null {
-		if (node == null) return null;
+		if (node == null || isSemicolonClassElement(node)) return null;
 
 		if (isAccessor(node)) {
 			return this.toClassAccessorDict(node);
