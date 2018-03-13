@@ -1,3 +1,12 @@
+<a name="1.0.125"></a>
+## <small>1.0.125 (2018-03-13)</small>
+
+* 1.0.125 ([898bb17](https://github.com/wessberg/CodeAnalyzer/commit/898bb17))
+* Added handling for SemicolonClassElements in the node to ctor/dict mappers. Fixes #21 ([43e1c2c](https://github.com/wessberg/CodeAnalyzer/commit/43e1c2c)), closes [#21](https://github.com/wessberg/CodeAnalyzer/issues/21)
+* Bumped version ([3fa8e2d](https://github.com/wessberg/CodeAnalyzer/commit/3fa8e2d))
+
+
+
 <a name="1.0.124"></a>
 ## <small>1.0.124 (2018-02-04)</small>
 
