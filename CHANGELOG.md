@@ -1,3 +1,11 @@
+<a name="1.0.128"></a>
+## <small>1.0.128 (2018-03-31)</small>
+
+* 1.0.128 ([4287a11](https://github.com/wessberg/CodeAnalyzer/commit/4287a11))
+* Bumped version ([97ddb33](https://github.com/wessberg/CodeAnalyzer/commit/97ddb33))
+
+
+
 <a name="1.0.127"></a>
 ## <small>1.0.127 (2018-03-31)</small>
 
