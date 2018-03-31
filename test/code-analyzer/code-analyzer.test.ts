@@ -43,7 +43,7 @@ importService.addNamedImportToImportDeclaration({name: "B", propertyName: "Foo"}
 classService.removePropertyWithName("aMethod", A);
 classService.removeDecorator("aDecorator", A);
 
-const [firstInterface] = interfaceDeclarationService.getAll(sourceFile);
+const firstInterface = interfaceDeclarationService.getInterfaceWithName("IFoo", sourceFile)!;
 console.log("\nall:\n", interfaceDeclarationService.getPropertyNamesOfTypeDeclaration(firstInterface));
 console.log("\noptional:\n", interfaceDeclarationService.getOptionalPropertyNamesOfTypeDeclaration(firstInterface));
 console.log("\nrequired:\n", interfaceDeclarationService.getRequiredPropertyNamesOfTypeDeclaration(firstInterface));

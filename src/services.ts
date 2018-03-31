@@ -4,9 +4,7 @@ import {Formatter} from "./formatter/formatter";
 import {DIContainer} from "@wessberg/di";
 import {IModuleUtil, ModuleUtil} from "@wessberg/moduleutil";
 import {IPathUtil, PathUtil} from "@wessberg/pathutil";
-import {FileLoader, IFileLoader} from "@wessberg/fileloader";
 import {ITypescriptLanguageService, TypescriptLanguageService} from "@wessberg/typescript-language-service";
-import {ITypescriptPackageReassembler, TypescriptPackageReassembler} from "@wessberg/typescript-package-reassembler";
 import {IParser} from "./parser/i-parser";
 import {Parser} from "./parser/parser";
 import {IDecoratorService} from "./service/decorator/i-decorator-service";
@@ -131,8 +129,6 @@ DIContainer.registerSingleton<IParser, Parser>();
 // Utilities
 DIContainer.registerSingleton<IModuleUtil, ModuleUtil>();
 DIContainer.registerSingleton<IPathUtil, PathUtil>();
-DIContainer.registerSingleton<IFileLoader, FileLoader>();
-DIContainer.registerSingleton<ITypescriptPackageReassembler, TypescriptPackageReassembler>();
 DIContainer.registerSingleton<ITypescriptLanguageService, TypescriptLanguageService>();
 DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();

@@ -404,7 +404,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 		return {
 			members: node.members.map(member => this.toTypeElementCtor(member)!),
 			name: this.interfaceDeclarationService.getName(node),
-			extends: node.heritageClauses == null || node.heritageClauses.length < 1 ? null : this.heritageClauseService.getFirstTypeNameWithArguments(node.heritageClauses[0]),
+			extends: node.heritageClauses == null ? [] : [].concat.apply([], node.heritageClauses.map(heritageClause => this.heritageClauseService.getTypeNamesWithArguments(heritageClause))),
 			typeParameters: this.fallbackToNull(this.interfaceDeclarationService.getTypeParameterNames(node))
 		};
 	}

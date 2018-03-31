@@ -1,48 +1,28 @@
-import typescriptPlugin from "rollup-plugin-typescript2";
+import typescriptRollupPlugin from "@wessberg/rollup-plugin-ts";
 import diPlugin from "@wessberg/rollup-plugin-di";
 import packageJSON from "./package.json";
-
-const globals = {
-	"@wessberg/di": "di",
-	"@wessberg/stringutil": "stringUtil",
-	"@wessberg/moduleutil": "moduleUtil",
-	"@wessberg/pathutil": "pathUtil",
-	"@wessberg/fileloader": "fileloader",
-	"@wessberg/typescript-language-service": "typescriptLanguageService",
-	"@wessberg/typescript-ast-util": "typescriptAstUtil",
-	"@wessberg/typescript-package-reassembler": "typescriptPackageReassembler",
-	"typescript": "typescript",
-	"path": "path"
-};
 
 export default {
 	input: "src/index.ts",
 	output: [
 		{
 			file: packageJSON.main,
-			format: "umd",
-			name: "CodeAnalyzer",
-			sourcemap: true,
-			globals
+			format: "cjs",
+			sourcemap: true
 		},
 		{
 			file: packageJSON.module,
 			format: "es",
-			sourcemap: true,
-			globals
+			sourcemap: true
 		},
 	],
 	treeshake: true,
 	plugins: [
-		diPlugin({
-			shimGlobalObject: false
-		}),
-		typescriptPlugin({
+		diPlugin(),
+		typescriptRollupPlugin({
 			tsconfig: process.env.NODE_ENV === "production" ? "tsconfig.dist.json" : "tsconfig.json",
 			include: ["*.ts+(|x)", "**/*.ts+(|x)"],
-			exclude: ["*.d.ts", "**/*.d.ts"],
-			cacheRoot: "/tmp",
-			clean: true
+			exclude: ["*.d.ts", "**/*.d.ts"]
 		})
 	],
 	external: [

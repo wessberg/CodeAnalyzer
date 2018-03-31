@@ -37,7 +37,15 @@ function foo<T, U, J> (bar: T, baz: U, lolz?: J): void {
 
 foo<string, number, C>("", 2);
 
-interface IFoo {
+interface Lol {
+	id: string;
+}
+
+interface Omg {
+	hehe: number;
+}
+
+interface IFoo extends Lol, Omg{
 	prop1: boolean;
 	readonly prop2: string;
 	prop3?: string|null;
