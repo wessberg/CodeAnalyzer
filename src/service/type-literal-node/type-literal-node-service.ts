@@ -9,7 +9,7 @@ export class TypeLiteralNodeService extends TypeDeclarationService<TypeLiteralNo
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.TypeLiteral];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.TypeLiteral];
 }

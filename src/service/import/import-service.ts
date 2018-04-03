@@ -26,9 +26,9 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.ImportDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.ImportDeclaration];
 
 	constructor (private readonly namedImportsService: INamedImportsService,
 							 private readonly namespaceImportService: INamespaceImportService,

@@ -11,9 +11,9 @@ import {isSuperExpression} from "@wessberg/typescript-ast-util";
 export class MethodService extends ClassFunctionLikeService<MethodDeclaration> implements IMethodService {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.MethodDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.MethodDeclaration];
 
 	/**
 	 * Appends the provided instructions to the provided instruction

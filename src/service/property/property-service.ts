@@ -21,9 +21,9 @@ export class PropertyService extends NodeService<PropertyDeclaration> implements
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.PropertyDeclaration];
 
 	constructor (private readonly typeNodeService: ITypeNodeService,
 							 private readonly formatter: IFormatter,

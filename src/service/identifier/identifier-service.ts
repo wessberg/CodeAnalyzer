@@ -9,9 +9,9 @@ export class IdentifierService extends NodeService<Identifier> implements IIdent
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.Identifier];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.Identifier];
 
 	/**
 	 * Gets the text of an Identifier

@@ -9,9 +9,9 @@ export class SetAccessorService extends ClassFunctionLikeService<SetAccessorDecl
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.SetAccessor];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.SetAccessor];
 
 	/**
 	 * Gets the name of the given SetAccessorDeclaration

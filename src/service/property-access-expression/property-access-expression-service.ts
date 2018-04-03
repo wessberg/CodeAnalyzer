@@ -14,9 +14,9 @@ import {IUpdater} from "../../updater/i-updater-getter";
 export class PropertyAccessExpressionService extends NodeService<PropertyAccessExpression> implements IPropertyAccessExpressionService {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.PropertyAccessExpression];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.PropertyAccessExpression];
 
 	constructor (private readonly printer: IPrinter,
 							 joiner: IJoiner,

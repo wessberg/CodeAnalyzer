@@ -18,9 +18,9 @@ export class InterfaceDeclarationService extends TypeDeclarationService<Interfac
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.InterfaceDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.InterfaceDeclaration];
 
 	constructor (private readonly nodeToDictMapper: INodeToDictMapper,
 							 private readonly printer: IPrinter,

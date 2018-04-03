@@ -17,9 +17,9 @@ export class ParameterService extends NodeService<ParameterDeclaration> implemen
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.Parameter];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.Parameter];
 
 	constructor (private readonly printer: IPrinter,
 							 private readonly typeNodeService: ITypeNodeService,

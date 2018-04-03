@@ -15,9 +15,9 @@ export class TemplateExpressionService extends NodeService<TemplateExpression> i
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.TemplateExpression, SyntaxKind.NoSubstitutionTemplateLiteral];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.TemplateExpression, SyntaxKind.NoSubstitutionTemplateLiteral];
 
 	constructor (private readonly printer: IPrinter,
 							 protected decoratorService: IDecoratorService,
