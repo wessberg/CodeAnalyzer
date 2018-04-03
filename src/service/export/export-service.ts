@@ -18,9 +18,9 @@ import {ITypescriptLanguageService} from "@wessberg/typescript-language-service"
 export class ExportService extends NodeService<ExportDeclaration> implements IExportService {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.ExportDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.ExportDeclaration];
 
 	constructor (private readonly namedExportsService: INamedExportsService,
 							 private readonly formatter: IFormatter,

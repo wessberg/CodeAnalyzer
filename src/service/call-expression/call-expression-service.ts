@@ -18,9 +18,9 @@ import {IPlacement} from "../../placement/i-placement";
 export class CallExpressionService extends NodeService<CallExpression> implements ICallExpressionService {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.CallExpression];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.CallExpression];
 
 	constructor (private readonly printer: IPrinter,
 							 private readonly formatter: IFormatter,

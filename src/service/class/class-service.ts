@@ -40,9 +40,9 @@ export class ClassService extends NodeService<ClassDeclaration|ClassExpression> 
 
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.ClassExpression, SyntaxKind.ClassDeclaration];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.ClassExpression, SyntaxKind.ClassDeclaration];
 
 	constructor (private readonly nodeToDictMapper: INodeToDictMapper,
 							 private readonly formatter: IFormatter,

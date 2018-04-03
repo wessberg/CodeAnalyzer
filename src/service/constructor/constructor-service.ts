@@ -18,9 +18,9 @@ import {IPlacement} from "../../placement/i-placement";
 export class ConstructorService extends NodeService<ConstructorDeclaration> implements IConstructorService {
 	/**
 	 * The allowed SyntaxKinds when parsing a SourceFile for relevant Expressions
-	 * @type {SyntaxKind[]}
+	 * @type {Iterable<SyntaxKind>}
 	 */
-	protected readonly ALLOWED_KINDS = [SyntaxKind.Constructor];
+	protected readonly ALLOWED_KINDS: Iterable<SyntaxKind> = [SyntaxKind.Constructor];
 
 	constructor (private readonly formatter: IFormatter,
 							 private readonly parameterService: IParameterService,
