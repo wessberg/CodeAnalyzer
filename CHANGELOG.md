@@ -1,3 +1,13 @@
+<a name="1.0.129"></a>
+## <small>1.0.129 (2018-04-03)</small>
+
+* 1.0.129 ([d8e3fbe](https://github.com/wessberg/CodeAnalyzer/commit/d8e3fbe))
+* Bumped deps ([3493ce9](https://github.com/wessberg/CodeAnalyzer/commit/3493ce9))
+* Bumped version ([e2e97da](https://github.com/wessberg/CodeAnalyzer/commit/e2e97da))
+* Fixed typings ([5d46945](https://github.com/wessberg/CodeAnalyzer/commit/5d46945))
+
+
+
 <a name="1.0.128"></a>
 ## <small>1.0.128 (2018-03-31)</small>
 
