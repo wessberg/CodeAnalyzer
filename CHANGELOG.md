@@ -1,3 +1,12 @@
+<a name="1.0.130"></a>
+## <small>1.0.130 (2018-04-25)</small>
+
+* 1.0.130 ([86964aa](https://github.com/wessberg/CodeAnalyzer/commit/86964aa))
+* Bumped deps ([f40fbc7](https://github.com/wessberg/CodeAnalyzer/commit/f40fbc7))
+* Bumped version ([1acdb52](https://github.com/wessberg/CodeAnalyzer/commit/1acdb52))
+
+
+
 <a name="1.0.129"></a>
 ## <small>1.0.129 (2018-04-03)</small>
 
