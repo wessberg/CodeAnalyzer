@@ -5,6 +5,7 @@ import {IImportService} from "../service/import/i-import-service";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
 import {IExportService} from "../service/export/i-export-service";
 import {IInterfaceDeclarationService} from "../service/interface-declaration/i-interface-declaration-service";
+import {IModuleUtil} from "@wessberg/moduleutil";
 
 /**
  * A service that can resolve nodes from Identifiers
@@ -14,7 +15,8 @@ export class Resolver implements IResolverBase {
 							 private readonly classService: IClassService,
 							 private readonly interfaceDeclarationService: IInterfaceDeclarationService,
 							 private readonly importService: IImportService,
-							 private readonly exportService: IExportService) {
+							 private readonly exportService: IExportService,
+							 private readonly moduleUtil: IModuleUtil) {
 	}
 
 	/**
@@ -50,8 +52,15 @@ export class Resolver implements IResolverBase {
 			return undefined;
 		}
 
+		const importPath = this.importService.getPathForImportDeclaration(relevantImport);
+
+		// If the import comes from a built-in module, do no more
+		if (this.moduleUtil.builtInModules.has(importPath)) {
+			return undefined;
+		}
+
 		// Get the SourceFile for the imported path
-		const importedSourceFile = this.languageService.getFile({path: this.importService.getPathForImportDeclaration(relevantImport), from: sourceFile.fileName});
+		const importedSourceFile = this.languageService.getFile({path: importPath, from: sourceFile.fileName});
 
 		// If it couldn't resolve any file, return undefined
 		if (importedSourceFile == null) return undefined;
