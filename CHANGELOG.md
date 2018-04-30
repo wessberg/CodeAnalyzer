@@ -1,3 +1,12 @@
+<a name="1.0.131"></a>
+## <small>1.0.131 (2018-04-30)</small>
+
+* 1.0.131 ([b4d54ab](https://github.com/wessberg/CodeAnalyzer/commit/b4d54ab))
+* Bumped version ([60dac75](https://github.com/wessberg/CodeAnalyzer/commit/60dac75))
+* Made sure that built-in node modules won't be attempted resolved ([f2790b9](https://github.com/wessberg/CodeAnalyzer/commit/f2790b9))
+
+
+
 <a name="1.0.130"></a>
 ## <small>1.0.130 (2018-04-25)</small>
 
