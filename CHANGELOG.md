@@ -1,3 +1,11 @@
+## <small>1.0.135 (2018-06-21)</small>
+
+* 1.0.135 ([3342b1f](https://github.com/wessberg/CodeAnalyzer/commit/3342b1f))
+* Bumped deps ([d17e57c](https://github.com/wessberg/CodeAnalyzer/commit/d17e57c))
+* Bumped version ([00e3728](https://github.com/wessberg/CodeAnalyzer/commit/00e3728))
+
+
+
 ## <small>1.0.134 (2018-06-21)</small>
 
 * 1.0.134 ([861411e](https://github.com/wessberg/CodeAnalyzer/commit/861411e))
