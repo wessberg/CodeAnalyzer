@@ -1,4 +1,18 @@
-<a name="1.0.132"></a>
+## <small>1.0.134 (2018-06-21)</small>
+
+* 1.0.134 ([861411e](https://github.com/wessberg/CodeAnalyzer/commit/861411e))
+* Bumped deps ([b3b1a2d](https://github.com/wessberg/CodeAnalyzer/commit/b3b1a2d))
+
+
+
+## <small>1.0.133 (2018-06-21)</small>
+
+* 1.0.133 ([5ee06bd](https://github.com/wessberg/CodeAnalyzer/commit/5ee06bd))
+* Bumped deps ([4660de8](https://github.com/wessberg/CodeAnalyzer/commit/4660de8))
+* Bumped version ([4885202](https://github.com/wessberg/CodeAnalyzer/commit/4885202))
+
+
+
 ## <small>1.0.132 (2018-04-30)</small>
 
 * 1.0.132 ([4aeed07](https://github.com/wessberg/CodeAnalyzer/commit/4aeed07))
@@ -7,7 +21,6 @@
 
 
 
-<a name="1.0.131"></a>
 ## <small>1.0.131 (2018-04-30)</small>
 
 * 1.0.131 ([b4d54ab](https://github.com/wessberg/CodeAnalyzer/commit/b4d54ab))
@@ -16,7 +29,6 @@
 
 
 
-<a name="1.0.130"></a>
 ## <small>1.0.130 (2018-04-25)</small>
 
 * 1.0.130 ([86964aa](https://github.com/wessberg/CodeAnalyzer/commit/86964aa))
@@ -25,7 +37,6 @@
 
 
 
-<a name="1.0.129"></a>
 ## <small>1.0.129 (2018-04-03)</small>
 
 * 1.0.129 ([d8e3fbe](https://github.com/wessberg/CodeAnalyzer/commit/d8e3fbe))
@@ -35,7 +46,6 @@
 
 
 
-<a name="1.0.128"></a>
 ## <small>1.0.128 (2018-03-31)</small>
 
 * 1.0.128 ([4287a11](https://github.com/wessberg/CodeAnalyzer/commit/4287a11))
@@ -43,7 +53,6 @@
 
 
 
-<a name="1.0.127"></a>
 ## <small>1.0.127 (2018-03-31)</small>
 
 * 1.0.127 ([935e581](https://github.com/wessberg/CodeAnalyzer/commit/935e581))
@@ -52,7 +61,6 @@
 
 
 
-<a name="1.0.126"></a>
 ## <small>1.0.126 (2018-03-31)</small>
 
 * 1.0.126 ([a2893fc](https://github.com/wessberg/CodeAnalyzer/commit/a2893fc))
@@ -61,7 +69,6 @@
 
 
 
-<a name="1.0.125"></a>
 ## <small>1.0.125 (2018-03-13)</small>
 
 * 1.0.125 ([898bb17](https://github.com/wessberg/CodeAnalyzer/commit/898bb17))
@@ -70,7 +77,6 @@
 
 
 
-<a name="1.0.124"></a>
 ## <small>1.0.124 (2018-02-04)</small>
 
 * 1.0.124 ([3a64904](https://github.com/wessberg/CodeAnalyzer/commit/3a64904))
@@ -80,7 +86,6 @@
 
 
 
-<a name="1.0.123"></a>
 ## <small>1.0.123 (2018-02-03)</small>
 
 * 1.0.123 ([2c2792c](https://github.com/wessberg/CodeAnalyzer/commit/2c2792c))
@@ -88,7 +93,6 @@
 
 
 
-<a name="1.0.122"></a>
 ## <small>1.0.122 (2018-02-03)</small>
 
 * 1.0.122 ([7b77f3a](https://github.com/wessberg/CodeAnalyzer/commit/7b77f3a))
@@ -98,7 +102,6 @@
 
 
 
-<a name="1.0.121"></a>
 ## <small>1.0.121 (2018-02-03)</small>
 
 * 1.0.121 ([ed883ce](https://github.com/wessberg/CodeAnalyzer/commit/ed883ce))
@@ -107,7 +110,6 @@
 
 
 
-<a name="1.0.120"></a>
 ## <small>1.0.120 (2018-02-03)</small>
 
 * 1.0.120 ([cd1be66](https://github.com/wessberg/CodeAnalyzer/commit/cd1be66))
@@ -116,7 +118,6 @@
 
 
 
-<a name="1.0.119"></a>
 ## <small>1.0.119 (2018-01-13)</small>
 
 * 1.0.119 ([0de6305](https://github.com/wessberg/CodeAnalyzer/commit/0de6305))
@@ -125,7 +126,6 @@
 
 
 
-<a name="1.0.118"></a>
 ## <small>1.0.118 (2018-01-13)</small>
 
 * 1.0.118 ([b450549](https://github.com/wessberg/CodeAnalyzer/commit/b450549))
@@ -135,7 +135,6 @@
 
 
 
-<a name="1.0.117"></a>
 ## <small>1.0.117 (2018-01-13)</small>
 
 * 1.0.117 ([08ca414](https://github.com/wessberg/CodeAnalyzer/commit/08ca414))
@@ -144,7 +143,6 @@
 
 
 
-<a name="1.0.116"></a>
 ## <small>1.0.116 (2018-01-11)</small>
 
 * 1.0.116 ([9a57a14](https://github.com/wessberg/CodeAnalyzer/commit/9a57a14))
@@ -153,7 +151,6 @@
 
 
 
-<a name="1.0.115"></a>
 ## <small>1.0.115 (2018-01-10)</small>
 
 * 1.0.115 ([9ab4fd9](https://github.com/wessberg/CodeAnalyzer/commit/9ab4fd9))
@@ -162,7 +159,6 @@
 
 
 
-<a name="1.0.114"></a>
 ## <small>1.0.114 (2017-12-08)</small>
 
 * 1.0.114 ([421d994](https://github.com/wessberg/CodeAnalyzer/commit/421d994))
@@ -171,7 +167,6 @@
 
 
 
-<a name="1.0.113"></a>
 ## <small>1.0.113 (2017-11-27)</small>
 
 * 1.0.113 ([885a42b](https://github.com/wessberg/CodeAnalyzer/commit/885a42b))
@@ -180,7 +175,6 @@
 
 
 
-<a name="1.0.112"></a>
 ## <small>1.0.112 (2017-11-27)</small>
 
 * 1.0.112 ([8ec37fa](https://github.com/wessberg/CodeAnalyzer/commit/8ec37fa))
@@ -189,7 +183,6 @@
 
 
 
-<a name="1.0.111"></a>
 ## <small>1.0.111 (2017-11-27)</small>
 
 * 1.0.111 ([069ac48](https://github.com/wessberg/CodeAnalyzer/commit/069ac48))
@@ -199,7 +192,6 @@
 
 
 
-<a name="1.0.110"></a>
 ## <small>1.0.110 (2017-11-17)</small>
 
 * 1.0.110 ([4272da5](https://github.com/wessberg/CodeAnalyzer/commit/4272da5))
@@ -208,7 +200,6 @@
 
 
 
-<a name="1.0.109"></a>
 ## <small>1.0.109 (2017-11-13)</small>
 
 * 1.0.109 ([62a610c](https://github.com/wessberg/CodeAnalyzer/commit/62a610c))
@@ -217,7 +208,6 @@
 
 
 
-<a name="1.0.108"></a>
 ## <small>1.0.108 (2017-11-13)</small>
 
 * 1.0.108 ([99d96e9](https://github.com/wessberg/CodeAnalyzer/commit/99d96e9))
@@ -226,7 +216,6 @@
 
 
 
-<a name="1.0.107"></a>
 ## <small>1.0.107 (2017-11-06)</small>
 
 * 1.0.107 ([8bd53d9](https://github.com/wessberg/CodeAnalyzer/commit/8bd53d9))
@@ -235,7 +224,6 @@
 
 
 
-<a name="1.0.106"></a>
 ## <small>1.0.106 (2017-11-05)</small>
 
 * 1.0.106 ([bfd6606](https://github.com/wessberg/CodeAnalyzer/commit/bfd6606))
@@ -244,7 +232,6 @@
 
 
 
-<a name="1.0.105"></a>
 ## <small>1.0.105 (2017-11-05)</small>
 
 * 1.0.105 ([121cb27](https://github.com/wessberg/CodeAnalyzer/commit/121cb27))
@@ -253,7 +240,6 @@
 
 
 
-<a name="1.0.104"></a>
 ## <small>1.0.104 (2017-11-04)</small>
 
 * 1.0.104 ([ddbf5e2](https://github.com/wessberg/CodeAnalyzer/commit/ddbf5e2))
@@ -262,7 +248,6 @@
 
 
 
-<a name="1.0.103"></a>
 ## <small>1.0.103 (2017-11-02)</small>
 
 * 1.0.103 ([d9bf6da](https://github.com/wessberg/CodeAnalyzer/commit/d9bf6da))
@@ -271,7 +256,6 @@
 
 
 
-<a name="1.0.102"></a>
 ## <small>1.0.102 (2017-10-29)</small>
 
 * 1.0.102 ([723900e](https://github.com/wessberg/CodeAnalyzer/commit/723900e))
@@ -281,7 +265,6 @@
 
 
 
-<a name="1.0.101"></a>
 ## <small>1.0.101 (2017-10-29)</small>
 
 * 1.0.101 ([f1cead8](https://github.com/wessberg/CodeAnalyzer/commit/f1cead8))
@@ -290,7 +273,6 @@
 
 
 
-<a name="1.0.100"></a>
 ## <small>1.0.100 (2017-10-29)</small>
 
 * 1.0.100 ([6f75d74](https://github.com/wessberg/CodeAnalyzer/commit/6f75d74))
@@ -299,7 +281,6 @@
 
 
 
-<a name="1.0.99"></a>
 ## <small>1.0.99 (2017-10-29)</small>
 
 * 1.0.99 ([8ef179e](https://github.com/wessberg/CodeAnalyzer/commit/8ef179e))
@@ -308,7 +289,6 @@
 
 
 
-<a name="1.0.98"></a>
 ## <small>1.0.98 (2017-10-28)</small>
 
 * 1.0.98 ([ecf02d8](https://github.com/wessberg/CodeAnalyzer/commit/ecf02d8))
@@ -317,7 +297,6 @@
 
 
 
-<a name="1.0.97"></a>
 ## <small>1.0.97 (2017-10-22)</small>
 
 * 1.0.97 ([5205a85](https://github.com/wessberg/CodeAnalyzer/commit/5205a85))
@@ -326,7 +305,6 @@
 
 
 
-<a name="1.0.96"></a>
 ## <small>1.0.96 (2017-10-22)</small>
 
 * 1.0.96 ([df9cfc5](https://github.com/wessberg/CodeAnalyzer/commit/df9cfc5))
@@ -336,7 +314,6 @@
 
 
 
-<a name="1.0.95"></a>
 ## <small>1.0.95 (2017-10-22)</small>
 
 * 1.0.95 ([6da7bb7](https://github.com/wessberg/CodeAnalyzer/commit/6da7bb7))
@@ -345,7 +322,6 @@
 
 
 
-<a name="1.0.94"></a>
 ## <small>1.0.94 (2017-10-22)</small>
 
 * 1.0.94 ([1a07bbf](https://github.com/wessberg/CodeAnalyzer/commit/1a07bbf))
@@ -354,7 +330,6 @@
 
 
 
-<a name="1.0.93"></a>
 ## <small>1.0.93 (2017-10-22)</small>
 
 * 1.0.93 ([0839096](https://github.com/wessberg/CodeAnalyzer/commit/0839096))
@@ -363,7 +338,6 @@
 
 
 
-<a name="1.0.92"></a>
 ## <small>1.0.92 (2017-10-21)</small>
 
 * 1.0.92 ([72a7f1a](https://github.com/wessberg/CodeAnalyzer/commit/72a7f1a))
@@ -372,7 +346,6 @@
 
 
 
-<a name="1.0.91"></a>
 ## <small>1.0.91 (2017-10-21)</small>
 
 * 1.0.91 ([f1c6bc1](https://github.com/wessberg/CodeAnalyzer/commit/f1c6bc1))
@@ -381,7 +354,6 @@
 
 
 
-<a name="1.0.90"></a>
 ## <small>1.0.90 (2017-10-21)</small>
 
 * 1.0.90 ([bf0a61c](https://github.com/wessberg/CodeAnalyzer/commit/bf0a61c))
@@ -390,7 +362,6 @@
 
 
 
-<a name="1.0.89"></a>
 ## <small>1.0.89 (2017-10-21)</small>
 
 * 1.0.89 ([c9b20de](https://github.com/wessberg/CodeAnalyzer/commit/c9b20de))
@@ -399,7 +370,6 @@
 
 
 
-<a name="1.0.88"></a>
 ## <small>1.0.88 (2017-10-21)</small>
 
 * 1.0.88 ([4f7b04c](https://github.com/wessberg/CodeAnalyzer/commit/4f7b04c))
@@ -409,7 +379,6 @@
 
 
 
-<a name="1.0.87"></a>
 ## <small>1.0.87 (2017-10-21)</small>
 
 * 1.0.87 ([9b46f30](https://github.com/wessberg/CodeAnalyzer/commit/9b46f30))
@@ -418,7 +387,6 @@
 
 
 
-<a name="1.0.86"></a>
 ## <small>1.0.86 (2017-10-21)</small>
 
 * 1.0.86 ([3a2d87b](https://github.com/wessberg/CodeAnalyzer/commit/3a2d87b))
@@ -427,7 +395,6 @@
 
 
 
-<a name="1.0.85"></a>
 ## <small>1.0.85 (2017-10-21)</small>
 
 * 1.0.85 ([ba241b7](https://github.com/wessberg/CodeAnalyzer/commit/ba241b7))
@@ -436,7 +403,6 @@
 
 
 
-<a name="1.0.84"></a>
 ## <small>1.0.84 (2017-10-21)</small>
 
 * 1.0.84 ([b38c426](https://github.com/wessberg/CodeAnalyzer/commit/b38c426))
@@ -445,7 +411,6 @@
 
 
 
-<a name="1.0.83"></a>
 ## <small>1.0.83 (2017-10-21)</small>
 
 * 1.0.83 ([5a66e4b](https://github.com/wessberg/CodeAnalyzer/commit/5a66e4b))
@@ -454,7 +419,6 @@
 
 
 
-<a name="1.0.82"></a>
 ## <small>1.0.82 (2017-10-21)</small>
 
 * 1.0.82 ([4e8b28f](https://github.com/wessberg/CodeAnalyzer/commit/4e8b28f))
@@ -463,7 +427,6 @@
 
 
 
-<a name="1.0.81"></a>
 ## <small>1.0.81 (2017-10-21)</small>
 
 * 1.0.81 ([9c6d417](https://github.com/wessberg/CodeAnalyzer/commit/9c6d417))
@@ -472,7 +435,6 @@
 
 
 
-<a name="1.0.80"></a>
 ## <small>1.0.80 (2017-10-21)</small>
 
 * 1.0.80 ([b6de6b9](https://github.com/wessberg/CodeAnalyzer/commit/b6de6b9))
@@ -482,7 +444,6 @@
 
 
 
-<a name="1.0.79"></a>
 ## <small>1.0.79 (2017-10-21)</small>
 
 * 1.0.79 ([3af9b72](https://github.com/wessberg/CodeAnalyzer/commit/3af9b72))
@@ -491,7 +452,6 @@
 
 
 
-<a name="1.0.78"></a>
 ## <small>1.0.78 (2017-10-21)</small>
 
 * 1.0.78 ([386b687](https://github.com/wessberg/CodeAnalyzer/commit/386b687))
@@ -500,7 +460,6 @@
 
 
 
-<a name="1.0.77"></a>
 ## <small>1.0.77 (2017-10-21)</small>
 
 * 1.0.77 ([f248487](https://github.com/wessberg/CodeAnalyzer/commit/f248487))
@@ -543,7 +502,6 @@
 
 
 
-<a name="1.0.76"></a>
 ## <small>1.0.76 (2017-09-18)</small>
 
 * 1.0.76 ([f4ad778](https://github.com/wessberg/CodeAnalyzer/commit/f4ad778))
@@ -552,7 +510,6 @@
 
 
 
-<a name="1.0.75"></a>
 ## <small>1.0.75 (2017-09-10)</small>
 
 * 1.0.75 ([e7ea0c2](https://github.com/wessberg/CodeAnalyzer/commit/e7ea0c2))
@@ -561,7 +518,6 @@
 
 
 
-<a name="1.0.74"></a>
 ## <small>1.0.74 (2017-09-10)</small>
 
 * . ([040e108](https://github.com/wessberg/CodeAnalyzer/commit/040e108))
@@ -570,7 +526,6 @@
 
 
 
-<a name="1.0.73"></a>
 ## <small>1.0.73 (2017-09-10)</small>
 
 * 1.0.73 ([6ae8721](https://github.com/wessberg/CodeAnalyzer/commit/6ae8721))
@@ -579,7 +534,6 @@
 
 
 
-<a name="1.0.72"></a>
 ## <small>1.0.72 (2017-09-10)</small>
 
 * 1.0.72 ([3afeb26](https://github.com/wessberg/CodeAnalyzer/commit/3afeb26))
@@ -588,7 +542,6 @@
 
 
 
-<a name="1.0.71"></a>
 ## <small>1.0.71 (2017-09-10)</small>
 
 * 1.0.71 ([33dedcb](https://github.com/wessberg/CodeAnalyzer/commit/33dedcb))
@@ -597,7 +550,6 @@
 
 
 
-<a name="1.0.70"></a>
 ## <small>1.0.70 (2017-09-10)</small>
 
 * 1.0.70 ([91a4715](https://github.com/wessberg/CodeAnalyzer/commit/91a4715))
@@ -607,7 +559,6 @@
 
 
 
-<a name="1.0.69"></a>
 ## <small>1.0.69 (2017-09-04)</small>
 
 * 1.0.69 ([f0a736d](https://github.com/wessberg/CodeAnalyzer/commit/f0a736d))
@@ -616,7 +567,6 @@
 
 
 
-<a name="1.0.68"></a>
 ## <small>1.0.68 (2017-09-04)</small>
 
 * 1.0.68 ([4959307](https://github.com/wessberg/CodeAnalyzer/commit/4959307))
@@ -625,7 +575,6 @@
 
 
 
-<a name="1.0.67"></a>
 ## <small>1.0.67 (2017-09-04)</small>
 
 * 1.0.67 ([77faea6](https://github.com/wessberg/CodeAnalyzer/commit/77faea6))
@@ -634,7 +583,6 @@
 
 
 
-<a name="1.0.66"></a>
 ## <small>1.0.66 (2017-09-04)</small>
 
 * 1.0.66 ([b46219d](https://github.com/wessberg/CodeAnalyzer/commit/b46219d))
@@ -643,7 +591,6 @@
 
 
 
-<a name="1.0.65"></a>
 ## <small>1.0.65 (2017-09-03)</small>
 
 * 1.0.65 ([fcc2eff](https://github.com/wessberg/CodeAnalyzer/commit/fcc2eff))
@@ -652,7 +599,6 @@
 
 
 
-<a name="1.0.64"></a>
 ## <small>1.0.64 (2017-09-03)</small>
 
 * 1.0.64 ([ce1c0f9](https://github.com/wessberg/CodeAnalyzer/commit/ce1c0f9))
@@ -661,7 +607,6 @@
 
 
 
-<a name="1.0.63"></a>
 ## <small>1.0.63 (2017-09-03)</small>
 
 * 1.0.63 ([511dbde](https://github.com/wessberg/CodeAnalyzer/commit/511dbde))
@@ -670,7 +615,6 @@
 
 
 
-<a name="1.0.62"></a>
 ## <small>1.0.62 (2017-09-03)</small>
 
 * 1.0.62 ([968a935](https://github.com/wessberg/CodeAnalyzer/commit/968a935))
@@ -679,7 +623,6 @@
 
 
 
-<a name="1.0.61"></a>
 ## <small>1.0.61 (2017-08-28)</small>
 
 * 1.0.61 ([66c0153](https://github.com/wessberg/CodeAnalyzer/commit/66c0153))
@@ -688,7 +631,6 @@
 
 
 
-<a name="1.0.60"></a>
 ## <small>1.0.60 (2017-08-28)</small>
 
 * 1.0.60 ([d790d6a](https://github.com/wessberg/CodeAnalyzer/commit/d790d6a))
@@ -698,7 +640,6 @@
 
 
 
-<a name="1.0.59"></a>
 ## <small>1.0.59 (2017-08-28)</small>
 
 * 1.0.59 ([1f8d781](https://github.com/wessberg/CodeAnalyzer/commit/1f8d781))
@@ -707,7 +648,6 @@
 
 
 
-<a name="1.0.58"></a>
 ## <small>1.0.58 (2017-08-28)</small>
 
 * 1.0.58 ([f9cbee3](https://github.com/wessberg/CodeAnalyzer/commit/f9cbee3))
@@ -718,7 +658,6 @@
 
 
 
-<a name="1.0.57"></a>
 ## <small>1.0.57 (2017-08-28)</small>
 
 * 1.0.57 ([98c6656](https://github.com/wessberg/CodeAnalyzer/commit/98c6656))
@@ -727,7 +666,6 @@
 
 
 
-<a name="1.0.56"></a>
 ## <small>1.0.56 (2017-08-28)</small>
 
 * 1.0.56 ([7e2b563](https://github.com/wessberg/CodeAnalyzer/commit/7e2b563))
@@ -736,7 +674,6 @@
 
 
 
-<a name="1.0.55"></a>
 ## <small>1.0.55 (2017-08-28)</small>
 
 * 1.0.55 ([f4676c5](https://github.com/wessberg/CodeAnalyzer/commit/f4676c5))
@@ -745,7 +682,6 @@
 
 
 
-<a name="1.0.54"></a>
 ## <small>1.0.54 (2017-08-28)</small>
 
 * 1.0.54 ([b3b9788](https://github.com/wessberg/CodeAnalyzer/commit/b3b9788))
@@ -754,7 +690,6 @@
 
 
 
-<a name="1.0.53"></a>
 ## <small>1.0.53 (2017-08-28)</small>
 
 * 1.0.53 ([b48a510](https://github.com/wessberg/CodeAnalyzer/commit/b48a510))
@@ -763,7 +698,6 @@
 
 
 
-<a name="1.0.52"></a>
 ## <small>1.0.52 (2017-08-28)</small>
 
 * 1.0.52 ([86b92df](https://github.com/wessberg/CodeAnalyzer/commit/86b92df))
@@ -772,7 +706,6 @@
 
 
 
-<a name="1.0.51"></a>
 ## <small>1.0.51 (2017-08-27)</small>
 
 * 1.0.51 ([8ec279a](https://github.com/wessberg/CodeAnalyzer/commit/8ec279a))
@@ -781,7 +714,6 @@
 
 
 
-<a name="1.0.50"></a>
 ## <small>1.0.50 (2017-08-27)</small>
 
 * 1.0.50 ([e8438b5](https://github.com/wessberg/CodeAnalyzer/commit/e8438b5))
@@ -802,7 +734,6 @@
 
 
 
-<a name="1.0.49"></a>
 ## <small>1.0.49 (2017-08-03)</small>
 
 * - Added support for NonNullExpressions. This fixes #12. ([3ef11d6](https://github.com/wessberg/CodeAnalyzer/commit/3ef11d6)), closes [#12](https://github.com/wessberg/CodeAnalyzer/issues/12) [#13](https://github.com/wessberg/CodeAnalyzer/issues/13)
@@ -811,7 +742,6 @@
 
 
 
-<a name="1.0.48"></a>
 ## <small>1.0.48 (2017-07-28)</small>
 
 * . ([dd33f4c](https://github.com/wessberg/CodeAnalyzer/commit/dd33f4c))
@@ -821,7 +751,6 @@
 
 
 
-<a name="1.0.46"></a>
 ## <small>1.0.46 (2017-07-19)</small>
 
 * 1.0.46 ([4804a66](https://github.com/wessberg/CodeAnalyzer/commit/4804a66))
@@ -830,7 +759,6 @@
 
 
 
-<a name="1.0.45"></a>
 ## <small>1.0.45 (2017-07-19)</small>
 
 * 1.0.45 ([c8dc168](https://github.com/wessberg/CodeAnalyzer/commit/c8dc168))
@@ -839,7 +767,6 @@
 
 
 
-<a name="1.0.44"></a>
 ## <small>1.0.44 (2017-07-19)</small>
 
 * 1.0.44 ([8b92dfd](https://github.com/wessberg/CodeAnalyzer/commit/8b92dfd))
@@ -852,7 +779,6 @@
 
 
 
-<a name="1.0.43"></a>
 ## <small>1.0.43 (2017-07-19)</small>
 
 * 1.0.43 ([da6dd9d](https://github.com/wessberg/CodeAnalyzer/commit/da6dd9d))
@@ -864,7 +790,6 @@
 
 
 
-<a name="1.0.42"></a>
 ## <small>1.0.42 (2017-07-10)</small>
 
 * 1.0.42 ([861c824](https://github.com/wessberg/CodeAnalyzer/commit/861c824))
@@ -872,7 +797,6 @@
 
 
 
-<a name="1.0.41"></a>
 ## <small>1.0.41 (2017-07-10)</small>
 
 * 1.0.41 ([8991b26](https://github.com/wessberg/CodeAnalyzer/commit/8991b26))
@@ -880,7 +804,6 @@
 
 
 
-<a name="1.0.40"></a>
 ## <small>1.0.40 (2017-07-10)</small>
 
 * - Fixed some tslint errors. ([22695e7](https://github.com/wessberg/CodeAnalyzer/commit/22695e7))
@@ -889,7 +812,6 @@
 
 
 
-<a name="1.0.39"></a>
 ## <small>1.0.39 (2017-07-09)</small>
 
 * 1.0.39 ([a63e1fb](https://github.com/wessberg/CodeAnalyzer/commit/a63e1fb))
@@ -897,7 +819,6 @@
 
 
 
-<a name="1.0.38"></a>
 ## <small>1.0.38 (2017-07-06)</small>
 
 * 1.0.38 ([219f18b](https://github.com/wessberg/CodeAnalyzer/commit/219f18b))
@@ -905,7 +826,6 @@
 
 
 
-<a name="1.0.37"></a>
 ## <small>1.0.37 (2017-07-06)</small>
 
 * 1.0.37 ([8b83e34](https://github.com/wessberg/CodeAnalyzer/commit/8b83e34))
@@ -913,7 +833,6 @@
 
 
 
-<a name="1.0.36"></a>
 ## <small>1.0.36 (2017-07-06)</small>
 
 * 1.0.36 ([0c1d9b2](https://github.com/wessberg/CodeAnalyzer/commit/0c1d9b2))
@@ -921,7 +840,6 @@
 
 
 
-<a name="1.0.35"></a>
 ## <small>1.0.35 (2017-07-05)</small>
 
 * 1.0.35 ([df28f77](https://github.com/wessberg/CodeAnalyzer/commit/df28f77))
@@ -929,7 +847,6 @@
 
 
 
-<a name="1.0.34"></a>
 ## <small>1.0.34 (2017-07-05)</small>
 
 * 1.0.34 ([f3f63fa](https://github.com/wessberg/CodeAnalyzer/commit/f3f63fa))
@@ -937,7 +854,6 @@
 
 
 
-<a name="1.0.33"></a>
 ## <small>1.0.33 (2017-07-05)</small>
 
 * 1.0.33 ([254487c](https://github.com/wessberg/CodeAnalyzer/commit/254487c))
@@ -945,7 +861,6 @@
 
 
 
-<a name="1.0.32"></a>
 ## <small>1.0.32 (2017-07-05)</small>
 
 * 1.0.32 ([b8da643](https://github.com/wessberg/CodeAnalyzer/commit/b8da643))
@@ -953,7 +868,6 @@
 
 
 
-<a name="1.0.31"></a>
 ## <small>1.0.31 (2017-07-05)</small>
 
 * 1.0.31 ([40d94ba](https://github.com/wessberg/CodeAnalyzer/commit/40d94ba))
@@ -961,7 +875,6 @@
 
 
 
-<a name="1.0.30"></a>
 ## <small>1.0.30 (2017-07-05)</small>
 
 * 1.0.30 ([868d7ff](https://github.com/wessberg/CodeAnalyzer/commit/868d7ff))
@@ -969,7 +882,6 @@
 
 
 
-<a name="1.0.29"></a>
 ## <small>1.0.29 (2017-06-12)</small>
 
 * 1.0.29 ([ed02cab](https://github.com/wessberg/CodeAnalyzer/commit/ed02cab))
@@ -977,7 +889,6 @@
 
 
 
-<a name="1.0.28"></a>
 ## <small>1.0.28 (2017-06-08)</small>
 
 * 1.0.28 ([016f723](https://github.com/wessberg/CodeAnalyzer/commit/016f723))
@@ -985,7 +896,6 @@
 
 
 
-<a name="1.0.27"></a>
 ## <small>1.0.27 (2017-06-08)</small>
 
 * 1.0.27 ([343c6ec](https://github.com/wessberg/CodeAnalyzer/commit/343c6ec))
@@ -993,7 +903,6 @@
 
 
 
-<a name="1.0.26"></a>
 ## <small>1.0.26 (2017-05-31)</small>
 
 * 1.0.26 ([6d61a91](https://github.com/wessberg/CodeAnalyzer/commit/6d61a91))
@@ -1001,7 +910,6 @@
 
 
 
-<a name="1.0.25"></a>
 ## <small>1.0.25 (2017-05-31)</small>
 
 * 1.0.25 ([4103910](https://github.com/wessberg/CodeAnalyzer/commit/4103910))
@@ -1009,7 +917,6 @@
 
 
 
-<a name="1.0.24"></a>
 ## <small>1.0.24 (2017-05-31)</small>
 
 * 1.0.24 ([012ab38](https://github.com/wessberg/CodeAnalyzer/commit/012ab38))
@@ -1017,7 +924,6 @@
 
 
 
-<a name="1.0.23"></a>
 ## <small>1.0.23 (2017-05-31)</small>
 
 * 1.0.23 ([ceb4c8d](https://github.com/wessberg/CodeAnalyzer/commit/ceb4c8d))
@@ -1025,7 +931,6 @@
 
 
 
-<a name="1.0.22"></a>
 ## <small>1.0.22 (2017-05-31)</small>
 
 * 1.0.22 ([6d61e64](https://github.com/wessberg/CodeAnalyzer/commit/6d61e64))
@@ -1033,7 +938,6 @@
 
 
 
-<a name="1.0.21"></a>
 ## <small>1.0.21 (2017-05-31)</small>
 
 * - Parsing for expressions with "deep" wouldn't find all expressions. ([4335561](https://github.com/wessberg/CodeAnalyzer/commit/4335561))
@@ -1041,7 +945,6 @@
 
 
 
-<a name="1.0.20"></a>
 ## <small>1.0.20 (2017-05-31)</small>
 
 * 1.0.20 ([0d7eb80](https://github.com/wessberg/CodeAnalyzer/commit/0d7eb80))
@@ -1049,7 +952,6 @@
 
 
 
-<a name="1.0.19"></a>
 ## <small>1.0.19 (2017-05-31)</small>
 
 * 1.0.19 ([c81c032](https://github.com/wessberg/CodeAnalyzer/commit/c81c032))
@@ -1057,7 +959,6 @@
 
 
 
-<a name="1.0.18"></a>
 ## <small>1.0.18 (2017-05-30)</small>
 
 * 1.0.18 ([5aee9e9](https://github.com/wessberg/CodeAnalyzer/commit/5aee9e9))
@@ -1065,7 +966,6 @@
 
 
 
-<a name="1.0.17"></a>
 ## <small>1.0.17 (2017-05-30)</small>
 
 * 1.0.17 ([0144a62](https://github.com/wessberg/CodeAnalyzer/commit/0144a62))
@@ -1073,7 +973,6 @@
 
 
 
-<a name="1.0.16"></a>
 ## <small>1.0.16 (2017-05-30)</small>
 
 * 1.0.16 ([0cd0f59](https://github.com/wessberg/CodeAnalyzer/commit/0cd0f59))
@@ -1081,7 +980,6 @@
 
 
 
-<a name="1.0.15"></a>
 ## <small>1.0.15 (2017-05-26)</small>
 
 * 1.0.15 ([e029d2f](https://github.com/wessberg/CodeAnalyzer/commit/e029d2f))
@@ -1089,7 +987,6 @@
 
 
 
-<a name="1.0.14"></a>
 ## <small>1.0.14 (2017-05-26)</small>
 
 * 1.0.14 ([e84a11c](https://github.com/wessberg/CodeAnalyzer/commit/e84a11c))
@@ -1097,7 +994,6 @@
 
 
 
-<a name="1.0.13"></a>
 ## <small>1.0.13 (2017-05-25)</small>
 
 * 1.0.13 ([a85063f](https://github.com/wessberg/CodeAnalyzer/commit/a85063f))
@@ -1105,7 +1001,6 @@
 
 
 
-<a name="1.0.12"></a>
 ## <small>1.0.12 (2017-05-25)</small>
 
 * 1.0.12 ([a3533d2](https://github.com/wessberg/CodeAnalyzer/commit/a3533d2))
@@ -1113,7 +1008,6 @@
 
 
 
-<a name="1.0.11"></a>
 ## <small>1.0.11 (2017-05-25)</small>
 
 * 1.0.11 ([2ce23d4](https://github.com/wessberg/CodeAnalyzer/commit/2ce23d4))
@@ -1122,7 +1016,6 @@
 
 
 
-<a name="1.0.10"></a>
 ## <small>1.0.10 (2017-05-25)</small>
 
 * 1.0.10 ([2eb6000](https://github.com/wessberg/CodeAnalyzer/commit/2eb6000))
@@ -1130,7 +1023,6 @@
 
 
 
-<a name="1.0.9"></a>
 ## <small>1.0.9 (2017-05-24)</small>
 
 * 1.0.9 ([23ee928](https://github.com/wessberg/CodeAnalyzer/commit/23ee928))
@@ -1141,7 +1033,6 @@
 
 
 
-<a name="1.0.8"></a>
 ## <small>1.0.8 (2017-05-24)</small>
 
 * 1.0.8 ([65b57da](https://github.com/wessberg/CodeAnalyzer/commit/65b57da))
@@ -1149,7 +1040,6 @@
 
 
 
-<a name="1.0.7"></a>
 ## <small>1.0.7 (2017-05-19)</small>
 
 * 1.0.7 ([7bd3e1e](https://github.com/wessberg/CodeAnalyzer/commit/7bd3e1e))
@@ -1159,7 +1049,6 @@
 
 
 
-<a name="1.0.6"></a>
 ## <small>1.0.6 (2017-05-18)</small>
 
 * 1.0.6 ([ff80b74](https://github.com/wessberg/CodeAnalyzer/commit/ff80b74))
@@ -1167,7 +1056,6 @@
 
 
 
-<a name="1.0.5"></a>
 ## <small>1.0.5 (2017-05-18)</small>
 
 * 1.0.5 ([7f26c72](https://github.com/wessberg/CodeAnalyzer/commit/7f26c72))
@@ -1175,7 +1063,6 @@
 
 
 
-<a name="1.0.4"></a>
 ## <small>1.0.4 (2017-05-18)</small>
 
 * 1.0.4 ([cb16202](https://github.com/wessberg/CodeAnalyzer/commit/cb16202))
@@ -1183,7 +1070,6 @@
 
 
 
-<a name="1.0.3"></a>
 ## <small>1.0.3 (2017-05-18)</small>
 
 * 1.0.3 ([d3d59da](https://github.com/wessberg/CodeAnalyzer/commit/d3d59da))
@@ -1193,7 +1079,6 @@
 
 
 
-<a name="1.0.2"></a>
 ## <small>1.0.2 (2017-05-16)</small>
 
 * 1.0.2 ([df61ccc](https://github.com/wessberg/CodeAnalyzer/commit/df61ccc))
@@ -1201,7 +1086,6 @@
 
 
 
-<a name="1.0.1"></a>
 ## <small>1.0.1 (2017-05-16)</small>
 
 * 1.0.1 ([a369d4a](https://github.com/wessberg/CodeAnalyzer/commit/a369d4a))
