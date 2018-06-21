@@ -37,7 +37,7 @@
 		"code quality"
 	],
 	"devDependencies": {
-		"@wessberg/rollup-plugin-di": "^1.0.83",
+		"@wessberg/rollup-plugin-di": "^1.0.84",
 		"@wessberg/rollup-plugin-ts": "0.0.25",
 		"@wessberg/ts-config": "^0.0.27",
 		"ava": "^0.25.0",
@@ -53,7 +53,7 @@
 		"@wessberg/pathutil": "0.0.10",
 		"@wessberg/stringutil": "^1.0.17",
 		"@wessberg/typescript-ast-util": "0.0.46",
-		"@wessberg/typescript-language-service": "0.0.43",
+		"@wessberg/typescript-language-service": "0.0.44",
 		"tslib": "^1.9.2",
 		"typescript": "^2.9.2"
 	},
