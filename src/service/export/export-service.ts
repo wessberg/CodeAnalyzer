@@ -8,10 +8,9 @@ import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedExportsService} from "../named-exports/i-named-exports-service";
-import {IStringUtil} from "@wessberg/stringutil";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {ITypescriptLanguageService} from "@wessberg/typescript-language-service";
-
+import {isQuoted} from "@wessberg/stringutil";
 /**
  * A service for working with ExportDeclarations
  */
@@ -25,7 +24,6 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 	constructor (private readonly namedExportsService: INamedExportsService,
 							 private readonly formatter: IFormatter,
 							 private readonly printer: IPrinter,
-							 private readonly stringUtil: IStringUtil,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
@@ -110,7 +108,7 @@ export class ExportService extends NodeService<ExportDeclaration> implements IEx
 		const literal = this.printer.print(exportDeclaration.moduleSpecifier);
 
 		// Make sure to return the path unquoted
-		return this.stringUtil.isQuoted(literal) ? literal.slice(1, literal.length - 1) : literal;
+		return isQuoted(literal) ? literal.slice(1, literal.length - 1) : literal;
 	}
 
 	/**

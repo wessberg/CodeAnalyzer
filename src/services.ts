@@ -54,7 +54,6 @@ import {IExportService} from "./service/export/i-export-service";
 import {ExportService} from "./service/export/export-service";
 import {INamedExportsService} from "./service/named-exports/i-named-exports-service";
 import {NamedExportsService} from "./service/named-exports/named-exports-service";
-import {IStringUtil, StringUtil} from "@wessberg/stringutil";
 import {CodeAnalyzerBase} from "./code-analyzer/code-analyzer-base";
 import {IPropertyAccessExpressionService} from "./service/property-access-expression/i-property-access-expression-service";
 import {PropertyAccessExpressionService} from "./service/property-access-expression/property-access-expression-service";
@@ -134,7 +133,6 @@ DIContainer.registerSingleton<ITypescriptASTUtil, TypescriptASTUtil>();
 DIContainer.registerSingleton<INodeMatcherUtil, NodeMatcherUtil>();
 DIContainer.registerSingleton<INodeUpdaterUtil, NodeUpdaterUtil>();
 DIContainer.registerSingleton<IPrinter, Printer>();
-DIContainer.registerSingleton<IStringUtil, StringUtil>();
 
 // Services
 DIContainer.registerSingleton<IHeritageClauseService, HeritageClauseService>();

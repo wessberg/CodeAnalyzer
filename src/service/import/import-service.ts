@@ -8,7 +8,6 @@ import {IUpdater} from "../../updater/i-updater-getter";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
 import {IRemover} from "../../remover/i-remover-base";
-import {IStringUtil} from "@wessberg/stringutil";
 import {IJoiner} from "../../joiner/i-joiner-getter";
 import {INamedImportExportCtor} from "../../light-ast/ctor/named-import-export/i-named-import-export-ctor";
 import {IImportCtor} from "../../light-ast/ctor/import/i-import-ctor";
@@ -18,6 +17,7 @@ import {IModuleUtil} from "@wessberg/moduleutil";
 import {join} from "path";
 import {IPathUtil} from "@wessberg/pathutil";
 import {INodeToDictMapper} from "../../node-to-dict-mapper/i-node-to-dict-mapper-getter";
+import {isQuoted} from "@wessberg/stringutil";
 
 /**
  * A class that helps with working with ImportDeclarations through the Typescript ASt
@@ -37,7 +37,6 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 							 private readonly formatter: IFormatter,
 							 private readonly printer: IPrinter,
 							 private readonly pathUtil: IPathUtil,
-							 private readonly stringUtil: IStringUtil,
 							 updater: IUpdater,
 							 joiner: IJoiner,
 							 astUtil: ITypescriptASTUtil,
@@ -55,7 +54,7 @@ export class ImportService extends NodeService<ImportDeclaration> implements IIm
 	public getPathForImportDeclaration (importDeclaration: ImportDeclaration): string {
 		const literal = this.printer.print(importDeclaration.moduleSpecifier);
 		// Make sure to return the path unquoted
-		return this.stringUtil.isQuoted(literal) ? literal.slice(1, literal.length - 1) : literal;
+		return isQuoted(literal) ? literal.slice(1, literal.length - 1) : literal;
 	}
 
 	/**
