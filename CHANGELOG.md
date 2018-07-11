@@ -1,3 +1,11 @@
+## <small>1.0.136 (2018-07-11)</small>
+
+* 1.0.136 ([1f8611e](https://github.com/wessberg/CodeAnalyzer/commit/1f8611e))
+* Added a getDecoratorsWithExpression method to the decorator service ([87f15d7](https://github.com/wessberg/CodeAnalyzer/commit/87f15d7))
+* Bumped version ([9b019d3](https://github.com/wessberg/CodeAnalyzer/commit/9b019d3))
+
+
+
 ## <small>1.0.135 (2018-06-21)</small>
 
 * 1.0.135 ([3342b1f](https://github.com/wessberg/CodeAnalyzer/commit/3342b1f))
