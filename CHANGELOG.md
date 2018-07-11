@@ -1,3 +1,11 @@
+## <small>1.0.137 (2018-07-11)</small>
+
+* 1.0.137 ([7a77fcc](https://github.com/wessberg/CodeAnalyzer/commit/7a77fcc))
+* Bumped version ([ab14531](https://github.com/wessberg/CodeAnalyzer/commit/ab14531))
+* Updated build scripts ([7be15ab](https://github.com/wessberg/CodeAnalyzer/commit/7be15ab))
+
+
+
 ## <small>1.0.136 (2018-07-11)</small>
 
 * 1.0.136 ([1f8611e](https://github.com/wessberg/CodeAnalyzer/commit/1f8611e))
