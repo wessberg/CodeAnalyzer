@@ -20,12 +20,11 @@
     "pretest": "npm run clean:compiled && npm run rollup:test",
     "test": "NODE_ENV=TEST ava --fail-fast",
     "posttest": "npm run clean:compiled",
-    "prepublishOnly": "npm run validate && npm run build:prod",
     "precommit": "npm run tslint && exit 0",
     "prepush": "npm run validate && exit 0",
-    "publish:major": "npm version major && npm run commit:readme && git push && npm publish",
-    "publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
-    "publish:patch": "npm version patch && npm run commit:readme && git push && npm publish",
+    "publish:major": "npm run validate && npm run build:prod && npm version major && npm run commit:readme && git push && npm publish",
+    "publish:minor": "npm run validate && npm run build:prod && npm version minor && npm run commit:readme && git push && npm publish",
+    "publish:patch": "npm run validate && npm run build:prod && npm version patch && npm run commit:readme && git push && npm publish",
     "update": "ncu -ua && npm update && npm install"
   },
   "keywords": [
