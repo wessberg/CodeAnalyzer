@@ -1,82 +1,84 @@
 {
-	"name": "@wessberg/codeanalyzer",
-	"version": "1.0.135",
-	"description": "A service that can analyze your code in great detail ahead of time.",
-	"scripts": {
-		"changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
-		"readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
-		"readme:refresh": "npm run changelog:generate && npm run readme:badges",
-		"commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
-		"clean:dist": "rm -r -f dist",
-		"clean:compiled": "rm -r -f compiled",
-		"clean": "npm run clean:dist && npm run clean:compiled",
-		"rollup": "rollup -c rollup.config.js",
-		"rollup:test": "rollup -c rollup.test.config.js",
-		"prebuild": "npm run clean",
-		"build": "npm run rollup",
-		"build:prod": "NODE_ENV=production npm run rollup",
-		"tslint": "tslint -c tslint.json -p tsconfig.json",
-		"validate": "npm run tslint && npm run test",
-		"pretest": "npm run clean:compiled && npm run rollup:test",
-		"test": "NODE_ENV=TEST ava --fail-fast",
-		"posttest": "npm run clean:compiled",
-		"prepublishOnly": "npm run validate && npm run build:prod",
-		"precommit": "npm run tslint && exit 0",
-		"prepush": "npm run validate && exit 0",
-		"publish:major": "npm version major && npm run commit:readme && git push && npm publish",
-		"publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
-		"publish:patch": "npm version patch && npm run commit:readme && git push && npm publish"
-	},
-	"keywords": [
-		"ast",
-		"analyzer",
-		"resolve",
-		"metadata",
-		"language service",
-		"typescript",
-		"code quality"
-	],
-	"devDependencies": {
-		"@wessberg/rollup-plugin-di": "^1.0.84",
-		"@wessberg/rollup-plugin-ts": "0.0.25",
-		"@wessberg/ts-config": "^0.0.27",
-		"ava": "^0.25.0",
-		"conventional-changelog-cli": "^2.0.1",
-		"husky": "latest",
-		"rollup": "0.61.1",
-		"tslint": "^5.10.0"
-	},
-	"dependencies": {
-		"@types/node": "^10.3.4",
-		"@wessberg/di": "^1.0.30",
-		"@wessberg/moduleutil": "0.0.24",
-		"@wessberg/pathutil": "0.0.10",
-		"@wessberg/stringutil": "^1.0.17",
-		"@wessberg/typescript-ast-util": "0.0.46",
-		"@wessberg/typescript-language-service": "0.0.44",
-		"tslib": "^1.9.2",
-		"typescript": "^2.9.2"
-	},
-	"main": "./dist/cjs/index.js",
-	"module": "./dist/es2015/index.js",
-	"browser": "./dist/es2015/index.js",
-	"types": "./dist/es2015/index.d.ts",
-	"typings": "./dist/es2015/index.d.ts",
-	"es2015": "./dist/es2015/index.js",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/wessberg/CodeAnalyzer.git"
-	},
-	"bugs": {
-		"url": "https://github.com/wessberg/CodeAnalyzer/issues"
-	},
-	"author": {
-		"name": "Frederik Wessberg",
-		"email": "frederikwessberg@hotmail.com",
-		"url": "https://github.com/wessberg"
-	},
-	"engines": {
-		"node": ">=9.0.0"
-	},
-	"license": "MIT"
+  "name": "@wessberg/codeanalyzer",
+  "version": "1.0.135",
+  "description": "A service that can analyze your code in great detail ahead of time.",
+  "scripts": {
+    "changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
+    "readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
+    "readme:refresh": "npm run changelog:generate && npm run readme:badges",
+    "commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
+    "clean:dist": "rm -r -f dist",
+    "clean:compiled": "rm -r -f compiled",
+    "clean": "npm run clean:dist && npm run clean:compiled",
+    "rollup": "rollup -c rollup.config.js",
+    "rollup:test": "rollup -c rollup.test.config.js",
+    "prebuild": "npm run clean",
+    "build": "npm run rollup",
+    "build:prod": "NODE_ENV=production npm run rollup",
+    "tslint": "tslint -c tslint.json -p tsconfig.json",
+    "validate": "npm run tslint && npm run test",
+    "pretest": "npm run clean:compiled && npm run rollup:test",
+    "test": "NODE_ENV=TEST ava --fail-fast",
+    "posttest": "npm run clean:compiled",
+    "prepublishOnly": "npm run validate && npm run build:prod",
+    "precommit": "npm run tslint && exit 0",
+    "prepush": "npm run validate && exit 0",
+    "publish:major": "npm version major && npm run commit:readme && git push && npm publish",
+    "publish:minor": "npm version minor && npm run commit:readme && git push && npm publish",
+    "publish:patch": "npm version patch && npm run commit:readme && git push && npm publish",
+    "update": "ncu -ua && npm update && npm install"
+  },
+  "keywords": [
+    "ast",
+    "analyzer",
+    "resolve",
+    "metadata",
+    "language service",
+    "typescript",
+    "code quality"
+  ],
+  "devDependencies": {
+    "@wessberg/rollup-plugin-di": "^1.0.84",
+    "@wessberg/rollup-plugin-ts": "0.0.30",
+    "@wessberg/ts-config": "^0.0.27",
+    "ava": "^0.25.0",
+    "conventional-changelog-cli": "^2.0.1",
+    "husky": "latest",
+    "npm-check-updates": "^2.14.2",
+    "rollup": "0.62.0",
+    "tslint": "^5.10.0"
+  },
+  "dependencies": {
+    "@types/node": "^10.5.2",
+    "@wessberg/di": "^1.1.0",
+    "@wessberg/moduleutil": "0.0.24",
+    "@wessberg/pathutil": "0.0.10",
+    "@wessberg/stringutil": "^1.0.17",
+    "@wessberg/typescript-ast-util": "0.0.46",
+    "@wessberg/typescript-language-service": "0.0.44",
+    "tslib": "^1.9.3",
+    "typescript": "^2.9.2"
+  },
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/es2015/index.js",
+  "browser": "./dist/es2015/index.js",
+  "types": "./dist/es2015/index.d.ts",
+  "typings": "./dist/es2015/index.d.ts",
+  "es2015": "./dist/es2015/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wessberg/CodeAnalyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/wessberg/CodeAnalyzer/issues"
+  },
+  "author": {
+    "name": "Frederik Wessberg",
+    "email": "frederikwessberg@hotmail.com",
+    "url": "https://github.com/wessberg"
+  },
+  "engines": {
+    "node": ">=9.0.0"
+  },
+  "license": "MIT"
 }

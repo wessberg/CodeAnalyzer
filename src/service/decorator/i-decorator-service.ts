@@ -8,4 +8,5 @@ export interface IDecoratorService {
 	takeDecoratorExpression (node: Decorator): string;
 	hasDecoratorWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): boolean;
 	getDecoratorWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator|undefined;
+	getDecoratorsWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator[];
 }

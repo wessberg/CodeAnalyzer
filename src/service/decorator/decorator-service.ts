@@ -35,11 +35,21 @@ export class DecoratorService implements IDecoratorService {
 	 * Returns the decorator that matches the provided expression on the provided Node
 	 * @param {string | IDecoratorCtor | RegExp} expression
 	 * @param {Node} node
-	 * @returns {boolean}
+	 * @returns {Decorator?}
 	 */
 	public getDecoratorWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator|undefined {
-		if (node.decorators == null) return undefined;
-		return node.decorators.find(decorator => {
+		return this.getDecoratorsWithExpression(expression, node)[0];
+	}
+
+	/**
+	 * Returns all the decorators that matches the provided expression on the provided Node
+	 * @param {string | IDecoratorCtor | RegExp} expression
+	 * @param {Node} node
+	 * @returns {Decorator[]}
+	 */
+	public getDecoratorsWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator[] {
+		if (node.decorators == null) return [];
+		return node.decorators.filter(decorator => {
 			const decoratorExpression = this.takeDecoratorExpression(decorator);
 
 			if (typeof expression === "string") {
