@@ -1,5 +1,5 @@
 import {ICallExpressionService} from "./i-call-expression-service";
-import {CallExpression, createNodeArray, createStatement, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isExpressionWithTypeArguments, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
+import {CallExpression, createExpressionStatement, createNodeArray, Expression, ExpressionStatement, isCallExpression, isExpressionStatement, isExpressionWithTypeArguments, isIdentifier, isPropertyAccessExpression, NodeArray, SourceFile, SyntaxKind} from "typescript";
 import {IPrinter, ITypescriptASTUtil} from "@wessberg/typescript-ast-util";
 import {NodeService} from "../node/node-service";
 import {IDecoratorService} from "../decorator/i-decorator-service";
@@ -63,7 +63,7 @@ export class CallExpressionService extends NodeService<CallExpression> implement
 
 		// Update the SourceFile to reflect the change
 		this.updater.updateSourceFileStatements(
-			this.joiner.joinStatementNodeArrays(createNodeArray([createStatement(callExpression)]), sourceFile.statements, placement),
+			this.joiner.joinStatementNodeArrays(createNodeArray([createExpressionStatement(callExpression)]), sourceFile.statements, placement),
 			sourceFile
 		);
 
