@@ -53,8 +53,8 @@
     "@wessberg/moduleutil": "0.0.24",
     "@wessberg/pathutil": "0.0.10",
     "@wessberg/stringutil": "^1.0.17",
-    "@wessberg/typescript-ast-util": "0.0.47",
-    "@wessberg/typescript-language-service": "0.0.45",
+    "@wessberg/typescript-ast-util": "0.0.48",
+    "@wessberg/typescript-language-service": "0.0.46",
     "tslib": "^1.9.3",
     "typescript": "^3.0.1"
   },
