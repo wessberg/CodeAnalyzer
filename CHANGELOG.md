@@ -1,3 +1,12 @@
+## <small>1.0.138 (2018-07-31)</small>
+
+* 1.0.138 ([8a2d3f2](https://github.com/wessberg/CodeAnalyzer/commit/8a2d3f2))
+* Bumped deps ([6ddef7c](https://github.com/wessberg/CodeAnalyzer/commit/6ddef7c))
+* Bumped to Typescript v3.01 support ([a21d0d8](https://github.com/wessberg/CodeAnalyzer/commit/a21d0d8))
+* Bumped version ([af8b2fa](https://github.com/wessberg/CodeAnalyzer/commit/af8b2fa))
+
+
+
 ## <small>1.0.137 (2018-07-11)</small>
 
 * 1.0.137 ([7a77fcc](https://github.com/wessberg/CodeAnalyzer/commit/7a77fcc))
