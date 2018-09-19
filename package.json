@@ -1,6 +1,6 @@
 {
   "name": "@wessberg/codeanalyzer",
-  "version": "1.0.138",
+  "version": "1.0.139",
   "description": "A service that can analyze your code in great detail ahead of time.",
   "scripts": {
     "clean:dist": "rm -r -f dist",
