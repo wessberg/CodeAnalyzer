@@ -3,10 +3,6 @@
   "version": "1.0.138",
   "description": "A service that can analyze your code in great detail ahead of time.",
   "scripts": {
-    "changelog:generate": "conventional-changelog --outfile CHANGELOG.md --release-count 0",
-    "readme:badges": "node node_modules/@wessberg/ts-config/readme/badge/helper/add-badges.js",
-    "readme:refresh": "npm run changelog:generate && npm run readme:badges",
-    "commit:readme": "npm run readme:refresh && git commit -am \"Bumped version\" --no-verify || true",
     "clean:dist": "rm -r -f dist",
     "clean:compiled": "rm -r -f compiled",
     "clean": "npm run clean:dist && npm run clean:compiled",
@@ -22,9 +18,9 @@
     "posttest": "npm run clean:compiled",
     "precommit": "npm run tslint && exit 0",
     "prepush": "npm run validate && exit 0",
-    "publish:major": "npm run validate && npm run build:prod && npm version major && npm run commit:readme && git push && npm publish",
-    "publish:minor": "npm run validate && npm run build:prod && npm version minor && npm run commit:readme && git push && npm publish",
-    "publish:patch": "npm run validate && npm run build:prod && npm version patch && npm run commit:readme && git push && npm publish",
+    "publish:major": "npm run validate && npm run build:prod && npm version major && git push && npm publish",
+    "publish:minor": "npm run validate && npm run build:prod && npm version minor && git push && npm publish",
+    "publish:patch": "npm run validate && npm run build:prod && npm version patch && git push && npm publish",
     "update": "ncu -ua && npm update && npm install"
   },
   "keywords": [
@@ -37,26 +33,25 @@
     "code quality"
   ],
   "devDependencies": {
-    "@wessberg/rollup-plugin-di": "^1.0.85",
-    "@wessberg/rollup-plugin-ts": "0.0.32",
-    "@wessberg/ts-config": "^0.0.27",
+    "@wessberg/rollup-plugin-di": "^1.0.86",
+    "@wessberg/rollup-plugin-ts": "0.0.40",
+    "@wessberg/ts-config": "^0.0.30",
     "ava": "^0.25.0",
-    "conventional-changelog-cli": "^2.0.1",
     "husky": "latest",
     "npm-check-updates": "^2.14.2",
-    "rollup": "0.63.4",
+    "rollup": "0.66.0",
     "tslint": "^5.11.0"
   },
   "dependencies": {
-    "@types/node": "^10.5.4",
+    "@types/node": "^10.10.1",
     "@wessberg/di": "^1.1.0",
-    "@wessberg/moduleutil": "0.0.24",
+    "@wessberg/moduleutil": "0.0.26",
     "@wessberg/pathutil": "0.0.10",
     "@wessberg/stringutil": "^1.0.17",
     "@wessberg/typescript-ast-util": "0.0.48",
-    "@wessberg/typescript-language-service": "0.0.46",
+    "@wessberg/typescript-language-service": "0.0.48",
     "tslib": "^1.9.3",
-    "typescript": "^3.0.1"
+    "typescript": "^3.0.3"
   },
   "main": "./dist/cjs/index.js",
   "module": "./dist/es2015/index.js",

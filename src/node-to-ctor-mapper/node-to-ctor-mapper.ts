@@ -44,6 +44,9 @@ import {IMethodCtor} from "../light-ast/ctor/method/i-method-ctor";
 import {IMethodService} from "../service/method/i-method-service";
 import {IFunctionLikeWithParametersCtor} from "../light-ast/ctor/function-like-with-parameters/i-function-like-with-parameters-ctor";
 import {IConstructorCtor} from "../light-ast/ctor/constructor/i-constructor-ctor";
+import {Optional} from "../optional/optional";
+
+// tslint:disable:no-identical-functions
 
 /**
  * A class that can map nodes to ctor's
@@ -72,7 +75,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {Decorator} node
 	 * @returns {IDecoratorCtor}
 	 */
-	public toIDecoratorCtor (node: Decorator|undefined|null): IDecoratorCtor|null {
+	public toIDecoratorCtor (node: Optional<Decorator>): IDecoratorCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -85,7 +88,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ModifiersArray | null | undefined} modifiers
 	 * @returns {IAllModifiersCtor | null}
 	 */
-	public toIAllModifiersCtor (modifiers: ModifiersArray|undefined|null): IAllModifiersCtor|null {
+	public toIAllModifiersCtor (modifiers: Optional<ModifiersArray>): IAllModifiersCtor|null {
 		if (modifiers == null) return null;
 		const visibility = this.modifierService.getAccessModifier(modifiers);
 
@@ -107,7 +110,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {IObjectBindingElementCtor}
 	 */
-	public toIObjectBindingElementCtor (node: BindingElement|undefined|null): IObjectBindingElementCtor|null {
+	public toIObjectBindingElementCtor (node: Optional<BindingElement>): IObjectBindingElementCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -123,7 +126,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingElement} node
 	 * @returns {INormalArrayBindingElementCtor}
 	 */
-	public toINormalArrayBindingElementCtor (node: BindingElement|undefined|null): INormalArrayBindingElementCtor|null {
+	public toINormalArrayBindingElementCtor (node: Optional<BindingElement>): INormalArrayBindingElementCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -139,7 +142,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingElement} _node
 	 * @returns {IOmittedArrayBindingElementCtor}
 	 */
-	public toIOmittedArrayBindingElementCtor (_node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementCtor|null {
+	public toIOmittedArrayBindingElementCtor (_node: Optional<ArrayBindingElement>): IOmittedArrayBindingElementCtor|null {
 		return {
 			kind: "OMITTED"
 		};
@@ -150,7 +153,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingElement} node
 	 * @returns {ArrayBindingElementCtor}
 	 */
-	public toArrayBindingElementCtor (node: ArrayBindingElement|undefined|null): ArrayBindingElementCtor|null {
+	public toArrayBindingElementCtor (node: Optional<ArrayBindingElement>): ArrayBindingElementCtor|null {
 		if (node == null) return null;
 
 		if (isOmittedExpression(node)) return this.toIOmittedArrayBindingElementCtor(node);
@@ -162,7 +165,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {BindingName} node
 	 * @returns {BindingNameCtor}
 	 */
-	public toBindingNameCtor (node: BindingName|undefined|null): BindingNameCtor|null {
+	public toBindingNameCtor (node: Optional<BindingName>): BindingNameCtor|null {
 		if (node == null) return null;
 
 		if (isIdentifier(node)) return this.toINormalBindingNameCtor(node);
@@ -177,7 +180,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {Identifier} node
 	 * @returns {INormalBindingNameCtor}
 	 */
-	public toINormalBindingNameCtor (node: Identifier|undefined|null): INormalBindingNameCtor|null {
+	public toINormalBindingNameCtor (node: Optional<Identifier>): INormalBindingNameCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -191,7 +194,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ObjectBindingPattern} node
 	 * @returns {IObjectBindingNameCtor}
 	 */
-	public toIObjectBindingNameCtor (node: ObjectBindingPattern|undefined|null): IObjectBindingNameCtor|null {
+	public toIObjectBindingNameCtor (node: Optional<ObjectBindingPattern>): IObjectBindingNameCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -205,7 +208,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ArrayBindingPattern} node
 	 * @returns {IArrayBindingNameCtor}
 	 */
-	public toIArrayBindingNameCtor (node: ArrayBindingPattern|undefined|null): IArrayBindingNameCtor|null {
+	public toIArrayBindingNameCtor (node: Optional<ArrayBindingPattern>): IArrayBindingNameCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -219,7 +222,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ParameterDeclaration} node
 	 * @returns {IParameterCtor}
 	 */
-	public toIParameterCtor (node: ParameterDeclaration|undefined|null): IParameterCtor|null {
+	public toIParameterCtor (node: Optional<ParameterDeclaration>): IParameterCtor|null {
 		if (node == null) return null;
 		return {
 			type: this.fallbackToNull(this.parameterService.getTypeName(node)),
@@ -237,7 +240,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {TypeElementCtor}
 	 */
-	public toTypeElementCtor (node: TypeElement|undefined|null): TypeElementCtor|null {
+	public toTypeElementCtor (node: Optional<TypeElement>): TypeElementCtor|null {
 		if (node == null) return null;
 
 		if (isCallSignatureDeclaration(node)) return this.toICallSignatureCtor(node);
@@ -254,7 +257,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {CallSignatureDeclaration} node
 	 * @returns {ICallSignatureCtor}
 	 */
-	public toICallSignatureCtor (node: CallSignatureDeclaration|undefined|null): ICallSignatureCtor|null {
+	public toICallSignatureCtor (node: Optional<CallSignatureDeclaration>): ICallSignatureCtor|null {
 		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
@@ -267,7 +270,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ConstructSignatureDeclaration} node
 	 * @returns {IConstructSignatureCtor}
 	 */
-	public toIConstructSignatureCtor (node: ConstructSignatureDeclaration|undefined|null): IConstructSignatureCtor|null {
+	public toIConstructSignatureCtor (node: Optional<ConstructSignatureDeclaration>): IConstructSignatureCtor|null {
 		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
@@ -280,7 +283,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {MethodSignature} node
 	 * @returns {IMethodSignatureCtor}
 	 */
-	public toIMethodSignatureCtor (node: MethodSignature|undefined|null): IMethodSignatureCtor|null {
+	public toIMethodSignatureCtor (node: Optional<MethodSignature>): IMethodSignatureCtor|null {
 		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
@@ -294,7 +297,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {IndexSignatureDeclaration} node
 	 * @returns {IIndexSignatureCtor}
 	 */
-	public toIIndexSignatureCtor (node: IndexSignatureDeclaration|undefined|null): IIndexSignatureCtor|null {
+	public toIIndexSignatureCtor (node: Optional<IndexSignatureDeclaration>): IIndexSignatureCtor|null {
 		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
@@ -308,7 +311,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {PropertySignature} node
 	 * @returns {IPropertySignatureCtor}
 	 */
-	public toIPropertySignatureCtor (node: PropertySignature|undefined|null): IPropertySignatureCtor|null {
+	public toIPropertySignatureCtor (node: Optional<PropertySignature>): IPropertySignatureCtor|null {
 		if (node == null) return null;
 		return {
 			...this.toITypeElementCtor(node)!,
@@ -323,7 +326,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {SignatureDeclaration} node
 	 * @returns {ISignatureCtor}
 	 */
-	public toISignatureCtor (node: SignatureDeclaration|undefined|null): ISignatureCtor|null {
+	public toISignatureCtor (node: Optional<SignatureDeclaration>): ISignatureCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -339,7 +342,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IExtendsHeritageCtor}
 	 */
-	public toIExtendsHeritageCtor (node: HeritageClause|undefined|null): IExtendsHeritageCtor|null {
+	public toIExtendsHeritageCtor (node: Optional<HeritageClause>): IExtendsHeritageCtor|null {
 		if (node == null || !this.heritageClauseService.isExtendsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
@@ -354,7 +357,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {IImplementsHeritageCtor}
 	 */
-	public toIImplementsHeritageCtor (node: HeritageClause|undefined|null): IImplementsHeritageCtor|null {
+	public toIImplementsHeritageCtor (node: Optional<HeritageClause>): IImplementsHeritageCtor|null {
 		if (node == null || !this.heritageClauseService.isImplementsClause(node)) return null;
 
 		// Otherwise, it is an implements clause.
@@ -369,7 +372,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {HeritageClause} node
 	 * @returns {HeritageCtor}
 	 */
-	public toHeritageCtor (node: HeritageClause|undefined|null): HeritageCtor|null {
+	public toHeritageCtor (node: Optional<HeritageClause>): HeritageCtor|null {
 		if (node == null) return null;
 
 		// If it is an implements clause
@@ -386,7 +389,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeLiteralNode|InterfaceDeclaration} node
 	 * @returns {ITypeLiteralCtor}
 	 */
-	public toITypeLiteralCtor (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralCtor|null {
+	public toITypeLiteralCtor (node: Optional<TypeLiteralNode|InterfaceDeclaration>): ITypeLiteralCtor|null {
 		if (node == null) return null;
 		return {
 			members: node.members.map(member => this.toITypeElementCtor(member)!)
@@ -398,7 +401,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {InterfaceDeclaration} node
 	 * @returns {IInterfaceCtor}
 	 */
-	public toIInterfaceCtor (node: InterfaceDeclaration|undefined|null): IInterfaceCtor|null {
+	public toIInterfaceCtor (node: Optional<InterfaceDeclaration>): IInterfaceCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -414,7 +417,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {TypeElement} node
 	 * @returns {ITypeElementCtor}
 	 */
-	public toITypeElementCtor (node: TypeElement|undefined|null): ITypeElementCtor|null {
+	public toITypeElementCtor (node: Optional<TypeElement>): ITypeElementCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -428,7 +431,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ClassDeclaration | ClassExpression | null | undefined} node
 	 * @returns {IClassCtor | null}
 	 */
-	public toIClassCtor (node: ClassDeclaration|ClassExpression|undefined|null): IClassCtor|null {
+	public toIClassCtor (node: Optional<ClassDeclaration|ClassExpression>): IClassCtor|null {
 		if (node == null) return null;
 
 		// Get the name of the class
@@ -453,7 +456,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ClassElement|null|?} node
 	 * @returns {ClassElementCtor|null}
 	 */
-	public toClassElementCtor (node: ClassElement|undefined|null): ClassElementCtor|null {
+	public toClassElementCtor (node: Optional<ClassElement>): ClassElementCtor|null {
 		if (node == null || isSemicolonClassElement(node)) return null;
 
 		if (isAccessor(node)) {
@@ -482,7 +485,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {AccessorDeclaration| null | undefined} node
 	 * @returns {ClassAccessorCtor | null}
 	 */
-	public toClassAccessorCtor (node: AccessorDeclaration|undefined|null): ClassAccessorCtor|null {
+	public toClassAccessorCtor (node: Optional<AccessorDeclaration>): ClassAccessorCtor|null {
 		if (node == null) return null;
 
 		const visibility = this.modifierService.getAccessModifier(node);
@@ -500,7 +503,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ConstructorDeclaration | null | undefined} node
 	 * @returns {IConstructorCtor | null}
 	 */
-	public toIConstructorCtor (node: ConstructorDeclaration|undefined|null): IConstructorCtor|null {
+	public toIConstructorCtor (node: Optional<ConstructorDeclaration>): IConstructorCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -514,7 +517,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {MethodDeclaration| null | undefined} node
 	 * @returns {IClassMethodCtor | null}
 	 */
-	public toIClassMethodCtor (node: MethodDeclaration|undefined|null): IClassMethodCtor|null {
+	public toIClassMethodCtor (node: Optional<MethodDeclaration>): IClassMethodCtor|null {
 		if (node == null) return null;
 
 		const visibility = this.modifierService.getAccessModifier(node);
@@ -533,7 +536,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {AccessorDeclaration| null | undefined} node
 	 * @returns {IClassPropertyCtor | null}
 	 */
-	public toIClassPropertyCtor (node: PropertyDeclaration|undefined|null): IClassPropertyCtor|null {
+	public toIClassPropertyCtor (node: Optional<PropertyDeclaration>): IClassPropertyCtor|null {
 		if (node == null) return null;
 
 		const visibility = this.modifierService.getAccessModifier(node);
@@ -557,7 +560,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {MethodDeclaration| null | undefined} node
 	 * @returns {IMethodCtor | null}
 	 */
-	public toIMethodCtor (node: MethodDeclaration|undefined|null): IMethodCtor|null {
+	public toIMethodCtor (node: Optional<MethodDeclaration>): IMethodCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -572,7 +575,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {FunctionLikeDeclaration | null | undefined} node
 	 * @returns {IFunctionLikeCtor | null}
 	 */
-	public toIFunctionLikeCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeCtor|null {
+	public toIFunctionLikeCtor (node: Optional<FunctionLikeDeclaration>): IFunctionLikeCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -587,7 +590,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {FunctionLikeDeclaration| null | undefined} node
 	 * @returns {IMethodCtor | null}
 	 */
-	public toIFunctionLikeWithParametersCtor (node: FunctionLikeDeclaration|undefined|null): IFunctionLikeWithParametersCtor|null {
+	public toIFunctionLikeWithParametersCtor (node: Optional<FunctionLikeDeclaration>): IFunctionLikeWithParametersCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -602,7 +605,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {AccessorDeclaration| null | undefined} node
 	 * @returns {AccessorCtor | null}
 	 */
-	public toAccessorCtor (node: AccessorDeclaration|undefined|null): AccessorCtor|null {
+	public toAccessorCtor (node: Optional<AccessorDeclaration>): AccessorCtor|null {
 		if (node == null) return null;
 
 		if (isGetAccessorDeclaration(node)) {
@@ -619,7 +622,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {AccessorDeclaration| null | undefined} node
 	 * @returns {IAccessorCtor | null}
 	 */
-	public toIAccessorCtor (node: AccessorDeclaration|undefined|null): IAccessorCtor|null {
+	public toIAccessorCtor (node: Optional<AccessorDeclaration>): IAccessorCtor|null {
 		if (node == null) return null;
 
 		if (isGetAccessorDeclaration(node)) {
@@ -640,7 +643,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {GetAccessorDeclaration | null | undefined} node
 	 * @returns {IGetAccessorCtor | null}
 	 */
-	public toIGetAccessorCtor (node: GetAccessorDeclaration|undefined|null): IGetAccessorCtor|null {
+	public toIGetAccessorCtor (node: Optional<GetAccessorDeclaration>): IGetAccessorCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -655,7 +658,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {SetAccessorDeclaration | null | undefined} node
 	 * @returns {ISetAccessorCtor | null}
 	 */
-	public toISetAccessorCtor (node: SetAccessorDeclaration|undefined|null): ISetAccessorCtor|null {
+	public toISetAccessorCtor (node: Optional<SetAccessorDeclaration>): ISetAccessorCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -672,7 +675,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ImportSpecifier|ExportSpecifier?} node
 	 * @returns {INamedImportExportCtor?}
 	 */
-	public toINamedImportExportCtor (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportCtor|null {
+	public toINamedImportExportCtor (node: Optional<ImportSpecifier|ExportSpecifier>): INamedImportExportCtor|null {
 		if (node == null) return null;
 
 		return {
@@ -686,7 +689,7 @@ export class NodeToCtorMapper implements INodeToCtorMapperBase {
 	 * @param {ImportClause?} node
 	 * @returns {IImportClauseCtor?}
 	 */
-	public toIImportClauseCtor (node: ImportClause|undefined|null): IImportClauseCtor|null {
+	public toIImportClauseCtor (node: Optional<ImportClause>): IImportClauseCtor|null {
 		if (node == null) return null;
 
 		return {

@@ -5,6 +5,8 @@ import {INamedImportsService} from "../service/named-imports/i-named-imports-ser
 import {INamedExportsService} from "../service/named-exports/i-named-exports-service";
 import {IPlacement} from "../placement/i-placement";
 
+// tslint:disable:no-misleading-array-reverse
+
 /**
  * A class for joining multiple different Nodes together to form new ones
  */

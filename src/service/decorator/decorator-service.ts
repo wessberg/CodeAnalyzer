@@ -1,4 +1,4 @@
-import {IDecoratorService} from "./i-decorator-service";
+import {DecoratorExpression, IDecoratorService} from "./i-decorator-service";
 import {Decorator, isCallExpression, Node} from "typescript";
 import {IFormatter} from "../../formatter/i-formatter-getter";
 import {IPrinter} from "@wessberg/typescript-ast-util";
@@ -23,31 +23,31 @@ export class DecoratorService implements IDecoratorService {
 
 	/**
 	 * Returns true if the provided Node is decorated with an expression that matches the provided one
-	 * @param {string | IDecoratorCtor | RegExp} expression
+	 * @param {DecoratorExpression} expression
 	 * @param {Node} node
 	 * @returns {boolean}
 	 */
-	public hasDecoratorWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): boolean {
+	public hasDecoratorWithExpression (expression: DecoratorExpression, node: Node): boolean {
 		return this.getDecoratorWithExpression(expression, node) != null;
 	}
 
 	/**
 	 * Returns the decorator that matches the provided expression on the provided Node
-	 * @param {string | IDecoratorCtor | RegExp} expression
+	 * @param {DecoratorExpression} expression
 	 * @param {Node} node
 	 * @returns {Decorator?}
 	 */
-	public getDecoratorWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator|undefined {
+	public getDecoratorWithExpression (expression: DecoratorExpression, node: Node): Decorator|undefined {
 		return this.getDecoratorsWithExpression(expression, node)[0];
 	}
 
 	/**
 	 * Returns all the decorators that matches the provided expression on the provided Node
-	 * @param {string | IDecoratorCtor | RegExp} expression
+	 * @param {DecoratorExpression} expression
 	 * @param {Node} node
 	 * @returns {Decorator[]}
 	 */
-	public getDecoratorsWithExpression (expression: string|IDecoratorCtor|RegExp, node: Node): Decorator[] {
+	public getDecoratorsWithExpression (expression: DecoratorExpression, node: Node): Decorator[] {
 		if (node.decorators == null) return [];
 		return node.decorators.filter(decorator => {
 			const decoratorExpression = this.takeDecoratorExpression(decorator);

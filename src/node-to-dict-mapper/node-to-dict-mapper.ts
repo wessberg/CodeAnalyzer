@@ -1,5 +1,5 @@
 import {INodeToDictMapperBase} from "./i-node-to-dict-mapper";
-import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassDeclaration, ClassElement, ClassExpression, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isPropertyDeclaration, isPropertySignature, isSemicolonClassElement, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
+import {AccessorDeclaration, ArrayBindingElement, ArrayBindingPattern, BindingElement, BindingName, CallSignatureDeclaration, ClassElement, ConstructorDeclaration, ConstructSignatureDeclaration, Decorator, ExportSpecifier, FunctionLikeDeclaration, GetAccessorDeclaration, HeritageClause, Identifier, ImportClause, ImportSpecifier, IndexSignatureDeclaration, InterfaceDeclaration, isAccessor, isArrayBindingPattern, isCallSignatureDeclaration, isConstructorDeclaration, isConstructSignatureDeclaration, isGetAccessorDeclaration, isIdentifier, isIndexSignatureDeclaration, isMethodDeclaration, isMethodSignature, isNamespaceImport, isObjectBindingPattern, isPropertyDeclaration, isPropertySignature, isSemicolonClassElement, MethodDeclaration, MethodSignature, ModifiersArray, ObjectBindingPattern, ParameterDeclaration, PropertyDeclaration, PropertySignature, SetAccessorDeclaration, SignatureDeclaration, SyntaxKind, TypeElement, TypeLiteralNode} from "typescript";
 import {IDecoratorDict} from "../light-ast/dict/decorator/i-decorator-dict";
 import {IObjectBindingElementDict} from "../light-ast/dict/binding-element/i-object-binding-element-dict";
 import {ArrayBindingElementDict, INormalArrayBindingElementDict, IOmittedArrayBindingElementDict} from "../light-ast/dict/binding-element/array-binding-element-dict";
@@ -29,6 +29,8 @@ import {IFunctionLikeDict} from "../light-ast/dict/function-like/i-function-like
 import {IFunctionLikeWithParametersDict} from "../light-ast/dict/function-like-with-parameters/i-function-like-with-parameters-dict";
 import {IMethodDict} from "../light-ast/dict/method/i-method-dict";
 import {IConstructorDict} from "../light-ast/dict/constructor/i-constructor-dict";
+import {Optional} from "../optional/optional";
+import {Class} from "../service/class/i-class-service";
 
 /**
  * A class that can map nodes to dicts
@@ -40,7 +42,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {Decorator} node
 	 * @returns {IDecoratorDict}
 	 */
-	public toIDecoratorDict (node: Decorator|undefined|null): IDecoratorDict|null {
+	public toIDecoratorDict (node: Optional<Decorator>): IDecoratorDict|null {
 		const result = this.toIDecoratorCtor(node);
 		if (result == null) return null;
 
@@ -55,7 +57,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {BindingElement} node
 	 * @returns {IObjectBindingElementDict}
 	 */
-	public toIObjectBindingElementDict (node: BindingElement|undefined|null): IObjectBindingElementDict|null {
+	public toIObjectBindingElementDict (node: Optional<BindingElement>): IObjectBindingElementDict|null {
 		const result = this.toIObjectBindingElementCtor(node);
 		if (result == null) return null;
 
@@ -70,7 +72,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {BindingElement} node
 	 * @returns {INormalArrayBindingElementDict}
 	 */
-	public toINormalArrayBindingElementDict (node: BindingElement|undefined|null): INormalArrayBindingElementDict|null {
+	public toINormalArrayBindingElementDict (node: Optional<BindingElement>): INormalArrayBindingElementDict|null {
 		const result = this.toINormalArrayBindingElementCtor(node);
 		if (result == null) return null;
 
@@ -85,7 +87,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ArrayBindingElement?} node
 	 * @returns {IOmittedArrayBindingElementDict}
 	 */
-	public toIOmittedArrayBindingElementDict (node: ArrayBindingElement|undefined|null): IOmittedArrayBindingElementDict|null {
+	public toIOmittedArrayBindingElementDict (node: Optional<ArrayBindingElement>): IOmittedArrayBindingElementDict|null {
 		const result = this.toIOmittedArrayBindingElementCtor(node);
 		if (result == null) return null;
 
@@ -100,7 +102,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ArrayBindingElement} node
 	 * @returns {ArrayBindingElementDict}
 	 */
-	public toArrayBindingElementDict (node: ArrayBindingElement|undefined|null): ArrayBindingElementDict|null {
+	public toArrayBindingElementDict (node: Optional<ArrayBindingElement>): ArrayBindingElementDict|null {
 		const result = this.toArrayBindingElementCtor(node);
 		if (result == null) return null;
 
@@ -115,7 +117,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {BindingName} node
 	 * @returns {BindingNameDict}
 	 */
-	public toBindingNameDict (node: BindingName|undefined|null): BindingNameDict|null {
+	public toBindingNameDict (node: Optional<BindingName>): BindingNameDict|null {
 		if (node == null) return null;
 
 		if (isIdentifier(node)) return this.toINormalBindingNameDict(node);
@@ -130,7 +132,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {Identifier} node
 	 * @returns {INormalBindingNameDict}
 	 */
-	public toINormalBindingNameDict (node: Identifier|undefined|null): INormalBindingNameDict|null {
+	public toINormalBindingNameDict (node: Optional<Identifier>): INormalBindingNameDict|null {
 		const result = this.toINormalBindingNameCtor(node);
 		if (result == null) return null;
 
@@ -145,7 +147,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ObjectBindingPattern} node
 	 * @returns {IObjectBindingNameDict}
 	 */
-	public toIObjectBindingNameDict (node: ObjectBindingPattern|undefined|null): IObjectBindingNameDict|null {
+	public toIObjectBindingNameDict (node: Optional<ObjectBindingPattern>): IObjectBindingNameDict|null {
 		const result = this.toIObjectBindingNameCtor(node);
 		if (result == null || node == null) return null;
 
@@ -161,7 +163,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ArrayBindingPattern} node
 	 * @returns {IArrayBindingNameDict}
 	 */
-	public toIArrayBindingNameDict (node: ArrayBindingPattern|undefined|null): IArrayBindingNameDict|null {
+	public toIArrayBindingNameDict (node: Optional<ArrayBindingPattern>): IArrayBindingNameDict|null {
 		const result = this.toIArrayBindingNameCtor(node);
 		if (result == null || node == null) return null;
 
@@ -177,7 +179,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ParameterDeclaration} node
 	 * @returns {IParameterDict}
 	 */
-	public toIParameterDict (node: ParameterDeclaration|undefined|null): IParameterDict|null {
+	public toIParameterDict (node: Optional<ParameterDeclaration>): IParameterDict|null {
 		const result = this.toIParameterCtor(node);
 		if (result == null || node == null) return null;
 
@@ -194,7 +196,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {TypeElement} node
 	 * @returns {TypeElementDict}
 	 */
-	public toTypeElementDict (node: TypeElement|undefined|null): TypeElementDict|null {
+	public toTypeElementDict (node: Optional<TypeElement>): TypeElementDict|null {
 		if (node == null) return null;
 
 		if (isCallSignatureDeclaration(node)) return this.toICallSignatureDict(node);
@@ -211,7 +213,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {CallSignatureDeclaration} node
 	 * @returns {ICallSignatureDict}
 	 */
-	public toICallSignatureDict (node: CallSignatureDeclaration|undefined|null): ICallSignatureDict|null {
+	public toICallSignatureDict (node: Optional<CallSignatureDeclaration>): ICallSignatureDict|null {
 		const result = this.toICallSignatureCtor(node);
 		if (result == null || node == null) return null;
 
@@ -227,7 +229,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ConstructSignatureDeclaration} node
 	 * @returns {IConstructSignatureDict}
 	 */
-	public toIConstructSignatureDict (node: ConstructSignatureDeclaration|undefined|null): IConstructSignatureDict|null {
+	public toIConstructSignatureDict (node: Optional<ConstructSignatureDeclaration>): IConstructSignatureDict|null {
 		const result = this.toIConstructSignatureCtor(node);
 		if (result == null || node == null) return null;
 
@@ -243,7 +245,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {MethodSignature} node
 	 * @returns {IMethodSignatureDict}
 	 */
-	public toIMethodSignatureDict (node: MethodSignature|undefined|null): IMethodSignatureDict|null {
+	public toIMethodSignatureDict (node: Optional<MethodSignature>): IMethodSignatureDict|null {
 		const result = this.toIMethodSignatureCtor(node);
 		if (result == null || node == null) return null;
 
@@ -259,7 +261,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {IndexSignatureDeclaration} node
 	 * @returns {IIndexSignatureDict}
 	 */
-	public toIIndexSignatureDict (node: IndexSignatureDeclaration|undefined|null): IIndexSignatureDict|null {
+	public toIIndexSignatureDict (node: Optional<IndexSignatureDeclaration>): IIndexSignatureDict|null {
 		const result = this.toIIndexSignatureCtor(node);
 		if (result == null || node == null) return null;
 
@@ -275,7 +277,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {PropertySignature} node
 	 * @returns {IPropertySignatureDict}
 	 */
-	public toIPropertySignatureDict (node: PropertySignature|undefined|null): IPropertySignatureDict|null {
+	public toIPropertySignatureDict (node: Optional<PropertySignature>): IPropertySignatureDict|null {
 		const result = this.toIPropertySignatureCtor(node);
 		if (result == null) return null;
 
@@ -290,7 +292,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {SignatureDeclaration} node
 	 * @returns {ISignatureDict}
 	 */
-	public toISignatureDict (node: SignatureDeclaration|undefined|null): ISignatureDict|null {
+	public toISignatureDict (node: Optional<SignatureDeclaration>): ISignatureDict|null {
 		const result = this.toISignatureCtor(node);
 		if (result == null || node == null) return null;
 
@@ -305,7 +307,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {HeritageClause} node
 	 * @returns {IExtendsHeritageDict}
 	 */
-	public toIExtendsHeritageDict (node: HeritageClause|undefined|null): IExtendsHeritageDict|null {
+	public toIExtendsHeritageDict (node: Optional<HeritageClause>): IExtendsHeritageDict|null {
 		const result = this.toIExtendsHeritageCtor(node);
 		if (result == null) return null;
 
@@ -321,7 +323,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {HeritageClause} node
 	 * @returns {IImplementsHeritageDict}
 	 */
-	public toIImplementsHeritageDict (node: HeritageClause|undefined|null): IImplementsHeritageDict|null {
+	public toIImplementsHeritageDict (node: Optional<HeritageClause>): IImplementsHeritageDict|null {
 		const result = this.toIImplementsHeritageCtor(node);
 		if (result == null) return null;
 
@@ -337,7 +339,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {HeritageClause} node
 	 * @returns {HeritageDict}
 	 */
-	public toHeritageDict (node: HeritageClause|undefined|null): HeritageDict|null {
+	public toHeritageDict (node: Optional<HeritageClause>): HeritageDict|null {
 		const result = this.toHeritageCtor(node);
 		if (result == null) return null;
 
@@ -352,7 +354,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {TypeLiteralNode|InterfaceDeclaration} node
 	 * @returns {ITypeLiteralDict}
 	 */
-	public toITypeLiteralDict (node: TypeLiteralNode|InterfaceDeclaration|undefined|null): ITypeLiteralDict|null {
+	public toITypeLiteralDict (node: Optional<TypeLiteralNode|InterfaceDeclaration>): ITypeLiteralDict|null {
 		const result = this.toITypeLiteralCtor(node);
 		if (result == null || node == null) return null;
 
@@ -368,7 +370,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {InterfaceDeclaration} node
 	 * @returns {IInterfaceDict}
 	 */
-	public toIInterfaceDict (node: InterfaceDeclaration|undefined|null): IInterfaceDict|null {
+	public toIInterfaceDict (node: Optional<InterfaceDeclaration>): IInterfaceDict|null {
 		const result = this.toIInterfaceCtor(node);
 		if (result == null || node == null) return null;
 
@@ -384,25 +386,25 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {TypeElement} node
 	 * @returns {ITypeElementDict}
 	 */
-	public toITypeElementDict (node: TypeElement|undefined|null): ITypeElementDict|null {
+	public toITypeElementDict (node: Optional<TypeElement>): ITypeElementDict|null {
 		return this.toITypeElementCtor(node);
 	}
 
 	/**
 	 * Maps a ModifiersArray to an IAllModifiersDict
-	 * @param {ModifiersArray | null | undefined} modifiers
+	 * @param {Optional<ModifiersArray>} modifiers
 	 * @returns {IAllModifiersDict | null}
 	 */
-	public toIAllModifiersDict (modifiers: ModifiersArray|undefined|null): IAllModifiersDict|null {
+	public toIAllModifiersDict (modifiers: Optional<ModifiersArray>): IAllModifiersDict|null {
 		return this.toIAllModifiersCtor(modifiers);
 	}
 
 	/**
 	 * Maps a Class to an IClassDict
-	 * @param {ClassDeclaration | ClassExpression | null | undefined} node
+	 * @param {Optional<Class>} node
 	 * @returns {IClassDict | null}
 	 */
-	public toIClassDict (node: ClassDeclaration|ClassExpression|undefined|null): IClassDict|null {
+	public toIClassDict (node: Optional<Class>): IClassDict|null {
 		const result = this.toIClassCtor(node);
 		if (result == null || node == null) return null;
 
@@ -421,10 +423,10 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a ClassElement to an ClassElementDict
-	 * @param {ClassElement | null | undefined} node
+	 * @param {Optional<ClassElement>} node
 	 * @returns {ClassElementDict | null}
 	 */
-	public toClassElementDict (node: ClassElement|undefined|null): ClassElementDict|null {
+	public toClassElementDict (node: Optional<ClassElement>): ClassElementDict|null {
 		if (node == null || isSemicolonClassElement(node)) return null;
 
 		if (isAccessor(node)) {
@@ -450,10 +452,10 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a AccessorDeclaration to an ClassAccessorDict
-	 * @param {AccessorDeclaration | null | undefined} node
+	 * @param {Optional<AccessorDeclaration>} node
 	 * @returns {ClassAccessorDict | null}
 	 */
-	public toClassAccessorDict (node: AccessorDeclaration|undefined|null): ClassAccessorDict|null {
+	public toClassAccessorDict (node: Optional<AccessorDeclaration>): ClassAccessorDict|null {
 		const result = this.toClassAccessorCtor(node);
 		if (result == null || node == null) return null;
 
@@ -469,7 +471,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a ConstructorDeclaration to an IConstructorDict
-	 * @param {ts.ConstructorDeclaration | null | undefined} node
+	 * @param {Optional<ConstructorDeclaration>} node
 	 * @returns {IConstructorDict | null}
 	 */
 	public toIConstructorDict (node: ConstructorDeclaration|null|undefined): IConstructorDict|null {
@@ -485,7 +487,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a MethodDeclaration to an IClassMethodDict
-	 * @param {MethodDeclaration | null | undefined} node
+	 * @param {Optional<MethodDeclaration>} node
 	 * @returns {IClassMethodDict | null}
 	 */
 	public toIClassMethodDict (node: MethodDeclaration|null|undefined): IClassMethodDict|null {
@@ -502,7 +504,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps an PropertyDeclaration to an IClassPropertyDict
-	 * @param {PropertyDeclaration | null | undefined} node
+	 * @param {Optional<PropertyDeclaration>} node
 	 * @returns {IClassPropertyDict | null}
 	 */
 	public toIClassPropertyDict (node: PropertyDeclaration|null|undefined): IClassPropertyDict|null {
@@ -518,7 +520,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a MethodDeclaration to an IMethodDict
-	 * @param {ts.MethodDeclaration | null | undefined} node
+	 * @param {Optional<MethodDeclaration>} node
 	 * @returns {IMethodDict | null}
 	 */
 	public toIMethodDict (node: MethodDeclaration|null|undefined): IMethodDict|null {
@@ -535,7 +537,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps an FunctionLikeDeclaration to an IFunctionLikeDict
-	 * @param {FunctionLikeDeclaration | null | undefined} node
+	 * @param {Optional<FunctionLikeDeclaration>} node
 	 * @returns {IFunctionLikeDict | null}
 	 */
 	public toIFunctionLikeDict (node: FunctionLikeDeclaration|null|undefined): IFunctionLikeDict|null {
@@ -550,7 +552,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a FunctionLikeDeclaration to an IFunctionLikeWithParametersDict
-	 * @param {FunctionLikeDeclaration | null | undefined} node
+	 * @param {Optional<FunctionLikeDeclaration>} node
 	 * @returns {IFunctionLikeWithParametersDict | null}
 	 */
 	public toIFunctionLikeWithParametersDict (node: FunctionLikeDeclaration|null|undefined): IFunctionLikeWithParametersDict|null {
@@ -566,7 +568,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps an AccessorDeclaration to an AccessorDict
-	 * @param {AccessorDeclaration | null | undefined} node
+	 * @param {Optional<AccessorDeclaration>} node
 	 * @returns {AccessorDict | null}
 	 */
 	public toAccessorDict (node: AccessorDeclaration|null|undefined): AccessorDict|null {
@@ -583,7 +585,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps an AccessorDeclaration to an IAccessorDict
-	 * @param {AccessorDeclaration | null | undefined} node
+	 * @param {Optional<AccessorDeclaration>} node
 	 * @returns {IAccessorDict | null}
 	 */
 	public toIAccessorDict (node: AccessorDeclaration|null|undefined): IAccessorDict|null {
@@ -598,7 +600,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a GetAccessorDeclaration to an IGetAccessorDict
-	 * @param {GetAccessorDeclaration | null | undefined} node
+	 * @param {Optional<GetAccessorDeclaration>} node
 	 * @returns {IGetAccessorDict | null}
 	 */
 	public toIGetAccessorDict (node: GetAccessorDeclaration|null|undefined): IGetAccessorDict|null {
@@ -614,7 +616,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 
 	/**
 	 * Maps a SetAccessorDeclaration to an ISetAccessorDict
-	 * @param {SetAccessorDeclaration | null | undefined} node
+	 * @param {Optional<SetAccessorDeclaration>} node
 	 * @returns {ISetAccessorDict | null}
 	 */
 	public toISetAccessorDict (node: SetAccessorDeclaration|null|undefined): ISetAccessorDict|null {
@@ -634,7 +636,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ImportSpecifier|ExportSpecifier?} node
 	 * @returns {INamedImportExportDict?}
 	 */
-	public toINamedImportExportDict (node: ImportSpecifier|ExportSpecifier|undefined|null): INamedImportExportDict|null {
+	public toINamedImportExportDict (node: Optional<ImportSpecifier|ExportSpecifier>): INamedImportExportDict|null {
 		const result = this.toINamedImportExportCtor(node);
 		if (result == null) return null;
 
@@ -649,7 +651,7 @@ export class NodeToDictMapper extends NodeToCtorMapper implements INodeToDictMap
 	 * @param {ImportClause?} node
 	 * @returns {IImportClauseDict?}
 	 */
-	public toIImportClauseDict (node: ImportClause|undefined|null): IImportClauseDict|null {
+	public toIImportClauseDict (node: Optional<ImportClause>): IImportClauseDict|null {
 		if (node == null) return null;
 
 		return {
